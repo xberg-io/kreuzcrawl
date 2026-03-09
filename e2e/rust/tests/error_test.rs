@@ -177,7 +177,8 @@ async fn test_error_502_bad_gateway() {
 #[tokio::test]
 async fn test_error_connection_refused() {
     // Handles connection refused error gracefully
-    let mock = helpers::setup_mock_server().await;
+    // Connect to a port where nothing is listening.
+    let url = "http://127.0.0.1:1/";
 
     let config = kreuzcrawl::CrawlConfig {
         respect_robots_txt: false,
@@ -185,7 +186,7 @@ async fn test_error_connection_refused() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let result = kreuzcrawl::scrape(url, &config).await;
     let err = result.expect_err("request should fail");
     assert!(err.to_string().contains("connection"));
 }
@@ -193,7 +194,8 @@ async fn test_error_connection_refused() {
 #[tokio::test]
 async fn test_error_dns_resolution() {
     // Handles DNS resolution failure gracefully
-    let mock = helpers::setup_mock_server().await;
+    // Use the .invalid TLD which is guaranteed to never resolve (RFC 2606).
+    let url = "http://this-domain-does-not-exist.invalid/";
 
     let config = kreuzcrawl::CrawlConfig {
         respect_robots_txt: false,
@@ -201,7 +203,7 @@ async fn test_error_dns_resolution() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let result = kreuzcrawl::scrape(url, &config).await;
     let err = result.expect_err("request should fail");
     assert!(err.to_string().contains("dns"));
 }
@@ -224,28 +226,40 @@ async fn test_error_empty_response() {
 
 #[tokio::test]
 async fn test_error_partial_response() {
-    // Handles incomplete or truncated HTTP response
-    let mock = helpers::setup_mock_server().await;
-    let body = "<html><body><h1>Truncated".to_owned();
-    helpers::register_mock(
-        &mock,
-        "GET",
-        "/",
-        200,
-        &[
-            ("content-type", "text/html; charset=utf-8"),
-            ("content-length", "99999"),
-        ],
-        &body,
-    )
-    .await;
+    // Handles incomplete or truncated HTTP response.
+    // We use a raw TCP server to send a response with Content-Length: 99999
+    // but close the connection after only 25 bytes, because wiremock/hyper
+    // validates content-length consistency server-side.
+    use tokio::net::TcpListener;
+    use tokio::io::AsyncWriteExt;
 
+    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let addr = listener.local_addr().unwrap();
+
+    // Spawn a task that accepts one connection and sends a truncated response.
+    tokio::spawn(async move {
+        let (mut stream, _) = listener.accept().await.unwrap();
+        // Read the request (we don't care about it)
+        let mut buf = [0u8; 1024];
+        let _ = tokio::io::AsyncReadExt::read(&mut stream, &mut buf).await;
+        // Send response with mismatched content-length
+        let response = b"HTTP/1.1 200 OK\r\n\
+            Content-Type: text/html; charset=utf-8\r\n\
+            Content-Length: 99999\r\n\
+            \r\n\
+            <html><body><h1>Truncated";
+        let _ = stream.write_all(response).await;
+        // Close immediately — truncating the body
+        drop(stream);
+    });
+
+    let url = format!("http://127.0.0.1:{}/", addr.port());
     let config = kreuzcrawl::CrawlConfig {
         respect_robots_txt: false,
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let result = kreuzcrawl::scrape(&url, &config).await;
     let err = result.expect_err("request should fail");
     assert!(err.to_string().contains("data_loss"));
 }
@@ -331,7 +345,9 @@ async fn test_error_retry_backoff() {
 #[tokio::test]
 async fn test_error_ssl_invalid_cert() {
     // Handles SSL certificate validation error
+    // Connect via HTTPS to the HTTP-only mock server — the TLS handshake will fail.
     let mock = helpers::setup_mock_server().await;
+    let https_url = mock.uri().replace("http://", "https://");
 
     let config = kreuzcrawl::CrawlConfig {
         respect_robots_txt: false,
@@ -339,7 +355,7 @@ async fn test_error_ssl_invalid_cert() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let result = kreuzcrawl::scrape(&https_url, &config).await;
     let err = result.expect_err("request should fail");
     assert!(err.to_string().contains("ssl"));
 }
@@ -348,19 +364,22 @@ async fn test_error_ssl_invalid_cert() {
 async fn test_error_timeout() {
     // Handles request timeout
     let mock = helpers::setup_mock_server().await;
-    let body = "<html><body>slow</body></html>".to_owned();
-    helpers::register_mock(
-        &mock,
-        "GET",
-        "/",
-        200,
-        &[("content-type", "text/html")],
-        &body,
-    )
-    .await;
+
+    // Register a mock that delays 5 seconds before responding.
+    use wiremock::{Mock, ResponseTemplate};
+    use wiremock::matchers::{method, path};
+    let response = ResponseTemplate::new(200)
+        .set_body_string("<html><body>slow</body></html>")
+        .append_header("content-type", "text/html")
+        .set_delay(std::time::Duration::from_secs(5));
+    Mock::given(method("GET"))
+        .and(path("/"))
+        .respond_with(response)
+        .mount(&mock)
+        .await;
 
     let config = kreuzcrawl::CrawlConfig {
-        request_timeout: std::time::Duration::from_millis(1),
+        request_timeout: std::time::Duration::from_millis(100),
         ..Default::default()
     };
 

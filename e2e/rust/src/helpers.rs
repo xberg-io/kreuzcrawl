@@ -9,6 +9,8 @@ pub async fn setup_mock_server() -> MockServer {
 }
 
 /// Load a response body file from fixtures/responses/.
+/// For binary files (e.g. .gz), reads raw bytes and encodes each byte as a
+/// single char so the data survives a round-trip through `String`.
 pub fn load_response_body(relative_path: &str) -> String {
     let base = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
         .parent()
@@ -18,11 +20,22 @@ pub fn load_response_body(relative_path: &str) -> String {
         .join("fixtures")
         .join("responses");
     let full_path = base.join(relative_path);
-    std::fs::read_to_string(&full_path)
-        .unwrap_or_else(|e| panic!("failed to load response body {}: {e}", full_path.display()))
+
+    // For binary files, read as bytes and encode each byte as a char
+    if relative_path.ends_with(".gz") || relative_path.ends_with(".bin") {
+        let bytes = std::fs::read(&full_path)
+            .unwrap_or_else(|e| panic!("failed to load response body {}: {e}", full_path.display()));
+        bytes.iter().map(|&b| b as char).collect()
+    } else {
+        std::fs::read_to_string(&full_path)
+            .unwrap_or_else(|e| panic!("failed to load response body {}: {e}", full_path.display()))
+    }
 }
 
 /// Register a mock route on the given server.
+///
+/// Uses `set_body_bytes` instead of `set_body_string` to avoid wiremock
+/// overriding the content-type header with `text/plain`.
 pub async fn register_mock(
     server: &MockServer,
     http_method: &str,
@@ -31,7 +44,23 @@ pub async fn register_mock(
     headers: &[(&str, &str)],
     body: &str,
 ) {
-    let mut response = ResponseTemplate::new(status).set_body_string(body.to_owned());
+    // Check if body was loaded from a binary file (Latin-1-encoded string)
+    let is_binary = headers.iter().any(|&(k, v)| {
+        k.eq_ignore_ascii_case("content-type")
+            && (v.contains("gzip")
+                || v.contains("octet-stream")
+                || v.contains("application/x-gzip"))
+    });
+
+    let body_bytes: Vec<u8> = if is_binary {
+        // Convert the Latin-1-encoded string back to raw bytes
+        body.chars().map(|c| c as u8).collect()
+    } else {
+        body.as_bytes().to_vec()
+    };
+
+    // Use set_body_bytes to avoid wiremock setting Content-Type to text/plain
+    let mut response = ResponseTemplate::new(status).set_body_bytes(body_bytes);
     for &(key, value) in headers {
         response = response.append_header(key, value);
     }
