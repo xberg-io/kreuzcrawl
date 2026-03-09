@@ -1,9 +1,11 @@
 //! Asset discovery and downloading from HTML pages.
 
 use std::collections::HashSet;
+use std::sync::Arc;
 
 use scraper::{Html, Selector};
 use sha2::{Digest, Sha256};
+use tokio::sync::Semaphore;
 use url::Url;
 
 use crate::types::{AssetCategory, CrawlConfig, DownloadedAsset};
@@ -75,63 +77,76 @@ pub(crate) async fn download_assets(
     config: &CrawlConfig,
     client: &reqwest::Client,
 ) -> Vec<DownloadedAsset> {
-    let mut downloaded = Vec::new();
     let mut seen_urls: HashSet<String> = HashSet::new();
 
-    for asset_ref in refs {
-        // Dedup by URL
-        if !seen_urls.insert(asset_ref.url.clone()) {
-            continue;
+    // Dedup and filter first, then download concurrently
+    let unique_refs: Vec<AssetRef> = refs
+        .into_iter()
+        .filter(|asset_ref| {
+            // Dedup by URL
+            if !seen_urls.insert(asset_ref.url.clone()) {
+                return false;
+            }
+            // Filter by asset type
+            if let Some(ref types) = config.asset_types
+                && !types.contains(&asset_ref.category)
+            {
+                return false;
+            }
+            true
+        })
+        .collect();
+
+    let semaphore = Arc::new(Semaphore::new(8));
+    let client = client.clone();
+    let max_asset_size = config.max_asset_size;
+
+    let mut handles = Vec::with_capacity(unique_refs.len());
+    for asset_ref in unique_refs {
+        let permit = Arc::clone(&semaphore);
+        let client = client.clone();
+        handles.push(tokio::spawn(async move {
+            let _permit = permit.acquire().await.ok()?;
+
+            let resp = client.get(&asset_ref.url).send().await.ok()?;
+            if !resp.status().is_success() {
+                return None;
+            }
+
+            let mime_type = resp
+                .headers()
+                .get("content-type")
+                .and_then(|v| v.to_str().ok())
+                .map(String::from);
+
+            let bytes = resp.bytes().await.ok()?;
+
+            if let Some(max_size) = max_asset_size
+                && bytes.len() > max_size
+            {
+                return None;
+            }
+
+            let mut hasher = Sha256::new();
+            hasher.update(&bytes);
+            let hash = format!("{:x}", hasher.finalize());
+
+            Some(DownloadedAsset {
+                url: asset_ref.url,
+                content_hash: hash,
+                mime_type,
+                size: bytes.len(),
+                asset_category: asset_ref.category,
+                html_tag: Some(asset_ref.html_tag),
+            })
+        }));
+    }
+
+    let mut downloaded = Vec::new();
+    for handle in handles {
+        if let Ok(Some(asset)) = handle.await {
+            downloaded.push(asset);
         }
-
-        // Filter by asset type
-        if let Some(ref types) = config.asset_types
-            && !types.contains(&asset_ref.category)
-        {
-            continue;
-        }
-
-        // Download
-        let resp = match client.get(&asset_ref.url).send().await {
-            Ok(r) => r,
-            Err(_) => continue,
-        };
-
-        if !resp.status().is_success() {
-            continue;
-        }
-
-        let mime_type = resp
-            .headers()
-            .get("content-type")
-            .and_then(|v| v.to_str().ok())
-            .map(String::from);
-
-        let bytes = match resp.bytes().await {
-            Ok(b) => b,
-            Err(_) => continue,
-        };
-
-        // Check max_asset_size
-        if let Some(max_size) = config.max_asset_size
-            && bytes.len() > max_size
-        {
-            continue;
-        }
-
-        // Compute SHA-256 hash
-        let mut hasher = Sha256::new();
-        hasher.update(&bytes);
-        let hash = format!("{:x}", hasher.finalize());
-
-        downloaded.push(DownloadedAsset {
-            url: asset_ref.url,
-            content_hash: hash,
-            mime_type,
-            size: bytes.len(),
-            asset_category: asset_ref.category,
-            html_tag: Some(asset_ref.html_tag),
-        });
     }
 
     downloaded

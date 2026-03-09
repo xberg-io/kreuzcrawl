@@ -123,65 +123,76 @@ pub async fn scrape(url: &str, config: &CrawlConfig) -> Result<ScrapeResult, Cra
         body = extract_main_content(&body);
     }
 
-    // Parse HTML for metadata, links, images, feeds, json-ld
+    // Parse HTML and extract all data synchronously (Html is not Send,
+    // so all doc usage must complete before any .await point).
     let is_html = is_html_content(&content_type, &body);
-    let doc = Html::parse_document(&body);
-
-    if !noindex_detected {
-        noindex_detected = detect_noindex(&doc);
-    }
-    if !nofollow_detected {
-        nofollow_detected = detect_nofollow(&doc);
-    }
-
     let response_meta = extract_response_meta(&headers);
 
-    let mut metadata = if is_html {
-        extract_metadata(&doc, &body)
-    } else {
-        PageMetadata::default()
-    };
+    let (metadata, links, images, feeds, json_ld, asset_refs) = {
+        let doc = Html::parse_document(&body);
 
-    if is_html {
-        let hreflangs = extract_hreflangs(&doc);
-        if !hreflangs.is_empty() {
-            metadata.hreflangs = Some(hreflangs);
+        if !noindex_detected {
+            noindex_detected = detect_noindex(&doc);
         }
-        let favicons = extract_favicons(&doc);
-        if !favicons.is_empty() {
-            metadata.favicons = Some(favicons);
+        if !nofollow_detected {
+            nofollow_detected = detect_nofollow(&doc);
         }
-        let headings = extract_headings(&doc);
-        if !headings.is_empty() {
-            metadata.headings = Some(headings);
-        }
-        metadata.word_count = Some(compute_word_count(&doc));
-    }
 
-    let links = if is_html {
-        extract_links(&doc, &parsed_url)
-    } else {
-        Vec::new()
-    };
-    let images = if is_html {
-        extract_images(&doc, &parsed_url)
-    } else {
-        Vec::new()
-    };
-    let feeds = if is_html {
-        extract_feeds(&doc)
-    } else {
-        Vec::new()
-    };
-    let json_ld = if is_html {
-        extract_json_ld(&doc)
-    } else {
-        Vec::new()
-    };
+        let mut metadata = if is_html {
+            extract_metadata(&doc, &body)
+        } else {
+            PageMetadata::default()
+        };
 
-    // Download assets if configured
-    let downloaded_assets = if config.download_assets && is_html {
-        let asset_refs = assets::discover_assets(&doc, &parsed_url);
+        if is_html {
+            let hreflangs = extract_hreflangs(&doc);
+            if !hreflangs.is_empty() {
+                metadata.hreflangs = Some(hreflangs);
+            }
+            let favicons = extract_favicons(&doc);
+            if !favicons.is_empty() {
+                metadata.favicons = Some(favicons);
+            }
+            let headings = extract_headings(&doc);
+            if !headings.is_empty() {
+                metadata.headings = Some(headings);
+            }
+            metadata.word_count = Some(compute_word_count(&doc));
+        }
+
+        let links = if is_html {
+            extract_links(&doc, &parsed_url)
+        } else {
+            Vec::new()
+        };
+        let images = if is_html {
+            extract_images(&doc, &parsed_url)
+        } else {
+            Vec::new()
+        };
+        let feeds = if is_html {
+            extract_feeds(&doc)
+        } else {
+            Vec::new()
+        };
+        let json_ld = if is_html {
+            extract_json_ld(&doc)
+        } else {
+            Vec::new()
+        };
+
+        let asset_refs = if config.download_assets && is_html {
+            assets::discover_assets(&doc, &parsed_url)
+        } else {
+            Vec::new()
+        };
+
+        (metadata, links, images, feeds, json_ld, asset_refs)
+    };
+    // doc is now dropped — future is Send from here
+
+    // Download discovered assets
+    let downloaded_assets = if !asset_refs.is_empty() {
         assets::download_assets(asset_refs, config, &client).await
     } else {
         Vec::new()

@@ -145,12 +145,31 @@ pub(crate) async fn fetch_sitemap_tree(
         Err(_) => return Vec::new(),
     };
 
-    let body = &resp.body;
+    process_sitemap_response(
+        sitemap_url,
+        &resp.body,
+        &resp.body_bytes,
+        &resp.content_type,
+        config,
+        client,
+    )
+    .await
+}
 
+/// Process an already-fetched sitemap response body, following sitemap index
+/// references if needed. Avoids re-fetching a URL that was already retrieved.
+pub(crate) async fn process_sitemap_response(
+    sitemap_url: &str,
+    body: &str,
+    body_bytes: &[u8],
+    content_type: &str,
+    config: &CrawlConfig,
+    client: &reqwest::Client,
+) -> Vec<SitemapUrl> {
     // Handle gzip
     let decompressed;
-    let xml_body = if resp.content_type.contains("gzip") || resp.content_type.contains("x-gzip") {
-        match decompress_gzip(&resp.body_bytes) {
+    let xml_body = if content_type.contains("gzip") || content_type.contains("x-gzip") {
+        match decompress_gzip(body_bytes) {
             Ok(d) => {
                 decompressed = d;
                 &decompressed
@@ -165,7 +184,9 @@ pub(crate) async fn fetch_sitemap_tree(
         let child_urls = parse_sitemap_index(xml_body);
         let base = Url::parse(sitemap_url).ok();
         let mut all_urls = Vec::new();
-        for child_url in &child_urls {
+        // Limit the number of child sitemaps to prevent unbounded recursion
+        let max_children = 100;
+        for child_url in child_urls.iter().take(max_children) {
             // Resolve child URL path against the base URL's host
             let resolved = if let Some(ref base_parsed) = base {
                 if let Ok(child_parsed) = Url::parse(child_url) {
@@ -210,11 +231,17 @@ pub(crate) async fn fetch_sitemap_tree(
 }
 
 /// Decompress gzip-encoded data into a UTF-8 string.
+///
+/// Limits decompressed output to 50 MB to prevent gzip bomb attacks.
 pub(crate) fn decompress_gzip(data: &[u8]) -> Result<String, std::io::Error> {
     use flate2::read::GzDecoder;
     use std::io::Read;
-    let mut decoder = GzDecoder::new(data);
+
+    const MAX_DECOMPRESSED_SIZE: u64 = 50 * 1024 * 1024; // 50 MB
+
+    let decoder = GzDecoder::new(data);
+    let mut limited = decoder.take(MAX_DECOMPRESSED_SIZE);
     let mut result = String::new();
-    decoder.read_to_string(&mut result)?;
+    limited.read_to_string(&mut result)?;
     Ok(result)
 }

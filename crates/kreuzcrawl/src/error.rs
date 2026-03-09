@@ -44,12 +44,6 @@ pub enum CrawlError {
     /// Data was lost or truncated during transfer.
     #[error("data_loss: {0}")]
     DataLoss(String),
-    /// A redirect loop was detected.
-    #[error("redirect_loop: {0}")]
-    RedirectLoop(String),
-    /// Too many redirects were followed.
-    #[error("too_many_redirects: {0}")]
-    TooManyRedirects(String),
     /// An unclassified error occurred.
     #[error("other: {0}")]
     Other(String),

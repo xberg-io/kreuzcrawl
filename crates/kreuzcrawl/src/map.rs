@@ -11,7 +11,10 @@ use crate::html::{extract_links, is_html_content};
 use crate::http::{build_client, fetch_with_retry, http_fetch};
 use crate::normalize::{normalize_url, resolve_redirect, robots_url, strip_fragment};
 use crate::robots::parse_robots_txt;
-use crate::sitemap::{decompress_gzip, fetch_sitemap_tree, is_sitemap_index, parse_sitemap_xml};
+use crate::sitemap::{
+    decompress_gzip, fetch_sitemap_tree, is_sitemap_index, parse_sitemap_xml,
+    process_sitemap_response,
+};
 use crate::types::{CrawlConfig, LinkType, MapResult, SitemapUrl};
 
 /// Map a website to discover its URLs.
@@ -52,7 +55,7 @@ pub async fn map(url: &str, config: &CrawlConfig) -> Result<MapResult, CrawlErro
                     all_urls.extend(fetch_sitemap_tree(&resolved, config, &client).await);
                 }
                 if !all_urls.is_empty() {
-                    return Ok(filter_map_result(all_urls, config));
+                    return filter_map_result(all_urls, config);
                 }
             }
         }
@@ -67,9 +70,18 @@ pub async fn map(url: &str, config: &CrawlConfig) -> Result<MapResult, CrawlErro
     if let Ok(sitemap_resp) = http_fetch(&sitemap_url, config, &client).await
         && (sitemap_resp.body.contains("<urlset") || sitemap_resp.body.contains("<sitemapindex"))
     {
-        let urls = fetch_sitemap_tree(&sitemap_url, config, &client).await;
+        // Use the already-fetched response to avoid a redundant second fetch
+        let urls = process_sitemap_response(
+            &sitemap_url,
+            &sitemap_resp.body,
+            &sitemap_resp.body_bytes,
+            &sitemap_resp.content_type,
+            config,
+            &client,
+        )
+        .await;
         if !urls.is_empty() {
-            return Ok(filter_map_result(urls, config));
+            return filter_map_result(urls, config);
         }
     }
 
@@ -86,7 +98,7 @@ pub async fn map(url: &str, config: &CrawlConfig) -> Result<MapResult, CrawlErro
     if is_gzip && let Ok(decompressed) = decompress_gzip(&resp.body_bytes) {
         let urls = parse_sitemap_xml(&decompressed);
         if !urls.is_empty() {
-            return Ok(filter_map_result(urls, config));
+            return filter_map_result(urls, config);
         }
     }
 
@@ -94,12 +106,12 @@ pub async fn map(url: &str, config: &CrawlConfig) -> Result<MapResult, CrawlErro
         if is_sitemap_index(&resp.body) {
             // It's a sitemap index -- delegate
             let urls = fetch_sitemap_tree(url, config, &client).await;
-            return Ok(filter_map_result(urls, config));
+            return filter_map_result(urls, config);
         }
         // Try as regular sitemap
         let urls = parse_sitemap_xml(&resp.body);
         if !urls.is_empty() {
-            return Ok(filter_map_result(urls, config));
+            return filter_map_result(urls, config);
         }
     }
 
@@ -133,20 +145,28 @@ pub async fn map(url: &str, config: &CrawlConfig) -> Result<MapResult, CrawlErro
                 }
             }
         }
-        return Ok(filter_map_result(url_set, config));
+        return filter_map_result(url_set, config);
     }
 
     Ok(MapResult { urls: Vec::new() })
 }
 
 /// Apply exclude paths, search filter, and limit to the map result.
-pub(crate) fn filter_map_result(mut urls: Vec<SitemapUrl>, config: &CrawlConfig) -> MapResult {
+///
+/// Returns an error if any `exclude_paths` pattern is not a valid regex.
+pub(crate) fn filter_map_result(
+    mut urls: Vec<SitemapUrl>,
+    config: &CrawlConfig,
+) -> Result<MapResult, CrawlError> {
     // Apply exclude paths with pre-compiled regexes
     if let Some(ref excludes) = config.exclude_paths {
-        let regexes: Vec<Regex> = excludes
-            .iter()
-            .filter_map(|pat| Regex::new(pat).ok())
-            .collect();
+        let mut regexes = Vec::with_capacity(excludes.len());
+        for pat in excludes {
+            let re = Regex::new(pat).map_err(|e| {
+                CrawlError::Other(format!("invalid exclude_paths regex pattern '{pat}': {e}"))
+            })?;
+            regexes.push(re);
+        }
         if !regexes.is_empty() {
             urls.retain(|su| {
                 if let Ok(u) = Url::parse(&su.url) {
@@ -170,5 +190,5 @@ pub(crate) fn filter_map_result(mut urls: Vec<SitemapUrl>, config: &CrawlConfig)
         urls.truncate(limit);
     }
 
-    MapResult { urls }
+    Ok(MapResult { urls })
 }

@@ -30,49 +30,70 @@ static META_RE_NAME_CONTENT: LazyLock<Regex> = LazyLock::new(|| {
     Regex::new(
         r#"<meta\s+[^>]*name\s*=\s*["']([^"']+)["'][^>]*content\s*=\s*["']([^"']+)["'][^>]*>"#,
     )
-    .unwrap()
+    .expect("valid regex: META_RE_NAME_CONTENT")
 });
 static META_RE_CONTENT_NAME: LazyLock<Regex> = LazyLock::new(|| {
     Regex::new(
         r#"<meta\s+[^>]*content\s*=\s*["']([^"']+)["'][^>]*name\s*=\s*["']([^"']+)["'][^>]*>"#,
     )
-    .unwrap()
+    .expect("valid regex: META_RE_CONTENT_NAME")
 });
 
 // --- LazyLock CSS selectors ---
 
-static SEL_META: LazyLock<Selector> = LazyLock::new(|| Selector::parse("meta").unwrap());
-static SEL_TITLE: LazyLock<Selector> = LazyLock::new(|| Selector::parse("title").unwrap());
-static SEL_CANONICAL: LazyLock<Selector> =
-    LazyLock::new(|| Selector::parse("link[rel='canonical']").unwrap());
-static SEL_ROBOTS_META: LazyLock<Selector> =
-    LazyLock::new(|| Selector::parse("meta[name='robots']").unwrap());
-static SEL_META_REFRESH: LazyLock<Selector> =
-    LazyLock::new(|| Selector::parse("meta[http-equiv='refresh']").unwrap());
-static SEL_A_HREF: LazyLock<Selector> = LazyLock::new(|| Selector::parse("a[href]").unwrap());
-static SEL_BASE_HREF: LazyLock<Selector> = LazyLock::new(|| Selector::parse("base[href]").unwrap());
-static SEL_IMG_SRC: LazyLock<Selector> = LazyLock::new(|| Selector::parse("img[src]").unwrap());
+static SEL_META: LazyLock<Selector> =
+    LazyLock::new(|| Selector::parse("meta").expect("valid selector: meta"));
+static SEL_TITLE: LazyLock<Selector> =
+    LazyLock::new(|| Selector::parse("title").expect("valid selector: title"));
+static SEL_CANONICAL: LazyLock<Selector> = LazyLock::new(|| {
+    Selector::parse("link[rel='canonical']").expect("valid selector: link[rel='canonical']")
+});
+static SEL_ROBOTS_META: LazyLock<Selector> = LazyLock::new(|| {
+    Selector::parse("meta[name='robots']").expect("valid selector: meta[name='robots']")
+});
+static SEL_META_REFRESH: LazyLock<Selector> = LazyLock::new(|| {
+    Selector::parse("meta[http-equiv='refresh']")
+        .expect("valid selector: meta[http-equiv='refresh']")
+});
+static SEL_A_HREF: LazyLock<Selector> =
+    LazyLock::new(|| Selector::parse("a[href]").expect("valid selector: a[href]"));
+static SEL_BASE_HREF: LazyLock<Selector> =
+    LazyLock::new(|| Selector::parse("base[href]").expect("valid selector: base[href]"));
+static SEL_IMG_SRC: LazyLock<Selector> =
+    LazyLock::new(|| Selector::parse("img[src]").expect("valid selector: img[src]"));
 static SEL_SOURCE_SRCSET: LazyLock<Selector> =
-    LazyLock::new(|| Selector::parse("source[srcset]").unwrap());
-static SEL_OG_IMAGE: LazyLock<Selector> =
-    LazyLock::new(|| Selector::parse("meta[property='og:image']").unwrap());
-static SEL_TWITTER_IMAGE: LazyLock<Selector> =
-    LazyLock::new(|| Selector::parse("meta[name='twitter:image']").unwrap());
-static SEL_FEED_ALTERNATE: LazyLock<Selector> =
-    LazyLock::new(|| Selector::parse("link[rel='alternate']").unwrap());
-static SEL_JSON_LD: LazyLock<Selector> =
-    LazyLock::new(|| Selector::parse("script[type='application/ld+json']").unwrap());
-static SEL_MAIN_CONTENT: LazyLock<Selector> =
-    LazyLock::new(|| Selector::parse("main, article, [role='main']").unwrap());
-static SEL_HTML: LazyLock<Selector> = LazyLock::new(|| Selector::parse("html").unwrap());
-static SEL_HREFLANG: LazyLock<Selector> =
-    LazyLock::new(|| Selector::parse("link[rel='alternate'][hreflang]").unwrap());
+    LazyLock::new(|| Selector::parse("source[srcset]").expect("valid selector: source[srcset]"));
+static SEL_OG_IMAGE: LazyLock<Selector> = LazyLock::new(|| {
+    Selector::parse("meta[property='og:image']").expect("valid selector: meta[property='og:image']")
+});
+static SEL_TWITTER_IMAGE: LazyLock<Selector> = LazyLock::new(|| {
+    Selector::parse("meta[name='twitter:image']")
+        .expect("valid selector: meta[name='twitter:image']")
+});
+static SEL_FEED_ALTERNATE: LazyLock<Selector> = LazyLock::new(|| {
+    Selector::parse("link[rel='alternate']").expect("valid selector: link[rel='alternate']")
+});
+static SEL_JSON_LD: LazyLock<Selector> = LazyLock::new(|| {
+    Selector::parse("script[type='application/ld+json']")
+        .expect("valid selector: script[type='application/ld+json']")
+});
+static SEL_MAIN_CONTENT: LazyLock<Selector> = LazyLock::new(|| {
+    Selector::parse("main, article, [role='main']")
+        .expect("valid selector: main, article, [role='main']")
+});
+static SEL_HTML: LazyLock<Selector> =
+    LazyLock::new(|| Selector::parse("html").expect("valid selector: html"));
+static SEL_HREFLANG: LazyLock<Selector> = LazyLock::new(|| {
+    Selector::parse("link[rel='alternate'][hreflang]")
+        .expect("valid selector: link[rel='alternate'][hreflang]")
+});
 static SEL_FAVICON: LazyLock<Selector> = LazyLock::new(|| {
     Selector::parse("link[rel='icon'], link[rel='shortcut icon'], link[rel='apple-touch-icon']")
-        .unwrap()
+        .expect("valid selector: link[rel='icon'], link[rel='shortcut icon'], link[rel='apple-touch-icon']")
 });
-static SEL_HEADINGS: LazyLock<Selector> =
-    LazyLock::new(|| Selector::parse("h1, h2, h3, h4, h5, h6").unwrap());
+static SEL_HEADINGS: LazyLock<Selector> = LazyLock::new(|| {
+    Selector::parse("h1, h2, h3, h4, h5, h6").expect("valid selector: h1, h2, h3, h4, h5, h6")
+});
 
 /// Extract metadata name-value pairs from raw HTML using regex (fallback for malformed HTML).
 pub(crate) fn extract_metadata_from_raw(body: &str) -> Vec<(String, String)> {
@@ -255,7 +276,30 @@ pub(crate) fn detect_meta_refresh(doc: &Html) -> Option<String> {
 
 /// Check whether content appears to be HTML based on Content-Type header or body content.
 pub(crate) fn is_html_content(content_type: &str, body: &str) -> bool {
-    content_type.contains("html") || body.trim_start().starts_with('<')
+    if content_type.contains("html") {
+        return true;
+    }
+    let trimmed = body.trim_start();
+    if !trimmed.starts_with('<') {
+        return false;
+    }
+    let lower = trimmed.to_lowercase();
+    // Reject XML/SVG that isn't HTML
+    if lower.starts_with("<?xml") && !lower.contains("<html") {
+        return false;
+    }
+    // Accept common HTML markers
+    lower.starts_with("<!doctype")
+        || lower.starts_with("<html")
+        || lower.starts_with("<head")
+        || lower.starts_with("<body")
+        || lower.starts_with("<div")
+        || lower.starts_with("<p")
+        || lower.starts_with("<h1")
+        || lower.starts_with("<script")
+        || lower.starts_with("<meta")
+        || lower.starts_with("<link")
+        || lower.starts_with("<!")
 }
 
 /// Classify a link as internal, external, anchor, or document.
@@ -316,9 +360,18 @@ pub(crate) fn extract_links(doc: &Html, base_url: &Url) -> Vec<LinkInfo> {
             continue;
         }
 
-        // Protocol-relative URLs: keep as-is
+        // Protocol-relative URLs: resolve against the base URL's scheme for classification
         let link_type = if href.starts_with("//") {
-            LinkType::External
+            let resolved = format!("{}:{}", effective_base.scheme(), href);
+            if let Ok(u) = Url::parse(&resolved) {
+                if u.host_str() != effective_base.host_str() {
+                    LinkType::External
+                } else {
+                    LinkType::Internal
+                }
+            } else {
+                LinkType::External
+            }
         } else {
             classify_link(href, &effective_base)
         };
@@ -349,15 +402,24 @@ pub(crate) fn extract_links(doc: &Html, base_url: &Url) -> Vec<LinkInfo> {
     links
 }
 
+/// Resolve a URL against a base URL, returning the resolved string or the original if resolution fails.
+fn resolve_url(src: &str, base_url: &Url) -> String {
+    base_url
+        .join(src)
+        .map(|u| u.to_string())
+        .unwrap_or_else(|_| src.to_owned())
+}
+
 /// Extract all images from a parsed HTML document (img, picture source, og:image, twitter:image).
-pub(crate) fn extract_images(doc: &Html, _base_url: &Url) -> Vec<ImageInfo> {
+pub(crate) fn extract_images(doc: &Html, base_url: &Url) -> Vec<ImageInfo> {
     let mut images = Vec::new();
 
     for el in doc.select(&SEL_IMG_SRC) {
-        let src = el.value().attr("src").unwrap_or("").to_owned();
+        let src = el.value().attr("src").unwrap_or("");
         if src.is_empty() || src.starts_with("data:") {
             continue;
         }
+        let resolved = resolve_url(src, base_url);
         let alt = el.value().attr("alt").map(String::from);
         let width = el.value().attr("width").and_then(|w| w.parse::<u32>().ok());
         let height = el
@@ -365,7 +427,7 @@ pub(crate) fn extract_images(doc: &Html, _base_url: &Url) -> Vec<ImageInfo> {
             .attr("height")
             .and_then(|h| h.parse::<u32>().ok());
         images.push(ImageInfo {
-            url: src,
+            url: resolved,
             alt,
             width,
             height,
@@ -374,14 +436,15 @@ pub(crate) fn extract_images(doc: &Html, _base_url: &Url) -> Vec<ImageInfo> {
     }
 
     for el in doc.select(&SEL_SOURCE_SRCSET) {
-        let srcset = el.value().attr("srcset").unwrap_or("").to_owned();
+        let srcset = el.value().attr("srcset").unwrap_or("");
         if !srcset.is_empty() {
             // Take the first URL from srcset
             let first_url = srcset.split(',').next().unwrap_or("").trim();
-            let url = first_url.split_whitespace().next().unwrap_or("").to_owned();
-            if !url.is_empty() {
+            let raw_url = first_url.split_whitespace().next().unwrap_or("");
+            if !raw_url.is_empty() {
+                let resolved = resolve_url(raw_url, base_url);
                 images.push(ImageInfo {
-                    url,
+                    url: resolved,
                     alt: None,
                     width: None,
                     height: None,
@@ -396,8 +459,9 @@ pub(crate) fn extract_images(doc: &Html, _base_url: &Url) -> Vec<ImageInfo> {
         if let Some(content) = el.value().attr("content")
             && !content.is_empty()
         {
+            let resolved = resolve_url(content, base_url);
             images.push(ImageInfo {
-                url: content.to_owned(),
+                url: resolved,
                 alt: None,
                 width: None,
                 height: None,
@@ -411,8 +475,9 @@ pub(crate) fn extract_images(doc: &Html, _base_url: &Url) -> Vec<ImageInfo> {
         if let Some(content) = el.value().attr("content")
             && !content.is_empty()
         {
+            let resolved = resolve_url(content, base_url);
             images.push(ImageInfo {
-                url: content.to_owned(),
+                url: resolved,
                 alt: None,
                 width: None,
                 height: None,
@@ -476,8 +541,8 @@ pub(crate) fn extract_json_ld(doc: &Html) -> Vec<JsonLdEntry> {
 
 /// Detect the character encoding from the Content-Type header or HTML meta tags.
 pub(crate) fn detect_charset(content_type: &str, body: &str) -> Option<String> {
-    // From Content-Type header
-    if let Some(pos) = content_type.to_lowercase().find("charset=") {
+    // From Content-Type header (ASCII search, case-insensitive)
+    if let Some(pos) = ascii_find_case_insensitive(content_type.as_bytes(), b"charset=") {
         let charset = content_type[pos + 8..]
             .split(';')
             .next()
@@ -490,11 +555,17 @@ pub(crate) fn detect_charset(content_type: &str, body: &str) -> Option<String> {
         }
     }
 
-    // From <meta charset="..."> in HTML body
-    let lower_body = body.to_lowercase();
-    if let Some(pos) = lower_body.find("charset=") {
-        // Could be <meta charset="utf-8"> or <meta ... content="...; charset=utf-8">
-        let after = &body[pos + 8..];
+    // From <meta charset="..."> in HTML body — search only first 2048 bytes for performance
+    let search_len = body.len().min(2048);
+    // Find a char boundary at or before the limit
+    let search_end = (0..=search_len)
+        .rev()
+        .find(|&i| body.is_char_boundary(i))
+        .unwrap_or(0);
+    let head = &body[..search_end];
+    if let Some(pos) = ascii_find_case_insensitive(head.as_bytes(), b"charset=") {
+        // pos is a byte offset that is valid for the original string since "charset=" is ASCII
+        let after = &head[pos + 8..];
         let charset = after
             .trim_start_matches(['"', '\''])
             .split(|c: char| c == '"' || c == '\'' || c == '>' || c == ';' || c.is_whitespace())
@@ -512,6 +583,24 @@ pub(crate) fn detect_charset(content_type: &str, body: &str) -> Option<String> {
         return Some("utf-8".to_owned());
     }
 
+    None
+}
+
+/// Case-insensitive search for an ASCII needle within a byte slice.
+/// Returns the byte offset of the first match, or `None`.
+fn ascii_find_case_insensitive(haystack: &[u8], needle: &[u8]) -> Option<usize> {
+    if needle.is_empty() || haystack.len() < needle.len() {
+        return None;
+    }
+    let needle_lower: Vec<u8> = needle.iter().map(|b| b.to_ascii_lowercase()).collect();
+    'outer: for i in 0..=(haystack.len() - needle.len()) {
+        for (j, &nb) in needle_lower.iter().enumerate() {
+            if haystack[i + j].to_ascii_lowercase() != nb {
+                continue 'outer;
+            }
+        }
+        return Some(i);
+    }
     None
 }
 
@@ -549,15 +638,28 @@ pub(crate) fn is_pdf_url(url: &str) -> bool {
 }
 
 /// Remove elements matching the given CSS selectors from the HTML string.
+///
+/// Parses the HTML and re-serializes it, removing matched elements.
+/// The output is based on the re-serialized DOM to ensure consistent string representations.
 pub(crate) fn apply_remove_tags(html: &str, tags: &[String]) -> String {
     let doc = Html::parse_document(html);
-    let mut output = html.to_owned();
+    // Collect the serialized HTML of all elements to remove
+    let mut to_remove = Vec::new();
     for tag in tags {
         if let Ok(sel) = Selector::parse(tag) {
             for el in doc.select(&sel) {
-                let outer = el.html();
-                output = output.replacen(&outer, "", 1);
+                to_remove.push(el.html());
             }
+        }
+    }
+    if to_remove.is_empty() {
+        return html.to_owned();
+    }
+    // Work on the re-serialized document so string representations match
+    let mut output = doc.root_element().inner_html();
+    for fragment in &to_remove {
+        if let Some(pos) = output.find(fragment.as_str()) {
+            output.replace_range(pos..pos + fragment.len(), "");
         }
     }
     output
@@ -619,7 +721,8 @@ pub(crate) fn extract_headings(doc: &Html) -> Vec<HeadingInfo> {
 
 /// Compute the word count of visible text in the HTML body.
 pub(crate) fn compute_word_count(doc: &Html) -> usize {
-    static SEL_BODY: LazyLock<Selector> = LazyLock::new(|| Selector::parse("body").unwrap());
+    static SEL_BODY: LazyLock<Selector> =
+        LazyLock::new(|| Selector::parse("body").expect("valid selector: body"));
     let body_text = doc
         .select(&SEL_BODY)
         .next()
