@@ -3,6 +3,7 @@
 use scraper::Html;
 use url::Url;
 
+use crate::assets;
 use crate::error::CrawlError;
 use crate::html::{
     apply_remove_tags, compute_word_count, detect_charset, detect_nofollow, detect_noindex,
@@ -67,6 +68,7 @@ pub async fn scrape(url: &str, config: &CrawlConfig) -> Result<ScrapeResult, Cra
                 main_content_only: config.main_content_only,
                 auth_header_sent,
                 response_meta: None,
+                assets: Vec::new(),
             });
         }
         Err(e) => return Err(e),
@@ -177,6 +179,14 @@ pub async fn scrape(url: &str, config: &CrawlConfig) -> Result<ScrapeResult, Cra
         Vec::new()
     };
 
+    // Download assets if configured
+    let downloaded_assets = if config.download_assets && is_html {
+        let asset_refs = assets::discover_assets(&doc, &parsed_url);
+        assets::download_assets(asset_refs, config, &client).await
+    } else {
+        Vec::new()
+    };
+
     Ok(ScrapeResult {
         status_code,
         content_type,
@@ -198,5 +208,6 @@ pub async fn scrape(url: &str, config: &CrawlConfig) -> Result<ScrapeResult, Cra
         main_content_only: main_content_active,
         auth_header_sent,
         response_meta: Some(response_meta),
+        assets: downloaded_assets,
     })
 }

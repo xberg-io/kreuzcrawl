@@ -193,8 +193,8 @@ async fn test_crawl_custom_headers() {
         respect_robots_txt: false,
         custom_headers: Some(
             vec![
-                ("X-Custom-Header".to_owned(), "test-value".to_owned()),
                 ("Accept-Language".to_owned(), "en-US".to_owned()),
+                ("X-Custom-Header".to_owned(), "test-value".to_owned()),
             ]
             .into_iter()
             .collect(),

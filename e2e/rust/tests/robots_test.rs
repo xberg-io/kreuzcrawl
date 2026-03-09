@@ -462,8 +462,8 @@ async fn test_robots_x_robots_tag() {
         "/",
         200,
         &[
-            ("content-type", "text/html; charset=utf-8"),
             ("x-robots-tag", "noindex, nofollow"),
+            ("content-type", "text/html; charset=utf-8"),
         ],
         &body,
     )
@@ -474,8 +474,8 @@ async fn test_robots_x_robots_tag() {
         "/robots.txt",
         200,
         &[
-            ("content-type", "text/html; charset=utf-8"),
             ("x-robots-tag", "noindex, nofollow"),
+            ("content-type", "text/html; charset=utf-8"),
         ],
         &body,
     )

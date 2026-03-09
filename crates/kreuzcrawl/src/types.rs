@@ -54,6 +54,12 @@ pub struct CrawlConfig {
     pub map_limit: Option<usize>,
     /// Search filter for map results (case-insensitive substring match on URLs).
     pub map_search: Option<String>,
+    /// Whether to download assets (CSS, JS, images, etc.) from the page.
+    pub download_assets: bool,
+    /// Filter for asset categories to download (if None, download all).
+    pub asset_types: Option<Vec<AssetCategory>>,
+    /// Maximum size in bytes for individual asset downloads.
+    pub max_asset_size: Option<usize>,
 }
 
 impl Default for CrawlConfig {
@@ -82,6 +88,9 @@ impl Default for CrawlConfig {
             remove_tags: None,
             map_limit: None,
             map_search: None,
+            download_assets: false,
+            asset_types: None,
+            max_asset_size: None,
         }
     }
 }
@@ -149,6 +158,50 @@ pub struct ResponseMeta {
     pub content_language: Option<String>,
     /// The Content-Encoding header value.
     pub content_encoding: Option<String>,
+}
+
+/// The category of a downloaded asset.
+#[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum AssetCategory {
+    /// A document file (PDF, DOC, etc.).
+    Document,
+    /// An image file.
+    #[default]
+    Image,
+    /// An audio file.
+    Audio,
+    /// A video file.
+    Video,
+    /// A font file.
+    Font,
+    /// A CSS stylesheet.
+    Stylesheet,
+    /// A JavaScript file.
+    Script,
+    /// An archive file (ZIP, TAR, etc.).
+    Archive,
+    /// A data file (JSON, XML, CSV, etc.).
+    Data,
+    /// An unrecognized asset type.
+    Other,
+}
+
+/// Information about a downloaded asset.
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct DownloadedAsset {
+    /// The original URL of the asset.
+    pub url: String,
+    /// The SHA-256 content hash of the asset.
+    pub content_hash: String,
+    /// The MIME type from the Content-Type header.
+    pub mime_type: Option<String>,
+    /// The size of the asset in bytes.
+    pub size: usize,
+    /// The category of the asset.
+    pub asset_category: AssetCategory,
+    /// The HTML tag that referenced this asset (e.g., "link", "script", "img").
+    pub html_tag: Option<String>,
 }
 
 /// Metadata extracted from an HTML page's `<meta>` tags and `<title>` element.
@@ -416,6 +469,8 @@ pub struct ScrapeResult {
     pub auth_header_sent: bool,
     /// Response metadata extracted from HTTP headers.
     pub response_meta: Option<ResponseMeta>,
+    /// Downloaded assets from the page.
+    pub assets: Vec<DownloadedAsset>,
 }
 
 /// The result of crawling a single page during a crawl operation.

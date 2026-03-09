@@ -8,8 +8,8 @@ pub async fn setup_mock_server() -> MockServer {
     MockServer::start().await
 }
 
-/// Load a response body file from fixtures/responses/.
-pub fn load_response_body(relative_path: &str) -> String {
+/// Load a response body file from fixtures/responses/ as bytes.
+pub fn load_response_bytes(relative_path: &str) -> Vec<u8> {
     let base = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
         .parent()
         .expect("e2e/rust parent")
@@ -18,8 +18,34 @@ pub fn load_response_body(relative_path: &str) -> String {
         .join("fixtures")
         .join("responses");
     let full_path = base.join(relative_path);
-    std::fs::read_to_string(&full_path)
+    std::fs::read(&full_path)
         .unwrap_or_else(|e| panic!("failed to load response body {}: {e}", full_path.display()))
+}
+
+/// Load a response body file from fixtures/responses/ as a UTF-8 string.
+pub fn load_response_body(relative_path: &str) -> String {
+    String::from_utf8(load_response_bytes(relative_path))
+        .expect("response body should be valid UTF-8")
+}
+
+/// Register a mock route on the given server using raw bytes.
+pub async fn register_mock_bytes(
+    server: &MockServer,
+    http_method: &str,
+    route: &str,
+    status: u16,
+    headers: &[(&str, &str)],
+    body: &[u8],
+) {
+    let mut response = ResponseTemplate::new(status).set_body_bytes(body);
+    for &(key, value) in headers {
+        response = response.append_header(key, value);
+    }
+    Mock::given(method(http_method))
+        .and(path(route))
+        .respond_with(response)
+        .mount(server)
+        .await;
 }
 
 /// Register a mock route on the given server.
@@ -31,15 +57,5 @@ pub async fn register_mock(
     headers: &[(&str, &str)],
     body: &str,
 ) {
-    // Use set_body_bytes to avoid wiremock's default text/plain content-type
-    // that set_body_string adds (which can't be overridden by append_header).
-    let mut response = ResponseTemplate::new(status).set_body_bytes(body.as_bytes());
-    for &(key, value) in headers {
-        response = response.append_header(key, value);
-    }
-    Mock::given(method(http_method))
-        .and(path(route))
-        .respond_with(response)
-        .mount(server)
-        .await;
+    register_mock_bytes(server, http_method, route, status, headers, body.as_bytes()).await;
 }

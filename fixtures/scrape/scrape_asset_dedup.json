@@ -1,0 +1,35 @@
+{
+  "id": "scrape_asset_dedup",
+  "description": "Same asset linked twice results in one download with one unique hash",
+  "tags": ["scrape", "assets"],
+  "mock_responses": [
+    {
+      "path": "/",
+      "status_code": 200,
+      "headers": { "content-type": "text/html; charset=utf-8" },
+      "body_file": "html/page_with_dedup_assets.html"
+    },
+    {
+      "path": "/assets/style.css",
+      "status_code": 200,
+      "headers": { "content-type": "text/css" },
+      "body_file": "assets/style.css"
+    },
+    {
+      "path": "/assets/photo.jpg",
+      "status_code": 200,
+      "headers": { "content-type": "image/jpeg" },
+      "body_file": "assets/photo.jpg"
+    }
+  ],
+  "config": {
+    "download_assets": true
+  },
+  "assertions": {
+    "status_code": 200,
+    "assets": {
+      "total_count": 2,
+      "unique_hashes": 2
+    }
+  }
+}

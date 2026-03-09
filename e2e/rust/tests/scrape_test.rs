@@ -5,6 +5,178 @@ use e2e_rust::helpers;
 use kreuzcrawl::{FeedType, LinkType};
 
 #[tokio::test]
+async fn test_scrape_asset_dedup() {
+    // Same asset linked twice results in one download with one unique hash
+    let mock = helpers::setup_mock_server().await;
+    let body_0 = helpers::load_response_body("html/page_with_dedup_assets.html");
+    helpers::register_mock(
+        &mock,
+        "GET",
+        "/",
+        200,
+        &[("content-type", "text/html; charset=utf-8")],
+        &body_0,
+    )
+    .await;
+    let body_1 = helpers::load_response_body("assets/style.css");
+    helpers::register_mock(
+        &mock,
+        "GET",
+        "/assets/style.css",
+        200,
+        &[("content-type", "text/css")],
+        &body_1,
+    )
+    .await;
+    let body_2 = helpers::load_response_bytes("assets/photo.jpg");
+    helpers::register_mock_bytes(
+        &mock,
+        "GET",
+        "/assets/photo.jpg",
+        200,
+        &[("content-type", "image/jpeg")],
+        &body_2,
+    )
+    .await;
+
+    let config = kreuzcrawl::CrawlConfig {
+        download_assets: true,
+        ..Default::default()
+    };
+
+    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let result = result.expect("request should succeed");
+    assert_eq!(result.status_code, 200);
+    assert_eq!(result.assets.len(), 2);
+    let unique_hashes: std::collections::HashSet<&str> = result
+        .assets
+        .iter()
+        .map(|a| a.content_hash.as_str())
+        .collect();
+    assert_eq!(unique_hashes.len(), 2);
+}
+
+#[tokio::test]
+async fn test_scrape_asset_max_size() {
+    // Skips assets exceeding max_asset_size limit
+    let mock = helpers::setup_mock_server().await;
+    let body_0 = helpers::load_response_body("html/page_with_assets.html");
+    helpers::register_mock(
+        &mock,
+        "GET",
+        "/",
+        200,
+        &[("content-type", "text/html; charset=utf-8")],
+        &body_0,
+    )
+    .await;
+    let body_1 = helpers::load_response_body("assets/style.css");
+    helpers::register_mock(
+        &mock,
+        "GET",
+        "/assets/style.css",
+        200,
+        &[("content-type", "text/css")],
+        &body_1,
+    )
+    .await;
+    let body_2 = helpers::load_response_body("assets/script.js");
+    helpers::register_mock(
+        &mock,
+        "GET",
+        "/assets/script.js",
+        200,
+        &[("content-type", "application/javascript")],
+        &body_2,
+    )
+    .await;
+    let body_3 = helpers::load_response_bytes("assets/photo.jpg");
+    helpers::register_mock_bytes(
+        &mock,
+        "GET",
+        "/assets/photo.jpg",
+        200,
+        &[("content-type", "image/jpeg")],
+        &body_3,
+    )
+    .await;
+
+    let config = kreuzcrawl::CrawlConfig {
+        download_assets: true,
+        max_asset_size: Some(150),
+        ..Default::default()
+    };
+
+    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let result = result.expect("request should succeed");
+    assert_eq!(result.status_code, 200);
+    assert_eq!(result.assets.len(), 2);
+}
+
+#[tokio::test]
+async fn test_scrape_asset_type_filter() {
+    // Only downloads image assets when asset_types filter is set
+    let mock = helpers::setup_mock_server().await;
+    let body_0 = helpers::load_response_body("html/page_with_assets.html");
+    helpers::register_mock(
+        &mock,
+        "GET",
+        "/",
+        200,
+        &[("content-type", "text/html; charset=utf-8")],
+        &body_0,
+    )
+    .await;
+    let body_1 = helpers::load_response_body("assets/style.css");
+    helpers::register_mock(
+        &mock,
+        "GET",
+        "/assets/style.css",
+        200,
+        &[("content-type", "text/css")],
+        &body_1,
+    )
+    .await;
+    let body_2 = helpers::load_response_body("assets/script.js");
+    helpers::register_mock(
+        &mock,
+        "GET",
+        "/assets/script.js",
+        200,
+        &[("content-type", "application/javascript")],
+        &body_2,
+    )
+    .await;
+    let body_3 = helpers::load_response_bytes("assets/photo.jpg");
+    helpers::register_mock_bytes(
+        &mock,
+        "GET",
+        "/assets/photo.jpg",
+        200,
+        &[("content-type", "image/jpeg")],
+        &body_3,
+    )
+    .await;
+
+    let config = kreuzcrawl::CrawlConfig {
+        download_assets: true,
+        asset_types: Some(vec![kreuzcrawl::AssetCategory::Image]),
+        ..Default::default()
+    };
+
+    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let result = result.expect("request should succeed");
+    assert_eq!(result.status_code, 200);
+    assert_eq!(result.assets.len(), 1);
+    assert!(
+        result
+            .assets
+            .iter()
+            .any(|a| a.asset_category == kreuzcrawl::AssetCategory::Image)
+    );
+}
+
+#[tokio::test]
 async fn test_scrape_basic_html_page() {
     // Scrapes a simple HTML page and extracts title, description, and links
     let mock = helpers::setup_mock_server().await;
@@ -93,6 +265,62 @@ async fn test_scrape_complex_links() {
             .iter()
             .any(|l| l.link_type == LinkType::Document)
     );
+}
+
+#[tokio::test]
+async fn test_scrape_download_assets() {
+    // Downloads CSS, JS, and image assets from page
+    let mock = helpers::setup_mock_server().await;
+    let body_0 = helpers::load_response_body("html/page_with_assets.html");
+    helpers::register_mock(
+        &mock,
+        "GET",
+        "/",
+        200,
+        &[("content-type", "text/html; charset=utf-8")],
+        &body_0,
+    )
+    .await;
+    let body_1 = helpers::load_response_body("assets/style.css");
+    helpers::register_mock(
+        &mock,
+        "GET",
+        "/assets/style.css",
+        200,
+        &[("content-type", "text/css")],
+        &body_1,
+    )
+    .await;
+    let body_2 = helpers::load_response_body("assets/script.js");
+    helpers::register_mock(
+        &mock,
+        "GET",
+        "/assets/script.js",
+        200,
+        &[("content-type", "application/javascript")],
+        &body_2,
+    )
+    .await;
+    let body_3 = helpers::load_response_bytes("assets/photo.jpg");
+    helpers::register_mock_bytes(
+        &mock,
+        "GET",
+        "/assets/photo.jpg",
+        200,
+        &[("content-type", "image/jpeg")],
+        &body_3,
+    )
+    .await;
+
+    let config = kreuzcrawl::CrawlConfig {
+        download_assets: true,
+        ..Default::default()
+    };
+
+    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let result = result.expect("request should succeed");
+    assert_eq!(result.status_code, 200);
+    assert!(result.assets.len() >= 3);
 }
 
 #[tokio::test]

@@ -119,6 +119,9 @@ pub struct CrawlConfigSpec {
     pub main_content_only: Option<bool>,
     pub map_search: Option<String>,
     pub map_limit: Option<u32>,
+    pub download_assets: Option<bool>,
+    pub asset_types: Option<Vec<String>>,
+    pub max_asset_size: Option<u64>,
 }
 
 /// Basic auth credentials.
@@ -166,6 +169,7 @@ pub struct Assertions {
     pub headings: Option<HeadingAssertions>,
     pub computed: Option<ComputedAssertions>,
     pub response_meta: Option<ResponseMetaAssertions>,
+    pub assets: Option<AssetAssertions>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -356,6 +360,14 @@ pub struct ResponseMetaAssertions {
     pub has_last_modified: Option<bool>,
     pub server_contains: Option<String>,
     pub content_language: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct AssetAssertions {
+    pub total_count: Option<usize>,
+    pub min_count: Option<usize>,
+    pub has_category: Option<String>,
+    pub unique_hashes: Option<usize>,
 }
 
 /// Skip directives for conditional test execution.

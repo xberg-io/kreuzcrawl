@@ -14,8 +14,8 @@ async fn test_cookies_per_domain() {
         "/",
         200,
         &[
-            ("set-cookie", "domain_cookie=value1; Path=/"),
             ("content-type", "text/html; charset=utf-8"),
+            ("set-cookie", "domain_cookie=value1; Path=/"),
         ],
         &body_0,
     )

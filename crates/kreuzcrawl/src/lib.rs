@@ -1,5 +1,6 @@
 //! kreuzcrawl -- A Rust crawling engine for turning websites into structured data.
 
+mod assets;
 mod crawl;
 mod error;
 mod html;
@@ -16,7 +17,8 @@ pub use error::CrawlError;
 pub use map::map;
 pub use scrape::scrape;
 pub use types::{
-    ArticleMetadata, CookieInfo, CrawlConfig, CrawlPageResult, CrawlResult, FaviconInfo, FeedInfo,
-    FeedType, HeadingInfo, HreflangEntry, ImageInfo, ImageSource, JsonLdEntry, LinkInfo, LinkType,
-    MapResult, PageMetadata, ResponseMeta, ScrapeResult, SitemapUrl,
+    ArticleMetadata, AssetCategory, CookieInfo, CrawlConfig, CrawlPageResult, CrawlResult,
+    DownloadedAsset, FaviconInfo, FeedInfo, FeedType, HeadingInfo, HreflangEntry, ImageInfo,
+    ImageSource, JsonLdEntry, LinkInfo, LinkType, MapResult, PageMetadata, ResponseMeta,
+    ScrapeResult, SitemapUrl,
 };

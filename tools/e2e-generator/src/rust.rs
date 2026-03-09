@@ -5,8 +5,8 @@ use camino::Utf8Path;
 use itertools::Itertools;
 
 use crate::fixtures::{
-    ArticleAssertions, Assertions, AuthAssertions, ComputedAssertions, ContentAssertions,
-    CookieAssertions, CrawlAssertions, DublinCoreAssertions, ErrorAssertions,
+    ArticleAssertions, Assertions, AssetAssertions, AuthAssertions, ComputedAssertions,
+    ContentAssertions, CookieAssertions, CrawlAssertions, DublinCoreAssertions, ErrorAssertions,
     ExtendedMetadataAssertions, ExtendedOgAssertions, FaviconAssertions, FeedAssertions, Fixture,
     HeadingAssertions, HreflangAssertions, ImageAssertions, JsonLdAssertions, LinkAssertions,
     MapAssertions, MetadataAssertions, OgAssertions, RedirectAssertions, ResponseMetaAssertions,
@@ -98,8 +98,8 @@ pub async fn setup_mock_server() -> MockServer {
     MockServer::start().await
 }
 
-/// Load a response body file from fixtures/responses/.
-pub fn load_response_body(relative_path: &str) -> String {
+/// Load a response body file from fixtures/responses/ as bytes.
+pub fn load_response_bytes(relative_path: &str) -> Vec<u8> {
     let base = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
         .parent()
         .expect("e2e/rust parent")
@@ -108,8 +108,34 @@ pub fn load_response_body(relative_path: &str) -> String {
         .join("fixtures")
         .join("responses");
     let full_path = base.join(relative_path);
-    std::fs::read_to_string(&full_path)
+    std::fs::read(&full_path)
         .unwrap_or_else(|e| panic!("failed to load response body {}: {e}", full_path.display()))
+}
+
+/// Load a response body file from fixtures/responses/ as a UTF-8 string.
+pub fn load_response_body(relative_path: &str) -> String {
+    String::from_utf8(load_response_bytes(relative_path))
+        .expect("response body should be valid UTF-8")
+}
+
+/// Register a mock route on the given server using raw bytes.
+pub async fn register_mock_bytes(
+    server: &MockServer,
+    http_method: &str,
+    route: &str,
+    status: u16,
+    headers: &[(&str, &str)],
+    body: &[u8],
+) {
+    let mut response = ResponseTemplate::new(status).set_body_bytes(body);
+    for &(key, value) in headers {
+        response = response.append_header(key, value);
+    }
+    Mock::given(method(http_method))
+        .and(path(route))
+        .respond_with(response)
+        .mount(server)
+        .await;
 }
 
 /// Register a mock route on the given server.
@@ -121,17 +147,7 @@ pub async fn register_mock(
     headers: &[(&str, &str)],
     body: &str,
 ) {
-    // Use set_body_bytes to avoid wiremock's default text/plain content-type
-    // that set_body_string adds (which can't be overridden by append_header).
-    let mut response = ResponseTemplate::new(status).set_body_bytes(body.as_bytes());
-    for &(key, value) in headers {
-        response = response.append_header(key, value);
-    }
-    Mock::given(method(http_method))
-        .and(path(route))
-        .respond_with(response)
-        .mount(server)
-        .await;
+    register_mock_bytes(server, http_method, route, status, headers, body.as_bytes()).await;
 }
 "#
     .to_owned()
@@ -201,12 +217,24 @@ fn generate_test_fn(out: &mut String, fixture: &Fixture) -> Result<()> {
     if let Some(ref routes) = fixture.mock_responses {
         for (i, route) in routes.iter().enumerate() {
             let body_var = format!("body_{i}");
+            let is_binary = route
+                .body_file
+                .as_ref()
+                .is_some_and(|f| is_binary_body_file(f));
             if let Some(ref body_file) = route.body_file {
-                writeln!(
-                    out,
-                    "    let {body_var} = helpers::load_response_body(\"{}\");",
-                    escape_rust_string(body_file)
-                )?;
+                if is_binary {
+                    writeln!(
+                        out,
+                        "    let {body_var} = helpers::load_response_bytes(\"{}\");",
+                        escape_rust_string(body_file)
+                    )?;
+                } else {
+                    writeln!(
+                        out,
+                        "    let {body_var} = helpers::load_response_body(\"{}\");",
+                        escape_rust_string(body_file)
+                    )?;
+                }
             } else if let Some(ref body_inline) = route.body_inline {
                 writeln!(
                     out,
@@ -228,13 +256,23 @@ fn generate_test_fn(out: &mut String, fixture: &Fixture) -> Result<()> {
                 })
                 .collect::<Vec<_>>()
                 .join(", ");
-            writeln!(
-                out,
-                "    helpers::register_mock(&mock, \"{}\", \"{}\", {}, &[{headers_str}], &{body_var}).await;",
-                escape_rust_string(&route.method),
-                escape_rust_string(&route.path),
-                route.status_code,
-            )?;
+            if is_binary {
+                writeln!(
+                    out,
+                    "    helpers::register_mock_bytes(&mock, \"{}\", \"{}\", {}, &[{headers_str}], &{body_var}).await;",
+                    escape_rust_string(&route.method),
+                    escape_rust_string(&route.path),
+                    route.status_code,
+                )?;
+            } else {
+                writeln!(
+                    out,
+                    "    helpers::register_mock(&mock, \"{}\", \"{}\", {}, &[{headers_str}], &{body_var}).await;",
+                    escape_rust_string(&route.method),
+                    escape_rust_string(&route.path),
+                    route.status_code,
+                )?;
+            }
         }
     } else if let Some(ref mock_resp) = fixture.mock_response {
         // Single-route fixture
@@ -482,6 +520,35 @@ fn generate_config(out: &mut String, fixture: &Fixture) -> Result<()> {
         if let Some(limit) = cfg.map_limit {
             writeln!(out, "        map_limit: Some({limit}),")?;
         }
+        if let Some(download) = cfg.download_assets {
+            writeln!(out, "        download_assets: {download},")?;
+        }
+        if let Some(ref types) = cfg.asset_types {
+            let items: Vec<String> = types
+                .iter()
+                .map(|t| {
+                    let variant = match t.as_str() {
+                        "image" => "Image",
+                        "stylesheet" => "Stylesheet",
+                        "script" => "Script",
+                        "document" => "Document",
+                        "font" => "Font",
+                        "audio" => "Audio",
+                        "video" => "Video",
+                        _ => "Other",
+                    };
+                    format!("kreuzcrawl::AssetCategory::{variant}")
+                })
+                .collect();
+            writeln!(
+                out,
+                "        asset_types: Some(vec![{}]),",
+                items.join(", ")
+            )?;
+        }
+        if let Some(max_size) = cfg.max_asset_size {
+            writeln!(out, "        max_asset_size: Some({max_size}),")?;
+        }
     }
 
     writeln!(out, "        ..Default::default()")?;
@@ -579,6 +646,9 @@ fn generate_assertions(out: &mut String, assertions: &Assertions, category: &str
     }
     if let Some(ref resp_meta) = assertions.response_meta {
         generate_response_meta_assertions(out, resp_meta)?;
+    }
+    if let Some(ref assets) = assertions.assets {
+        generate_asset_assertions(out, assets)?;
     }
 
     Ok(())
@@ -1301,6 +1371,57 @@ fn link_type_variant(s: &str) -> &str {
         "document" => "Document",
         other => panic!("unknown link type in fixture: {other}"),
     }
+}
+
+fn generate_asset_assertions(out: &mut String, assets: &AssetAssertions) -> Result<()> {
+    if let Some(total) = assets.total_count {
+        writeln!(out, "    assert_eq!(result.assets.len(), {total});")?;
+    }
+    if let Some(min) = assets.min_count {
+        writeln!(out, "    assert!(result.assets.len() >= {min});")?;
+    }
+    if let Some(ref category) = assets.has_category {
+        let variant = match category.as_str() {
+            "image" => "Image",
+            "stylesheet" => "Stylesheet",
+            "script" => "Script",
+            "document" => "Document",
+            "font" => "Font",
+            "audio" => "Audio",
+            "video" => "Video",
+            _ => "Other",
+        };
+        writeln!(
+            out,
+            "    assert!(result.assets.iter().any(|a| a.asset_category == kreuzcrawl::AssetCategory::{variant}));"
+        )?;
+    }
+    if let Some(unique) = assets.unique_hashes {
+        writeln!(
+            out,
+            "    let unique_hashes: std::collections::HashSet<&str> = result.assets.iter().map(|a| a.content_hash.as_str()).collect();"
+        )?;
+        writeln!(out, "    assert_eq!(unique_hashes.len(), {unique});")?;
+    }
+    Ok(())
+}
+
+/// Check if a body file path refers to a binary file.
+fn is_binary_body_file(path: &str) -> bool {
+    let lower = path.to_lowercase();
+    lower.ends_with(".jpg")
+        || lower.ends_with(".jpeg")
+        || lower.ends_with(".png")
+        || lower.ends_with(".gif")
+        || lower.ends_with(".webp")
+        || lower.ends_with(".ico")
+        || lower.ends_with(".pdf")
+        || lower.ends_with(".woff")
+        || lower.ends_with(".woff2")
+        || lower.ends_with(".ttf")
+        || lower.ends_with(".otf")
+        || lower.ends_with(".zip")
+        || lower.ends_with(".gz")
 }
 
 /// Extract the path portion from a URL string (defaults to "/").

@@ -1,0 +1,41 @@
+{
+  "id": "scrape_asset_max_size",
+  "description": "Skips assets exceeding max_asset_size limit",
+  "tags": ["scrape", "assets"],
+  "mock_responses": [
+    {
+      "path": "/",
+      "status_code": 200,
+      "headers": { "content-type": "text/html; charset=utf-8" },
+      "body_file": "html/page_with_assets.html"
+    },
+    {
+      "path": "/assets/style.css",
+      "status_code": 200,
+      "headers": { "content-type": "text/css" },
+      "body_file": "assets/style.css"
+    },
+    {
+      "path": "/assets/script.js",
+      "status_code": 200,
+      "headers": { "content-type": "application/javascript" },
+      "body_file": "assets/script.js"
+    },
+    {
+      "path": "/assets/photo.jpg",
+      "status_code": 200,
+      "headers": { "content-type": "image/jpeg" },
+      "body_file": "assets/photo.jpg"
+    }
+  ],
+  "config": {
+    "download_assets": true,
+    "max_asset_size": 150
+  },
+  "assertions": {
+    "status_code": 200,
+    "assets": {
+      "total_count": 2
+    }
+  }
+}
