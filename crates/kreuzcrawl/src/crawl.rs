@@ -338,9 +338,15 @@ pub(crate) async fn crawl_with_sender(
         }
     }
 
-    // Deduplicate cookies by name
-    let mut seen_cookie_names: HashSet<String> = HashSet::new();
-    all_cookies.retain(|c| seen_cookie_names.insert(c.name.clone()));
+    // Deduplicate cookies by (name, domain, path)
+    let mut seen_cookies: HashSet<(String, String, String)> = HashSet::new();
+    all_cookies.retain(|c| {
+        seen_cookies.insert((
+            c.name.clone(),
+            c.domain.clone().unwrap_or_default(),
+            c.path.clone().unwrap_or_default(),
+        ))
+    });
 
     Ok(CrawlResult::new(
         pages,

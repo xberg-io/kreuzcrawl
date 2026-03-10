@@ -9,22 +9,31 @@ use super::selectors::SEL_MAIN_CONTENT;
 /// Remove elements matching the given CSS selectors from the HTML string.
 pub(crate) fn apply_remove_tags(html: &str, tags: &[String]) -> String {
     let doc = Html::parse_document(html);
-    let mut to_remove = Vec::new();
+    // Collect (start_offset, fragment) pairs from the serialized DOM
+    let serialized = doc.root_element().inner_html();
+    let mut ranges: Vec<(usize, usize)> = Vec::new();
     for tag in tags {
         if let Ok(sel) = Selector::parse(tag) {
             for el in doc.select(&sel) {
-                to_remove.push(el.html());
+                let fragment = el.html();
+                // Find the exact position in the serialized output
+                if let Some(pos) = serialized.find(&fragment) {
+                    ranges.push((pos, pos + fragment.len()));
+                }
             }
         }
     }
-    if to_remove.is_empty() {
+    if ranges.is_empty() {
         return html.to_owned();
     }
-    let mut output = doc.root_element().inner_html();
-    for fragment in &to_remove {
-        if let Some(pos) = output.find(fragment.as_str()) {
-            output.replace_range(pos..pos + fragment.len(), "");
-        }
+    // Sort by start position descending so we remove from end first,
+    // preserving earlier offsets.
+    ranges.sort_by(|a, b| b.0.cmp(&a.0));
+    // Deduplicate overlapping ranges
+    ranges.dedup_by(|a, b| a.0 >= b.0 && a.0 < b.1);
+    let mut output = serialized;
+    for (start, end) in &ranges {
+        output.replace_range(*start..*end, "");
     }
     output
 }

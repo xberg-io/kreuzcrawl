@@ -112,9 +112,7 @@ pub(crate) fn parse_robots_txt(body: &str, user_agent: &str) -> RobotsRules {
             if agent == "*" {
                 matches_wildcard = true;
             } else if ua_lower != "*"
-                && (agent == &ua_lower
-                    || ua_lower.contains(agent.as_str())
-                    || agent.contains(ua_lower.as_str()))
+                && (ua_lower.starts_with(agent.as_str()) || agent.starts_with(ua_lower.as_str()))
             {
                 matches_specific = true;
             }

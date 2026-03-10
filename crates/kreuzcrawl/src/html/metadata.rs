@@ -177,7 +177,15 @@ pub(crate) fn detect_meta_refresh(doc: &Html) -> Option<String> {
     for el in doc.select(&SEL_META_REFRESH) {
         if let Some(content) = el.value().attr("content") {
             // Format: "N;url=TARGET" or "N; url=TARGET"
-            if let Some(pos) = content.to_lowercase().find("url=") {
+            // Case-insensitive search on original bytes to preserve correct offset
+            let bytes = content.as_bytes();
+            let needle = b"url=";
+            let pos = bytes.windows(needle.len()).position(|w| {
+                w.iter()
+                    .zip(needle)
+                    .all(|(a, b)| a.to_ascii_lowercase() == *b)
+            });
+            if let Some(pos) = pos {
                 let target = content[pos + 4..].trim().to_owned();
                 if !target.is_empty() {
                     return Some(target);
