@@ -54,6 +54,11 @@ pub struct MockRouteSpec {
 
 impl Fixture {
     /// Returns the category (resolved during load).
+    ///
+    /// # Panics
+    ///
+    /// Panics if called before `load_fixtures` has resolved the category.
+    /// This is a programming error, not a user error.
     pub fn category(&self) -> &str {
         self.category
             .as_deref()

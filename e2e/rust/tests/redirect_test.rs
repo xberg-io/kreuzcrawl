@@ -347,8 +347,8 @@ async fn test_redirect_refresh_header() {
         "/",
         200,
         &[
-            ("refresh", "0;url=/refreshed"),
             ("content-type", "text/html; charset=utf-8"),
+            ("refresh", "0;url=/refreshed"),
         ],
         &body_0,
     )

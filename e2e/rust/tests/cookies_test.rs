@@ -55,8 +55,8 @@ async fn test_cookies_persistence() {
         "/",
         200,
         &[
-            ("set-cookie", "session=abc123; Path=/"),
             ("content-type", "text/html; charset=utf-8"),
+            ("set-cookie", "session=abc123; Path=/"),
         ],
         &body_0,
     )

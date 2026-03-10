@@ -246,6 +246,102 @@
             "has_url_containing": { "type": "string" },
             "max_urls": { "type": "integer" }
           }
+        },
+        "extended_metadata": {
+          "type": "object",
+          "properties": {
+            "has_keywords": { "type": "boolean" },
+            "keywords_contains": { "type": "string" },
+            "author": { "type": "string" },
+            "has_viewport": { "type": "boolean" },
+            "generator": { "type": "string" },
+            "theme_color": { "type": "string" },
+            "robots_content": { "type": "string" },
+            "html_lang": { "type": "string" },
+            "html_dir": { "type": "string" }
+          }
+        },
+        "article": {
+          "type": "object",
+          "properties": {
+            "published_time": { "type": "string" },
+            "modified_time": { "type": "string" },
+            "author": { "type": "string" },
+            "section": { "type": "string" },
+            "tag_count": { "type": "integer" }
+          }
+        },
+        "extended_og": {
+          "type": "object",
+          "properties": {
+            "og_video": { "type": "string" },
+            "og_audio": { "type": "string" },
+            "og_locale_alternate_count": { "type": "integer" }
+          }
+        },
+        "hreflang": {
+          "type": "object",
+          "properties": {
+            "count": { "type": "integer" },
+            "has_lang": { "type": "string" }
+          }
+        },
+        "favicons": {
+          "type": "object",
+          "properties": {
+            "count": { "type": "integer" },
+            "has_apple_touch": { "type": "boolean" }
+          }
+        },
+        "headings": {
+          "type": "object",
+          "properties": {
+            "h1_count": { "type": "integer" },
+            "h1_text": { "type": "string" },
+            "total_count": { "type": "integer" }
+          }
+        },
+        "computed": {
+          "type": "object",
+          "properties": {
+            "word_count_min": { "type": "integer" },
+            "word_count_max": { "type": "integer" }
+          }
+        },
+        "response_meta": {
+          "type": "object",
+          "properties": {
+            "has_etag": { "type": "boolean" },
+            "has_last_modified": { "type": "boolean" },
+            "server_contains": { "type": "string" },
+            "content_language": { "type": "string" }
+          }
+        },
+        "assets": {
+          "type": "object",
+          "properties": {
+            "total_count": { "type": "integer" },
+            "min_count": { "type": "integer" },
+            "has_category": { "type": "string" },
+            "unique_hashes": { "type": "integer" }
+          }
+        },
+        "stream": {
+          "type": "object",
+          "properties": {
+            "event_count_min": { "type": "integer" },
+            "has_page_event": { "type": "boolean" },
+            "has_complete_event": { "type": "boolean" }
+          }
+        },
+        "batch": {
+          "type": "object",
+          "properties": {
+            "completed_count": { "type": "integer" },
+            "failed_count": { "type": "integer" },
+            "total_count": { "type": "integer" },
+            "has_url_result": { "type": "string" }
+          }
         }
       }
     },

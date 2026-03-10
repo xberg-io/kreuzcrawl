@@ -1,6 +1,6 @@
 use std::fmt::Write as _;
 
-use anyhow::{Context, Result};
+use anyhow::{Context, Result, bail};
 use camino::Utf8Path;
 use itertools::Itertools;
 
@@ -575,19 +575,10 @@ fn generate_config(out: &mut String, fixture: &Fixture) -> Result<()> {
             let items: Vec<String> = types
                 .iter()
                 .map(|t| {
-                    let variant = match t.as_str() {
-                        "image" => "Image",
-                        "stylesheet" => "Stylesheet",
-                        "script" => "Script",
-                        "document" => "Document",
-                        "font" => "Font",
-                        "audio" => "Audio",
-                        "video" => "Video",
-                        _ => "Other",
-                    };
-                    format!("kreuzcrawl::AssetCategory::{variant}")
+                    let variant = asset_category_variant(t)?;
+                    Ok(format!("kreuzcrawl::AssetCategory::{variant}"))
                 })
-                .collect();
+                .collect::<Result<Vec<_>>>()?;
             writeln!(
                 out,
                 "        asset_types: Some(vec![{}]),",
@@ -785,7 +776,7 @@ fn generate_link_assertions(out: &mut String, links: &LinkAssertions) -> Result<
         writeln!(out, "    assert!(result.links.len() <= {max});")?;
     }
     for link_type in &links.has_type {
-        let variant = link_type_variant(link_type);
+        let variant = link_type_variant(link_type)?;
         writeln!(
             out,
             "    assert!(result.links.iter().any(|l| l.link_type == LinkType::{variant}));"
@@ -1417,13 +1408,27 @@ fn generate_response_meta_assertions(
 }
 
 /// Map a link type string from fixtures to a `LinkType` enum variant name.
-fn link_type_variant(s: &str) -> &str {
+fn link_type_variant(s: &str) -> Result<&str> {
     match s {
-        "internal" => "Internal",
-        "external" => "External",
-        "anchor" => "Anchor",
-        "document" => "Document",
-        other => panic!("unknown link type in fixture: {other}"),
+        "internal" => Ok("Internal"),
+        "external" => Ok("External"),
+        "anchor" => Ok("Anchor"),
+        "document" => Ok("Document"),
+        other => bail!("unknown link type in fixture: \"{other}\""),
+    }
+}
+
+/// Map an asset category string from fixtures to an `AssetCategory` enum variant name.
+fn asset_category_variant(s: &str) -> Result<&str> {
+    match s {
+        "image" => Ok("Image"),
+        "stylesheet" => Ok("Stylesheet"),
+        "script" => Ok("Script"),
+        "document" => Ok("Document"),
+        "font" => Ok("Font"),
+        "audio" => Ok("Audio"),
+        "video" => Ok("Video"),
+        other => bail!("unknown asset category in fixture: \"{other}\""),
     }
 }
 
@@ -1435,16 +1440,7 @@ fn generate_asset_assertions(out: &mut String, assets: &AssetAssertions) -> Resu
         writeln!(out, "    assert!(result.assets.len() >= {min});")?;
     }
     if let Some(ref category) = assets.has_category {
-        let variant = match category.as_str() {
-            "image" => "Image",
-            "stylesheet" => "Stylesheet",
-            "script" => "Script",
-            "document" => "Document",
-            "font" => "Font",
-            "audio" => "Audio",
-            "video" => "Video",
-            _ => "Other",
-        };
+        let variant = asset_category_variant(category)?;
         writeln!(
             out,
             "    assert!(result.assets.iter().any(|a| a.asset_category == kreuzcrawl::AssetCategory::{variant}));"
