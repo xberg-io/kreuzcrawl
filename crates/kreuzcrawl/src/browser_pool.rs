@@ -53,6 +53,8 @@ pub struct BrowserPool {
     state: Mutex<Option<BrowserState>>,
     page_semaphore: Arc<Semaphore>,
     shutdown: AtomicBool,
+    /// Lock-free health signal updated whenever browser state changes.
+    healthy: AtomicBool,
 }
 
 impl BrowserPool {
@@ -65,6 +67,7 @@ impl BrowserPool {
             state: Mutex::new(None),
             page_semaphore: semaphore,
             shutdown: AtomicBool::new(false),
+            healthy: AtomicBool::new(false),
         })
     }
 
@@ -76,6 +79,7 @@ impl BrowserPool {
         if guard.is_none() {
             let bs = self.launch_browser().await?;
             *guard = Some(bs);
+            self.healthy.store(true, Ordering::Release);
         }
         Ok(())
     }
@@ -125,27 +129,18 @@ impl BrowserPool {
         }
     }
 
-    /// Non-blocking health check. Returns `true` when Chrome is running and
-    /// its event handler has not exited.
+    /// Non-blocking health check. Returns `true` when Chrome is running.
     ///
-    /// **Note:** This method uses `try_lock` on the internal mutex and will
-    /// return `false` under contention (e.g. while a page is being created or
-    /// Chrome is relaunching). It is therefore unsuitable for strict health
-    /// probes — a `false` return does not necessarily mean the pool is unhealthy.
+    /// This is a lock-free atomic read — safe for use in health probes and
+    /// monitoring without risking contention.
     pub fn is_healthy(&self) -> bool {
-        let guard = match self.state.try_lock() {
-            Ok(g) => g,
-            Err(_) => return false,
-        };
-        match guard.as_ref() {
-            Some(bs) => !bs.handler_handle.is_finished(),
-            None => false,
-        }
+        self.healthy.load(Ordering::Acquire) && !self.shutdown.load(Ordering::Acquire)
     }
 
     /// Gracefully shut the pool down. Safe to call multiple times.
     pub async fn shutdown(&self) {
         self.shutdown.store(true, Ordering::SeqCst);
+        self.healthy.store(false, Ordering::Release);
 
         // Close the semaphore so any pending acquire_owned() calls return Err immediately.
         self.page_semaphore.close();
@@ -171,7 +166,7 @@ impl BrowserPool {
                 .as_ref()
                 .is_some_and(|bs| bs.handler_handle.is_finished())
         {
-            // Need to launch.
+            self.healthy.store(false, Ordering::Release);
             if let Some(old) = guard.take() {
                 old.handler_handle.abort();
                 if let Some(dir) = old.user_data_dir {
@@ -180,6 +175,7 @@ impl BrowserPool {
             }
             let bs = self.launch_browser().await?;
             *guard = Some(bs);
+            self.healthy.store(true, Ordering::Release);
         }
 
         let bs = guard.as_ref().unwrap();
@@ -206,6 +202,7 @@ impl BrowserPool {
         }
 
         // Tear down old state and relaunch.
+        self.healthy.store(false, Ordering::Release);
         if let Some(old) = guard.take() {
             drop(old.browser);
             let _ = tokio::time::timeout(Duration::from_secs(5), old.handler_handle).await;
@@ -216,6 +213,7 @@ impl BrowserPool {
 
         let bs = self.launch_browser().await?;
         *guard = Some(bs);
+        self.healthy.store(true, Ordering::Release);
         Ok(())
     }
 
@@ -279,7 +277,7 @@ impl std::fmt::Debug for BrowserPool {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("BrowserPool")
             .field("config", &self.config)
-            .field("healthy", &self.is_healthy())
+            .field("healthy", &self.healthy.load(Ordering::Relaxed))
             .field("shutdown", &self.shutdown.load(Ordering::Relaxed))
             .finish()
     }
