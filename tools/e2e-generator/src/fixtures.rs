@@ -134,6 +134,18 @@ pub struct CrawlConfigSpec {
     pub browser_wait: Option<String>,
     pub browser_wait_selector: Option<String>,
     pub browser_extra_wait_ms: Option<u64>,
+    /// When true, use CrawlEngine::builder() instead of free functions.
+    pub engine_mode: Option<bool>,
+    /// Crawl strategy: "bfs" (default), "dfs", or "best_first"
+    pub crawl_strategy: Option<String>,
+    /// Per-domain rate limit delay in milliseconds for PerDomainThrottle.
+    pub rate_limit_delay_ms: Option<u64>,
+    /// Content filter: "none" (default) or "bm25"
+    pub content_filter: Option<String>,
+    /// Query string for BM25 content filter.
+    pub bm25_query: Option<String>,
+    /// Minimum BM25 score threshold (0.0-1.0). Pages below this are filtered out.
+    pub bm25_threshold: Option<f64>,
 }
 
 /// Basic auth credentials.
@@ -185,6 +197,9 @@ pub struct Assertions {
     pub stream: Option<StreamAssertions>,
     pub batch: Option<BatchAssertions>,
     pub browser: Option<BrowserAssertions>,
+    pub strategy: Option<StrategyAssertions>,
+    pub rate_limit: Option<RateLimitAssertions>,
+    pub filter: Option<FilterAssertions>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -398,6 +413,33 @@ pub struct BatchAssertions {
     pub failed_count: Option<usize>,
     pub total_count: Option<usize>,
     pub has_url_result: Option<String>,
+}
+
+/// Content filter assertions.
+#[derive(Debug, Deserialize)]
+pub struct FilterAssertions {
+    /// Number of pages remaining after filtering.
+    pub pages_after_filter: Option<usize>,
+    /// All remaining pages contain this keyword.
+    pub remaining_contain_keyword: Option<String>,
+}
+
+/// Rate-limiting assertions.
+#[derive(Debug, Deserialize)]
+pub struct RateLimitAssertions {
+    /// Crawl took at least this many milliseconds (proves rate limiting is working).
+    pub min_duration_ms: Option<u64>,
+}
+
+/// Strategy-related assertions for crawl ordering.
+#[derive(Debug, Deserialize)]
+pub struct StrategyAssertions {
+    /// Expected page visit order (URL path suffixes in order).
+    pub crawl_order: Option<Vec<String>>,
+    /// First crawled page URL contains this string.
+    pub first_page_url_contains: Option<String>,
+    /// Last crawled page URL contains this string.
+    pub last_page_url_contains: Option<String>,
 }
 
 /// Browser-related assertions.

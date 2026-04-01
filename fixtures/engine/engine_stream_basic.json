@@ -1,0 +1,28 @@
+{
+  "id": "engine_stream_basic",
+  "description": "CrawlEngine with defaults streams events like the free function",
+  "tags": ["engine", "stream"],
+  "mock_responses": [
+    {
+      "path": "/",
+      "headers": { "content-type": "text/html" },
+      "body_inline": "<html><body><a href=\"/page1\">Link</a></body></html>"
+    },
+    {
+      "path": "/page1",
+      "headers": { "content-type": "text/html" },
+      "body_inline": "<html><body><h1>Page 1</h1></body></html>"
+    }
+  ],
+  "config": {
+    "engine_mode": true,
+    "max_depth": 1
+  },
+  "assertions": {
+    "stream": {
+      "has_page_event": true,
+      "has_complete_event": true,
+      "event_count_min": 3
+    }
+  }
+}

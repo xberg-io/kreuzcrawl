@@ -50,6 +50,9 @@ pub enum CrawlError {
     /// The browser page load or rendering timed out.
     #[error("browser_timeout: {0}")]
     BrowserTimeout(String),
+    /// The provided configuration is invalid.
+    #[error("invalid_config: {0}")]
+    InvalidConfig(String),
     /// An unclassified error occurred.
     #[error("other: {0}")]
     Other(String),

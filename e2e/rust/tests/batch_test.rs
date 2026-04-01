@@ -42,6 +42,9 @@ async fn test_scrape_batch_basic() {
         ..Default::default()
     };
 
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
     let urls: Vec<String> = vec![
         format!("{}/page1", mock.uri()),
         format!("{}/page2", mock.uri()),
@@ -51,7 +54,7 @@ async fn test_scrape_batch_basic() {
     let results: Vec<(
         String,
         Result<kreuzcrawl::ScrapeResult, kreuzcrawl::CrawlError>,
-    )> = kreuzcrawl::batch_scrape(&url_refs, &config).await;
+    )> = engine.batch_scrape(&url_refs).await;
     assert_eq!(results.len(), 3);
     let completed = results.iter().filter(|(_, r)| r.is_ok()).count();
     assert_eq!(completed, 3);
@@ -98,6 +101,9 @@ async fn test_scrape_batch_partial_failure() {
         ..Default::default()
     };
 
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
     let urls: Vec<String> = vec![
         format!("{}/good1", mock.uri()),
         format!("{}/bad", mock.uri()),
@@ -107,7 +113,7 @@ async fn test_scrape_batch_partial_failure() {
     let results: Vec<(
         String,
         Result<kreuzcrawl::ScrapeResult, kreuzcrawl::CrawlError>,
-    )> = kreuzcrawl::batch_scrape(&url_refs, &config).await;
+    )> = engine.batch_scrape(&url_refs).await;
     assert_eq!(results.len(), 3);
     let completed = results.iter().filter(|(_, r)| r.is_ok()).count();
     assert_eq!(completed, 2);
@@ -144,6 +150,9 @@ async fn test_scrape_batch_progress() {
         ..Default::default()
     };
 
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
     let urls: Vec<String> = vec![
         format!("{}/target", mock.uri()),
         format!("{}/other", mock.uri()),
@@ -152,7 +161,7 @@ async fn test_scrape_batch_progress() {
     let results: Vec<(
         String,
         Result<kreuzcrawl::ScrapeResult, kreuzcrawl::CrawlError>,
-    )> = kreuzcrawl::batch_scrape(&url_refs, &config).await;
+    )> = engine.batch_scrape(&url_refs).await;
     assert_eq!(results.len(), 2);
     assert!(results.iter().any(|(url, _)| url.contains("/target")));
 }

@@ -5,7 +5,7 @@ use std::time::Duration;
 use reqwest::header::{CONTENT_TYPE, HeaderMap, USER_AGENT};
 
 use crate::error::{CrawlError, classify_reqwest_error, error_chain_string};
-use crate::types::{CookieInfo, CrawlConfig, ResponseMeta};
+use crate::types::{AuthConfig, CookieInfo, CrawlConfig, ResponseMeta};
 
 /// An HTTP response with status, headers, and body content.
 pub(crate) struct HttpResponse {
@@ -38,21 +38,28 @@ pub(crate) async fn http_fetch(
     }
 
     // Auth
-    if let Some(ref auth) = config.auth_basic {
-        req = req.basic_auth(&auth.username, Some(&auth.password));
-    }
-    if let Some(ref token) = config.auth_bearer {
-        req = req.bearer_auth(token);
-    }
-    if let Some(ref hdr) = config.auth_header {
-        req = req.header(hdr.name.as_str(), hdr.value.as_str());
+    match config.auth {
+        Some(AuthConfig::Basic {
+            ref username,
+            ref password,
+        }) => {
+            req = req.basic_auth(username, Some(password));
+        }
+        Some(AuthConfig::Bearer { ref token }) => {
+            req = req.bearer_auth(token);
+        }
+        Some(AuthConfig::Header {
+            ref name,
+            ref value,
+        }) => {
+            req = req.header(name.as_str(), value.as_str());
+        }
+        None => {}
     }
 
     // Custom headers
-    if let Some(ref headers) = config.custom_headers {
-        for (k, v) in headers {
-            req = req.header(k.as_str(), v.as_str());
-        }
+    for (k, v) in &config.custom_headers {
+        req = req.header(k.as_str(), v.as_str());
     }
 
     let resp = req.send().await.map_err(|e| classify_reqwest_error(&e))?;
@@ -173,8 +180,8 @@ pub(crate) async fn fetch_with_retry(
     config: &CrawlConfig,
     client: &reqwest::Client,
 ) -> Result<HttpResponse, CrawlError> {
-    let retries = config.retry_count.unwrap_or(0);
-    let retry_codes = config.retry_codes.clone().unwrap_or_default();
+    let retries = config.retry_count;
+    let retry_codes = config.retry_codes.clone();
 
     let mut last_err = None;
     for attempt in 0..=retries {

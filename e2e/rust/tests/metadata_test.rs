@@ -22,7 +22,10 @@ async fn test_metadata_article_times() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
     assert_eq!(
@@ -87,7 +90,10 @@ async fn test_metadata_favicons() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
     assert_eq!(
@@ -128,7 +134,10 @@ async fn test_metadata_headings() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
     assert_eq!(
@@ -180,7 +189,10 @@ async fn test_metadata_hreflang() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
     assert_eq!(
@@ -221,7 +233,10 @@ async fn test_metadata_keywords_author() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
     assert_eq!(
@@ -266,7 +281,10 @@ async fn test_metadata_og_video_audio() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
     assert_eq!(
@@ -299,11 +317,11 @@ async fn test_metadata_response_headers() {
         "/",
         200,
         &[
-            ("server", "nginx/1.24"),
-            ("etag", "\"abc123\""),
             ("content-language", "en-US"),
-            ("content-type", "text/html; charset=utf-8"),
             ("last-modified", "Wed, 01 Jan 2025 00:00:00 GMT"),
+            ("content-type", "text/html; charset=utf-8"),
+            ("etag", "\"abc123\""),
+            ("server", "nginx/1.24"),
             ("x-powered-by", "kreuzcrawl"),
         ],
         &body,
@@ -314,7 +332,10 @@ async fn test_metadata_response_headers() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
     assert!(
@@ -367,7 +388,10 @@ async fn test_metadata_word_count() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
     assert!(result.metadata.word_count.unwrap_or(0) >= 100);

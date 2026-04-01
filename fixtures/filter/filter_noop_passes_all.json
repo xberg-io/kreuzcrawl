@@ -1,0 +1,31 @@
+{
+  "id": "filter_noop_passes_all",
+  "description": "No content filter passes all crawled pages through",
+  "tags": ["filter"],
+  "mock_responses": [
+    {
+      "path": "/",
+      "headers": {"content-type": "text/html"},
+      "body_inline": "<html><body><a href=\"/page1\">P1</a><a href=\"/page2\">P2</a></body></html>"
+    },
+    {
+      "path": "/page1",
+      "headers": {"content-type": "text/html"},
+      "body_inline": "<html><body><p>Rust programming language systems</p></body></html>"
+    },
+    {
+      "path": "/page2",
+      "headers": {"content-type": "text/html"},
+      "body_inline": "<html><body><p>Cooking recipes for dinner</p></body></html>"
+    }
+  ],
+  "config": {
+    "max_depth": 1,
+    "engine_mode": true
+  },
+  "assertions": {
+    "crawl": {
+      "pages_crawled": 3
+    }
+  }
+}

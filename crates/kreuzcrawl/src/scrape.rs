@@ -28,8 +28,7 @@ pub async fn scrape(url: &str, config: &CrawlConfig) -> Result<ScrapeResult, Cra
     let parsed_url = Url::parse(url).map_err(|e| CrawlError::Other(format!("invalid URL: {e}")))?;
     let client = build_client(config)?;
 
-    let auth_header_sent =
-        config.auth_basic.is_some() || config.auth_bearer.is_some() || config.auth_header.is_some();
+    let auth_header_sent = config.auth.is_some();
 
     // Check robots.txt
     let mut is_allowed = true;
@@ -52,7 +51,7 @@ pub async fn scrape(url: &str, config: &CrawlConfig) -> Result<ScrapeResult, Cra
 
     // In Always mode with browser feature, skip HTTP and go straight to browser.
     #[cfg(feature = "browser")]
-    let resp = if matches!(config.browser_mode, BrowserMode::Always) {
+    let resp = if matches!(config.browser.mode, BrowserMode::Always) {
         match crate::browser::browser_fetch(url, config, None, config.browser_pool.as_deref()).await
         {
             Ok(r) => {
@@ -65,7 +64,7 @@ pub async fn scrape(url: &str, config: &CrawlConfig) -> Result<ScrapeResult, Cra
         match fetch_with_retry(url, config, &client).await {
             Ok(r) => r,
             // WAF-blocked: try browser fallback in Auto mode.
-            Err(CrawlError::WafBlocked(_)) if matches!(config.browser_mode, BrowserMode::Auto) => {
+            Err(CrawlError::WafBlocked(_)) if matches!(config.browser.mode, BrowserMode::Auto) => {
                 match crate::browser::browser_fetch(
                     url,
                     config,
@@ -159,7 +158,7 @@ pub async fn scrape(url: &str, config: &CrawlConfig) -> Result<ScrapeResult, Cra
 
     // Auto re-fetch with browser when JS rendering is detected and browser feature is enabled.
     #[cfg(feature = "browser")]
-    if result.js_render_hint && !browser_used && matches!(config.browser_mode, BrowserMode::Auto) {
+    if result.js_render_hint && !browser_used && matches!(config.browser.mode, BrowserMode::Auto) {
         // Note: prior HTTP cookies are not forwarded to the browser.
         // Cookie state from the HTTP response is lost on browser re-fetch.
         if let Ok(browser_resp) =
@@ -238,8 +237,8 @@ async fn scrape_from_response(
         is_binary_content_type(&content_type) || is_binary_url(parsed_url.as_str()) || is_pdf;
 
     // Remove tags if specified
-    if let Some(ref tags) = config.remove_tags {
-        body = apply_remove_tags(&body, tags);
+    if !config.remove_tags.is_empty() {
+        body = apply_remove_tags(&body, &config.remove_tags);
     }
 
     // Extract main content only

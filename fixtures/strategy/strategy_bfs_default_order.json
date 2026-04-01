@@ -1,0 +1,44 @@
+{
+  "id": "strategy_bfs_default_order",
+  "description": "BFS strategy visits pages in breadth-first order",
+  "tags": ["strategy", "bfs"],
+  "mock_responses": [
+    {
+      "path": "/",
+      "headers": {"content-type": "text/html"},
+      "body_inline": "<html><body><a href=\"/a\">A</a><a href=\"/b\">B</a></body></html>"
+    },
+    {
+      "path": "/a",
+      "headers": {"content-type": "text/html"},
+      "body_inline": "<html><body><a href=\"/a/1\">A1</a></body></html>"
+    },
+    {
+      "path": "/b",
+      "headers": {"content-type": "text/html"},
+      "body_inline": "<html><body><a href=\"/b/1\">B1</a></body></html>"
+    },
+    {
+      "path": "/a/1",
+      "headers": {"content-type": "text/html"},
+      "body_inline": "<html><body><h1>A1</h1></body></html>"
+    },
+    {
+      "path": "/b/1",
+      "headers": {"content-type": "text/html"},
+      "body_inline": "<html><body><h1>B1</h1></body></html>"
+    }
+  ],
+  "config": {
+    "max_depth": 2,
+    "crawl_strategy": "bfs"
+  },
+  "assertions": {
+    "crawl": {
+      "pages_crawled": 5
+    },
+    "strategy": {
+      "crawl_order": ["/", "/a", "/b", "/a/1", "/b/1"]
+    }
+  }
+}

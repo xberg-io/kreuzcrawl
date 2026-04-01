@@ -22,7 +22,10 @@ async fn test_sitemap_basic() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::map(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.map(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.urls.len(), 4);
     assert!(result.urls.iter().any(|u| u.lastmod.is_some()));
@@ -47,7 +50,10 @@ async fn test_sitemap_empty() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::map(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.map(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.urls.len(), 0);
 }
@@ -82,7 +88,10 @@ async fn test_sitemap_from_robots_txt() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::map(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.map(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.urls.len(), 4);
 }
@@ -136,7 +145,10 @@ async fn test_sitemap_index() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::map(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.map(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.urls.len(), 3);
 }
@@ -161,7 +173,10 @@ async fn test_sitemap_lastmod_filter() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::map(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.map(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.urls.len(), 4);
     assert!(result.urls.iter().any(|u| u.lastmod.is_some()));
@@ -187,7 +202,10 @@ async fn test_sitemap_only_mode() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::map(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.map(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.urls.len(), 4);
 }
@@ -212,7 +230,10 @@ async fn test_sitemap_xhtml_links() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::map(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.map(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.urls.len(), 2);
     assert!(result.urls.iter().all(|u| u.lastmod.is_none()));

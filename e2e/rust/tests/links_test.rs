@@ -23,7 +23,10 @@ async fn test_links_anchor_fragment() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.links.iter().any(|l| l.link_type == LinkType::Anchor));
 }
@@ -47,7 +50,10 @@ async fn test_links_base_tag() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.links.len() >= 3);
     assert!(result.links.iter().any(|l| l.url.contains("example.com")));
@@ -72,7 +78,10 @@ async fn test_links_document_types() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(
         result
@@ -101,7 +110,10 @@ async fn test_links_empty_href() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.links.len() >= 1);
     assert!(result.links.iter().any(|l| l.url.contains("/valid")));
@@ -126,7 +138,10 @@ async fn test_links_internal_external_classification() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.links.len() >= 5);
     assert!(
@@ -162,7 +177,10 @@ async fn test_links_mailto_javascript_skip() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.links.len() >= 1);
     assert!(result.links.iter().all(|l| !l.url.contains("mailto:")));
@@ -187,7 +205,10 @@ async fn test_links_protocol_relative() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.links.len() >= 2);
     assert!(result.links.iter().any(|l| l.url.starts_with("//")));
@@ -212,7 +233,10 @@ async fn test_links_rel_attributes() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.links.len() >= 1);
 }
@@ -236,7 +260,10 @@ async fn test_links_relative_parent() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.links.len() >= 4);
 }

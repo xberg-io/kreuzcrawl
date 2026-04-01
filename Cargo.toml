@@ -11,7 +11,9 @@ repository = "https://github.com/kreuzberg-dev/kreuzcrawl"
 rust-version = "1.91"
 
 [workspace.dependencies]
+ahash = "0.8"
 anyhow = "1"
+async-trait = "0.1"
 camino = "1.2"
 chromiumoxide = { version = "0.9", default-features = false }
 clap = { version = "4", features = ["derive"] }

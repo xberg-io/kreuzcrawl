@@ -88,9 +88,7 @@ pub(crate) async fn download_assets(
                 return false;
             }
             // Filter by asset type
-            if let Some(ref types) = config.asset_types
-                && !types.contains(&asset_ref.category)
-            {
+            if !config.asset_types.is_empty() && !config.asset_types.contains(&asset_ref.category) {
                 return false;
             }
             true

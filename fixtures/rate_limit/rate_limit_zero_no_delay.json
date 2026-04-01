@@ -1,0 +1,26 @@
+{
+  "id": "rate_limit_zero_no_delay",
+  "description": "Rate limiter with zero delay does not slow crawling",
+  "tags": ["rate_limit"],
+  "mock_responses": [
+    {
+      "path": "/",
+      "headers": {"content-type": "text/html"},
+      "body_inline": "<html><body><a href=\"/p1\">P1</a></body></html>"
+    },
+    {
+      "path": "/p1",
+      "headers": {"content-type": "text/html"},
+      "body_inline": "<html><body><h1>P1</h1></body></html>"
+    }
+  ],
+  "config": {
+    "max_depth": 1,
+    "rate_limit_delay_ms": 0
+  },
+  "assertions": {
+    "crawl": {
+      "pages_crawled": 2
+    }
+  }
+}

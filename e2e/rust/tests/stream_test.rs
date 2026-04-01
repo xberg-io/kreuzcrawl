@@ -48,7 +48,10 @@ async fn test_crawl_stream_events() {
         ..Default::default()
     };
 
-    let stream = kreuzcrawl::crawl_stream(&mock.uri(), &config);
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let stream = engine.crawl_stream(&mock.uri());
     let events: Vec<CrawlEvent> = stream.collect().await;
     assert!(events.len() >= 4);
     assert!(events.iter().any(|e| matches!(e, CrawlEvent::Page(_))));

@@ -12,6 +12,8 @@ default = []
 browser = ["dep:chromiumoxide"]
 
 [dependencies]
+ahash = { workspace = true }
+async-trait = { workspace = true }
 chromiumoxide = { workspace = true, optional = true }
 flate2 = { workspace = true }
 quick-xml = { workspace = true }

@@ -24,7 +24,10 @@ async fn test_map_discover_urls() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::map(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.map(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.urls.len() >= 3);
 }
@@ -47,11 +50,14 @@ async fn test_map_exclude_patterns() {
     let config = kreuzcrawl::CrawlConfig {
         max_depth: Some(0),
         respect_robots_txt: false,
-        exclude_paths: Some(vec!["/private/.*".to_owned(), "/api/.*".to_owned()]),
+        exclude_paths: vec!["/private/.*".to_owned(), "/api/.*".to_owned()],
         ..Default::default()
     };
 
-    let result = kreuzcrawl::map(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.map(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.urls.len(), 1);
 }
@@ -78,10 +84,18 @@ async fn test_map_include_subdomains() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::map(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.map(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.urls.len() >= 2);
-    assert!(result.urls.iter().any(|u| u.contains("blog.example.com")));
+    assert!(
+        result
+            .urls
+            .iter()
+            .any(|u| u.url.contains("blog.example.com"))
+    );
 }
 
 #[tokio::test]
@@ -104,7 +118,10 @@ async fn test_map_large_sitemap() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::map(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.map(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.urls.len() >= 100);
 }
@@ -131,7 +148,10 @@ async fn test_map_limit_pagination() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::map(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.map(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.urls.len() <= 5);
 }
@@ -158,8 +178,11 @@ async fn test_map_search_filter() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::map(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.map(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.urls.len() >= 2);
-    assert!(result.urls.iter().any(|u| u.contains("blog")));
+    assert!(result.urls.iter().any(|u| u.url.contains("blog")));
 }

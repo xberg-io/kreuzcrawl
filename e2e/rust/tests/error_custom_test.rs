@@ -16,7 +16,10 @@ async fn test_error_connection_refused() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape("http://127.0.0.1:1/", &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape("http://127.0.0.1:1/").await;
     let err = result.expect_err("request should fail");
     assert!(
         err.to_string().contains("connection"),
@@ -34,7 +37,12 @@ async fn test_error_dns_resolution() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape("http://this-domain-does-not-exist.invalid/", &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine
+        .scrape("http://this-domain-does-not-exist.invalid/")
+        .await;
     let err = result.expect_err("request should fail");
     assert!(
         err.to_string().contains("dns"),
@@ -56,7 +64,10 @@ async fn test_error_ssl_invalid_cert() {
 
     // Replace http:// with https:// to force TLS handshake against plain HTTP
     let https_url = mock.uri().replace("http://", "https://");
-    let result = kreuzcrawl::scrape(&https_url, &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&https_url).await;
     let err = result.expect_err("request should fail");
     assert!(
         err.to_string().contains("ssl")
@@ -91,7 +102,10 @@ async fn test_error_timeout() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let err = result.expect_err("request should fail");
     assert!(
         err.to_string().contains("timeout"),
@@ -124,7 +138,10 @@ async fn test_error_partial_response() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let err = result.expect_err("request should fail");
     let msg = err.to_string();
     // Wiremock/hyper may reject the mismatched content-length at the server side,

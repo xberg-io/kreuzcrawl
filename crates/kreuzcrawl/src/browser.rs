@@ -5,7 +5,7 @@
 use std::time::Duration;
 
 use chromiumoxide::Handler;
-use chromiumoxide::browser::{Browser, BrowserConfig};
+use chromiumoxide::browser::{Browser, BrowserConfig as ChromeBrowserConfig};
 use chromiumoxide::cdp::browser_protocol::network::{
     Headers, SetCookieParams, SetExtraHttpHeadersParams,
 };
@@ -15,7 +15,7 @@ use tokio_stream::StreamExt;
 use crate::browser_pool::BrowserPool;
 use crate::error::CrawlError;
 use crate::http::HttpResponse;
-use crate::types::{BrowserWait, CookieInfo, CrawlConfig};
+use crate::types::{AuthConfig, BrowserWait, CookieInfo, CrawlConfig};
 
 /// Fetch a URL using a headless Chrome browser via CDP.
 ///
@@ -90,22 +90,23 @@ async fn page_fetch(
 
     // Set custom headers (including auth).
     let mut extra_headers = serde_json::Map::new();
-    if let Some(ref headers) = config.custom_headers {
-        for (k, v) in headers {
-            extra_headers.insert(k.clone(), serde_json::Value::String(v.clone()));
+    for (k, v) in &config.custom_headers {
+        extra_headers.insert(k.clone(), serde_json::Value::String(v.clone()));
+    }
+    match config.auth {
+        Some(AuthConfig::Bearer { ref token }) => {
+            extra_headers.insert(
+                "Authorization".to_owned(),
+                serde_json::Value::String(format!("Bearer {token}")),
+            );
         }
-    }
-    if let Some(ref bearer) = config.auth_bearer {
-        extra_headers.insert(
-            "Authorization".to_owned(),
-            serde_json::Value::String(format!("Bearer {bearer}")),
-        );
-    }
-    if let Some(ref auth_hdr) = config.auth_header {
-        extra_headers.insert(
-            auth_hdr.name.clone(),
-            serde_json::Value::String(auth_hdr.value.clone()),
-        );
+        Some(AuthConfig::Header {
+            ref name,
+            ref value,
+        }) => {
+            extra_headers.insert(name.clone(), serde_json::Value::String(value.clone()));
+        }
+        _ => {}
     }
     if !extra_headers.is_empty() {
         let params =
@@ -116,7 +117,7 @@ async fn page_fetch(
     }
 
     // Navigate and wait for rendering, all under a single timeout.
-    let timeout = config.browser_timeout;
+    let timeout = config.browser.timeout;
     tokio::time::timeout(timeout, async {
         page.goto(url)
             .await
@@ -132,7 +133,7 @@ async fn page_fetch(
     .map_err(|_| CrawlError::BrowserTimeout(format!("browser timed out after {timeout:?}")))??;
 
     // Extra wait if configured.
-    if let Some(extra) = config.browser_extra_wait {
+    if let Some(extra) = config.browser.extra_wait {
         tokio::time::sleep(extra).await;
     }
 
@@ -163,7 +164,7 @@ async fn wait_for_ready(
     page: &chromiumoxide::Page,
     config: &CrawlConfig,
 ) -> Result<(), chromiumoxide::error::CdpError> {
-    match config.browser_wait {
+    match config.browser.wait {
         BrowserWait::NetworkIdle => {
             // Note: true CDP network idle detection (zero in-flight requests)
             // is not implemented. This is a settle delay that gives client-side
@@ -171,7 +172,7 @@ async fn wait_for_ready(
             tokio::time::sleep(Duration::from_millis(500)).await;
         }
         BrowserWait::Selector => {
-            if let Some(ref selector) = config.browser_wait_selector {
+            if let Some(ref selector) = config.browser.wait_selector {
                 page.find_element(selector).await?;
             } else {
                 tokio::time::sleep(Duration::from_millis(500)).await;
@@ -186,12 +187,12 @@ async fn wait_for_ready(
 
 /// Launch a new managed browser or connect to an external CDP endpoint.
 async fn launch_or_connect(config: &CrawlConfig) -> Result<(Browser, Handler), CrawlError> {
-    if let Some(ref endpoint) = config.browser_endpoint {
+    if let Some(ref endpoint) = config.browser.endpoint {
         Browser::connect(endpoint)
             .await
             .map_err(|e| CrawlError::BrowserError(format!("failed to connect to {endpoint}: {e}")))
     } else {
-        let browser_config = BrowserConfig::builder()
+        let browser_config = ChromeBrowserConfig::builder()
             .no_sandbox()
             .new_headless_mode()
             .build()

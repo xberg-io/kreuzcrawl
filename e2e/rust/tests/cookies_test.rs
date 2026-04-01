@@ -38,7 +38,10 @@ async fn test_cookies_per_domain() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::crawl(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.cookies.len(), 1);
     assert!(result.cookies.iter().any(|c| c.name == "domain_cookie"));
@@ -55,8 +58,8 @@ async fn test_cookies_persistence() {
         "/",
         200,
         &[
-            ("set-cookie", "session=abc123; Path=/"),
             ("content-type", "text/html; charset=utf-8"),
+            ("set-cookie", "session=abc123; Path=/"),
         ],
         &body_0,
     )
@@ -79,7 +82,10 @@ async fn test_cookies_persistence() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::crawl(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.cookies.iter().any(|c| c.name == "session"));
 }
@@ -95,8 +101,8 @@ async fn test_cookies_set_cookie_response() {
         "/",
         200,
         &[
-            ("set-cookie", "tracking=xyz789; Path=/; HttpOnly"),
             ("content-type", "text/html; charset=utf-8"),
+            ("set-cookie", "tracking=xyz789; Path=/; HttpOnly"),
         ],
         &body_0,
     )
@@ -119,7 +125,10 @@ async fn test_cookies_set_cookie_response() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::crawl(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.cookies.iter().any(|c| c.name == "tracking"));
 }

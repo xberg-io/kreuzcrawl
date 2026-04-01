@@ -1,0 +1,27 @@
+{
+  "id": "engine_batch_basic",
+  "description": "CrawlEngine with defaults batch scrapes like the free function",
+  "tags": ["engine", "batch"],
+  "mock_responses": [
+    {
+      "path": "/page1",
+      "headers": { "content-type": "text/html" },
+      "body_inline": "<html><head><title>Batch 1</title></head><body>Content 1</body></html>"
+    },
+    {
+      "path": "/page2",
+      "headers": { "content-type": "text/html" },
+      "body_inline": "<html><head><title>Batch 2</title></head><body>Content 2</body></html>"
+    }
+  ],
+  "config": {
+    "engine_mode": true,
+    "batch_urls": ["/page1", "/page2"]
+  },
+  "assertions": {
+    "batch": {
+      "completed_count": 2,
+      "total_count": 2
+    }
+  }
+}

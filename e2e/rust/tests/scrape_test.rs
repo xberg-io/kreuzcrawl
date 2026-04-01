@@ -44,7 +44,10 @@ async fn test_scrape_asset_dedup() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
     assert_eq!(result.assets.len(), 2);
@@ -107,7 +110,10 @@ async fn test_scrape_asset_max_size() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
     assert_eq!(result.assets.len(), 2);
@@ -160,11 +166,14 @@ async fn test_scrape_asset_type_filter() {
 
     let config = kreuzcrawl::CrawlConfig {
         download_assets: true,
-        asset_types: Some(vec![kreuzcrawl::AssetCategory::Image]),
+        asset_types: vec![kreuzcrawl::AssetCategory::Image],
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
     assert_eq!(result.assets.len(), 1);
@@ -197,7 +206,10 @@ async fn test_scrape_basic_html_page() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
     assert!(result.content_type.starts_with("text/html"));
@@ -242,7 +254,10 @@ async fn test_scrape_complex_links() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
     assert!(result.links.len() >= 10);
@@ -317,7 +332,10 @@ async fn test_scrape_download_assets() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
     assert!(result.assets.len() >= 3);
@@ -342,7 +360,10 @@ async fn test_scrape_dublin_core() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
     assert!(result.metadata.dc_title.is_some());
@@ -375,7 +396,10 @@ async fn test_scrape_empty_page() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
     assert!(result.links.len() >= 0);
@@ -401,7 +425,10 @@ async fn test_scrape_feed_discovery() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
     assert_eq!(
@@ -449,7 +476,10 @@ async fn test_scrape_image_sources() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
     assert!(result.images.len() >= 5);
@@ -478,7 +508,10 @@ async fn test_scrape_js_heavy_spa() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(!result.html.is_empty());
 }
@@ -502,7 +535,10 @@ async fn test_scrape_json_ld() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
     assert!(!result.json_ld.is_empty());
@@ -534,7 +570,10 @@ async fn test_scrape_malformed_html() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
     assert!(!result.html.is_empty());
@@ -567,7 +606,10 @@ async fn test_scrape_og_metadata() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
     assert_eq!(
@@ -603,7 +645,10 @@ async fn test_scrape_twitter_card() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
     assert!(result.metadata.twitter_card.is_some());

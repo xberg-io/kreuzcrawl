@@ -8,7 +8,7 @@
 use std::sync::Arc;
 use std::time::Duration;
 
-use kreuzcrawl::{BrowserMode, BrowserPool, BrowserPoolConfig, CrawlConfig};
+use kreuzcrawl::{BrowserMode, BrowserPool, BrowserPoolConfig, CrawlConfig, CrawlEngine};
 
 const TEST_PAGE: &str = "data:text/html,<html><head><title>Test Page</title></head><body><h1>Hello</h1><p>Test content for pool integration tests.</p></body></html>";
 
@@ -22,8 +22,11 @@ fn pool_config() -> BrowserPoolConfig {
 
 fn scrape_config(pool: &Arc<BrowserPool>) -> CrawlConfig {
     CrawlConfig {
-        browser_mode: BrowserMode::Always,
-        browser_timeout: Duration::from_secs(10),
+        browser: kreuzcrawl::BrowserConfig {
+            mode: BrowserMode::Always,
+            timeout: Duration::from_secs(10),
+            ..Default::default()
+        },
         browser_pool: Some(Arc::clone(pool)),
         respect_robots_txt: false,
         ..Default::default()
@@ -155,9 +158,8 @@ async fn test_pool_with_scrape_api() {
     pool.warm().await.expect("warm");
 
     let config = scrape_config(&pool);
-    let result = kreuzcrawl::scrape(TEST_PAGE, &config)
-        .await
-        .expect("scrape");
+    let engine = CrawlEngine::builder().config(config).build();
+    let result = engine.scrape(TEST_PAGE).await.expect("scrape");
 
     assert!(result.browser_used, "browser should be used");
     assert_eq!(result.metadata.title.as_deref(), Some("Test Page"));
@@ -172,16 +174,13 @@ async fn test_pool_with_scrape_sequential_reuse() {
     pool.warm().await.expect("warm");
 
     let config = scrape_config(&pool);
+    let engine = CrawlEngine::builder().config(config).build();
 
     // Two sequential scrapes — both should reuse the same Chrome.
-    let r1 = kreuzcrawl::scrape(TEST_PAGE, &config)
-        .await
-        .expect("scrape 1");
+    let r1 = engine.scrape(TEST_PAGE).await.expect("scrape 1");
     assert!(r1.browser_used);
 
-    let r2 = kreuzcrawl::scrape(TEST_PAGE, &config)
-        .await
-        .expect("scrape 2");
+    let r2 = engine.scrape(TEST_PAGE).await.expect("scrape 2");
     assert!(r2.browser_used);
 
     assert!(

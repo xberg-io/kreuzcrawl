@@ -14,7 +14,10 @@ async fn test_content_204_no_content() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 204);
     assert!(result.html.is_empty());
@@ -40,7 +43,10 @@ async fn test_content_charset_iso8859() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.detected_charset.as_deref(), Some("iso-8859-1"));
 }
@@ -65,7 +71,10 @@ async fn test_content_empty_body() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
 }
@@ -90,7 +99,10 @@ async fn test_content_gzip_compressed() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
     assert!(!result.html.is_empty());
@@ -117,7 +129,10 @@ async fn test_content_large_page_limit() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.body_size <= 1024);
 }
@@ -143,7 +158,10 @@ async fn test_content_main_only() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.main_content_only, true);
 }
@@ -168,7 +186,10 @@ async fn test_content_pdf_no_extension() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.is_pdf, true);
 }
@@ -190,15 +211,14 @@ async fn test_content_remove_tags() {
 
     let config = kreuzcrawl::CrawlConfig {
         respect_robots_txt: false,
-        remove_tags: Some(vec![
-            "nav".to_owned(),
-            "aside".to_owned(),
-            "footer".to_owned(),
-        ]),
+        remove_tags: vec!["nav".to_owned(), "aside".to_owned(), "footer".to_owned()],
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(!result.html.is_empty());
 }
@@ -223,7 +243,10 @@ async fn test_content_utf8_bom() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(!result.html.is_empty());
     assert_eq!(result.detected_charset.as_deref(), Some("utf-8"));

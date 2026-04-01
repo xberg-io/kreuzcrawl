@@ -1,0 +1,28 @@
+{
+  "id": "engine_scrape_basic",
+  "description": "CrawlEngine with defaults scrapes a page identically to the free function",
+  "tags": ["engine", "scrape"],
+  "mock_response": {
+    "status_code": 200,
+    "headers": { "content-type": "text/html; charset=utf-8" },
+    "body_inline": "<html><head><title>Engine Test</title><meta name=\"description\" content=\"Testing the engine\"></head><body><h1>Hello Engine</h1><a href=\"/page2\">Link</a></body></html>"
+  },
+  "config": {
+    "engine_mode": true
+  },
+  "assertions": {
+    "status_code": 200,
+    "content_type": "text/html",
+    "metadata": {
+      "title": "Engine Test",
+      "description_contains": "Testing the engine"
+    },
+    "links": {
+      "min_count": 1
+    },
+    "headings": {
+      "h1_count": 1,
+      "h1_text": "Hello Engine"
+    }
+  }
+}

@@ -19,11 +19,17 @@ async fn test_browser_config_auto_no_feature() {
     .await;
 
     let config = kreuzcrawl::CrawlConfig {
-        browser_mode: kreuzcrawl::BrowserMode::Auto,
+        browser: kreuzcrawl::BrowserConfig {
+            mode: kreuzcrawl::BrowserMode::Auto,
+            ..Default::default()
+        },
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
     assert!(result.js_render_hint);
@@ -46,11 +52,17 @@ async fn test_browser_config_never_mode() {
     .await;
 
     let config = kreuzcrawl::CrawlConfig {
-        browser_mode: kreuzcrawl::BrowserMode::Never,
+        browser: kreuzcrawl::BrowserConfig {
+            mode: kreuzcrawl::BrowserMode::Never,
+            ..Default::default()
+        },
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
     assert!(result.js_render_hint);
@@ -76,7 +88,10 @@ async fn test_browser_detect_minimal_page() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
     assert!(!result.js_render_hint);
@@ -102,7 +117,10 @@ async fn test_browser_detect_next_empty() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
     assert!(result.js_render_hint);
@@ -128,7 +146,10 @@ async fn test_browser_detect_next_rendered() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
     assert!(!result.html.is_empty());
@@ -155,7 +176,10 @@ async fn test_browser_detect_normal_page() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
     assert!(!result.js_render_hint);
@@ -181,7 +205,10 @@ async fn test_browser_detect_nuxt_shell() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
     assert!(result.js_render_hint);
@@ -207,7 +234,10 @@ async fn test_browser_detect_react_shell() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
     assert!(!result.html.is_empty());
@@ -234,7 +264,10 @@ async fn test_browser_detect_vue_shell() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
     assert!(result.js_render_hint);

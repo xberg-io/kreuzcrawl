@@ -20,14 +20,17 @@ async fn test_auth_basic_http() {
 
     let config = kreuzcrawl::CrawlConfig {
         respect_robots_txt: false,
-        auth_basic: Some(kreuzcrawl::BasicAuth {
+        auth: Some(kreuzcrawl::AuthConfig::Basic {
             username: "testuser".to_owned(),
             password: "testpass".to_owned(),
         }),
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.auth_header_sent);
     assert_eq!(result.status_code, 200);
@@ -50,11 +53,16 @@ async fn test_auth_bearer_token() {
 
     let config = kreuzcrawl::CrawlConfig {
         respect_robots_txt: false,
-        auth_bearer: Some("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test".to_owned()),
+        auth: Some(kreuzcrawl::AuthConfig::Bearer {
+            token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test".to_owned(),
+        }),
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.auth_header_sent);
     assert_eq!(result.status_code, 200);
@@ -77,14 +85,17 @@ async fn test_auth_custom_header() {
 
     let config = kreuzcrawl::CrawlConfig {
         respect_robots_txt: false,
-        auth_header: Some(kreuzcrawl::AuthHeader {
+        auth: Some(kreuzcrawl::AuthConfig::Header {
             name: "X-API-Key".to_owned(),
             value: "sk-test-key-12345".to_owned(),
         }),
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.auth_header_sent);
     assert_eq!(result.status_code, 200);

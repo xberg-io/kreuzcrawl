@@ -159,24 +159,22 @@ pub(crate) fn filter_map_result(
     config: &CrawlConfig,
 ) -> Result<MapResult, CrawlError> {
     // Apply exclude paths with pre-compiled regexes
-    if let Some(ref excludes) = config.exclude_paths {
-        let mut regexes = Vec::with_capacity(excludes.len());
-        for pat in excludes {
+    if !config.exclude_paths.is_empty() {
+        let mut regexes = Vec::with_capacity(config.exclude_paths.len());
+        for pat in &config.exclude_paths {
             let re = Regex::new(pat).map_err(|e| {
                 CrawlError::Other(format!("invalid exclude_paths regex pattern '{pat}': {e}"))
             })?;
             regexes.push(re);
         }
-        if !regexes.is_empty() {
-            urls.retain(|su| {
-                if let Ok(u) = Url::parse(&su.url) {
-                    let path = u.path();
-                    !regexes.iter().any(|re| re.is_match(path))
-                } else {
-                    true
-                }
-            });
-        }
+        urls.retain(|su| {
+            if let Ok(u) = Url::parse(&su.url) {
+                let path = u.path();
+                !regexes.iter().any(|re| re.is_match(path))
+            } else {
+                true
+            }
+        });
     }
 
     // Apply search filter

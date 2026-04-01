@@ -25,7 +25,10 @@ async fn test_error_401_unauthorized() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let err = result.expect_err("request should fail");
     assert!(err.to_string().contains("unauthorized"));
 }
@@ -49,7 +52,10 @@ async fn test_error_403_forbidden() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let err = result.expect_err("request should fail");
     assert!(err.to_string().contains("forbidden"));
 }
@@ -73,7 +79,10 @@ async fn test_error_404_page() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let err = result.expect_err("request should fail");
     assert!(err.to_string().contains("not_found"));
 }
@@ -97,7 +106,10 @@ async fn test_error_408_request_timeout() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let err = result.expect_err("request should fail");
     assert!(err.to_string().contains("timeout"));
 }
@@ -121,7 +133,10 @@ async fn test_error_410_gone() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let err = result.expect_err("request should fail");
     assert!(err.to_string().contains("gone"));
 }
@@ -145,7 +160,10 @@ async fn test_error_500_server() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let err = result.expect_err("request should fail");
     assert!(err.to_string().contains("server_error"));
 }
@@ -169,7 +187,10 @@ async fn test_error_502_bad_gateway() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let err = result.expect_err("request should fail");
     assert!(err.to_string().contains("bad_gateway"));
 }
@@ -185,7 +206,10 @@ async fn test_error_empty_response() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.html.is_empty());
 }
@@ -209,7 +233,10 @@ async fn test_error_rate_limited() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let err = result.expect_err("request should fail");
     assert!(err.to_string().contains("rate_limited"));
 }
@@ -231,12 +258,15 @@ async fn test_error_retry_503() {
 
     let config = kreuzcrawl::CrawlConfig {
         respect_robots_txt: false,
-        retry_count: Some(2),
-        retry_codes: Some(vec![503]),
+        retry_count: 2,
+        retry_codes: vec![503],
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let err = result.expect_err("request should fail");
     assert!(err.to_string().contains("server_error"));
 }
@@ -251,19 +281,22 @@ async fn test_error_retry_backoff() {
         "GET",
         "/",
         429,
-        &[("retry-after", "1"), ("content-type", "text/html")],
+        &[("content-type", "text/html"), ("retry-after", "1")],
         &body,
     )
     .await;
 
     let config = kreuzcrawl::CrawlConfig {
         respect_robots_txt: false,
-        retry_count: Some(3),
-        retry_codes: Some(vec![429]),
+        retry_count: 3,
+        retry_codes: vec![429],
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let err = result.expect_err("request should fail");
     assert!(err.to_string().contains("rate_limited"));
 }
@@ -290,7 +323,10 @@ async fn test_error_waf_false_403() {
         ..Default::default()
     };
 
-    let result = kreuzcrawl::scrape(&mock.uri(), &config).await;
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build();
+    let result = engine.scrape(&mock.uri()).await;
     let err = result.expect_err("request should fail");
     assert!(err.to_string().contains("forbidden"));
     assert!(err.to_string().contains("waf") || err.to_string().contains("blocked"));

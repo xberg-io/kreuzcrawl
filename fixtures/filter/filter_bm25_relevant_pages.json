@@ -1,0 +1,33 @@
+{
+  "id": "filter_bm25_relevant_pages",
+  "description": "BM25 filter keeps only pages relevant to the query",
+  "tags": ["filter", "bm25"],
+  "mock_responses": [
+    {
+      "path": "/",
+      "headers": {"content-type": "text/html"},
+      "body_inline": "<html><body><p>Welcome to our site about rust programming</p><a href=\"/rust\">Rust</a><a href=\"/cooking\">Cooking</a></body></html>"
+    },
+    {
+      "path": "/rust",
+      "headers": {"content-type": "text/html"},
+      "body_inline": "<html><body><p>Rust is a systems programming language focused on safety and performance. Rust provides memory safety without garbage collection. Rust programming is growing rapidly.</p></body></html>"
+    },
+    {
+      "path": "/cooking",
+      "headers": {"content-type": "text/html"},
+      "body_inline": "<html><body><p>Today we will make pasta with tomato sauce. Add garlic and onion to the pan. Season with salt and pepper.</p></body></html>"
+    }
+  ],
+  "config": {
+    "max_depth": 1,
+    "content_filter": "bm25",
+    "bm25_query": "rust programming language",
+    "bm25_threshold": 0.1
+  },
+  "assertions": {
+    "filter": {
+      "remaining_contain_keyword": "rust"
+    }
+  }
+}

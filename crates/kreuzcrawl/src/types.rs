@@ -5,24 +5,6 @@ use std::time::Duration;
 
 use serde::{Deserialize, Serialize};
 
-/// HTTP Basic authentication credentials.
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct BasicAuth {
-    /// The username.
-    pub username: String,
-    /// The password.
-    pub password: String,
-}
-
-/// A custom authentication header.
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct AuthHeader {
-    /// The header name.
-    pub name: String,
-    /// The header value.
-    pub value: String,
-}
-
 /// When to use the headless browser fallback.
 #[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
@@ -49,8 +31,85 @@ pub enum BrowserWait {
     Fixed,
 }
 
+mod duration_ms {
+    use serde::{Deserialize, Deserializer, Serialize, Serializer};
+    use std::time::Duration;
+
+    pub fn serialize<S: Serializer>(d: &Duration, s: S) -> Result<S::Ok, S::Error> {
+        d.as_millis().serialize(s)
+    }
+
+    pub fn deserialize<'de, D: Deserializer<'de>>(d: D) -> Result<Duration, D::Error> {
+        let ms = u64::deserialize(d)?;
+        Ok(Duration::from_millis(ms))
+    }
+}
+
+mod option_duration_ms {
+    use serde::{Deserialize, Deserializer, Serialize, Serializer};
+    use std::time::Duration;
+
+    pub fn serialize<S: Serializer>(d: &Option<Duration>, s: S) -> Result<S::Ok, S::Error> {
+        d.map(|d| d.as_millis() as u64).serialize(s)
+    }
+
+    pub fn deserialize<'de, D: Deserializer<'de>>(d: D) -> Result<Option<Duration>, D::Error> {
+        let ms: Option<u64> = Option::deserialize(d)?;
+        Ok(ms.map(Duration::from_millis))
+    }
+}
+
+/// Authentication configuration.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields, tag = "type")]
+pub enum AuthConfig {
+    /// HTTP Basic authentication.
+    #[serde(rename = "basic")]
+    Basic { username: String, password: String },
+    /// Bearer token authentication.
+    #[serde(rename = "bearer")]
+    Bearer { token: String },
+    /// Custom authentication header.
+    #[serde(rename = "header")]
+    Header { name: String, value: String },
+}
+
+/// Browser fallback configuration.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields, default)]
+pub struct BrowserConfig {
+    /// When to use the headless browser fallback.
+    pub mode: BrowserMode,
+    /// CDP WebSocket endpoint for connecting to an external browser instance.
+    pub endpoint: Option<String>,
+    /// Timeout for browser page load and rendering (in milliseconds when serialized).
+    #[serde(with = "duration_ms")]
+    pub timeout: Duration,
+    /// Wait strategy after browser navigation.
+    pub wait: BrowserWait,
+    /// CSS selector to wait for when `wait` is `Selector`.
+    pub wait_selector: Option<String>,
+    /// Extra time to wait after the wait condition is met.
+    #[serde(default, with = "option_duration_ms")]
+    pub extra_wait: Option<Duration>,
+}
+
+impl Default for BrowserConfig {
+    fn default() -> Self {
+        Self {
+            mode: BrowserMode::Auto,
+            endpoint: None,
+            timeout: Duration::from_secs(30),
+            wait: BrowserWait::default(),
+            wait_selector: None,
+            extra_wait: None,
+        }
+    }
+}
+
 /// Configuration for crawl, scrape, and map operations.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields, default)]
 pub struct CrawlConfig {
     /// Maximum crawl depth (number of link hops from the start URL).
     pub max_depth: Option<usize>,
@@ -67,57 +126,52 @@ pub struct CrawlConfig {
     /// Whether to allow subdomains when `stay_on_domain` is true.
     pub allow_subdomains: bool,
     /// Regex patterns for paths to include during crawling.
-    pub include_paths: Option<Vec<String>>,
+    #[serde(default)]
+    pub include_paths: Vec<String>,
     /// Regex patterns for paths to exclude during crawling.
-    pub exclude_paths: Option<Vec<String>>,
+    #[serde(default)]
+    pub exclude_paths: Vec<String>,
     /// Custom HTTP headers to send with each request.
-    pub custom_headers: Option<HashMap<String, String>>,
-    /// Timeout for individual HTTP requests.
+    #[serde(default)]
+    pub custom_headers: HashMap<String, String>,
+    /// Timeout for individual HTTP requests (in milliseconds when serialized).
+    #[serde(with = "duration_ms")]
     pub request_timeout: Duration,
     /// Maximum number of redirects to follow.
-    pub max_redirects: Option<usize>,
+    pub max_redirects: usize,
     /// Number of retry attempts for failed requests.
-    pub retry_count: Option<usize>,
+    pub retry_count: usize,
     /// HTTP status codes that should trigger a retry.
-    pub retry_codes: Option<Vec<u16>>,
+    #[serde(default)]
+    pub retry_codes: Vec<u16>,
     /// Whether to enable cookie handling.
     pub cookies_enabled: bool,
-    /// HTTP Basic authentication credentials.
-    pub auth_basic: Option<BasicAuth>,
-    /// Bearer token for authentication.
-    pub auth_bearer: Option<String>,
-    /// Custom authentication header.
-    pub auth_header: Option<AuthHeader>,
+    /// Authentication configuration.
+    pub auth: Option<AuthConfig>,
     /// Maximum response body size in bytes.
     pub max_body_size: Option<usize>,
     /// Whether to extract only the main content from HTML pages.
     pub main_content_only: bool,
     /// CSS selectors for tags to remove from HTML before processing.
-    pub remove_tags: Option<Vec<String>>,
+    #[serde(default)]
+    pub remove_tags: Vec<String>,
     /// Maximum number of URLs to return from a map operation.
     pub map_limit: Option<usize>,
     /// Search filter for map results (case-insensitive substring match on URLs).
     pub map_search: Option<String>,
     /// Whether to download assets (CSS, JS, images, etc.) from the page.
     pub download_assets: bool,
-    /// Filter for asset categories to download (if None, download all).
-    pub asset_types: Option<Vec<AssetCategory>>,
+    /// Filter for asset categories to download.
+    #[serde(default)]
+    pub asset_types: Vec<AssetCategory>,
     /// Maximum size in bytes for individual asset downloads.
     pub max_asset_size: Option<usize>,
-    /// When to use the headless browser fallback.
-    pub browser_mode: BrowserMode,
-    /// CDP WebSocket endpoint for connecting to an external browser instance.
-    pub browser_endpoint: Option<String>,
-    /// Timeout for browser page load and rendering.
-    pub browser_timeout: Duration,
-    /// Wait strategy after browser navigation.
-    pub browser_wait: BrowserWait,
-    /// CSS selector to wait for when `browser_wait` is `Selector`.
-    pub browser_wait_selector: Option<String>,
-    /// Extra time to wait after the wait condition is met.
-    pub browser_extra_wait: Option<Duration>,
-    /// Shared browser pool for reusing Chrome across requests.
+    /// Browser configuration.
+    #[serde(default)]
+    pub browser: BrowserConfig,
+    /// Shared browser pool for reusing Chrome across requests (not serializable).
     #[cfg(feature = "browser")]
+    #[serde(skip)]
     pub browser_pool: Option<std::sync::Arc<crate::browser_pool::BrowserPool>>,
 }
 
@@ -131,39 +185,74 @@ impl Default for CrawlConfig {
             user_agent: None,
             stay_on_domain: false,
             allow_subdomains: false,
-            include_paths: None,
-            exclude_paths: None,
-            custom_headers: None,
+            include_paths: Vec::new(),
+            exclude_paths: Vec::new(),
+            custom_headers: HashMap::new(),
             request_timeout: Duration::from_secs(30),
-            max_redirects: None,
-            retry_count: None,
-            retry_codes: None,
+            max_redirects: 10,
+            retry_count: 0,
+            retry_codes: Vec::new(),
             cookies_enabled: false,
-            auth_basic: None,
-            auth_bearer: None,
-            auth_header: None,
+            auth: None,
             max_body_size: None,
             main_content_only: false,
-            remove_tags: None,
+            remove_tags: Vec::new(),
             map_limit: None,
             map_search: None,
             download_assets: false,
-            asset_types: None,
+            asset_types: Vec::new(),
             max_asset_size: None,
-            browser_mode: BrowserMode::Auto,
-            browser_endpoint: None,
-            browser_timeout: Duration::from_secs(30),
-            browser_wait: BrowserWait::default(),
-            browser_wait_selector: None,
-            browser_extra_wait: None,
+            browser: BrowserConfig::default(),
             #[cfg(feature = "browser")]
             browser_pool: None,
         }
     }
 }
 
+impl CrawlConfig {
+    /// Validate the configuration, returning an error if any values are invalid.
+    pub fn validate(&self) -> Result<(), crate::error::CrawlError> {
+        use crate::error::CrawlError;
+
+        if let Some(max_pages) = self.max_pages
+            && max_pages == 0
+        {
+            return Err(CrawlError::InvalidConfig("max_pages must be > 0".into()));
+        }
+        if self.max_redirects > 100 {
+            return Err(CrawlError::InvalidConfig(
+                "max_redirects must be <= 100".into(),
+            ));
+        }
+        for pattern in &self.include_paths {
+            regex::Regex::new(pattern).map_err(|e| {
+                CrawlError::InvalidConfig(format!("invalid include_path regex '{pattern}': {e}"))
+            })?;
+        }
+        for pattern in &self.exclude_paths {
+            regex::Regex::new(pattern).map_err(|e| {
+                CrawlError::InvalidConfig(format!("invalid exclude_path regex '{pattern}': {e}"))
+            })?;
+        }
+        for &code in &self.retry_codes {
+            if !(100..=599).contains(&code) {
+                return Err(CrawlError::InvalidConfig(format!(
+                    "invalid retry code: {code}"
+                )));
+            }
+        }
+        if self.request_timeout.is_zero() {
+            return Err(CrawlError::InvalidConfig(
+                "request_timeout must be > 0".into(),
+            ));
+        }
+        Ok(())
+    }
+}
+
 /// Article metadata extracted from `article:*` Open Graph tags.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct ArticleMetadata {
     /// The article publication time.
     pub published_time: Option<String>,
@@ -179,6 +268,7 @@ pub struct ArticleMetadata {
 
 /// An hreflang alternate link entry.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct HreflangEntry {
     /// The language code (e.g., "en", "fr", "x-default").
     pub lang: String,
@@ -188,6 +278,7 @@ pub struct HreflangEntry {
 
 /// Information about a favicon or icon link.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct FaviconInfo {
     /// The icon URL.
     pub url: String,
@@ -201,6 +292,7 @@ pub struct FaviconInfo {
 
 /// A heading element extracted from the page.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct HeadingInfo {
     /// The heading level (1-6).
     pub level: u8,
@@ -210,6 +302,7 @@ pub struct HeadingInfo {
 
 /// Response metadata extracted from HTTP headers.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct ResponseMeta {
     /// The ETag header value.
     pub etag: Option<String>,
@@ -256,6 +349,7 @@ pub enum AssetCategory {
 
 /// Information about a downloaded asset.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct DownloadedAsset {
     /// The original URL of the asset.
     pub url: String,
@@ -273,6 +367,7 @@ pub struct DownloadedAsset {
 
 /// Metadata extracted from an HTML page's `<meta>` tags and `<title>` element.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct PageMetadata {
     /// The page title from the `<title>` element.
     pub title: Option<String>,
@@ -390,6 +485,7 @@ impl std::fmt::Display for LinkType {
 
 /// Information about a link found on a page.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct LinkInfo {
     /// The resolved URL of the link.
     pub url: String,
@@ -433,6 +529,7 @@ impl std::fmt::Display for ImageSource {
 
 /// Information about an image found on a page.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct ImageInfo {
     /// The image URL.
     pub url: String,
@@ -460,6 +557,7 @@ pub enum FeedType {
 
 /// Information about a feed link found on a page.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct FeedInfo {
     /// The feed URL.
     pub url: String,
@@ -471,6 +569,7 @@ pub struct FeedInfo {
 
 /// A JSON-LD structured data entry found on a page.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct JsonLdEntry {
     /// The `@type` value from the JSON-LD object.
     pub schema_type: String,
@@ -482,6 +581,7 @@ pub struct JsonLdEntry {
 
 /// Information about an HTTP cookie received from a response.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct CookieInfo {
     /// The cookie name.
     pub name: String,
@@ -495,6 +595,7 @@ pub struct CookieInfo {
 
 /// The result of a single-page scrape operation.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct ScrapeResult {
     /// The HTTP status code of the response.
     pub status_code: u16,
@@ -546,6 +647,7 @@ pub struct ScrapeResult {
 
 /// The result of crawling a single page during a crawl operation.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct CrawlPageResult {
     /// The original URL of the page.
     pub url: String,
@@ -602,6 +704,7 @@ pub enum CrawlEvent {
 
 /// The result of a multi-page crawl operation.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct CrawlResult {
     /// The list of crawled pages.
     pub pages: Vec<CrawlPageResult>,
@@ -653,6 +756,7 @@ impl CrawlResult {
 
 /// A URL entry from a sitemap.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct SitemapUrl {
     /// The URL.
     pub url: String,
@@ -664,15 +768,9 @@ pub struct SitemapUrl {
     pub priority: Option<String>,
 }
 
-impl std::ops::Deref for SitemapUrl {
-    type Target = str;
-    fn deref(&self) -> &str {
-        &self.url
-    }
-}
-
 /// The result of a map operation, containing discovered URLs.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MapResult {
     /// The list of discovered URLs.
     pub urls: Vec<SitemapUrl>,
