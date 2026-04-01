@@ -112,3 +112,53 @@ where
         })
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::defaults::NoopCache;
+    use tower::Service;
+
+    #[derive(Clone)]
+    struct CountingService(std::sync::Arc<std::sync::atomic::AtomicUsize>);
+    impl Service<CrawlRequest> for CountingService {
+        type Response = CrawlResponse;
+        type Error = CrawlError;
+        type Future = std::pin::Pin<
+            Box<dyn std::future::Future<Output = Result<CrawlResponse, CrawlError>> + Send>,
+        >;
+        fn poll_ready(
+            &mut self,
+            _: &mut std::task::Context<'_>,
+        ) -> std::task::Poll<Result<(), Self::Error>> {
+            std::task::Poll::Ready(Ok(()))
+        }
+        fn call(&mut self, _req: CrawlRequest) -> Self::Future {
+            self.0.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+            Box::pin(async {
+                Ok(CrawlResponse {
+                    status: 200,
+                    content_type: "text/html".into(),
+                    body: "ok".into(),
+                    body_bytes: vec![],
+                    headers: HashMap::new(),
+                })
+            })
+        }
+    }
+
+    #[tokio::test]
+    async fn test_noop_cache_always_forwards() {
+        let layer = CrawlCacheLayer::new(std::sync::Arc::new(NoopCache));
+        let counter = std::sync::Arc::new(std::sync::atomic::AtomicUsize::new(0));
+        let mut svc = layer.layer(CountingService(counter.clone()));
+
+        svc.call(CrawlRequest::new("http://a.com")).await.unwrap();
+        svc.call(CrawlRequest::new("http://a.com")).await.unwrap();
+        assert_eq!(
+            counter.load(std::sync::atomic::Ordering::Relaxed),
+            2,
+            "noop cache should forward all requests"
+        );
+    }
+}

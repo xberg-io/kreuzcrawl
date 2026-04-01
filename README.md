@@ -89,11 +89,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ### Network & Caching
 
-- **Per-domain rate limiting** — PerDomainThrottle with configurable delays
+- **Per-domain rate limiting** — PerDomainRateLimitLayer with configurable delays
 - **Proxy support** — HTTP, HTTPS, SOCKS5
-- **Proxy rotation** — Middleware-based rotation
-- **User-Agent rotation** — Pluggable UA strategies
-- **HTTP caching** — ETag/Last-Modified conditional requests (CachingMiddleware)
+- **Proxy rotation** — Removed for security (credentials leaked as HTTP headers)
+- **User-Agent rotation** — UaRotationLayer for UA header diversity
+- **HTTP caching** — ETag/Last-Modified conditional requests (CrawlCacheLayer)
 - **Disk cache** — blake3-hashed storage with TTL and automatic eviction
 
 ### Content Filtering & Relevance
@@ -115,12 +115,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ### Extensibility
 
-**8 pluggable traits** for deep customization:
+**7 pluggable traits** for deep customization:
 
 - `Frontier` — Custom URL queue implementations
 - `RateLimiter` — Custom rate limiting strategies
 - `CrawlStore` — Custom storage backends
-- `CrawlMiddleware` — Request/response interceptors
 - `EventEmitter` — Custom event handling
 - `CrawlStrategy` — Custom traversal algorithms
 - `ContentFilter` — Custom content evaluation
@@ -156,14 +155,14 @@ kreuzcrawl map https://example.com --respect-robots-txt
 | **Metadata fields** | ✅ 40+ (OG, Twitter, DC, JSON-LD) | ✅ Basic | ✅ Basic | ✅ Basic |
 | **WAF detection** | ✅ 8 vendors | ✅ 20+ vendors | Cloud only | ✅ 3-tier |
 | **Proxy support** | ✅ HTTP/HTTPS/SOCKS5 | ✅ | ✅ | ✅ |
-| **Proxy rotation** | ✅ Middleware | ✅ ClientRotator | Cloud only | ✅ |
-| **User-Agent rotation** | ✅ Middleware | ✅ | — | ✅ |
+| **Proxy rotation** | ❌ Removed (security) | ✅ ClientRotator | Cloud only | ✅ |
+| **User-Agent rotation** | ✅ Tower layer | ✅ | — | ✅ |
 | **Browser fallback** | ✅ chromiumoxide | ✅ chromey | ✅ Engines | ✅ Playwright |
 | **Disk cache** | ✅ blake3 + TTL | ✅ SQLite | — | ✅ SQLite |
 | **Rate limiting** | ✅ Per-domain | ✅ | Backend managed | ✅ |
 | **robots.txt** | ✅ RFC 9309 | ✅ Partial | ✅ Partial | ✅ Basic |
 | **Config validation** | ✅ serde strict | — | — | — |
-| **Pluggable traits** | ✅ 8 traits | — | — | ✅ Partial |
+| **Pluggable traits** | ✅ 7 traits | — | — | ✅ Partial |
 | **CLI tools** | ✅ scrape/crawl/map | ✅ | — | ✅ |
 | **Batch crawling** | ✅ `batch_crawl()` | — | ✅ API | — |
 | **Streaming events** | ✅ Real-time | ✅ | ✅ Polling | ✅ |
@@ -190,7 +189,9 @@ kreuzcrawl uses a **trait-based engine** with pluggable components:
 7. **ContentFilter** — Relevance evaluation (BM25 scoring, adaptive saturation)
 8. **CrawlCache** — Response caching (CachingMiddleware, DiskCache)
 
-### Data Flow
+### Tower Service Stack
+
+The crawl request/response flow uses the **Tower** service abstraction with composable layers:
 
 ```
 CrawlEngine::crawl()
@@ -199,11 +200,15 @@ CrawlStrategy (BFS/DFS/BestFirst/Adaptive)
     ↓
 Frontier (URL queue)
     ↓
-RateLimiter (throttle per domain)
+CrawlTracingLayer (feature-gated, OpenTelemetry)
     ↓
-CrawlMiddleware (proxy, UA, cache)
+UaRotationLayer (rotate User-Agent headers)
     ↓
-HTTP fetch (reqwest + retry)
+CrawlCacheLayer (check cache, store responses)
+    ↓
+PerDomainRateLimitLayer (acquire permits, record responses)
+    ↓
+HttpFetchService (innermost, wraps reqwest + retry)
     ↓
 HTML extraction (40+ fields, links, markdown)
     ↓
@@ -213,6 +218,13 @@ CrawlStore (accumulate results)
     ↓
 EventEmitter (stream events)
 ```
+
+**Tower Layers** (from outermost to innermost):
+- `CrawlTracingLayer` — OpenTelemetry span/event recording (optional)
+- `UaRotationLayer` — Rotates User-Agent headers across requests
+- `CrawlCacheLayer` — Cache hits return stored responses; misses forward to inner service
+- `PerDomainRateLimitLayer` — Rate-limit enforcement per domain
+- `HttpFetchService` — Core HTTP fetching with reqwest + retry logic
 
 ## Configuration
 

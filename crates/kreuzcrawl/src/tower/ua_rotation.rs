@@ -67,3 +67,62 @@ where
         self.inner.call(req)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use tower::Service;
+
+    // Simple mock service
+    #[derive(Clone)]
+    struct EchoService;
+    impl Service<CrawlRequest> for EchoService {
+        type Response = CrawlResponse;
+        type Error = CrawlError;
+        type Future = std::pin::Pin<
+            Box<dyn std::future::Future<Output = Result<CrawlResponse, CrawlError>> + Send>,
+        >;
+        fn poll_ready(
+            &mut self,
+            _: &mut std::task::Context<'_>,
+        ) -> std::task::Poll<Result<(), Self::Error>> {
+            std::task::Poll::Ready(Ok(()))
+        }
+        fn call(&mut self, req: CrawlRequest) -> Self::Future {
+            let ua = req.headers.get("user-agent").cloned().unwrap_or_default();
+            Box::pin(async move {
+                Ok(CrawlResponse {
+                    status: 200,
+                    content_type: "text/html".into(),
+                    body: ua,
+                    body_bytes: vec![],
+                    headers: std::collections::HashMap::new(),
+                })
+            })
+        }
+    }
+
+    #[tokio::test]
+    async fn test_ua_rotation_injects_header() {
+        let layer = UaRotationLayer::new(vec!["Bot/1.0".into(), "Bot/2.0".into()]);
+        let mut svc = layer.layer(EchoService);
+
+        let resp1 = svc.call(CrawlRequest::new("http://a.com")).await.unwrap();
+        assert_eq!(resp1.body, "Bot/1.0");
+
+        let resp2 = svc.call(CrawlRequest::new("http://b.com")).await.unwrap();
+        assert_eq!(resp2.body, "Bot/2.0");
+
+        // Wraps around
+        let resp3 = svc.call(CrawlRequest::new("http://c.com")).await.unwrap();
+        assert_eq!(resp3.body, "Bot/1.0");
+    }
+
+    #[tokio::test]
+    async fn test_empty_ua_list_passes_through() {
+        let layer = UaRotationLayer::new(vec![]);
+        let mut svc = layer.layer(EchoService);
+        let resp = svc.call(CrawlRequest::new("http://a.com")).await.unwrap();
+        assert_eq!(resp.body, ""); // No UA injected
+    }
+}
