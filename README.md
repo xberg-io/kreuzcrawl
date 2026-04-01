@@ -220,20 +220,34 @@ EventEmitter (stream events)
 
 ```rust
 pub struct CrawlConfig {
-    pub max_depth: Option<usize>,              // Max traversal depth
-    pub max_pages: Option<usize>,              // Max pages to fetch
-    pub timeout: Duration,                     // Per-request timeout
-    pub follow_redirects: bool,                // HTTP 3xx handling
-    pub respect_robots_txt: bool,              // RFC 9309 enforcement
-    pub allowed_domains: Option<Vec<String>>,  // Domain whitelist
-    pub exclude_patterns: Option<Vec<String>>, // URL regex filters
-    pub headers: Option<HashMap<String, String>>, // Custom headers
-    pub cookies: Option<HashMap<String, String>>, // Persistent cookies
-    pub proxy: Option<String>,                 // HTTP proxy URL
-    pub auth: Option<Auth>,                    // Basic/Bearer auth
-    pub user_agent: Option<String>,            // Custom UA
-    pub cache_dir: Option<PathBuf>,            // Disk cache location
-    pub cache_ttl: Duration,                   // Cache expiration
+    pub max_depth: Option<usize>,
+    pub max_pages: Option<usize>,
+    pub max_concurrent: Option<usize>,
+    pub respect_robots_txt: bool,
+    pub user_agent: Option<String>,
+    pub stay_on_domain: bool,
+    pub allow_subdomains: bool,
+    pub include_paths: Vec<String>,
+    pub exclude_paths: Vec<String>,
+    pub custom_headers: HashMap<String, String>,
+    pub request_timeout: Duration,
+    pub max_redirects: usize,
+    pub retry_count: usize,
+    pub retry_codes: Vec<u16>,
+    pub cookies_enabled: bool,
+    pub auth: Option<AuthConfig>,
+    pub max_body_size: Option<usize>,
+    pub main_content_only: bool,
+    pub remove_tags: Vec<String>,
+    pub map_limit: Option<usize>,
+    pub map_search: Option<String>,
+    pub download_assets: bool,
+    pub asset_types: Vec<AssetCategory>,
+    pub max_asset_size: Option<usize>,
+    pub browser: BrowserConfig,
+    pub proxy: Option<ProxyConfig>,
+    pub user_agents: Vec<String>,
+    pub capture_screenshot: bool,
 }
 ```
 

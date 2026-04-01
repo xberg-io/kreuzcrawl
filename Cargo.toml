@@ -34,6 +34,7 @@ liter-llm = { path = "../liter-llm/crates/liter-llm", features = [
   "native-http",
 ] }
 blake3 = "1"
+minijinja = "2"
 tempfile = "3"
 url = "2"
 walkdir = "2.5"

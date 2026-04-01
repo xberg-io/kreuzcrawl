@@ -11,12 +11,41 @@ mod inner {
     use crate::traits::ContentFilter;
     use crate::types::{CrawlPageResult, ExtractionMeta};
 
+    const DEFAULT_EXTRACTION_TEMPLATE: &str = r#"Extract structured data from the following content.
+{% if instruction %}
+{{ instruction }}
+{% endif %}
+{% if schema %}
+Output must conform to this JSON schema:
+```json
+{{ schema }}
+```
+{% endif %}
+
+Content:
+{{ content }}"#;
+
+    const MAX_CONTENT_CHARS: usize = 100_000;
+
+    /// Truncate a string to at most `max_bytes` bytes on a valid char boundary.
+    fn truncate_to_char_boundary(s: &str, max_bytes: usize) -> &str {
+        if s.len() <= max_bytes {
+            return s;
+        }
+        let mut end = max_bytes;
+        while end > 0 && !s.is_char_boundary(end) {
+            end -= 1;
+        }
+        &s[..end]
+    }
+
     /// Extracts structured data from crawled pages using an LLM.
     pub struct LlmExtractor {
         client: liter_llm::DefaultClient,
         model: String,
         schema: Option<Value>,
         instruction: Option<String>,
+        prompt_template: Option<String>,
     }
 
     impl LlmExtractor {
@@ -26,11 +55,13 @@ mod inner {
         /// - `model`: Model identifier (e.g. `"openai/gpt-4o-mini"`, `"anthropic/claude-sonnet-4-20250514"`)
         /// - `schema`: Optional JSON schema for structured extraction
         /// - `instruction`: Optional extraction instruction
+        /// - `prompt_template`: Optional custom Jinja2 template for the prompt
         pub fn new(
             api_key: &str,
             model: &str,
             schema: Option<Value>,
             instruction: Option<String>,
+            prompt_template: Option<String>,
         ) -> Result<Self, CrawlError> {
             let config = liter_llm::ClientConfig::new(api_key);
             let client = liter_llm::DefaultClient::new(config, Some(model))
@@ -40,6 +71,7 @@ mod inner {
                 model: model.to_owned(),
                 schema,
                 instruction,
+                prompt_template,
             })
         }
     }
@@ -59,19 +91,28 @@ mod inner {
                 .map(|m| m.content.as_str())
                 .unwrap_or(&page.html);
 
-            // Build prompt.
-            let mut prompt = String::new();
-            if let Some(ref instruction) = self.instruction {
-                prompt.push_str(instruction);
-                prompt.push_str("\n\n");
-            }
-            if let Some(ref schema) = self.schema {
-                prompt.push_str("Extract data matching this JSON schema:\n");
-                prompt.push_str(&serde_json::to_string_pretty(schema).unwrap_or_default());
-                prompt.push_str("\n\n");
-            }
-            prompt.push_str("Content:\n");
-            prompt.push_str(content);
+            // Truncate content to avoid exceeding LLM context windows.
+            let content = truncate_to_char_boundary(content, MAX_CONTENT_CHARS);
+
+            // Build prompt via template.
+            let mut env = minijinja::Environment::new();
+            let template_str = self
+                .prompt_template
+                .as_deref()
+                .unwrap_or(DEFAULT_EXTRACTION_TEMPLATE);
+            env.add_template("prompt", template_str)
+                .map_err(|e| CrawlError::Other(format!("template error: {e}")))?;
+            let tmpl = env.get_template("prompt").unwrap();
+
+            let rendered = tmpl
+                .render(minijinja::context! {
+                    content => content,
+                    schema => self.schema.as_ref().map(|s| serde_json::to_string_pretty(s).unwrap_or_default()),
+                    instruction => self.instruction.as_deref(),
+                    url => &page.url,
+                    title => page.metadata.title.as_deref(),
+                })
+                .map_err(|e| CrawlError::Other(format!("template render error: {e}")))?;
 
             // Build request.
             let mut request = liter_llm::ChatCompletionRequest::default();
@@ -82,7 +123,7 @@ mod inner {
                     name: None,
                 }),
                 liter_llm::Message::User(liter_llm::UserMessage {
-                    content: liter_llm::UserContent::Text(prompt),
+                    content: liter_llm::UserContent::Text(rendered),
                     name: None,
                 }),
             ];

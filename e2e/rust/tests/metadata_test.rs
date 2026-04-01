@@ -323,12 +323,12 @@ async fn test_metadata_response_headers() {
         "/",
         200,
         &[
-            ("x-powered-by", "kreuzcrawl"),
             ("etag", "\"abc123\""),
-            ("last-modified", "Wed, 01 Jan 2025 00:00:00 GMT"),
-            ("content-type", "text/html; charset=utf-8"),
             ("server", "nginx/1.24"),
+            ("last-modified", "Wed, 01 Jan 2025 00:00:00 GMT"),
             ("content-language", "en-US"),
+            ("content-type", "text/html; charset=utf-8"),
+            ("x-powered-by", "kreuzcrawl"),
         ],
         &body,
     )

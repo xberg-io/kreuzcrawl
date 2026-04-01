@@ -258,7 +258,7 @@ async fn test_error_rate_limited() {
         "GET",
         "/",
         429,
-        &[("content-type", "text/html"), ("retry-after", "60")],
+        &[("retry-after", "60"), ("content-type", "text/html")],
         &body,
     )
     .await;

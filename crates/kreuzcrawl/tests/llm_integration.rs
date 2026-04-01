@@ -43,6 +43,7 @@ async fn test_llm_extractor_builds_successfully() {
             "additionalProperties": false
         })),
         Some("Extract the page title.".to_owned()),
+        None,
     );
     assert!(
         extractor.is_ok(),
@@ -71,6 +72,7 @@ async fn test_llm_extractor_with_engine() {
             "additionalProperties": false
         })),
         Some("Extract the title and a one-sentence summary.".to_owned()),
+        None,
     )
     .unwrap();
 

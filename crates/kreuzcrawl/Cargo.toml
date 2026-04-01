@@ -10,7 +10,7 @@ description = "A Rust crawling engine for turning websites into structured data"
 [features]
 default = []
 browser = ["dep:chromiumoxide"]
-ai = ["dep:liter-llm"]
+ai = ["dep:liter-llm", "dep:minijinja"]
 
 [dependencies]
 ahash = { workspace = true }
@@ -19,6 +19,7 @@ chromiumoxide = { workspace = true, optional = true }
 flate2 = { workspace = true }
 html-to-markdown-rs = { workspace = true }
 liter-llm = { workspace = true, optional = true }
+minijinja = { workspace = true, optional = true }
 quick-xml = { workspace = true }
 regex = { workspace = true }
 reqwest = { workspace = true }
@@ -34,3 +35,5 @@ url = { workspace = true }
 
 [dev-dependencies]
 tempfile = { workspace = true }
+tokio = { workspace = true }
+wiremock = "0.6"
