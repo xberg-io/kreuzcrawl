@@ -25,7 +25,8 @@ async fn test_links_anchor_fragment() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.links.iter().any(|l| l.link_type == LinkType::Anchor));
@@ -52,7 +53,8 @@ async fn test_links_base_tag() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.links.len() >= 3);
@@ -80,7 +82,8 @@ async fn test_links_document_types() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(
@@ -112,7 +115,8 @@ async fn test_links_empty_href() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.links.len() >= 1);
@@ -140,7 +144,8 @@ async fn test_links_internal_external_classification() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.links.len() >= 5);
@@ -179,7 +184,8 @@ async fn test_links_mailto_javascript_skip() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.links.len() >= 1);
@@ -207,7 +213,8 @@ async fn test_links_protocol_relative() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.links.len() >= 2);
@@ -235,7 +242,8 @@ async fn test_links_rel_attributes() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.links.len() >= 1);
@@ -262,7 +270,8 @@ async fn test_links_relative_parent() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.links.len() >= 4);

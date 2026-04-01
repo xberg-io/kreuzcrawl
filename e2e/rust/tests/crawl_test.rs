@@ -46,7 +46,8 @@ async fn test_content_binary_skip() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.was_skipped);
@@ -96,7 +97,8 @@ async fn test_content_pdf_link_skip() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.was_skipped);
@@ -166,7 +168,8 @@ async fn test_crawl_concurrent_depth() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.pages.len(), 3);
@@ -237,7 +240,8 @@ async fn test_crawl_concurrent_limit() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.pages.len(), 5);
@@ -318,7 +322,8 @@ async fn test_crawl_concurrent_max_pages() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.pages.len() <= 3);
@@ -353,8 +358,8 @@ async fn test_crawl_custom_headers() {
         max_depth: Some(1),
         respect_robots_txt: false,
         custom_headers: vec![
-            ("Accept-Language".to_owned(), "en-US".to_owned()),
             ("X-Custom-Header".to_owned(), "test-value".to_owned()),
+            ("Accept-Language".to_owned(), "en-US".to_owned()),
         ]
         .into_iter()
         .collect(),
@@ -363,7 +368,8 @@ async fn test_crawl_custom_headers() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.pages.len(), 2);
@@ -414,7 +420,8 @@ async fn test_crawl_depth_one() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.pages.len(), 3);
@@ -474,7 +481,8 @@ async fn test_crawl_depth_priority() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.pages.len(), 4);
@@ -523,7 +531,8 @@ async fn test_crawl_depth_two() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.pages.len(), 3);
@@ -565,7 +574,8 @@ async fn test_crawl_double_slash_normalization() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.unique_normalized_urls(), 2);
@@ -615,7 +625,8 @@ async fn test_crawl_exclude_path_pattern() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.pages.len(), 2);
@@ -654,7 +665,8 @@ async fn test_crawl_fragment_stripping() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.unique_normalized_urls(), 2);
@@ -704,10 +716,51 @@ async fn test_crawl_include_path_pattern() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.pages.len(), 2);
+}
+
+#[tokio::test]
+async fn test_crawl_max_depth_zero() {
+    // max_depth=0 crawls only the seed page with no link following
+    let mock = helpers::setup_mock_server().await;
+    let body_0 = "<html><body><a href=\"/page1\">Link</a></body></html>".to_owned();
+    helpers::register_mock(
+        &mock,
+        "GET",
+        "/",
+        200,
+        &[("content-type", "text/html")],
+        &body_0,
+    )
+    .await;
+    let body_1 = "<html><body><h1>Should not be crawled</h1></body></html>".to_owned();
+    helpers::register_mock(
+        &mock,
+        "GET",
+        "/page1",
+        200,
+        &[("content-type", "text/html")],
+        &body_1,
+    )
+    .await;
+
+    let config = kreuzcrawl::CrawlConfig {
+        max_depth: Some(0),
+        ..Default::default()
+    };
+
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build()
+        .unwrap();
+    let result = engine.crawl(&mock.uri()).await;
+    let result = result.expect("request should succeed");
+    assert_eq!(result.pages.len(), 1);
+    assert!(result.pages.len() <= 1);
 }
 
 #[tokio::test]
@@ -783,7 +836,8 @@ async fn test_crawl_max_pages() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.pages.len() <= 3);
@@ -822,10 +876,40 @@ async fn test_crawl_query_param_dedup() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.unique_normalized_urls(), 2);
+}
+
+#[tokio::test]
+async fn test_crawl_single_page_no_links() {
+    // Crawling a page with no links returns only the seed page
+    let mock = helpers::setup_mock_server().await;
+    let body_0 = "<html><body><p>No links here</p></body></html>".to_owned();
+    helpers::register_mock(
+        &mock,
+        "GET",
+        "/",
+        200,
+        &[("content-type", "text/html")],
+        &body_0,
+    )
+    .await;
+
+    let config = kreuzcrawl::CrawlConfig {
+        max_depth: Some(2),
+        ..Default::default()
+    };
+
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .build()
+        .unwrap();
+    let result = engine.crawl(&mock.uri()).await;
+    let result = result.expect("request should succeed");
+    assert_eq!(result.pages.len(), 1);
 }
 
 #[tokio::test]
@@ -862,7 +946,8 @@ async fn test_crawl_stay_on_domain() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.pages.len(), 2);
@@ -904,7 +989,8 @@ async fn test_crawl_subdomain_exclusion() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.pages.len(), 2);
@@ -945,7 +1031,8 @@ async fn test_crawl_subdomain_inclusion() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.pages.len() >= 2);
@@ -996,7 +1083,8 @@ async fn test_crawl_trailing_slash_dedup() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.unique_normalized_urls(), 2);
@@ -1035,7 +1123,8 @@ async fn test_crawl_url_deduplication() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.pages.len() <= 2);

@@ -24,7 +24,8 @@ async fn test_metadata_article_times() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
@@ -92,7 +93,8 @@ async fn test_metadata_favicons() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
@@ -136,7 +138,8 @@ async fn test_metadata_headings() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
@@ -191,7 +194,8 @@ async fn test_metadata_hreflang() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
@@ -235,7 +239,8 @@ async fn test_metadata_keywords_author() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
@@ -283,7 +288,8 @@ async fn test_metadata_og_video_audio() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
@@ -317,12 +323,12 @@ async fn test_metadata_response_headers() {
         "/",
         200,
         &[
-            ("content-language", "en-US"),
-            ("last-modified", "Wed, 01 Jan 2025 00:00:00 GMT"),
-            ("content-type", "text/html; charset=utf-8"),
-            ("etag", "\"abc123\""),
-            ("server", "nginx/1.24"),
             ("x-powered-by", "kreuzcrawl"),
+            ("last-modified", "Wed, 01 Jan 2025 00:00:00 GMT"),
+            ("content-language", "en-US"),
+            ("etag", "\"abc123\""),
+            ("content-type", "text/html; charset=utf-8"),
+            ("server", "nginx/1.24"),
         ],
         &body,
     )
@@ -334,7 +340,8 @@ async fn test_metadata_response_headers() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
@@ -390,7 +397,8 @@ async fn test_metadata_word_count() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);

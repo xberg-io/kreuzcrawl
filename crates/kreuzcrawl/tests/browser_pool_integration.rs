@@ -158,7 +158,7 @@ async fn test_pool_with_scrape_api() {
     pool.warm().await.expect("warm");
 
     let config = scrape_config(&pool);
-    let engine = CrawlEngine::builder().config(config).build();
+    let engine = CrawlEngine::builder().config(config).build().unwrap();
     let result = engine.scrape(TEST_PAGE).await.expect("scrape");
 
     assert!(result.browser_used, "browser should be used");
@@ -174,7 +174,7 @@ async fn test_pool_with_scrape_sequential_reuse() {
     pool.warm().await.expect("warm");
 
     let config = scrape_config(&pool);
-    let engine = CrawlEngine::builder().config(config).build();
+    let engine = CrawlEngine::builder().config(config).build().unwrap();
 
     // Two sequential scrapes — both should reuse the same Chrome.
     let r1 = engine.scrape(TEST_PAGE).await.expect("scrape 1");

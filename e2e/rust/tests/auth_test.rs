@@ -29,7 +29,8 @@ async fn test_auth_basic_http() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.auth_header_sent);
@@ -61,7 +62,8 @@ async fn test_auth_bearer_token() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.auth_header_sent);
@@ -94,7 +96,8 @@ async fn test_auth_custom_header() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.auth_header_sent);

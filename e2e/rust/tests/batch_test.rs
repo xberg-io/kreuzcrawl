@@ -44,7 +44,8 @@ async fn test_scrape_batch_basic() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let urls: Vec<String> = vec![
         format!("{}/page1", mock.uri()),
         format!("{}/page2", mock.uri()),
@@ -103,7 +104,8 @@ async fn test_scrape_batch_partial_failure() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let urls: Vec<String> = vec![
         format!("{}/good1", mock.uri()),
         format!("{}/bad", mock.uri()),
@@ -152,7 +154,8 @@ async fn test_scrape_batch_progress() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let urls: Vec<String> = vec![
         format!("{}/target", mock.uri()),
         format!("{}/other", mock.uri()),

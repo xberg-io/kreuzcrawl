@@ -50,7 +50,8 @@ async fn test_crawl_stream_events() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let stream = engine.crawl_stream(&mock.uri());
     let events: Vec<CrawlEvent> = stream.collect().await;
     assert!(events.len() >= 4);

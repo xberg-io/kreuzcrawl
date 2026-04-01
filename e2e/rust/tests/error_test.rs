@@ -27,7 +27,8 @@ async fn test_error_401_unauthorized() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let err = result.expect_err("request should fail");
     assert!(err.to_string().contains("unauthorized"));
@@ -54,7 +55,8 @@ async fn test_error_403_forbidden() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let err = result.expect_err("request should fail");
     assert!(err.to_string().contains("forbidden"));
@@ -81,7 +83,8 @@ async fn test_error_404_page() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let err = result.expect_err("request should fail");
     assert!(err.to_string().contains("not_found"));
@@ -108,7 +111,8 @@ async fn test_error_408_request_timeout() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let err = result.expect_err("request should fail");
     assert!(err.to_string().contains("timeout"));
@@ -135,7 +139,8 @@ async fn test_error_410_gone() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let err = result.expect_err("request should fail");
     assert!(err.to_string().contains("gone"));
@@ -162,7 +167,8 @@ async fn test_error_500_server() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let err = result.expect_err("request should fail");
     assert!(err.to_string().contains("server_error"));
@@ -189,7 +195,8 @@ async fn test_error_502_bad_gateway() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let err = result.expect_err("request should fail");
     assert!(err.to_string().contains("bad_gateway"));
@@ -208,7 +215,8 @@ async fn test_error_empty_response() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.html.is_empty());
@@ -235,7 +243,8 @@ async fn test_error_rate_limited() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let err = result.expect_err("request should fail");
     assert!(err.to_string().contains("rate_limited"));
@@ -265,7 +274,8 @@ async fn test_error_retry_503() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let err = result.expect_err("request should fail");
     assert!(err.to_string().contains("server_error"));
@@ -281,7 +291,7 @@ async fn test_error_retry_backoff() {
         "GET",
         "/",
         429,
-        &[("content-type", "text/html"), ("retry-after", "1")],
+        &[("retry-after", "1"), ("content-type", "text/html")],
         &body,
     )
     .await;
@@ -295,7 +305,8 @@ async fn test_error_retry_backoff() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let err = result.expect_err("request should fail");
     assert!(err.to_string().contains("rate_limited"));
@@ -312,8 +323,8 @@ async fn test_error_waf_false_403() {
         "/",
         403,
         &[
-            ("server", "cloudflare"),
             ("content-type", "text/html; charset=utf-8"),
+            ("server", "cloudflare"),
         ],
         &body,
     )
@@ -325,7 +336,8 @@ async fn test_error_waf_false_403() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let err = result.expect_err("request should fail");
     assert!(err.to_string().contains("forbidden"));

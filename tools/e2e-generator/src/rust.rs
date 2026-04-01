@@ -12,7 +12,7 @@ use crate::fixtures::{
     HreflangAssertions, ImageAssertions, JsonLdAssertions, LinkAssertions, MapAssertions,
     MetadataAssertions, OgAssertions, RateLimitAssertions, RedirectAssertions,
     ResponseMetaAssertions, RobotsAssertions, SitemapAssertions, StrategyAssertions,
-    StreamAssertions, TwitterAssertions,
+    StreamAssertions, TwitterAssertions, ValidationAssertions,
 };
 
 /// Generate Rust E2E test files from fixtures, grouped by category.
@@ -360,7 +360,17 @@ fn generate_test_fn(out: &mut String, fixture: &Fixture) -> Result<()> {
     writeln!(out)?;
 
     // Build the engine — every test now uses CrawlEngine
-    if category == "rate_limit" {
+    if category == "validation" {
+        // Validation tests expect build() to fail
+        writeln!(
+            out,
+            "    let err = kreuzcrawl::CrawlEngine::builder().config(config.clone()).build()"
+        )?;
+        writeln!(
+            out,
+            "        .err().expect(\"build should fail with invalid config\");"
+        )?;
+    } else if category == "rate_limit" {
         let delay_ms = fixture
             .config
             .as_ref()
@@ -368,7 +378,7 @@ fn generate_test_fn(out: &mut String, fixture: &Fixture) -> Result<()> {
             .unwrap_or(0);
         writeln!(
             out,
-            "    let engine = kreuzcrawl::CrawlEngine::builder().config(config.clone()).rate_limiter(kreuzcrawl::PerDomainThrottle::new(std::time::Duration::from_millis({delay_ms}))).build();"
+            "    let engine = kreuzcrawl::CrawlEngine::builder().config(config.clone()).rate_limiter(kreuzcrawl::PerDomainThrottle::new(std::time::Duration::from_millis({delay_ms}))).build().unwrap();"
         )?;
     } else if category == "filter" {
         let content_filter = fixture
@@ -389,13 +399,14 @@ fn generate_test_fn(out: &mut String, fixture: &Fixture) -> Result<()> {
                 .unwrap_or(0.1);
             writeln!(
                 out,
-                "    let engine = kreuzcrawl::CrawlEngine::builder().config(config.clone()).content_filter(kreuzcrawl::Bm25Filter::new(\"{}\", {threshold})).build();",
-                escape_rust_string(query)
+                "    let engine = kreuzcrawl::CrawlEngine::builder().config(config.clone()).content_filter(kreuzcrawl::Bm25Filter::new(\"{}\", {})).build().unwrap();",
+                escape_rust_string(query),
+                format_f64(threshold)
             )?;
         } else {
             writeln!(
                 out,
-                "    let engine = kreuzcrawl::CrawlEngine::builder().config(config.clone()).build();"
+                "    let engine = kreuzcrawl::CrawlEngine::builder().config(config.clone()).build().unwrap();"
             )?;
         }
     } else if category == "strategy" {
@@ -410,26 +421,26 @@ fn generate_test_fn(out: &mut String, fixture: &Fixture) -> Result<()> {
             "dfs" => {
                 writeln!(
                     out,
-                    "    let engine = kreuzcrawl::CrawlEngine::builder().config(config.clone()).strategy(kreuzcrawl::DfsStrategy).build();"
+                    "    let engine = kreuzcrawl::CrawlEngine::builder().config(config.clone()).strategy(kreuzcrawl::DfsStrategy).build().unwrap();"
                 )?;
             }
             "best_first" => {
                 writeln!(
                     out,
-                    "    let engine = kreuzcrawl::CrawlEngine::builder().config(config.clone()).strategy(kreuzcrawl::BestFirstStrategy).build();"
+                    "    let engine = kreuzcrawl::CrawlEngine::builder().config(config.clone()).strategy(kreuzcrawl::BestFirstStrategy).build().unwrap();"
                 )?;
             }
             _ => {
                 writeln!(
                     out,
-                    "    let engine = kreuzcrawl::CrawlEngine::builder().config(config.clone()).build();"
+                    "    let engine = kreuzcrawl::CrawlEngine::builder().config(config.clone()).build().unwrap();"
                 )?;
             }
         }
     } else {
         writeln!(
             out,
-            "    let engine = kreuzcrawl::CrawlEngine::builder().config(config.clone()).build();"
+            "    let engine = kreuzcrawl::CrawlEngine::builder().config(config.clone()).build().unwrap();"
         )?;
     }
 
@@ -552,14 +563,22 @@ fn generate_test_fn(out: &mut String, fixture: &Fixture) -> Result<()> {
                 writeln!(out, "    let result = engine.scrape(&mock.uri()).await;")?;
             }
         }
+        // Validation tests: the build call IS the test, no API call needed
+        "validation" => {}
         // Single-page categories: scrape, metadata, links, robots, content, auth, error
         _ => {
             writeln!(out, "    let result = engine.scrape(&mock.uri()).await;")?;
         }
     }
 
-    // For error category, handle Result differently
-    if category == "error" {
+    // For validation category, generate validation assertions and skip normal handling
+    if category == "validation" {
+        if let Some(ref assertions) = fixture.assertions
+            && let Some(ref v) = assertions.validation
+        {
+            generate_validation_assertions(out, v)?;
+        }
+    } else if category == "error" {
         generate_error_assertions(out, fixture)?;
     } else if category == "stream" {
         if let Some(ref assertions) = fixture.assertions {
@@ -948,6 +967,9 @@ fn generate_assertions(out: &mut String, assertions: &Assertions, category: &str
     }
     if let Some(ref filter) = assertions.filter {
         generate_filter_assertions(out, filter)?;
+    }
+    if let Some(ref validation) = assertions.validation {
+        generate_validation_assertions(out, validation)?;
     }
 
     Ok(())
@@ -1807,6 +1829,18 @@ fn generate_filter_assertions(out: &mut String, filter: &FilterAssertions) -> Re
     Ok(())
 }
 
+fn generate_validation_assertions(out: &mut String, v: &ValidationAssertions) -> Result<()> {
+    if let Some(ref contains) = v.error_contains {
+        writeln!(
+            out,
+            "    assert!(err.to_string().contains(\"{}\"), \"error should contain '{}', got: {{}}\", err);",
+            escape_rust_string(contains),
+            escape_rust_string(contains)
+        )?;
+    }
+    Ok(())
+}
+
 fn generate_batch_assertions(out: &mut String, batch: &BatchAssertions) -> Result<()> {
     if let Some(total) = batch.total_count {
         writeln!(out, "    assert_eq!(results.len(), {total});")?;
@@ -1833,6 +1867,12 @@ fn generate_batch_assertions(out: &mut String, batch: &BatchAssertions) -> Resul
         )?;
     }
     Ok(())
+}
+
+/// Format an f64 value ensuring it always has a decimal point (valid Rust float literal).
+fn format_f64(v: f64) -> String {
+    let s = v.to_string();
+    if s.contains('.') { s } else { format!("{s}.0") }
 }
 
 /// Check if a body file path refers to a binary file.

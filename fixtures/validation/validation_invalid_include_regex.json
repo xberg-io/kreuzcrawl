@@ -1,0 +1,17 @@
+{
+  "id": "validation_invalid_include_regex",
+  "description": "Invalid regex in include_paths is rejected",
+  "tags": ["validation"],
+  "mock_response": {
+    "status_code": 200,
+    "body_inline": "<html></html>"
+  },
+  "config": {
+    "include_paths": ["[invalid"]
+  },
+  "assertions": {
+    "validation": {
+      "error_contains": "include_path"
+    }
+  }
+}

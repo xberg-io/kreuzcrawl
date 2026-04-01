@@ -49,7 +49,8 @@ async fn test_rate_limit_basic_delay() {
         .rate_limiter(kreuzcrawl::PerDomainThrottle::new(
             std::time::Duration::from_millis(100),
         ))
-        .build();
+        .build()
+        .unwrap();
     let start = std::time::Instant::now();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
@@ -97,7 +98,8 @@ async fn test_rate_limit_zero_no_delay() {
         .rate_limiter(kreuzcrawl::PerDomainThrottle::new(
             std::time::Duration::from_millis(0),
         ))
-        .build();
+        .build()
+        .unwrap();
     let start = std::time::Instant::now();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");

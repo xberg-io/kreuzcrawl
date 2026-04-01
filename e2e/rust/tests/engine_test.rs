@@ -38,7 +38,8 @@ async fn test_engine_batch_basic() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let urls: Vec<String> = vec![
         format!("{}/page1", mock.uri()),
         format!("{}/page2", mock.uri()),
@@ -99,7 +100,8 @@ async fn test_engine_crawl_basic() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.pages.len(), 3);
@@ -137,7 +139,8 @@ async fn test_engine_map_basic() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.map(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.urls.len() >= 2);
@@ -164,7 +167,8 @@ async fn test_engine_scrape_basic() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.status_code, 200);
@@ -230,7 +234,8 @@ async fn test_engine_stream_basic() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let stream = engine.crawl_stream(&mock.uri());
     let events: Vec<CrawlEvent> = stream.collect().await;
     assert!(events.len() >= 3);

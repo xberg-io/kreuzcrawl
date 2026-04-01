@@ -123,10 +123,14 @@ impl CrawlEngineBuilder {
         self
     }
 
-    /// Build the [`CrawlEngine`], filling in defaults for any unset fields.
-    pub fn build(self) -> CrawlEngine {
-        CrawlEngine {
-            config: self.config.unwrap_or_default(),
+    /// Build the [`CrawlEngine`], validating the config and filling in defaults.
+    ///
+    /// Returns an error if the configuration is invalid.
+    pub fn build(self) -> Result<CrawlEngine, CrawlError> {
+        let config = self.config.unwrap_or_default();
+        config.validate()?;
+        Ok(CrawlEngine {
+            config,
             frontier: self
                 .frontier
                 .unwrap_or_else(|| Arc::new(defaults::InMemoryFrontier::new())),
@@ -147,7 +151,7 @@ impl CrawlEngineBuilder {
             content_filter: self
                 .content_filter
                 .unwrap_or_else(|| Arc::new(defaults::NoopFilter)),
-        }
+        })
     }
 }
 

@@ -76,7 +76,8 @@ async fn test_concurrent_basic() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.pages.len(), 6);
@@ -147,7 +148,8 @@ async fn test_concurrent_respects_max_pages() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.pages.len() <= 3);

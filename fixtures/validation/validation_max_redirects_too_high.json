@@ -1,0 +1,17 @@
+{
+  "id": "validation_max_redirects_too_high",
+  "description": "max_redirects > 100 is rejected as invalid config",
+  "tags": ["validation"],
+  "mock_response": {
+    "status_code": 200,
+    "body_inline": "<html></html>"
+  },
+  "config": {
+    "max_redirects": 200
+  },
+  "assertions": {
+    "validation": {
+      "error_contains": "max_redirects"
+    }
+  }
+}

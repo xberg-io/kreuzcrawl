@@ -1,0 +1,17 @@
+{
+  "id": "validation_timeout_zero",
+  "description": "Zero request timeout is rejected as invalid config",
+  "tags": ["validation"],
+  "mock_response": {
+    "status_code": 200,
+    "body_inline": "<html></html>"
+  },
+  "config": {
+    "request_timeout_ms": 0
+  },
+  "assertions": {
+    "validation": {
+      "error_contains": "request_timeout"
+    }
+  }
+}

@@ -7,7 +7,6 @@ mod browser;
 mod browser_detect;
 #[cfg(feature = "browser")]
 mod browser_pool;
-mod crawl;
 pub mod defaults;
 pub mod engine;
 mod error;
@@ -19,7 +18,6 @@ mod normalize;
 mod robots;
 mod scrape;
 mod sitemap;
-mod stream;
 pub mod traits;
 mod types;
 

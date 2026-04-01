@@ -18,7 +18,8 @@ async fn test_error_connection_refused() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape("http://127.0.0.1:1/").await;
     let err = result.expect_err("request should fail");
     assert!(
@@ -39,7 +40,8 @@ async fn test_error_dns_resolution() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine
         .scrape("http://this-domain-does-not-exist.invalid/")
         .await;
@@ -66,7 +68,8 @@ async fn test_error_ssl_invalid_cert() {
     let https_url = mock.uri().replace("http://", "https://");
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&https_url).await;
     let err = result.expect_err("request should fail");
     assert!(
@@ -104,7 +107,8 @@ async fn test_error_timeout() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let err = result.expect_err("request should fail");
     assert!(
@@ -140,7 +144,8 @@ async fn test_error_partial_response() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let err = result.expect_err("request should fail");
     let msg = err.to_string();

@@ -24,7 +24,8 @@ async fn test_sitemap_basic() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.map(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.urls.len(), 4);
@@ -52,7 +53,8 @@ async fn test_sitemap_empty() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.map(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.urls.len(), 0);
@@ -90,7 +92,8 @@ async fn test_sitemap_from_robots_txt() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.map(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.urls.len(), 4);
@@ -147,7 +150,8 @@ async fn test_sitemap_index() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.map(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.urls.len(), 3);
@@ -175,7 +179,8 @@ async fn test_sitemap_lastmod_filter() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.map(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.urls.len(), 4);
@@ -204,7 +209,8 @@ async fn test_sitemap_only_mode() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.map(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.urls.len(), 4);
@@ -232,7 +238,8 @@ async fn test_sitemap_xhtml_links() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.map(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.urls.len(), 2);

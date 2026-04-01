@@ -34,7 +34,8 @@ async fn test_robots_allow_all() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.is_allowed, true);
@@ -71,7 +72,8 @@ async fn test_robots_allow_override() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.is_allowed, true);
@@ -109,7 +111,8 @@ async fn test_robots_comments_handling() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.is_allowed, true);
@@ -147,7 +150,8 @@ async fn test_robots_crawl_delay() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.crawl_delay, Some(2));
@@ -184,7 +188,8 @@ async fn test_robots_disallow_path() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.is_allowed, false);
@@ -221,7 +226,8 @@ async fn test_robots_meta_nofollow() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.nofollow_detected, true);
@@ -258,7 +264,8 @@ async fn test_robots_meta_noindex() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.noindex_detected, true);
@@ -295,7 +302,8 @@ async fn test_robots_missing_404() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.is_allowed, true);
@@ -333,7 +341,8 @@ async fn test_robots_multiple_user_agents() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.is_allowed, true);
@@ -371,7 +380,8 @@ async fn test_robots_request_rate() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.is_allowed, true);
@@ -409,7 +419,8 @@ async fn test_robots_sitemap_directive() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.is_allowed, true);
@@ -447,7 +458,8 @@ async fn test_robots_user_agent_specific() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.is_allowed, false);
@@ -484,7 +496,8 @@ async fn test_robots_wildcard_paths() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.is_allowed, false);
@@ -501,8 +514,8 @@ async fn test_robots_x_robots_tag() {
         "/",
         200,
         &[
-            ("x-robots-tag", "noindex, nofollow"),
             ("content-type", "text/html; charset=utf-8"),
+            ("x-robots-tag", "noindex, nofollow"),
         ],
         &body,
     )
@@ -513,8 +526,8 @@ async fn test_robots_x_robots_tag() {
         "/robots.txt",
         200,
         &[
-            ("x-robots-tag", "noindex, nofollow"),
             ("content-type", "text/html; charset=utf-8"),
+            ("x-robots-tag", "noindex, nofollow"),
         ],
         &body,
     )
@@ -527,7 +540,8 @@ async fn test_robots_x_robots_tag() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.noindex_detected, true);

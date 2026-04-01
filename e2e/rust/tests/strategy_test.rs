@@ -48,7 +48,8 @@ async fn test_strategy_best_first_seed() {
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
         .strategy(kreuzcrawl::BestFirstStrategy)
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.pages.len(), 3);
@@ -117,7 +118,8 @@ async fn test_strategy_bfs_default_order() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.pages.len(), 5);
@@ -211,7 +213,8 @@ async fn test_strategy_dfs_depth_first() {
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
         .strategy(kreuzcrawl::DfsStrategy)
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.pages.len(), 5);

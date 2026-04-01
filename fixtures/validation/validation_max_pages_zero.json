@@ -1,0 +1,17 @@
+{
+  "id": "validation_max_pages_zero",
+  "description": "max_pages=0 is rejected as invalid config",
+  "tags": ["validation"],
+  "mock_response": {
+    "status_code": 200,
+    "body_inline": "<html></html>"
+  },
+  "config": {
+    "max_pages": 0
+  },
+  "assertions": {
+    "validation": {
+      "error_contains": "max_pages"
+    }
+  }
+}

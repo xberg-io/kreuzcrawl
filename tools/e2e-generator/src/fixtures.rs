@@ -200,6 +200,7 @@ pub struct Assertions {
     pub strategy: Option<StrategyAssertions>,
     pub rate_limit: Option<RateLimitAssertions>,
     pub filter: Option<FilterAssertions>,
+    pub validation: Option<ValidationAssertions>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -424,6 +425,13 @@ pub struct FilterAssertions {
     pub remaining_contain_keyword: Option<String>,
 }
 
+/// Validation error assertions.
+#[derive(Debug, Deserialize)]
+pub struct ValidationAssertions {
+    /// Expected error message substring.
+    pub error_contains: Option<String>,
+}
+
 /// Rate-limiting assertions.
 #[derive(Debug, Deserialize)]
 pub struct RateLimitAssertions {
@@ -559,6 +567,7 @@ pub fn load_fixtures(dir: &Utf8Path) -> Result<Vec<Fixture>> {
         if fixture.mock_response.is_none()
             && fixture.mock_responses.is_none()
             && fixture.category.as_deref() != Some("error")
+            && fixture.category.as_deref() != Some("validation")
         {
             bail!(
                 "fixture {} has no mock_response or mock_responses (required for non-error fixtures)",

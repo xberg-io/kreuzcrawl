@@ -36,7 +36,8 @@ async fn test_sitemap_compressed_gzip() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.map(&server.uri()).await;
     let result = result.expect("map should succeed");
     // The map function handles gzip decompression internally via fetch_sitemap_tree

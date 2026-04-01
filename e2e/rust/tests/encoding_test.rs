@@ -24,7 +24,8 @@ async fn test_encoding_double_encoded() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(!result.html.is_empty());
@@ -52,7 +53,8 @@ async fn test_encoding_mixed_charset_page() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(!result.html.is_empty());
@@ -79,7 +81,8 @@ async fn test_encoding_percent_encoded_path() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(!result.html.is_empty());
@@ -107,7 +110,8 @@ async fn test_encoding_unicode_url() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.scrape(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(!result.html.is_empty());

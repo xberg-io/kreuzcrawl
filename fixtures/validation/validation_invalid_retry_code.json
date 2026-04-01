@@ -1,0 +1,17 @@
+{
+  "id": "validation_invalid_retry_code",
+  "description": "Retry code outside 100-599 is rejected",
+  "tags": ["validation"],
+  "mock_response": {
+    "status_code": 200,
+    "body_inline": "<html></html>"
+  },
+  "config": {
+    "retry_codes": [999]
+  },
+  "assertions": {
+    "validation": {
+      "error_contains": "retry code"
+    }
+  }
+}

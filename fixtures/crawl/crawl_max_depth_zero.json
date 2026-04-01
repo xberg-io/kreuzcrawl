@@ -1,0 +1,27 @@
+{
+  "id": "crawl_max_depth_zero",
+  "description": "max_depth=0 crawls only the seed page with no link following",
+  "tags": ["crawl", "depth"],
+  "mock_responses": [
+    {
+      "path": "/",
+      "headers": {"content-type": "text/html"},
+      "body_inline": "<html><body><a href=\"/page1\">Link</a></body></html>"
+    },
+    {
+      "path": "/page1",
+      "headers": {"content-type": "text/html"},
+      "body_inline": "<html><body><h1>Should not be crawled</h1></body></html>"
+    }
+  ],
+  "config": {
+    "engine_mode": true,
+    "max_depth": 0
+  },
+  "assertions": {
+    "crawl": {
+      "pages_crawled": 1,
+      "max_pages": 1
+    }
+  }
+}

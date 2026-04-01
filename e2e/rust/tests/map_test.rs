@@ -26,7 +26,8 @@ async fn test_map_discover_urls() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.map(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.urls.len() >= 3);
@@ -56,7 +57,8 @@ async fn test_map_exclude_patterns() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.map(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.urls.len(), 1);
@@ -86,7 +88,8 @@ async fn test_map_include_subdomains() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.map(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.urls.len() >= 2);
@@ -120,7 +123,8 @@ async fn test_map_large_sitemap() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.map(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.urls.len() >= 100);
@@ -150,7 +154,8 @@ async fn test_map_limit_pagination() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.map(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.urls.len() <= 5);
@@ -180,7 +185,8 @@ async fn test_map_search_filter() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.map(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.urls.len() >= 2);

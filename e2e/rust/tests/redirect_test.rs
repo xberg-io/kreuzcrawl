@@ -27,7 +27,8 @@ async fn test_redirect_301_permanent() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.final_url.contains("/target"));
@@ -66,7 +67,8 @@ async fn test_redirect_302_found() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.final_url.contains("/found-target"));
@@ -105,7 +107,8 @@ async fn test_redirect_303_see_other() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.final_url.contains("/see-other"));
@@ -144,7 +147,8 @@ async fn test_redirect_307_temporary() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.final_url.contains("/temp-target"));
@@ -183,7 +187,8 @@ async fn test_redirect_308_permanent() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.final_url.contains("/perm-target"));
@@ -224,7 +229,8 @@ async fn test_redirect_chain() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.final_url.contains("/step2"));
@@ -263,7 +269,8 @@ async fn test_redirect_cross_domain() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.final_url.contains("/external-redirect"));
@@ -286,7 +293,8 @@ async fn test_redirect_loop() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.error.is_some(), "expected redirect error");
@@ -321,7 +329,8 @@ async fn test_redirect_max_exceeded() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.error.is_some(), "expected redirect error");
@@ -359,7 +368,8 @@ async fn test_redirect_meta_refresh() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.final_url.contains("/target"));
@@ -401,7 +411,8 @@ async fn test_redirect_refresh_header() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.final_url.contains("/refreshed"));
@@ -432,7 +443,8 @@ async fn test_redirect_to_404() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(result.final_url.contains("/gone"));

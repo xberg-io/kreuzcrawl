@@ -36,10 +36,53 @@ async fn test_filter_bm25_empty_query() {
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
         .content_filter(kreuzcrawl::Bm25Filter::new("", 0.1))
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.pages.len(), 2);
+}
+
+#[tokio::test]
+async fn test_filter_bm25_high_threshold() {
+    // BM25 filter with very high threshold filters out all pages
+    let mock = helpers::setup_mock_server().await;
+    let body_0 =
+        "<html><body><p>Some content about rust</p><a href=\"/page1\">Link</a></body></html>"
+            .to_owned();
+    helpers::register_mock(
+        &mock,
+        "GET",
+        "/",
+        200,
+        &[("content-type", "text/html")],
+        &body_0,
+    )
+    .await;
+    let body_1 = "<html><body><p>More content about programming</p></body></html>".to_owned();
+    helpers::register_mock(
+        &mock,
+        "GET",
+        "/page1",
+        200,
+        &[("content-type", "text/html")],
+        &body_1,
+    )
+    .await;
+
+    let config = kreuzcrawl::CrawlConfig {
+        max_depth: Some(1),
+        ..Default::default()
+    };
+
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .content_filter(kreuzcrawl::Bm25Filter::new("quantum physics", 100.0))
+        .build()
+        .unwrap();
+    let result = engine.crawl(&mock.uri()).await;
+    let result = result.expect("request should succeed");
+    assert_eq!(result.pages.len(), 0, "expected 0 pages after filtering");
 }
 
 #[tokio::test]
@@ -88,7 +131,8 @@ async fn test_filter_bm25_relevant_pages() {
             "rust programming language",
             0.1,
         ))
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert!(
@@ -98,6 +142,47 @@ async fn test_filter_bm25_relevant_pages() {
             .all(|p| p.html.to_lowercase().contains("rust")),
         "all remaining pages should contain keyword 'rust'"
     );
+}
+
+#[tokio::test]
+async fn test_filter_bm25_threshold_zero() {
+    // BM25 filter with zero threshold passes all pages
+    let mock = helpers::setup_mock_server().await;
+    let body_0 =
+        "<html><body><p>Random content</p><a href=\"/page1\">Link</a></body></html>".to_owned();
+    helpers::register_mock(
+        &mock,
+        "GET",
+        "/",
+        200,
+        &[("content-type", "text/html")],
+        &body_0,
+    )
+    .await;
+    let body_1 = "<html><body><p>More random stuff</p></body></html>".to_owned();
+    helpers::register_mock(
+        &mock,
+        "GET",
+        "/page1",
+        200,
+        &[("content-type", "text/html")],
+        &body_1,
+    )
+    .await;
+
+    let config = kreuzcrawl::CrawlConfig {
+        max_depth: Some(1),
+        ..Default::default()
+    };
+
+    let engine = kreuzcrawl::CrawlEngine::builder()
+        .config(config.clone())
+        .content_filter(kreuzcrawl::Bm25Filter::new("unrelated query", 0.0))
+        .build()
+        .unwrap();
+    let result = engine.crawl(&mock.uri()).await;
+    let result = result.expect("request should succeed");
+    assert_eq!(result.pages.len(), 2);
 }
 
 #[tokio::test]
@@ -143,7 +228,8 @@ async fn test_filter_noop_passes_all() {
 
     let engine = kreuzcrawl::CrawlEngine::builder()
         .config(config.clone())
-        .build();
+        .build()
+        .unwrap();
     let result = engine.crawl(&mock.uri()).await;
     let result = result.expect("request should succeed");
     assert_eq!(result.pages.len(), 3);

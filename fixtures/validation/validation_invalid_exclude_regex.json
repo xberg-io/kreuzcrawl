@@ -1,0 +1,17 @@
+{
+  "id": "validation_invalid_exclude_regex",
+  "description": "Invalid regex in exclude_paths is rejected",
+  "tags": ["validation"],
+  "mock_response": {
+    "status_code": 200,
+    "body_inline": "<html></html>"
+  },
+  "config": {
+    "exclude_paths": ["(unclosed"]
+  },
+  "assertions": {
+    "validation": {
+      "error_contains": "exclude_path"
+    }
+  }
+}
