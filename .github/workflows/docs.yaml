@@ -1,0 +1,120 @@
+name: Documentation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'pyproject.toml'
+      - 'zensical.toml'
+      - '.textlintrc.json'
+      - '.github/workflows/docs.yaml'
+      - 'scripts/ci/docs/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'pyproject.toml'
+      - 'zensical.toml'
+      - '.textlintrc.json'
+      - '.github/workflows/docs.yaml'
+      - 'scripts/ci/docs/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: "Validate: Build (strict)"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+      - name: Build docs (strict)
+        run: scripts/ci/docs/build.sh --strict
+
+  validate-snippets:
+    name: "Validate: Documentation Snippets"
+    if: github.repository == 'kreuzberg-dev/kreuzcrawl' && github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          cache-on-failure: true
+      - name: Build and run snippet validation
+        run: cargo run --release -p snippet-runner -- validate --snippets docs/snippets --reference docs/reference --level syntax --timeout 120
+
+  lint-prose:
+    name: "Validate: Prose (textlint)"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install textlint and rules
+        run: |
+          npm install --no-save \
+            textlint \
+            textlint-rule-no-todo \
+            textlint-rule-no-start-duplicated-conjunction \
+            textlint-rule-no-empty-section \
+            textlint-rule-terminology \
+            textlint-rule-no-zero-width-spaces \
+            @textlint-rule/textlint-rule-no-invalid-control-character \
+            textlint-rule-no-surrogate-pair \
+            @textlint-rule/textlint-rule-no-unmatched-pair \
+            textlint-rule-write-good \
+            textlint-rule-common-misspellings \
+            textlint-rule-stop-words \
+            textlint-filter-rule-comments \
+            textlint-filter-rule-node-types
+      - name: Run textlint
+        run: scripts/ci/docs/textlint.sh
+        continue-on-error: true
+
+  deploy:
+    name: "Deploy to GitHub Pages"
+    needs: [validate, validate-snippets, lint-prose]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+      - name: Build docs
+        run: scripts/ci/docs/build.sh
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: site
+      - id: deployment
+        uses: actions/deploy-pages@v5
