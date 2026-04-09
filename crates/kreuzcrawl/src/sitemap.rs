@@ -5,7 +5,7 @@ use quick_xml::events::Event;
 use url::Url;
 
 use crate::http::http_fetch;
-use crate::normalize::resolve_redirect;
+use crate::normalize::{resolve_redirect, rewrite_url_host};
 use crate::types::{CrawlConfig, SitemapUrl};
 
 /// Parse a sitemap XML document and extract URL entries.
@@ -194,18 +194,9 @@ pub(crate) async fn process_sitemap_response(
         // Limit the number of child sitemaps to prevent unbounded recursion
         let max_children = 100;
         for child_url in child_urls.iter().take(max_children) {
-            // Resolve child URL path against the base URL's host
             let resolved = if let Some(ref base_parsed) = base {
-                if let Ok(child_parsed) = Url::parse(child_url) {
-                    // If child URL is on a different host, rewrite to use base host
-                    if child_parsed.host_str() != base_parsed.host_str() {
-                        let mut resolved_url = base_parsed.clone();
-                        resolved_url.set_path(child_parsed.path());
-                        resolved_url.set_query(child_parsed.query());
-                        resolved_url.to_string()
-                    } else {
-                        child_url.clone()
-                    }
+                if Url::parse(child_url).is_ok() {
+                    rewrite_url_host(child_url, base_parsed)
                 } else {
                     resolve_redirect(sitemap_url, child_url)
                 }

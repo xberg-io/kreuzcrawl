@@ -40,7 +40,7 @@ pub(super) static SEL_A_HREF: LazyLock<Selector> =
     LazyLock::new(|| Selector::parse("a[href]").expect("valid selector: a[href]"));
 pub(super) static SEL_BASE_HREF: LazyLock<Selector> =
     LazyLock::new(|| Selector::parse("base[href]").expect("valid selector: base[href]"));
-pub(super) static SEL_IMG_SRC: LazyLock<Selector> =
+pub(crate) static SEL_IMG_SRC: LazyLock<Selector> =
     LazyLock::new(|| Selector::parse("img[src]").expect("valid selector: img[src]"));
 pub(super) static SEL_SOURCE_SRCSET: LazyLock<Selector> =
     LazyLock::new(|| Selector::parse("source[srcset]").expect("valid selector: source[srcset]"));
@@ -78,3 +78,9 @@ pub(super) static SEL_FAVICON: LazyLock<Selector> = LazyLock::new(|| {
 pub(super) static SEL_HEADINGS: LazyLock<Selector> = LazyLock::new(|| {
     Selector::parse("h1, h2, h3, h4, h5, h6").expect("valid selector: h1, h2, h3, h4, h5, h6")
 });
+pub(crate) static SEL_LINK_CSS: LazyLock<Selector> = LazyLock::new(|| {
+    Selector::parse("link[rel='stylesheet'][href]")
+        .expect("valid selector: link[rel='stylesheet'][href]")
+});
+pub(crate) static SEL_SCRIPT_SRC: LazyLock<Selector> =
+    LazyLock::new(|| Selector::parse("script[src]").expect("valid selector: script[src]"));

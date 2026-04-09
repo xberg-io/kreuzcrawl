@@ -2,11 +2,9 @@
 
 use std::time::Duration;
 
-use async_trait::async_trait;
-use serde::{Deserialize, Serialize};
-
 use crate::error::CrawlError;
-use crate::types::{CrawlPageResult, ScrapeResult};
+use crate::types::{CachedPage, CrawlPageResult, ScrapeResult};
+use async_trait::async_trait;
 
 /// An entry in the URL frontier queue.
 #[derive(Debug, Clone)]
@@ -164,18 +162,6 @@ pub trait CrawlStrategy: Send + Sync {
 pub trait ContentFilter: Send + Sync {
     /// Filter a crawled page. Return `None` to discard it.
     async fn filter(&self, page: CrawlPageResult) -> Result<Option<CrawlPageResult>, CrawlError>;
-}
-
-/// Cached page data for HTTP response caching.
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CachedPage {
-    pub url: String,
-    pub status_code: u16,
-    pub content_type: String,
-    pub body: String,
-    pub etag: Option<String>,
-    pub last_modified: Option<String>,
-    pub cached_at: u64,
 }
 
 /// HTTP response cache for avoiding re-fetching unchanged pages.

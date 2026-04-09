@@ -6,7 +6,8 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use async_trait::async_trait;
 
 use crate::error::CrawlError;
-use crate::traits::{CachedPage, CrawlCache};
+use crate::traits::CrawlCache;
+use crate::types::CachedPage;
 
 /// Filesystem-backed response cache.
 ///
@@ -63,53 +64,14 @@ impl DiskCache {
         let hash = Self::cache_key(key);
         self.cache_dir.join(format!("{hash}.json"))
     }
+}
 
-    #[allow(dead_code)]
-    pub(crate) fn now_secs() -> u64 {
-        SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap_or_default()
-            .as_secs()
-    }
-
-    /// Evict oldest entries when max_entries is exceeded.
-    ///
-    /// Uses file modification time as a proxy for LRU ordering.
-    /// Note: This method is now inlined into set() to avoid blocking the async runtime.
-    #[allow(dead_code)]
-    fn evict_if_needed(&self) -> Result<(), CrawlError> {
-        if self.max_entries == 0 {
-            return Ok(());
-        }
-
-        let entries: Vec<_> = std::fs::read_dir(&self.cache_dir)
-            .map_err(|e| CrawlError::Other(format!("cache dir read error: {e}")))?
-            .filter_map(|e| e.ok())
-            .filter(|e| e.path().extension().is_some_and(|ext| ext == "json"))
-            .collect();
-
-        if entries.len() < self.max_entries {
-            return Ok(());
-        }
-
-        // Sort by modification time (oldest first)
-        let mut with_times: Vec<_> = entries
-            .into_iter()
-            .filter_map(|e| {
-                let modified = e.metadata().ok()?.modified().ok()?;
-                Some((e.path(), modified))
-            })
-            .collect();
-        with_times.sort_by_key(|(_, t)| *t);
-
-        // Remove oldest entries until we're under the limit
-        let to_remove = with_times.len().saturating_sub(self.max_entries - 1);
-        for (path, _) in with_times.into_iter().take(to_remove) {
-            let _ = std::fs::remove_file(path);
-        }
-
-        Ok(())
-    }
+#[cfg(test)]
+pub(crate) fn now_secs() -> u64 {
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_secs()
 }
 
 #[async_trait]
@@ -231,7 +193,7 @@ mod tests {
             body: "<html>test</html>".to_owned(),
             etag: Some("\"abc\"".to_owned()),
             last_modified: None,
-            cached_at: DiskCache::now_secs(),
+            cached_at: now_secs(),
         }
     }
 
@@ -283,7 +245,7 @@ mod tests {
 
         // Store a page with cached_at far in the past
         let mut page = make_page("http://example.com/old");
-        page.cached_at = DiskCache::now_secs() - 120; // 2 minutes ago, TTL is 60s
+        page.cached_at = now_secs() - 120; // 2 minutes ago, TTL is 60s
 
         cache.set("http://example.com/old", &page).await.unwrap();
 

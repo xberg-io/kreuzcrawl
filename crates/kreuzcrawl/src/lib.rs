@@ -38,12 +38,12 @@ pub use defaults::{
 pub use engine::{CrawlEngine, CrawlEngineBuilder};
 pub use error::CrawlError;
 pub use traits::{
-    CachedPage, CompleteEvent, ContentFilter, CrawlCache, CrawlStats, CrawlStore, CrawlStrategy,
-    ErrorEvent, EventEmitter, Frontier, FrontierEntry, PageEvent, RateLimiter,
+    CompleteEvent, ContentFilter, CrawlCache, CrawlStats, CrawlStore, CrawlStrategy, ErrorEvent,
+    EventEmitter, Frontier, FrontierEntry, PageEvent, RateLimiter,
 };
 pub use types::{
     ArticleMetadata, AssetCategory, AuthConfig, BrowserConfig, BrowserMode, BrowserWait,
-    CookieInfo, CrawlConfig, CrawlEvent, CrawlPageResult, CrawlResult, DownloadedAsset,
+    CachedPage, CookieInfo, CrawlConfig, CrawlEvent, CrawlPageResult, CrawlResult, DownloadedAsset,
     ExtractionMeta, FaviconInfo, FeedInfo, FeedType, HeadingInfo, HreflangEntry, ImageInfo,
     ImageSource, JsonLdEntry, LinkInfo, LinkType, MapResult, MarkdownResult, PageMetadata,
     ProxyConfig, ResponseMeta, ScrapeResult, SitemapUrl,

@@ -71,6 +71,18 @@ pub(crate) fn strip_fragment(url: &str) -> String {
     }
 }
 
+pub(crate) fn rewrite_url_host(url_str: &str, base: &Url) -> String {
+    if let Ok(parsed) = Url::parse(url_str)
+        && parsed.host_str() != base.host_str()
+    {
+        let mut resolved = base.clone();
+        resolved.set_path(parsed.path());
+        resolved.set_query(parsed.query());
+        return resolved.to_string();
+    }
+    url_str.to_owned()
+}
+
 /// Resolve a redirect target against a base URL.
 ///
 /// If the target is already absolute, returns it as-is. Otherwise, resolves

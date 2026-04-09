@@ -9,7 +9,16 @@ mod images;
 mod json_ld;
 mod links;
 mod metadata;
-mod selectors;
+pub(crate) mod selectors;
+
+use url::Url;
+
+pub(crate) fn resolve_url(src: &str, base_url: &Url) -> String {
+    base_url
+        .join(src)
+        .map(|u| u.to_string())
+        .unwrap_or_else(|_| src.to_owned())
+}
 
 pub(crate) use charset::detect_charset;
 pub(crate) use content::{apply_remove_tags, extract_main_content};

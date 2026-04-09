@@ -14,6 +14,12 @@ use tokio_stream::StreamExt;
 
 use crate::error::CrawlError;
 
+/// Timeout for opening a new page (tab) in Chrome.
+const PAGE_OPEN_TIMEOUT: Duration = Duration::from_secs(5);
+
+/// Timeout for waiting on the CDP handler task during shutdown.
+const HANDLER_SHUTDOWN_TIMEOUT: Duration = Duration::from_secs(5);
+
 /// Configuration for a [`BrowserPool`].
 #[derive(Debug, Clone)]
 pub struct BrowserPoolConfig {
@@ -148,7 +154,7 @@ impl BrowserPool {
         let mut guard = self.state.lock().await;
         if let Some(bs) = guard.take() {
             drop(bs.browser);
-            let _ = tokio::time::timeout(Duration::from_secs(5), bs.handler_handle).await;
+            let _ = tokio::time::timeout(HANDLER_SHUTDOWN_TIMEOUT, bs.handler_handle).await;
             if let Some(dir) = bs.user_data_dir {
                 let _ = std::fs::remove_dir_all(dir);
             }
@@ -179,7 +185,7 @@ impl BrowserPool {
         }
 
         let bs = guard.as_ref().unwrap();
-        tokio::time::timeout(Duration::from_secs(5), bs.browser.new_page("about:blank"))
+        tokio::time::timeout(PAGE_OPEN_TIMEOUT, bs.browser.new_page("about:blank"))
             .await
             .map_err(|_| CrawlError::BrowserError("timeout opening page".into()))?
             .map_err(|e| CrawlError::BrowserError(format!("failed to open page: {e}")))
@@ -205,7 +211,7 @@ impl BrowserPool {
         self.healthy.store(false, Ordering::Release);
         if let Some(old) = guard.take() {
             drop(old.browser);
-            let _ = tokio::time::timeout(Duration::from_secs(5), old.handler_handle).await;
+            let _ = tokio::time::timeout(HANDLER_SHUTDOWN_TIMEOUT, old.handler_handle).await;
             if let Some(dir) = old.user_data_dir {
                 let _ = std::fs::remove_dir_all(dir);
             }

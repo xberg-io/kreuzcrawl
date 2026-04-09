@@ -89,7 +89,7 @@ impl CrawlState {
         }
     }
 
-    fn to_result(self, final_url: String) -> CrawlResult {
+    fn into_result(self, final_url: String) -> CrawlResult {
         CrawlResult::new(
             self.pages,
             final_url,
@@ -160,7 +160,7 @@ impl CrawlEngine {
 
         // If we have an error already (from redirects), return early
         if state.error.is_some() {
-            return Ok(state.to_result(final_url));
+            return Ok(state.into_result(final_url));
         }
 
         // ── Phase 2: prepare filters and robots rules ───────────────────
@@ -242,7 +242,7 @@ impl CrawlEngine {
             .all_cookies
             .retain(|c| seen_cookies.insert((c.name.clone(), c.domain.clone(), c.path.clone())));
 
-        Ok(state.to_result(final_url))
+        Ok(state.into_result(final_url))
     }
 
     /// Follow HTTP, Refresh header, and meta refresh redirects until a final page is reached.

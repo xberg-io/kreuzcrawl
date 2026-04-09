@@ -9,7 +9,9 @@ use url::Url;
 use crate::error::CrawlError;
 use crate::html::{extract_links, is_html_content};
 use crate::http::{build_client, fetch_with_retry, http_fetch};
-use crate::normalize::{normalize_url, resolve_redirect, robots_url, strip_fragment};
+use crate::normalize::{
+    normalize_url, resolve_redirect, rewrite_url_host, robots_url, strip_fragment,
+};
 use crate::robots::parse_robots_txt;
 use crate::sitemap::{
     decompress_gzip, fetch_sitemap_tree, is_sitemap_index, parse_sitemap_xml,
@@ -41,19 +43,7 @@ pub async fn map(url: &str, config: &CrawlConfig) -> Result<MapResult, CrawlErro
                 let mut all_urls = Vec::new();
                 for sitemap_ref in &rules.sitemaps {
                     let sitemap_url = resolve_redirect(url, sitemap_ref);
-                    // Resolve the path against the base URL host
-                    let resolved = if let Ok(su) = Url::parse(&sitemap_url) {
-                        if su.host_str() != parsed_url.host_str() {
-                            let mut base = parsed_url.clone();
-                            base.set_path(su.path());
-                            base.set_query(su.query());
-                            base.to_string()
-                        } else {
-                            sitemap_url.clone()
-                        }
-                    } else {
-                        sitemap_url
-                    };
+                    let resolved = rewrite_url_host(&sitemap_url, &parsed_url);
                     all_urls.extend(fetch_sitemap_tree(&resolved, config, &client).await);
                 }
                 if !all_urls.is_empty() {

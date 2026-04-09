@@ -37,16 +37,16 @@ impl Default for InMemoryFrontier {
 #[async_trait]
 impl Frontier for InMemoryFrontier {
     async fn push(&self, entry: FrontierEntry) -> Result<(), CrawlError> {
-        self.queue.lock().unwrap().push_back(entry);
+        self.queue.lock().expect("lock poisoned").push_back(entry);
         Ok(())
     }
 
     async fn pop(&self) -> Result<Option<FrontierEntry>, CrawlError> {
-        Ok(self.queue.lock().unwrap().pop_front())
+        Ok(self.queue.lock().expect("lock poisoned").pop_front())
     }
 
     async fn pop_batch(&self, n: usize) -> Result<Vec<FrontierEntry>, CrawlError> {
-        let mut queue = self.queue.lock().unwrap();
+        let mut queue = self.queue.lock().expect("lock poisoned");
         let mut batch = Vec::with_capacity(n.min(queue.len()));
         for _ in 0..n {
             match queue.pop_front() {
@@ -58,16 +58,19 @@ impl Frontier for InMemoryFrontier {
     }
 
     async fn is_seen(&self, url: &str) -> Result<bool, CrawlError> {
-        Ok(self.seen.lock().unwrap().contains(url))
+        Ok(self.seen.lock().expect("lock poisoned").contains(url))
     }
 
     async fn mark_seen(&self, url: &str) -> Result<(), CrawlError> {
-        self.seen.lock().unwrap().insert(url.to_owned());
+        self.seen
+            .lock()
+            .expect("lock poisoned")
+            .insert(url.to_owned());
         Ok(())
     }
 
     async fn len(&self) -> Result<usize, CrawlError> {
-        Ok(self.queue.lock().unwrap().len())
+        Ok(self.queue.lock().expect("lock poisoned").len())
     }
 }
 

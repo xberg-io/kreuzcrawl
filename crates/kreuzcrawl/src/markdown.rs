@@ -9,8 +9,10 @@ use crate::types::MarkdownResult;
 pub(crate) async fn convert_to_markdown(html: &str) -> Option<MarkdownResult> {
     let html = html.to_owned();
     tokio::task::spawn_blocking(move || {
-        let mut options = html_to_markdown_rs::options::ConversionOptions::default();
-        options.include_document_structure = true;
+        let options = html_to_markdown_rs::options::ConversionOptions {
+            include_document_structure: true,
+            ..Default::default()
+        };
 
         match html_to_markdown_rs::convert(&html, Some(options)) {
             Ok(result) => {

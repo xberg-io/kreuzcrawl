@@ -8,16 +8,22 @@ use std::sync::LazyLock;
 use regex::Regex;
 use scraper::{Html, Selector};
 
+/// Minimum word count to consider a page as having substantial content.
+const MIN_CONTENT_WORD_COUNT: usize = 50;
+
+/// Word count below which script tags suggest client-side rendering.
+const SPARSE_CONTENT_WORD_COUNT: usize = 20;
+
 /// Well-known SPA mount-point IDs with typically empty content.
 static SPA_MOUNT_IDS: &[&str] = &["root", "app", "__next", "__nuxt"];
 
 /// Selector for script elements.
 static SCRIPT_SELECTOR: LazyLock<Selector> =
-    LazyLock::new(|| Selector::parse("script[src]").unwrap());
+    LazyLock::new(|| Selector::parse("script[src]").expect("valid selector: script[src]"));
 
 /// Selector for noscript elements.
 static NOSCRIPT_SELECTOR: LazyLock<Selector> =
-    LazyLock::new(|| Selector::parse("noscript").unwrap());
+    LazyLock::new(|| Selector::parse("noscript").expect("valid selector: noscript"));
 
 /// Pattern matching common noscript warning text.
 static NOSCRIPT_WARNING: LazyLock<Regex> = LazyLock::new(|| {
@@ -32,7 +38,7 @@ static NOSCRIPT_WARNING: LazyLock<Regex> = LazyLock::new(|| {
 /// with no substantial server-rendered content.
 pub(crate) fn detect_js_render_needed(body: &str, word_count: usize) -> bool {
     // Pages with substantial text content are not empty shells.
-    if word_count >= 50 {
+    if word_count >= MIN_CONTENT_WORD_COUNT {
         return false;
     }
 
@@ -49,7 +55,7 @@ pub(crate) fn detect_js_render_needed(body: &str, word_count: usize) -> bool {
     }
 
     // Low text content combined with script tags suggests client-side rendering.
-    if word_count < 20 && has_script_tags(&doc) {
+    if word_count < SPARSE_CONTENT_WORD_COUNT && has_script_tags(&doc) {
         return true;
     }
 

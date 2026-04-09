@@ -135,6 +135,8 @@ pub struct CrawlConfigSpec {
     pub browser_wait_selector: Option<String>,
     pub browser_extra_wait_ms: Option<u64>,
     /// When true, use CrawlEngine::builder() instead of free functions.
+    /// Populated by serde from fixture JSON; used for code generation dispatch.
+    #[allow(dead_code)]
     pub engine_mode: Option<bool>,
     /// Crawl strategy: "bfs" (default), "dfs", or "best_first"
     pub crawl_strategy: Option<String>,

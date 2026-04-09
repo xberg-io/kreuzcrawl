@@ -13,8 +13,6 @@ pub(crate) struct HttpResponse {
     pub(crate) content_type: String,
     pub(crate) body: String,
     pub(crate) body_bytes: Vec<u8>,
-    #[allow(dead_code)]
-    pub(crate) headers: HeaderMap,
 }
 
 /// Perform a single HTTP GET request with the given configuration.
@@ -89,50 +87,14 @@ pub(crate) async fn http_fetch(
     match status {
         401 => return Err(CrawlError::Unauthorized("unauthorized".into())),
         403 => {
-            // Check for WAF
             let server_lower = headers
                 .get("server")
                 .and_then(|v| v.to_str().ok())
                 .unwrap_or("")
                 .to_lowercase();
             let body = resp.text().await.unwrap_or_default();
-            let body_lower = body.to_lowercase();
-
-            let is_waf =
-                // Cloudflare - require specific patterns
-                server_lower.contains("cloudflare")
-                || body_lower.contains("cf-browser-verification")
-                || body_lower.contains("challenge-form")
-                || body_lower.contains("cf-chl-")
-                // Akamai - require specific pattern
-                || server_lower.contains("akamaighost")
-                // AWS WAF
-                || body_lower.contains("awselb")
-                || body_lower.contains("x-amzn-waf")
-                || body_lower.contains("request blocked")
-                // Imperva / Incapsula
-                || server_lower.contains("incapsula")
-                || body_lower.contains("incapsula")
-                || body_lower.contains("_incap_ses_")
-                // DataDome
-                || body_lower.contains("datadome")
-                || body_lower.contains("dd.js")
-                // PerimeterX - only specific patterns
-                || body_lower.contains("perimeterx")
-                || body_lower.contains("px-captcha")
-                // Sucuri
-                || body_lower.contains("sucuri")
-                || body_lower.contains("x-sucuri-id")
-                // F5 BIG-IP
-                || server_lower.contains("big-ip")
-                || body_lower.contains("bigipserver");
-
-            let has_waf_headers = headers.contains_key("x-sucuri-id")
-                || headers.contains_key("x-datadome")
-                || headers.contains_key("x-amzn-waf-action")
-                || headers.keys().any(|k| k.as_str().starts_with("x-px-"));
-
-            if is_waf || has_waf_headers {
+            if is_waf_blocked_headermap(&server_lower, &body, &headers) {
+                let body_lower = body.to_lowercase();
                 return Err(CrawlError::WafBlocked(format!(
                     "waf/blocked detected: {}",
                     detect_waf_vendor(&server_lower, &body_lower)
@@ -196,7 +158,6 @@ pub(crate) async fn http_fetch(
         content_type,
         body,
         body_bytes: body_bytes_vec,
-        headers,
     })
 }
 
@@ -323,18 +284,8 @@ pub(crate) fn extract_response_meta_from_hashmap(
     }
 }
 
-/// Check whether a 403 response indicates WAF/bot blocking.
-///
-/// `server` and `body` should be lowercased. `headers` is the raw header map.
-pub(crate) fn is_waf_blocked(
-    server: &str,
-    body: &str,
-    headers: &std::collections::HashMap<String, Vec<String>>,
-) -> bool {
-    let body_lower = body.to_lowercase();
-    let server_lower = server.to_lowercase();
-
-    let pattern_match = server_lower.contains("cloudflare")
+fn waf_pattern_match(server_lower: &str, body_lower: &str) -> bool {
+    server_lower.contains("cloudflare")
         || body_lower.contains("cf-browser-verification")
         || body_lower.contains("challenge-form")
         || body_lower.contains("cf-chl-")
@@ -352,14 +303,34 @@ pub(crate) fn is_waf_blocked(
         || body_lower.contains("sucuri")
         || body_lower.contains("x-sucuri-id")
         || server_lower.contains("big-ip")
-        || body_lower.contains("bigipserver");
+        || body_lower.contains("bigipserver")
+}
 
-    let has_waf_headers = headers.contains_key("x-sucuri-id")
+fn is_waf_blocked_headermap(server_lower: &str, body: &str, headers: &HeaderMap) -> bool {
+    let body_lower = body.to_lowercase();
+    if waf_pattern_match(server_lower, &body_lower) {
+        return true;
+    }
+    headers.contains_key("x-sucuri-id")
         || headers.contains_key("x-datadome")
         || headers.contains_key("x-amzn-waf-action")
-        || headers.keys().any(|k| k.starts_with("x-px-"));
+        || headers.keys().any(|k| k.as_str().starts_with("x-px-"))
+}
 
-    pattern_match || has_waf_headers
+pub(crate) fn is_waf_blocked(
+    server: &str,
+    body: &str,
+    headers: &std::collections::HashMap<String, Vec<String>>,
+) -> bool {
+    let body_lower = body.to_lowercase();
+    let server_lower = server.to_lowercase();
+    if waf_pattern_match(&server_lower, &body_lower) {
+        return true;
+    }
+    headers.contains_key("x-sucuri-id")
+        || headers.contains_key("x-datadome")
+        || headers.contains_key("x-amzn-waf-action")
+        || headers.keys().any(|k| k.starts_with("x-px-"))
 }
 
 /// Identify the WAF vendor from server and body content.

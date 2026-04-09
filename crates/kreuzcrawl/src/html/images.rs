@@ -5,15 +5,8 @@ use url::Url;
 
 use crate::types::{ImageInfo, ImageSource};
 
+use super::resolve_url;
 use super::selectors::{SEL_IMG_SRC, SEL_OG_IMAGE, SEL_SOURCE_SRCSET, SEL_TWITTER_IMAGE};
-
-/// Resolve a URL against a base URL, returning the resolved string or the original.
-fn resolve_url(src: &str, base_url: &Url) -> String {
-    base_url
-        .join(src)
-        .map(|u| u.to_string())
-        .unwrap_or_else(|_| src.to_owned())
-}
 
 /// Extract all images from a parsed HTML document.
 pub(crate) fn extract_images(doc: &Html, base_url: &Url) -> Vec<ImageInfo> {

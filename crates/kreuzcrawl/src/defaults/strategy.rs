@@ -102,7 +102,7 @@ impl AdaptiveStrategy {
 
     /// Record a page's content for saturation tracking.
     pub fn record_page(&self, html: &str) {
-        let mut state = self.term_history.lock().unwrap();
+        let mut state = self.term_history.lock().expect("lock poisoned");
         let mut new_terms = 0usize;
 
         for token in html
@@ -146,7 +146,7 @@ impl CrawlStrategy for AdaptiveStrategy {
             return true; // Need enough data
         }
 
-        let state = self.term_history.lock().unwrap();
+        let state = self.term_history.lock().expect("lock poisoned");
         if state.window.len() < self.window_size {
             return true;
         }
@@ -202,7 +202,7 @@ mod adaptive_tests {
     fn test_adaptive_records_terms() {
         let s = AdaptiveStrategy::new(5, 0.05);
         s.record_page("rust programming language systems memory");
-        let state = s.term_history.lock().unwrap();
+        let state = s.term_history.lock().expect("lock poisoned");
         assert!(state.all_terms.len() >= 4);
         assert_eq!(state.window.len(), 1);
     }

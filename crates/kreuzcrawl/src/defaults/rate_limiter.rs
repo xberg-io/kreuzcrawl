@@ -65,7 +65,7 @@ impl PerDomainThrottle {
 impl RateLimiter for PerDomainThrottle {
     async fn acquire(&self, domain: &str) -> Result<(), CrawlError> {
         let sleep_duration = {
-            let mut state = self.state.lock().unwrap();
+            let mut state = self.state.lock().expect("lock poisoned");
             let now = Instant::now();
             let domain_state = state.entry(domain.to_owned()).or_insert(DomainState {
                 last_request: now - self.default_delay,
@@ -104,7 +104,7 @@ impl RateLimiter for PerDomainThrottle {
     }
 
     async fn record_response(&self, domain: &str, status: u16) -> Result<(), CrawlError> {
-        let mut state = self.state.lock().unwrap();
+        let mut state = self.state.lock().expect("lock poisoned");
         if let Some(domain_state) = state.get_mut(domain) {
             if status == 429 {
                 // Reset consecutive success on rate limit
@@ -133,7 +133,7 @@ impl RateLimiter for PerDomainThrottle {
     }
 
     async fn set_crawl_delay(&self, domain: &str, delay: Duration) -> Result<(), CrawlError> {
-        let mut state = self.state.lock().unwrap();
+        let mut state = self.state.lock().expect("lock poisoned");
         let domain_state = state.entry(domain.to_owned()).or_insert(DomainState {
             last_request: Instant::now() - self.default_delay,
             crawl_delay: None,

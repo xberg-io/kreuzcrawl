@@ -3,11 +3,12 @@
 use std::collections::HashSet;
 use std::sync::Arc;
 
-use scraper::{Html, Selector};
+use scraper::Html;
 use sha2::{Digest, Sha256};
 use tokio::sync::Semaphore;
 use url::Url;
 
+use crate::html::selectors::{SEL_IMG_SRC, SEL_LINK_CSS, SEL_SCRIPT_SRC};
 use crate::types::{AssetCategory, CrawlConfig, DownloadedAsset};
 
 /// A reference to an asset discovered in an HTML page.
@@ -19,13 +20,6 @@ pub(crate) struct AssetRef {
 
 /// Discover downloadable assets from a parsed HTML document.
 pub(crate) fn discover_assets(doc: &Html, base_url: &Url) -> Vec<AssetRef> {
-    static SEL_LINK_CSS: std::sync::LazyLock<Selector> =
-        std::sync::LazyLock::new(|| Selector::parse("link[rel='stylesheet'][href]").unwrap());
-    static SEL_SCRIPT_SRC: std::sync::LazyLock<Selector> =
-        std::sync::LazyLock::new(|| Selector::parse("script[src]").unwrap());
-    static SEL_IMG_SRC: std::sync::LazyLock<Selector> =
-        std::sync::LazyLock::new(|| Selector::parse("img[src]").unwrap());
-
     let mut assets = Vec::new();
 
     // CSS stylesheets

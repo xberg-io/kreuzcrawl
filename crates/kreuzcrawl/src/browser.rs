@@ -9,7 +9,6 @@ use chromiumoxide::browser::{Browser, BrowserConfig as ChromeBrowserConfig};
 use chromiumoxide::cdp::browser_protocol::network::{
     Headers, SetCookieParams, SetExtraHttpHeadersParams,
 };
-use reqwest::header::HeaderMap;
 use tokio_stream::StreamExt;
 
 use crate::browser_pool::BrowserPool;
@@ -155,7 +154,6 @@ async fn page_fetch(
         content_type: "text/html".to_owned(),
         body: html,
         body_bytes,
-        headers: HeaderMap::new(),
     })
 }
 

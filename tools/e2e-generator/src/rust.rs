@@ -437,11 +437,6 @@ fn generate_test_fn(out: &mut String, fixture: &Fixture) -> Result<()> {
                 )?;
             }
         }
-    } else if category == "stealth" || category == "proxy" || category == "cache" {
-        writeln!(
-            out,
-            "    let engine = kreuzcrawl::CrawlEngine::builder().config(config.clone()).build().unwrap();"
-        )?;
     } else {
         writeln!(
             out,
@@ -594,63 +589,14 @@ fn generate_test_fn(out: &mut String, fixture: &Fixture) -> Result<()> {
         }
     } else if category == "error" {
         generate_error_assertions(out, fixture)?;
-    } else if category == "stream" {
+    } else if category == "stream" || category == "batch" {
         if let Some(ref assertions) = fixture.assertions {
             generate_assertions(out, assertions, category)?;
         }
-    } else if category == "batch" {
-        if let Some(ref assertions) = fixture.assertions {
-            generate_assertions(out, assertions, category)?;
-        }
-    } else if category == "rate_limit" {
-        writeln!(
-            out,
-            "    let result = result.expect(\"request should succeed\");"
-        )?;
-        if let Some(ref assertions) = fixture.assertions {
-            generate_assertions(out, assertions, category)?;
-        }
-    } else if category == "filter" {
-        writeln!(
-            out,
-            "    let result = result.expect(\"request should succeed\");"
-        )?;
-        if let Some(ref assertions) = fixture.assertions {
-            generate_assertions(out, assertions, category)?;
-        }
-    } else if category == "middleware" {
-        writeln!(
-            out,
-            "    let result = result.expect(\"request should succeed\");"
-        )?;
-        if let Some(ref assertions) = fixture.assertions {
-            generate_assertions(out, assertions, category)?;
-        }
-    } else if category == "concurrent" {
-        writeln!(
-            out,
-            "    let result = result.expect(\"request should succeed\");"
-        )?;
-        if let Some(ref assertions) = fixture.assertions {
-            generate_assertions(out, assertions, category)?;
-        }
-    } else if category == "stealth" {
-        writeln!(
-            out,
-            "    let result = result.expect(\"request should succeed\");"
-        )?;
-        if let Some(ref assertions) = fixture.assertions {
-            generate_assertions(out, assertions, category)?;
-        }
-    } else if category == "proxy" {
-        writeln!(
-            out,
-            "    let result = result.expect(\"request should succeed\");"
-        )?;
-        if let Some(ref assertions) = fixture.assertions {
-            generate_assertions(out, assertions, category)?;
-        }
-    } else if category == "cache" {
+    } else if matches!(
+        category,
+        "rate_limit" | "filter" | "middleware" | "concurrent" | "stealth" | "proxy" | "cache"
+    ) {
         writeln!(
             out,
             "    let result = result.expect(\"request should succeed\");"

@@ -11,7 +11,8 @@ use tower::{Layer, Service};
 
 use super::types::{CrawlRequest, CrawlResponse};
 use crate::error::CrawlError;
-use crate::traits::{CachedPage, CrawlCache};
+use crate::traits::CrawlCache;
+use crate::types::CachedPage;
 
 /// Tower layer that caches HTTP responses using a [`CrawlCache`].
 pub struct CrawlCacheLayer {
