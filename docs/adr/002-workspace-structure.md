@@ -43,7 +43,7 @@ resolver = "2"
 [workspace.package]
 version = "0.1.0"
 edition = "2024"
-license = "MIT"
+license = "Elastic-2.0"
 rust-version = "1.91"
 ```
 

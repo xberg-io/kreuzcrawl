@@ -140,39 +140,86 @@ kreuzcrawl crawl https://example.com --depth 2 --max-pages 50 --format markdown
 kreuzcrawl map https://example.com --respect-robots-txt
 ```
 
-## Feature Comparison
+## Competitive Landscape
 
-| Feature | kreuzcrawl | spider-rs | firecrawl | crawl4ai |
-|---------|-----------|-----------|-----------|----------|
-| **Language** | Rust | Rust | TypeScript | Python |
-| **Concurrent fetching** | ✅ JoinSet | ✅ JoinSet | ✅ Promise.race | ✅ asyncio |
-| **Traversal strategies** | ✅ BFS, DFS, BestFirst, Adaptive | ✅ BFS only | ✅ BFS only | ✅ BFS, DFS, BestFirst |
-| **Markdown (always-on)** | ✅ + structure, tables | ✅ Basic | ✅ Primary output | ✅ Basic |
-| **Link-to-citations** | ✅ Numbered refs | — | — | ✅ |
-| **Fit markdown (pruned for LLM)** | ✅ BM25 + adaptive | — | — | ✅ BM25/LLM-based |
-| **LLM extraction** | ✅ Multi-provider support via liter-llm | ✅ OpenAI, Gemini | ✅ OpenAI | ✅ litellm |
-| **Cost tracking** | ✅ Estimated + tokens | — | ✅ | ✅ |
-| **Metadata fields** | ✅ 40+ (OG, Twitter, DC, JSON-LD) | ✅ Basic | ✅ Basic | ✅ Basic |
-| **WAF detection** | ✅ 8 vendors | ✅ 20+ vendors | Cloud only | ✅ 3-tier |
-| **Proxy support** | ✅ HTTP/HTTPS/SOCKS5 | ✅ | ✅ | ✅ |
-| **Proxy rotation** | ❌ Removed (security) | ✅ ClientRotator | Cloud only | ✅ |
-| **User-Agent rotation** | ✅ Tower layer | ✅ | — | ✅ |
-| **Browser fallback** | ✅ chromiumoxide | ✅ chromey | ✅ Engines | ✅ Playwright |
-| **Disk cache** | ✅ blake3 + TTL | ✅ SQLite | — | ✅ SQLite |
-| **Rate limiting** | ✅ Per-domain | ✅ | Backend managed | ✅ |
-| **robots.txt** | ✅ RFC 9309 | ✅ Partial | ✅ Partial | ✅ Basic |
-| **Config validation** | ✅ serde strict | — | — | — |
-| **Pluggable traits** | ✅ 7 traits | — | — | ✅ Partial |
-| **CLI tools** | ✅ scrape/crawl/map | ✅ | — | ✅ |
-| **Batch crawling** | ✅ `batch_crawl()` | — | ✅ API | — |
-| **Streaming events** | ✅ Real-time | ✅ | ✅ Polling | ✅ |
-| **Asset download + dedup** | ✅ SHA-256 | — | — | — |
-| **Feed discovery** | ✅ RSS, Atom, JSON | — | — | — |
-| **JSON-LD extraction** | ✅ Full | — | — | — |
-| **Screenshot capture** | Stub | ✅ | ✅ | ✅ |
-| **Page interaction** | — | — | ✅ | ✅ |
-| **REST API** | — | — | ✅ | — |
-| **Language SDKs** | — | — | ✅ 4 languages | ✅ Python |
+### Overview
+
+| | kreuzcrawl | spider | firecrawl | crawl4ai | webclaw | ScrapeGraphAI | CRW |
+|---|---|---|---|---|---|---|---|
+| **Language** | Rust | Rust | TypeScript | Python | Rust | Python | Rust |
+| **License** | Elastic-2.0 | MIT | AGPL-3.0 | Apache-2.0 | AGPL-3.0 | MIT | AGPL-3.0 |
+| **Distribution** | Library + CLI | Library + CLI + SaaS | SaaS + Self-hosted | Library + CLI + API | Library + CLI + MCP | Library + SaaS API | CLI + MCP + API |
+| **Headless browser** | chromiumoxide | chromey / WebDriver | Playwright | Playwright | None (TLS fingerprint) | Playwright | LightPanda / Chrome |
+
+### Crawling
+
+| | kreuzcrawl | spider | firecrawl | crawl4ai | webclaw | ScrapeGraphAI | CRW |
+|---|---|---|---|---|---|---|---|
+| **Traversal strategies** | BFS, DFS, BestFirst, Adaptive | BFS | BFS | BFS, DFS, BestFirst | BFS | LLM-driven graph | BFS |
+| **Concurrent fetching** | JoinSet + Semaphore | Tokio multi-thread + AIMD | Bull queue workers | asyncio browser pool | Tokio | asyncio | Tokio |
+| **Streaming events** | ✅ Real-time | ✅ Subscriber channels | ✅ SSE / polling | ✅ | — | — | — |
+| **Batch operations** | ✅ `batch_crawl()` | — | ✅ Async API | ✅ Deep crawl | ✅ | — | ✅ |
+| **Sitemap parsing** | ✅ XML, gzip, index | ✅ | ✅ | — | ✅ | — | ✅ |
+| **robots.txt** | ✅ RFC 9309 | ✅ With caching | ✅ | ✅ Basic | ✅ | — | ✅ |
+
+### Extraction & Content
+
+| | kreuzcrawl | spider | firecrawl | crawl4ai | webclaw | ScrapeGraphAI | CRW |
+|---|---|---|---|---|---|---|---|
+| **Markdown conversion** | ✅ Always-on + structure | ✅ | ✅ Primary output | ✅ | ✅ | ✅ | ✅ |
+| **Fit markdown (LLM-pruned)** | ✅ BM25 + heuristic | — | — | ✅ BM25/LLM-based | ✅ Token-optimized | — | — |
+| **Metadata fields** | ✅ 40+ (OG, DC, Twitter, Article, JSON-LD) | ✅ Basic | ✅ Basic | ✅ Basic | ✅ Moderate | — | ✅ Basic |
+| **JSON-LD extraction** | ✅ Full | — | — | — | ✅ Data islands | — | — |
+| **Feed discovery** | ✅ RSS, Atom, JSON Feed | — | — | — | — | — | — |
+| **Link-to-citations** | ✅ Numbered refs | — | — | ✅ | — | — | — |
+| **LLM extraction** | ✅ Multi-provider (liter-llm) | ✅ OpenAI, Gemini | ✅ 10+ providers | ✅ litellm | ✅ Ollama (local) | ✅ LangChain (core) | ✅ Claude, OpenAI |
+| **Cost tracking** | ✅ USD + tokens | — | ✅ | ✅ | — | ✅ Token counting | — |
+| **PDF extraction** | — | — | ✅ FirePDF | ✅ | ✅ | ✅ | ✅ |
+
+### Browser & Anti-Bot
+
+| | kreuzcrawl | spider | firecrawl | crawl4ai | webclaw | ScrapeGraphAI | CRW |
+|---|---|---|---|---|---|---|---|
+| **WAF detection** | ✅ 8 vendors | ✅ Smart mode (auto-escalate) | Cloud only | ✅ 3-tier detection | — | — | — |
+| **Stealth / anti-detect** | ✅ UA rotation | ✅ ua_generator | ✅ Stealth injection | ✅ Playwright Stealth | ✅ TLS fingerprinting | ✅ Undetected Playwright | ✅ Stealth injection |
+| **Proxy support** | ✅ HTTP/HTTPS/SOCKS5 | ✅ + SOCKS + Cloud | ✅ Rotating proxies | ✅ With escalation | ✅ | Via Playwright | ✅ HTTP/SOCKS5 |
+| **User-Agent rotation** | ✅ Tower layer | ✅ | — | ✅ | — | — | ✅ |
+| **Screenshot capture** | Stub | ✅ | ✅ | ✅ | — | ✅ | — |
+| **Page interaction** | — | ✅ Agent automation | ✅ Click, scroll, type | ✅ JS execution | — | — | — |
+
+### Infrastructure & Integration
+
+| | kreuzcrawl | spider | firecrawl | crawl4ai | webclaw | ScrapeGraphAI | CRW |
+|---|---|---|---|---|---|---|---|
+| **REST API server** | — | — | ✅ (primary) | ✅ FastAPI | — | ✅ SaaS API | ✅ Firecrawl-compatible |
+| **MCP server** | — | ✅ | ✅ | ✅ | ✅ | ✅ Via Toolhouse | ✅ |
+| **CLI** | ✅ scrape/crawl/map | ✅ | — | ✅ `crwl` | ✅ | — | ✅ |
+| **Language SDKs** | Rust only | Rust, Python, Node.js | Python, JS, Go, Java, Elixir, Rust | Python | Rust | Python, Node.js | Rust |
+| **Disk cache** | ✅ blake3 + TTL | ✅ SQLite | ✅ Redis | ✅ SQLite | — | — | — |
+| **Per-domain rate limiting** | ✅ Tower layer | ✅ Token bucket + auto-throttle | ✅ Global RPS | ✅ Adaptive | — | — | ✅ Global RPS |
+| **HTTP caching (ETag)** | ✅ | ✅ | — | — | — | — | — |
+
+### Architecture & Extensibility
+
+| | kreuzcrawl | spider | firecrawl | crawl4ai | webclaw | ScrapeGraphAI | CRW |
+|---|---|---|---|---|---|---|---|
+| **Pluggable traits** | ✅ 7 traits | — | — | ✅ Partial (strategies) | — | ✅ Graph nodes | — |
+| **Middleware stack** | ✅ Tower services | — | — | — | — | — | — |
+| **Config validation** | ✅ serde strict | — | — | — | — | — | — |
+| **BM25 relevance scoring** | ✅ | — | — | ✅ | — | — | — |
+| **Adaptive crawling** | ✅ Term saturation | — | — | ✅ Pattern learning | — | — | — |
+| **Asset download + dedup** | ✅ SHA-256 | — | — | — | — | — | — |
+| **Search integration** | — | ✅ Serper, Brave, Bing, Tavily | ✅ | ✅ Google | ✅ API key | ✅ DuckDuckGo | ✅ API key |
+| **WARC output** | — | ✅ | — | — | — | — | — |
+
+### License Details
+
+| License | Tools | Commercial use | Hosting restriction |
+|---------|-------|---------------|---------------------|
+| **Elastic-2.0** | kreuzcrawl | ✅ Yes | Cannot provide as managed service |
+| **MIT** | spider, ScrapeGraphAI | ✅ Yes | None |
+| **Apache-2.0** | crawl4ai | ✅ Yes | None |
+| **AGPL-3.0** | firecrawl, webclaw, CRW | ✅ Yes | Must open-source modifications if hosting |
 
 ## Architecture
 
@@ -293,4 +340,4 @@ kreuzcrawl map <URL> \
 
 ## License
 
-MIT License — see [LICENSE](LICENSE).
+Elastic License 2.0 (ELv2) — see [LICENSE](LICENSE).
