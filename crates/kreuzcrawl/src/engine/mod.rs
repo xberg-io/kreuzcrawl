@@ -107,6 +107,7 @@ impl CrawlEngine {
                     extracted_data: None,
                     extraction_meta: None,
                     screenshot: None,
+                    downloaded_document: None,
                 });
             }
             Err(e) => return Err(e),

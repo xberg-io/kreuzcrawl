@@ -23,6 +23,7 @@ api = [
     "dep:base64",
 ]
 mcp-http = ["mcp", "api"]
+warc = ["dep:uuid"]
 
 [dependencies]
 ahash = { workspace = true }

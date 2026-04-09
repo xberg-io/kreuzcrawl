@@ -16,5 +16,6 @@ pub use metadata::{
     ArticleMetadata, FaviconInfo, HeadingInfo, HreflangEntry, PageMetadata, ResponseMeta,
 };
 pub use results::{
-    CachedPage, CrawlPageResult, CrawlResult, MapResult, MarkdownResult, ScrapeResult, SitemapUrl,
+    ActionResult, CachedPage, CrawlPageResult, CrawlResult, DownloadedDocument, InteractionResult,
+    MapResult, MarkdownResult, ScrapeResult, SitemapUrl,
 };

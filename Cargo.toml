@@ -1,6 +1,11 @@
 [workspace]
-members = ["crates/*", "tools/*"]
-exclude = [".claude", "e2e/rust"]
+members = ["crates/*", "tools/*", "packages/elixir/native/kreuzcrawl_nif"]
+exclude = [
+    ".claude",
+    "e2e/rust",
+    "packages/ruby/ext/kreuzcrawl_rb/native",
+    "packages/ruby/vendor",
+]
 resolver = "2"
 
 [workspace.package]
@@ -63,3 +68,12 @@ url = "2"
 utoipa = { version = "5", features = ["axum_extras"] }
 uuid = { version = "1", features = ["v4"] }
 walkdir = "2.5"
+
+# Binding framework dependencies
+ext-php-rs = "0.15"
+libc = "0.2"
+napi = { version = "3", default-features = false, features = ["napi8", "tokio_rt"] }
+napi-derive = "3"
+pyo3 = { version = "0.28", features = ["abi3-py310"] }
+wasm-bindgen = "0.2"
+wasm-bindgen-futures = "0.4"

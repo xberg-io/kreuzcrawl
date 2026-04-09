@@ -1,11 +1,69 @@
-use std::collections::HashSet;
+use std::borrow::Cow;
+use std::collections::HashMap;
 
+use ahash::AHashSet;
 use serde::{Deserialize, Serialize};
 
 use super::{
     CookieInfo, DownloadedAsset, ExtractionMeta, FeedInfo, ImageInfo, JsonLdEntry, LinkInfo,
     PageMetadata, ResponseMeta,
 };
+
+/// A downloaded non-HTML document (PDF, DOCX, image, code file, etc.).
+///
+/// When the crawler encounters non-HTML content and `download_documents` is
+/// enabled, it downloads the raw bytes and populates this struct instead of
+/// skipping the resource.
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct DownloadedDocument {
+    /// The URL the document was fetched from.
+    pub url: String,
+    /// The MIME type from the Content-Type header.
+    pub mime_type: Cow<'static, str>,
+    /// Raw document bytes. Skipped during JSON serialization.
+    #[serde(skip_serializing)]
+    pub content: Vec<u8>,
+    /// Size of the document in bytes.
+    pub size: usize,
+    /// Filename extracted from Content-Disposition or URL path.
+    pub filename: Option<Box<str>>,
+    /// SHA-256 hex digest of the content.
+    pub content_hash: Box<str>,
+    /// Selected response headers.
+    #[serde(default, skip_serializing_if = "HashMap::is_empty")]
+    pub headers: HashMap<Box<str>, Box<str>>,
+}
+
+/// Result of executing a sequence of page interaction actions.
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct InteractionResult {
+    /// Results from each executed action.
+    pub action_results: Vec<ActionResult>,
+    /// Final page HTML after all actions completed.
+    pub final_html: String,
+    /// Final page URL (may have changed due to navigation).
+    pub final_url: String,
+    /// Screenshot taken after all actions, if requested.
+    #[serde(skip)]
+    pub screenshot: Option<Vec<u8>>,
+}
+
+/// Result from a single page action execution.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ActionResult {
+    /// Zero-based index of the action in the sequence.
+    pub action_index: usize,
+    /// The type of action that was executed.
+    pub action_type: Cow<'static, str>,
+    /// Whether the action completed successfully.
+    pub success: bool,
+    /// Action-specific return data (screenshot bytes, JS return value, scraped HTML).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub data: Option<serde_json::Value>,
+    /// Error message if the action failed.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub error: Option<String>,
+}
 
 /// The result of a single-page scrape operation.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -66,6 +124,9 @@ pub struct ScrapeResult {
     /// Screenshot of the page as PNG bytes. Populated when browser is used and capture_screenshot is enabled.
     #[serde(skip)]
     pub screenshot: Option<Vec<u8>>,
+    /// Downloaded non-HTML document (PDF, DOCX, image, code, etc.).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub downloaded_document: Option<DownloadedDocument>,
 }
 
 /// The result of crawling a single page during a crawl operation.
@@ -110,6 +171,9 @@ pub struct CrawlPageResult {
     pub extracted_data: Option<serde_json::Value>,
     /// Metadata about the LLM extraction pass (cost, tokens, model).
     pub extraction_meta: Option<ExtractionMeta>,
+    /// Downloaded non-HTML document (PDF, DOCX, image, code, etc.).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub downloaded_document: Option<DownloadedDocument>,
 }
 
 /// The result of a multi-page crawl operation.
@@ -156,7 +220,7 @@ impl CrawlResult {
 
     /// Returns the count of unique normalized URLs encountered during crawling.
     pub fn unique_normalized_urls(&self) -> usize {
-        let mut unique: HashSet<&str> = HashSet::new();
+        let mut unique: AHashSet<&str> = AHashSet::new();
         for n in &self.normalized_urls {
             unique.insert(n.as_str());
         }

@@ -156,5 +156,6 @@ pub(crate) async fn scrape_from_crawl_response(
         extracted_data: None,
         extraction_meta: None,
         screenshot: None,
+        downloaded_document: None,
     })
 }

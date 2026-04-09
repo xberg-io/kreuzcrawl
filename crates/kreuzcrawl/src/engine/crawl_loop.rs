@@ -686,6 +686,7 @@ impl CrawlEngine {
             markdown,
             extracted_data: None,
             extraction_meta: None,
+            downloaded_document: None,
         };
 
         // Apply content filter — filtered pages still contribute to link discovery above
