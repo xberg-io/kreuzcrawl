@@ -18,22 +18,22 @@ log_file=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-  --strict)
-    strict=true
-    shift
-    ;;
-  --log-file)
-    if [[ $# -lt 2 ]]; then
-      echo "error: --log-file requires a path" >&2
+    --strict)
+      strict=true
+      shift
+      ;;
+    --log-file)
+      if [[ $# -lt 2 ]]; then
+        echo "error: --log-file requires a path" >&2
+        exit 2
+      fi
+      log_file="$2"
+      shift 2
+      ;;
+    *)
+      echo "usage: $0 [--strict] [--log-file PATH]" >&2
       exit 2
-    fi
-    log_file="$2"
-    shift 2
-    ;;
-  *)
-    echo "usage: $0 [--strict] [--log-file PATH]" >&2
-    exit 2
-    ;;
+      ;;
   esac
 done
 

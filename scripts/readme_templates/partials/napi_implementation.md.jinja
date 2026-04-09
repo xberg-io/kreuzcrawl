@@ -1,0 +1,24 @@
+## NAPI-RS Implementation Details
+
+### Native Performance
+
+This binding uses NAPI-RS to provide native Node.js bindings with:
+
+- **Zero-copy data transfer** between JavaScript and Rust layers
+- **Native thread pool** for concurrent document processing
+- **Direct memory management** for efficient large document handling
+- **Binary-compatible** pre-built native modules across platforms
+
+### Threading Model
+
+- Single documents are processed synchronously or asynchronously in a dedicated thread
+- Batch operations distribute work across available CPU cores
+- Thread count is configurable but defaults to system CPU count
+- Long-running extractions block the event loop unless using async APIs
+
+### Memory Management
+
+- Large documents (> 100 MB) are streamed to avoid loading entirely into memory
+- Temporary files are created in system temp directory for extraction
+- Memory is automatically released after extraction completion
+- ONNX models are cached in memory for repeated embeddings operations

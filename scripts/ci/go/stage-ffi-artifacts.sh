@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+STAGING_DIR="${1:-artifact-staging/kreuzcrawl-ffi}"
+export BUILD_FEATURES="${2:-default}"
+
+echo "=== Staging FFI artifacts to ${STAGING_DIR} ==="
+
+shopt -s nullglob
+
+# Stage static library (.a) - required for Go static linking
+static_lib="target/release/libkreuzcrawl_ffi.a"
+if [ -f "$static_lib" ]; then
+  cp "$static_lib" "${STAGING_DIR}/lib/"
+  echo "✓ Staged static library: $static_lib ($(du -h "$static_lib" | cut -f1))"
+else
+  echo "ERROR: Static library not found: $static_lib" >&2
+  exit 1
+fi
+
+# Stage dynamic libraries (.so, .dylib, .dll) - optional for runtime linking
+ffi_libs=(target/release/libkreuzcrawl_ffi.{so,dylib,dll} target/release/libkreuzcrawl_ffi.so.*)
+ffi_libs_found=()
+for lib in "${ffi_libs[@]}"; do
+  if [ -f "$lib" ]; then
+    cp "$lib" "${STAGING_DIR}/lib/"
+    ffi_libs_found+=("$lib")
+  fi
+done
+if [ ${#ffi_libs_found[@]} -gt 0 ]; then
+  echo "✓ Staged dynamic libraries: ${ffi_libs_found[*]}"
+fi
+
+# Stage PDFium libraries
+pdfium_libs=(target/release/libpdfium.*)
+if [ ${#pdfium_libs[@]} -gt 0 ]; then
+  cp "${pdfium_libs[@]}" "${STAGING_DIR}/lib/"
+  echo "✓ Staged PDFium library: ${pdfium_libs[*]}"
+fi
+
+shopt -u nullglob
+
+# Stage header file
+cp crates/kreuzcrawl-ffi/kreuzcrawl.h "${STAGING_DIR}/include/"
+echo "✓ Staged header: kreuzcrawl.h"
+
+# Stage pkg-config file
+cp crates/kreuzcrawl-ffi/kreuzcrawl-ffi-install.pc "${STAGING_DIR}/share/pkgconfig/kreuzcrawl-ffi.pc"
+echo "✓ Staged pkg-config: kreuzcrawl-ffi.pc"
+
+echo ""
+echo "✓ FFI artifacts staged successfully to ${STAGING_DIR}"
+echo "  Contents:"
+ls -la "${STAGING_DIR}/lib/" 2>/dev/null || true

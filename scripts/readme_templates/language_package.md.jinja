@@ -1,0 +1,100 @@
+# {{ name }}
+
+{% include 'partials/badges.html.jinja' %}
+
+{{ description }}
+
+## Installation
+
+{% include 'partials/installation.md.jinja' %}
+
+## Quick Start
+
+{% include 'partials/quick_start.md.jinja' %}
+
+{% if language == "typescript" %}
+{% include 'partials/napi_implementation.md.jinja' %}
+
+{% endif %}
+## Features
+
+{% include 'partials/features.md.jinja' %}
+
+{% if features.ocr %}
+## OCR Support
+
+Kreuzcrawl supports multiple OCR backends for extracting text from scanned documents and images:
+
+{% for backend in ocr_backends %}
+- **{{ backend | title }}**
+{% endfor %}
+
+### OCR Configuration Example
+
+{{ snippets.ocr_configuration | include_snippet(language) }}
+
+{% endif %}
+{% if features.async %}
+## Async Support
+
+This binding provides full async/await support for non-blocking document processing:
+
+{{ snippets.async_extraction | include_snippet(language) }}
+
+{% endif %}
+{% if features.plugin_system %}
+## Plugin System
+
+Kreuzcrawl supports extensible post-processing plugins for custom text transformation and filtering.
+
+For detailed plugin documentation, visit [Plugin System Guide](https://kreuzcrawl.dev/guides/plugins/).
+
+{% if snippets.plugin_system %}
+### Plugin Example
+
+{{ snippets.plugin_system | include_snippet(language) }}
+
+{% endif %}
+{% endif %}
+{% if features.embeddings %}
+## Embeddings Support
+
+Generate vector embeddings for extracted text using the built-in ONNX Runtime support. Requires ONNX Runtime installation.
+
+**[Embeddings Guide](https://kreuzcrawl.dev/features/#embeddings)**
+{% endif %}
+
+{% if snippets.batch_processing %}
+## Batch Processing
+
+Process multiple documents efficiently:
+
+{{ snippets.batch_processing | include_snippet(language) }}
+
+{% endif %}
+
+## Configuration
+
+For advanced configuration options including language detection, table extraction, OCR settings, and more:
+
+**[Configuration Guide](https://kreuzcrawl.dev/guides/configuration/)**
+
+## Documentation
+
+- **[Official Documentation](https://kreuzcrawl.dev/)**
+- **[API Reference](https://kreuzcrawl.dev/reference/api-{{ language }}/)**
+- **[Examples & Guides](https://kreuzcrawl.dev/guides/)**
+
+## Contributing
+
+Contributions are welcome! See [Contributing Guide](https://github.com/kreuzcrawl-dev/kreuzcrawl/blob/main/CONTRIBUTING.md).
+
+## License
+
+MIT License - see LICENSE file for details.
+
+## Support
+
+- **Discord Community**: [Join our Discord](https://discord.gg/xt9WY3GnKR)
+- **GitHub Issues**: [Report bugs](https://github.com/kreuzcrawl-dev/kreuzcrawl/issues)
+- **Discussions**: [Ask questions](https://github.com/kreuzcrawl-dev/kreuzcrawl/discussions)

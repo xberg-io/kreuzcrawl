@@ -1,0 +1,251 @@
+### Package Installation
+
+{% if package_manager | length == 1 %}
+{% set pm = package_manager[0] %}
+{% if pm == "pip" %}
+Install via pip:
+
+```bash
+pip install {{ package_name }}
+```
+
+For async support and additional features:
+
+```bash
+pip install {{ package_name }}[async]
+```
+
+{% elif pm == "npm" or pm == "pnpm" or pm == "yarn" %}
+Install via your preferred package manager:
+
+{% if "npm" in package_manager %}
+```bash
+npm install {{ package_name }}
+```
+{% endif %}
+{% if "pnpm" in package_manager %}
+```bash
+pnpm add {{ package_name }}
+```
+{% endif %}
+{% if "yarn" in package_manager %}
+```bash
+yarn add {{ package_name }}
+```
+{% endif %}
+
+{% elif pm == "go get" %}
+Install with go get:
+
+```bash
+go get {{ package_name }}
+```
+
+For more details on FFI setup and native library linking, see the [Go API Reference](https://kreuzcrawl.dev/reference/api-go/).
+
+{% elif pm == "maven" %}
+Add to your `pom.xml`:
+
+```xml
+<dependency>
+    <groupId>dev.kreuzcrawl</groupId>
+    <artifactId>kreuzcrawl</artifactId>
+    <version>4.0.0</version>
+</dependency>
+```
+
+Or use Gradle:
+
+```gradle
+implementation 'dev.kreuzcrawl:kreuzcrawl:4.0.0'
+```
+
+{% elif pm == "rubygems" %}
+Install via gem:
+
+```bash
+gem install {{ package_name }}
+```
+
+Or add to your Gemfile:
+
+```ruby
+gem '{{ package_name }}'
+```
+
+{% elif pm == "composer" %}
+Install via Composer:
+
+```bash
+composer require {{ package_name }}
+```
+
+{% elif pm == "mix" %}
+Add to your `mix.exs` dependencies:
+
+```elixir
+def deps do
+  [
+    {{ package_name | replace("/", "_") }}: "~> 4.0"
+  ]
+end
+```
+
+Then run:
+
+```bash
+mix deps.get
+```
+
+{% elif pm == "nuget" %}
+Install via NuGet:
+
+```bash
+dotnet add package {{ package_name }}
+```
+
+Or via NuGet Package Manager:
+
+```
+Install-Package {{ package_name }}
+```
+
+{% endif %}
+{% else %}
+Install via one of the supported package managers:
+
+{% for pm in package_manager %}
+{% if pm == "pip" %}
+**pip:**
+```bash
+pip install {{ package_name }}
+```
+
+{% elif pm == "npm" %}
+**npm:**
+```bash
+npm install {{ package_name }}
+```
+
+{% elif pm == "pnpm" %}
+**pnpm:**
+```bash
+pnpm add {{ package_name }}
+```
+
+{% elif pm == "yarn" %}
+**yarn:**
+```bash
+yarn add {{ package_name }}
+```
+
+{% elif pm == "go get" %}
+**go get:**
+```bash
+go get {{ package_name }}
+```
+
+{% elif pm == "maven" %}
+**Maven:**
+```xml
+<dependency>
+    <groupId>dev.kreuzcrawl</groupId>
+    <artifactId>kreuzcrawl</artifactId>
+    <version>4.0.0</version>
+</dependency>
+```
+
+{% elif pm == "gradle" %}
+**Gradle:**
+```gradle
+implementation 'dev.kreuzcrawl:kreuzcrawl:4.0.0'
+```
+
+{% elif pm == "rubygems" %}
+**gem:**
+```bash
+gem install {{ package_name }}
+```
+
+{% elif pm == "bundler" %}
+**Bundler:**
+```ruby
+gem '{{ package_name }}'
+```
+
+{% elif pm == "composer" %}
+**Composer:**
+```bash
+composer require {{ package_name }}
+```
+
+{% elif pm == "mix" %}
+**mix:**
+```elixir
+def deps do
+  [
+    {{ package_name | replace("/", "_") }}: "~> 4.0"
+  ]
+end
+```
+
+{% elif pm == "nuget" %}
+**NuGet:**
+```bash
+dotnet add package {{ package_name }}
+```
+
+{% endif %}
+{% endfor %}
+{% endif %}
+
+### System Requirements
+{% if language == "python" %}
+- **Python 3.10+** required
+- Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.22.x for embeddings support
+- Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
+{% elif language == "typescript" %}
+- **Node.js 22+** required (NAPI-RS native bindings)
+- Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.22.x for embeddings support
+- Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
+
+### Platform Support
+
+Pre-built binaries available for:
+- macOS (arm64, x64)
+- Linux (x64)
+- Windows (x64)
+
+{% elif language == "go" %}
+- **Go 1.19+** required
+- Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.22.x for embeddings support
+- Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
+{% elif language == "java" %}
+- **Java 11+** required
+- Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.22.x for embeddings support
+- Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
+{% elif language == "ruby" %}
+- **Ruby 3.2.0 or higher** required (including Ruby 4.x)
+- Ruby 4.0+ is fully supported with no code changes required
+- Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.22.x for embeddings support
+- Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
+
+**Ruby 4.0 Compatibility:** Kreuzcrawl is fully compatible with Ruby 4.0 (released December 25, 2025) and all Ruby 4.x versions. All tests pass with 100% compatibility. The gem compiles without any breaking changes. Key Ruby 4.0 features like Ruby Box, ZJIT compiler, and Ractor improvements work seamlessly with Kreuzcrawl.
+{% elif language == "php" %}
+- **PHP 8.0+** required
+- Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.22.x for embeddings support
+- Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
+{% elif language == "csharp" %}
+- **.NET 10.0+** required
+- Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.22.x for embeddings support
+- Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
+{% elif language == "elixir" %}
+- **Elixir 1.12+** and **Erlang/OTP 24+** required
+- Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.22.x for embeddings support
+- Optional: [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) for OCR functionality
+{% elif language == "wasm" %}
+- Modern browser with WebAssembly support, or Deno 1.0+, or Cloudflare Workers
+- Optional: [Tesseract WASM](https://github.com/naptha/tesseract.js) for OCR functionality
+{% else %}
+- See [Installation Guide](https://kreuzcrawl.dev/getting-started/installation/) for requirements
+{% endif %}

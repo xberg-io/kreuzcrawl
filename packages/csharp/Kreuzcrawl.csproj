@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>Kreuzcrawl</RootNamespace>
+    <PackageId>Kreuzcrawl</PackageId>
+    <Version>0.1.0</Version>
+    <Description>High-performance web crawling engine</Description>
+    <PackageLicenseExpression>Elastic-2.0</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/kreuzberg-dev/kreuzcrawl</RepositoryUrl>
+    <Authors>Kreuzberg Team</Authors>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+</Project>

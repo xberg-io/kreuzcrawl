@@ -1,0 +1,77 @@
+### Basic Extraction
+
+Extract text, metadata, and structure from any supported document format:
+
+{{ snippets.basic_extraction | include_snippet(language) }}
+
+### Common Use Cases
+
+#### Extract with Custom Configuration
+
+Most use cases benefit from configuration to control extraction behavior:
+
+{% if snippets.ocr_configuration %}
+**With OCR (for scanned documents):**
+
+{{ snippets.ocr_configuration | include_snippet(language) }}
+
+{% endif %}
+
+#### Table Extraction
+
+{% if snippets.table_extraction %}
+{{ snippets.table_extraction | include_snippet(language) }}
+
+{% else %}
+See [Table Extraction Guide](https://kreuzcrawl.dev/features/table-extraction/) for detailed examples.
+
+{% endif %}
+
+#### Processing Multiple Files
+
+{% if snippets.batch_processing %}
+{{ snippets.batch_processing | include_snippet(language) }}
+
+{% endif %}
+
+{% if snippets.async_extraction %}
+#### Async Processing
+
+For non-blocking document processing:
+
+{{ snippets.async_extraction | include_snippet(language) }}
+
+{% endif %}
+{% if snippets.config_discovery %}
+
+#### Configuration Discovery
+
+{{ snippets.config_discovery | include_snippet(language) }}
+
+{% endif %}
+{% if snippets.worker_pool %}
+
+#### Worker Thread Pool
+
+{{ snippets.worker_pool | include_snippet(language) }}
+
+**Performance Benefits:**
+- **Parallel Processing**: Multiple documents extracted simultaneously
+- **CPU Utilization**: Maximizes multi-core CPU usage for large batches
+- **Queue Management**: Automatically distributes work across available workers
+- **Resource Control**: Prevents thread exhaustion with configurable pool size
+
+**Best Practices:**
+- Use worker pools for batches of 10+ documents
+- Set pool size to number of CPU cores (default behavior)
+- Always close pools with `closeWorkerPool()` to prevent resource leaks
+- Reuse pools across multiple batch operations for efficiency
+
+{% endif %}
+
+### Next Steps
+
+- **[Installation Guide](https://kreuzcrawl.dev/getting-started/installation/)** - Platform-specific setup
+- **[API Documentation](https://kreuzcrawl.dev/api/)** - Complete API reference
+- **[Examples & Guides](https://kreuzcrawl.dev/guides/)** - Full code examples and usage guides
+- **[Configuration Guide](https://kreuzcrawl.dev/guides/configuration/)** - Advanced configuration options
