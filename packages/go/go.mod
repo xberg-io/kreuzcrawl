@@ -1,3 +1,3 @@
 module github.com/kreuzberg-dev/kreuzcrawl
 
-go 1.21
+go 1.22

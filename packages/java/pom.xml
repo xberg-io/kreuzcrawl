@@ -4,25 +4,38 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>dev.kreuzberg.kreuzcrawl</groupId>
+    <groupId>dev.kreuzberg</groupId>
     <artifactId>kreuzcrawl</artifactId>
     <version>0.1.0</version>
     <packaging>jar</packaging>
 
     <name>kreuzcrawl</name>
     <description>High-performance web crawling engine</description>
-    <url>https://github.com/kreuzberg-dev/kreuzcrawl</url>
+    <url>https://kreuzberg.dev</url>
 
     <licenses>
         <license>
-            <name>Elastic-2.0</name>
+            <name>Elastic License 2.0 (ELv2)</name>
+            <url>https://www.elastic.co/licensing/elastic-license</url>
         </license>
     </licenses>
 
+    <developers>
+        <developer>
+            <name>Na'aman Hirschfeld</name>
+            <email>naaman@kreuzberg.dev</email>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/kreuzberg-dev/kreuzcrawl.git</connection>
+        <developerConnection>scm:git:ssh://github.com:kreuzberg-dev/kreuzcrawl.git</developerConnection>
+        <url>https://github.com/kreuzberg-dev/kreuzcrawl</url>
+    </scm>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
+        <maven.compiler.release>25</maven.compiler.release>
     </properties>
 
     <dependencies>
@@ -46,8 +59,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.11.0</version>
                 <configuration>
-                    <source>21</source>
-                    <target>21</target>
+                    <release>25</release>
                     <compilerArgs>
                         <arg>--enable-preview</arg>
                     </compilerArgs>
@@ -59,6 +71,7 @@
                 <version>3.2.5</version>
                 <configuration>
                     <argLine>--enable-preview --enable-native-access=ALL-UNNAMED -Djava.library.path=${project.basedir}/../../target/release</argLine>
+                    <forkedProcessTimeoutInSeconds>600</forkedProcessTimeoutInSeconds>
                 </configuration>
             </plugin>
         </plugins>

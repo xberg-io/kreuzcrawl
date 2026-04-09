@@ -7,12 +7,16 @@ name = "kreuzcrawl"
 version = "0.1.0"
 description = "High-performance web crawling engine"
 readme = "README.md"
-keywords = [ "crawl", "scrape", "spider", "web" ]
+keywords = [ "crawl", "rust", "scrape", "spider", "web" ]
 license = "Elastic-2.0"
-authors = [ { name = "Kreuzberg Team", email = "team@kreuzberg.dev" } ]
+authors = [ { name = "Na'aman Hirschfeld", email = "naaman@kreuzberg.dev" } ]
 requires-python = ">=3.10"
 classifiers = [
   "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Information Technology",
+  "License :: Other/Proprietary License",
+  "Operating System :: OS Independent",
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
@@ -20,10 +24,16 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
   "Programming Language :: Python :: Implementation :: CPython",
-  "Programming Language :: Python :: Implementation :: PyPy",
   "Programming Language :: Rust",
+  "Topic :: Internet :: WWW/HTTP",
+  "Topic :: Software Development :: Libraries :: Python Modules",
   "Typing :: Typed",
 ]
+urls.Documentation = "https://kreuzberg.dev"
+urls.Homepage = "https://kreuzberg.dev"
+urls.Issues = "https://github.com/kreuzberg-dev/kreuzcrawl/issues"
+urls.Repository = "https://github.com/kreuzberg-dev/kreuzcrawl"
+urls.Source = "https://github.com/kreuzberg-dev/kreuzcrawl"
 
 [tool.maturin]
 features = [ "pyo3/extension-module" ]

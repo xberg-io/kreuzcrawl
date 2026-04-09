@@ -1,19 +1,14 @@
 {
-    "name": "kreuzberg-dev/kreuzcrawl",
-    "description": "High-performance web crawling engine",
-    "license": "Elastic-2.0",
-    "type": "php-ext",
-    "require": {
-        "php": ">=8.1"
-    },
-    "extra": {
-        "ext-name": "kreuzcrawl"
-    },
-    "keywords": [
-        "crawl",
-        "scrape",
-        "web",
-        "spider"
-    ],
-    "version": "0.1.0"
+	"name": "kreuzberg-dev/kreuzcrawl",
+	"description": "High-performance web crawling engine",
+	"license": "Elastic-2.0",
+	"type": "php-ext",
+	"require": {
+		"php": ">=8.1"
+	},
+	"extra": {
+		"ext-name": "kreuzcrawl"
+	},
+	"keywords": ["crawl", "scrape", "web", "spider"],
+	"version": "0.1.0"
 }

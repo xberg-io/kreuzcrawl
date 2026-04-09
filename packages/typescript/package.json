@@ -5,13 +5,29 @@
 	"license": "Elastic-2.0",
 	"main": "index.js",
 	"types": "index.d.ts",
-	"repository": "https://github.com/kreuzberg-dev/kreuzcrawl",
-	"author": "Kreuzberg Team",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/kreuzberg-dev/kreuzcrawl.git"
+	},
+	"author": {
+		"name": "Na'aman Hirschfeld",
+		"email": "naaman@kreuzberg.dev",
+		"url": "https://kreuzberg.dev"
+	},
+	"homepage": "https://kreuzberg.dev",
+	"bugs": {
+		"url": "https://github.com/kreuzberg-dev/kreuzcrawl/issues"
+	},
+	"publishConfig": {
+		"registry": "https://registry.npmjs.org/",
+		"access": "public"
+	},
 	"keywords": [
 		"crawl",
 		"scrape",
 		"web",
-		"spider"
+		"spider",
+		"rust"
 	],
 	"files": [
 		"index.js",

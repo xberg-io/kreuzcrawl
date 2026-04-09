@@ -1,29 +1,29 @@
 {
-    "name": "kreuzberg/kreuzcrawl",
-    "description": "High-performance Rust web crawling engine \u2014 PHP bindings",
-    "type": "php-ext",
-    "license": "Elastic-2.0",
-    "require": {
-        "php": "^8.4"
-    },
-    "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.0",
-        "phpstan/phpstan": "^2.0",
-        "phpunit/phpunit": "^13.1"
-    },
-    "autoload": {
-        "psr-4": {
-            "Kreuzberg\\Kreuzcrawl\\": "packages/php/src/"
-        }
-    },
-    "scripts": {
-        "test": "phpunit --configuration packages/php/phpunit.xml",
-        "phpstan": "phpstan analyse packages/php/src --level=9",
-        "lint": "php-cs-fixer fix --dry-run --diff packages/php/src",
-        "format": "php-cs-fixer fix packages/php/src"
-    },
-    "config": {
-        "sort-packages": true
-    },
-    "version": "0.1.0"
+	"name": "kreuzberg/kreuzcrawl",
+	"description": "High-performance Rust web crawling engine \u2014 PHP bindings",
+	"type": "php-ext",
+	"license": "Elastic-2.0",
+	"require": {
+		"php": "^8.4"
+	},
+	"require-dev": {
+		"friendsofphp/php-cs-fixer": "^3.0",
+		"phpstan/phpstan": "^2.0",
+		"phpunit/phpunit": "^13.1"
+	},
+	"autoload": {
+		"psr-4": {
+			"Kreuzberg\\Kreuzcrawl\\": "packages/php/src/"
+		}
+	},
+	"scripts": {
+		"test": "phpunit --configuration packages/php/phpunit.xml",
+		"phpstan": "phpstan analyse packages/php/src --level=9",
+		"lint": "php-cs-fixer fix --dry-run --diff packages/php/src",
+		"format": "php-cs-fixer fix packages/php/src"
+	},
+	"config": {
+		"sort-packages": true
+	},
+	"version": "0.1.0"
 }
