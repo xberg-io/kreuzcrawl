@@ -5,7 +5,7 @@ defmodule E2e.ConcurrentTest do
   describe "concurrent_basic" do
     test "Concurrent crawling fetches all pages with max_concurrent workers" do
       result = Kreuzcrawl.scrape!()
-      assert length(result.pages) == 6
+      assert String.trim(length(result.pages)) == 6
       assert length(result.pages) >= 6
     end
   end
@@ -13,7 +13,7 @@ defmodule E2e.ConcurrentTest do
   describe "concurrent_depth_two_fan_out" do
     test "Concurrent depth=2 crawl correctly fans out and deduplicates across levels" do
       result = Kreuzcrawl.scrape!()
-      assert length(result.pages) == 4
+      assert String.trim(length(result.pages)) == 4
     end
   end
 

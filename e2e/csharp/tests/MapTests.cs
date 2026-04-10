@@ -10,7 +10,7 @@ public class MapTests
     public void Test_MapDiscoverUrls()
     {
         // Discovers all URLs on a site without fetching full content
-        var result = Kreuzcrawl.Scrape();
+        var result = KreuzcrawlLib.Scrape();
         Assert.True(result.Urls.Count >= 3, "expected >= 3");
     }
 
@@ -18,7 +18,7 @@ public class MapTests
     public void Test_MapExcludePatterns()
     {
         // Excludes URLs matching patterns from URL map
-        var result = Kreuzcrawl.Scrape();
+        var result = KreuzcrawlLib.Scrape();
         Assert.Equal(1, result.Urls.Count.Trim());
     }
 
@@ -26,7 +26,7 @@ public class MapTests
     public void Test_MapIncludeSubdomains()
     {
         // Includes subdomain URLs in URL map discovery
-        var result = Kreuzcrawl.Scrape();
+        var result = KreuzcrawlLib.Scrape();
         Assert.True(result.Urls.Count >= 2, "expected >= 2");
         Assert.Contains("blog.example.com", result.Urls);
     }
@@ -35,7 +35,7 @@ public class MapTests
     public void Test_MapLargeSitemap()
     {
         // Handles large sitemap with 100+ URLs
-        var result = Kreuzcrawl.Scrape();
+        var result = KreuzcrawlLib.Scrape();
         Assert.True(result.Urls.Count >= 100, "expected >= 100");
     }
 
@@ -43,7 +43,7 @@ public class MapTests
     public void Test_MapLimitPagination()
     {
         // Limits map result count to specified maximum
-        var result = Kreuzcrawl.Scrape();
+        var result = KreuzcrawlLib.Scrape();
         Assert.True(result.Urls.Count <= 5, "expected <= 5");
     }
 
@@ -51,7 +51,7 @@ public class MapTests
     public void Test_MapSearchFilter()
     {
         // Filters map results by search keyword
-        var result = Kreuzcrawl.Scrape();
+        var result = KreuzcrawlLib.Scrape();
         Assert.True(result.Urls.Count >= 2, "expected >= 2");
         Assert.Contains("blog", result.Urls);
     }

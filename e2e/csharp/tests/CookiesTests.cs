@@ -10,7 +10,7 @@ public class CookiesTests
     public void Test_CookiesPerDomain()
     {
         // Isolates cookies per domain during crawl
-        var result = Kreuzcrawl.Scrape();
+        var result = KreuzcrawlLib.Scrape();
         Assert.Equal(1, result.Cookies.Count.Trim());
         Assert.Contains("domain_cookie", result.Cookies);
     }
@@ -19,7 +19,7 @@ public class CookiesTests
     public void Test_CookiesPersistence()
     {
         // Maintains cookies across multiple crawl requests
-        var result = Kreuzcrawl.Scrape();
+        var result = KreuzcrawlLib.Scrape();
         Assert.Contains("session", result.Cookies);
     }
 
@@ -27,7 +27,7 @@ public class CookiesTests
     public void Test_CookiesSetCookieResponse()
     {
         // Respects Set-Cookie header from server responses
-        var result = Kreuzcrawl.Scrape();
+        var result = KreuzcrawlLib.Scrape();
         Assert.Contains("tracking", result.Cookies);
     }
 }

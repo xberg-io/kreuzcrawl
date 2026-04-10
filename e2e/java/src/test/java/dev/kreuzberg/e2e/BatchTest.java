@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /** E2e tests for category: batch. */
 class BatchTest {
     @Test
-    void testScrapeBatchBasic() {
+    void testScrapeBatchBasic() throws Exception {
         // Batch scrape of multiple URLs all succeeding
         var result = Kreuzcrawl.scrape();
         assertEquals(3, result.batch().completed_count());
@@ -15,7 +15,7 @@ class BatchTest {
     }
 
     @Test
-    void testScrapeBatchPartialFailure() {
+    void testScrapeBatchPartialFailure() throws Exception {
         // Batch scrape with one URL failing returns partial results
         var result = Kreuzcrawl.scrape();
         assertEquals(2, result.batch().completed_count());
@@ -24,7 +24,7 @@ class BatchTest {
     }
 
     @Test
-    void testScrapeBatchProgress() {
+    void testScrapeBatchProgress() throws Exception {
         // Batch scrape results include specific URL
         var result = Kreuzcrawl.scrape();
         assertEquals(2, result.batch().total_count());

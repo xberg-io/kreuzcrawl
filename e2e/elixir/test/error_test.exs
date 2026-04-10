@@ -77,8 +77,8 @@ defmodule E2e.ErrorTest do
   describe "error_empty_response" do
     test "Handles 200 with completely empty body gracefully" do
       result = Kreuzcrawl.scrape!()
-      assert result.html_not_empty == false
-      assert result.error.is_error == false
+      assert String.trim(result.html_not_empty) == false
+      assert String.trim(result.error.is_error) == false
     end
   end
 

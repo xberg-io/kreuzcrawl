@@ -10,7 +10,7 @@ public class MarkdownTests
     public void Test_MarkdownBasicConversion()
     {
         // HTML is always converted to markdown alongside raw HTML
-        var result = Kreuzcrawl.Scrape();
+        var result = KreuzcrawlLib.Scrape();
         Assert.Equal(200, result.StatusCode.Trim());
         Assert.Equal("Test", result.Metadata.Title.Trim());
         Assert.NotEmpty(result.Html);
@@ -22,7 +22,7 @@ public class MarkdownTests
     public void Test_MarkdownCrawlAllPages()
     {
         // All crawled pages have markdown field populated
-        var result = Kreuzcrawl.Scrape();
+        var result = KreuzcrawlLib.Scrape();
         Assert.Equal(2, result.Crawl.PagesCrawled.Trim());
     }
 
@@ -30,7 +30,7 @@ public class MarkdownTests
     public void Test_MarkdownFitContent()
     {
         // Fit markdown removes navigation and boilerplate content
-        var result = Kreuzcrawl.Scrape();
+        var result = KreuzcrawlLib.Scrape();
         Assert.Equal(200, result.StatusCode.Trim());
         Assert.NotEmpty(result.Markdown);
     }
@@ -39,7 +39,7 @@ public class MarkdownTests
     public void Test_MarkdownHeadingsAndParagraphs()
     {
         // Markdown conversion preserves heading hierarchy and paragraph text
-        var result = Kreuzcrawl.Scrape();
+        var result = KreuzcrawlLib.Scrape();
         Assert.NotEmpty(result.Markdown);
         Assert.Contains("Main Title", result.Markdown);
     }
@@ -48,7 +48,7 @@ public class MarkdownTests
     public void Test_MarkdownLinksConverted()
     {
         // HTML links are converted to markdown link syntax
-        var result = Kreuzcrawl.Scrape();
+        var result = KreuzcrawlLib.Scrape();
         Assert.Equal(200, result.StatusCode.Trim());
         Assert.NotEmpty(result.Html);
         Assert.NotEmpty(result.Markdown);
@@ -59,7 +59,7 @@ public class MarkdownTests
     public void Test_MarkdownWithCitations()
     {
         // Markdown includes citation conversion with numbered references
-        var result = Kreuzcrawl.Scrape();
+        var result = KreuzcrawlLib.Scrape();
         Assert.Equal(200, result.StatusCode.Trim());
         Assert.NotEmpty(result.Markdown);
     }

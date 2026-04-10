@@ -15,7 +15,14 @@
         <junit.version>5.11.4</junit.version>
     </properties>
 
+    <!-- The Java package JAR must be pre-installed in the local Maven repo.
+         Run: mvn install -f ../../packages/java/pom.xml -DskipTests before testing. -->
     <dependencies>
+        <dependency>
+            <groupId>dev.kreuzberg.kreuzcrawl</groupId>
+            <artifactId>kreuzcrawl</artifactId>
+            <version>0.1.0</version>
+        </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
@@ -31,24 +38,6 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-install-plugin</artifactId>
-                <version>3.1.3</version>
-                <executions>
-                    <execution>
-                        <id>install-java-package</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                        <configuration>
-                            <file>../../packages/java/pom.xml</file>
-                            <pomFile>../../packages/java/pom.xml</pomFile>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
@@ -74,9 +63,6 @@
                 <version>3.5.2</version>
                 <configuration>
                     <argLine>--enable-preview --enable-native-access=ALL-UNNAMED -Djava.library.path=../../target/release</argLine>
-                    <additionalClasspathElements>
-                        <additionalClasspathElement>../../packages/java/target/classes</additionalClasspathElement>
-                    </additionalClasspathElements>
                 </configuration>
             </plugin>
         </plugins>

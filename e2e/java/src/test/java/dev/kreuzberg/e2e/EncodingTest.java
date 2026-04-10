@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /** E2e tests for category: encoding. */
 class EncodingTest {
     @Test
-    void testEncodingDoubleEncoded() {
+    void testEncodingDoubleEncoded() throws Exception {
         // Handles double-encoded URL characters (%25C3%25B6)
         var result = Kreuzcrawl.scrape();
         assertFalse(result.html().isEmpty(), "expected non-empty value");
@@ -14,14 +14,14 @@ class EncodingTest {
     }
 
     @Test
-    void testEncodingMixedCharsetPage() {
+    void testEncodingMixedCharsetPage() throws Exception {
         // Handles charset mismatch between HTTP header and HTML meta tag
         var result = Kreuzcrawl.scrape();
         assertFalse(result.html().isEmpty(), "expected non-empty value");
     }
 
     @Test
-    void testEncodingPercentEncodedPath() {
+    void testEncodingPercentEncodedPath() throws Exception {
         // Handles percent-encoded spaces and characters in URL paths
         var result = Kreuzcrawl.scrape();
         assertFalse(result.html().isEmpty(), "expected non-empty value");
@@ -29,7 +29,7 @@ class EncodingTest {
     }
 
     @Test
-    void testEncodingUnicodeUrl() {
+    void testEncodingUnicodeUrl() throws Exception {
         // Handles Unicode characters in URLs (Hebrew, Japanese, Cyrillic)
         var result = Kreuzcrawl.scrape();
         assertFalse(result.html().isEmpty(), "expected non-empty value");

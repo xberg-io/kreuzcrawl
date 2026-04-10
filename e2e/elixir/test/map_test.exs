@@ -12,7 +12,7 @@ defmodule E2e.MapTest do
   describe "map_exclude_patterns" do
     test "Excludes URLs matching patterns from URL map" do
       result = Kreuzcrawl.scrape!()
-      assert length(result.urls) == 1
+      assert String.trim(length(result.urls)) == 1
     end
   end
 

@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /** E2e tests for category: engine. */
 class EngineTest {
     @Test
-    void testEngineBatchBasic() {
+    void testEngineBatchBasic() throws Exception {
         // CrawlEngine with defaults batch scrapes like the free function
         var result = Kreuzcrawl.scrape();
         assertEquals(2, result.batch().completed_count());
@@ -14,7 +14,7 @@ class EngineTest {
     }
 
     @Test
-    void testEngineCrawlBasic() {
+    void testEngineCrawlBasic() throws Exception {
         // CrawlEngine with defaults crawls multiple pages like the free function
         var result = Kreuzcrawl.scrape();
         assertEquals(3, result.crawl().pages_crawled());
@@ -22,19 +22,19 @@ class EngineTest {
     }
 
     @Test
-    void testEngineMapBasic() {
+    void testEngineMapBasic() throws Exception {
         // CrawlEngine with defaults discovers URLs like the free function
         var result = Kreuzcrawl.scrape();
         assertTrue(result.map().min_urls() >= 2, "expected >= 2");
     }
 
     @Test
-    void testEngineScrapeBasic() {
+    void testEngineScrapeBasic() throws Exception {
         // CrawlEngine with defaults scrapes a page identically to the free function
         var result = Kreuzcrawl.scrape();
         assertEquals(200, result.status_code());
         assertEquals("text/html", result.content_type());
-        assertEquals("Engine Test", result.metadata().title());
+        assertEquals("Engine Test", result.metadata().title().orElse(""));
         assertTrue(result.metadata().description_contains().contains("Testing the engine"), "expected to contain: " + "Testing the engine");
         assertTrue(result.links().min_count() >= 1, "expected >= 1");
         assertEquals(1, result.headings().h1_count());
@@ -42,7 +42,7 @@ class EngineTest {
     }
 
     @Test
-    void testEngineStreamBasic() {
+    void testEngineStreamBasic() throws Exception {
         // CrawlEngine with defaults streams events like the free function
         var result = Kreuzcrawl.scrape();
         assertEquals(true, result.stream().has_page_event());

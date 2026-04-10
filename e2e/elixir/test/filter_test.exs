@@ -12,14 +12,14 @@ defmodule E2e.FilterTest do
   describe "filter_bm25_empty_query" do
     test "BM25 filter with empty query passes all pages through" do
       result = Kreuzcrawl.scrape!()
-      assert result.crawl.pages_crawled == 2
+      assert String.trim(result.crawl.pages_crawled) == 2
     end
   end
 
   describe "filter_bm25_high_threshold" do
     test "BM25 filter with very high threshold filters out all pages" do
       result = Kreuzcrawl.scrape!()
-      assert result.filter.pages_after_filter == 0
+      assert String.trim(result.filter.pages_after_filter) == 0
     end
   end
 
@@ -33,21 +33,21 @@ defmodule E2e.FilterTest do
   describe "filter_bm25_threshold_zero" do
     test "BM25 filter with zero threshold passes all pages" do
       result = Kreuzcrawl.scrape!()
-      assert result.crawl.pages_crawled == 2
+      assert String.trim(result.crawl.pages_crawled) == 2
     end
   end
 
   describe "filter_noop_crawl_all_kept" do
     test "NoopFilter keeps all pages during a multi-page crawl" do
       result = Kreuzcrawl.scrape!()
-      assert result.filter.pages_after_filter == 3
+      assert String.trim(result.filter.pages_after_filter) == 3
     end
   end
 
   describe "filter_noop_passes_all" do
     test "No content filter passes all crawled pages through" do
       result = Kreuzcrawl.scrape!()
-      assert result.crawl.pages_crawled == 3
+      assert String.trim(result.crawl.pages_crawled) == 3
     end
   end
 end

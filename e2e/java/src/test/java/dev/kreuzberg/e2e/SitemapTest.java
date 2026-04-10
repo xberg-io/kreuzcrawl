@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /** E2e tests for category: sitemap. */
 class SitemapTest {
     @Test
-    void testSitemapBasic() {
+    void testSitemapBasic() throws Exception {
         // Parses a standard urlset sitemap
         var result = Kreuzcrawl.scrape();
         assertEquals(4, result.urls().size());
@@ -14,35 +14,35 @@ class SitemapTest {
     }
 
     @Test
-    void testSitemapCompressedGzip() {
+    void testSitemapCompressedGzip() throws Exception {
         // Parses a gzip-compressed sitemap file
         var result = Kreuzcrawl.scrape();
         assertEquals(3, result.urls().size());
     }
 
     @Test
-    void testSitemapEmpty() {
+    void testSitemapEmpty() throws Exception {
         // Handles empty sitemap gracefully
         var result = Kreuzcrawl.scrape();
         assertEquals(0, result.urls().size());
     }
 
     @Test
-    void testSitemapFromRobotsTxt() {
+    void testSitemapFromRobotsTxt() throws Exception {
         // Discovers sitemap via robots.txt Sitemap directive
         var result = Kreuzcrawl.scrape();
         assertEquals(4, result.urls().size());
     }
 
     @Test
-    void testSitemapIndex() {
+    void testSitemapIndex() throws Exception {
         // Follows sitemap index to discover child sitemaps
         var result = Kreuzcrawl.scrape();
         assertEquals(3, result.urls().size());
     }
 
     @Test
-    void testSitemapLastmodFilter() {
+    void testSitemapLastmodFilter() throws Exception {
         // Filters sitemap URLs by lastmod date
         var result = Kreuzcrawl.scrape();
         assertEquals(4, result.urls().size());
@@ -50,14 +50,14 @@ class SitemapTest {
     }
 
     @Test
-    void testSitemapOnlyMode() {
+    void testSitemapOnlyMode() throws Exception {
         // Uses sitemap URLs exclusively without following page links
         var result = Kreuzcrawl.scrape();
         assertEquals(4, result.urls().size());
     }
 
     @Test
-    void testSitemapXhtmlLinks() {
+    void testSitemapXhtmlLinks() throws Exception {
         // Parses sitemap with XHTML namespace alternate links
         var result = Kreuzcrawl.scrape();
         assertEquals(2, result.urls().size());

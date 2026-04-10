@@ -10,7 +10,7 @@ public class CacheTests
     public void Test_CacheBasic()
     {
         // Crawling with disk cache enabled succeeds without errors
-        var result = Kreuzcrawl.Scrape();
+        var result = KreuzcrawlLib.Scrape();
         Assert.Equal(200, result.StatusCode.Trim());
     }
 }

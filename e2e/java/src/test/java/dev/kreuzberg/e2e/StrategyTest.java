@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /** E2e tests for category: strategy. */
 class StrategyTest {
     @Test
-    void testStrategyBestFirstSeed() {
+    void testStrategyBestFirstSeed() throws Exception {
         // BestFirst strategy always processes the seed URL first
         var result = Kreuzcrawl.scrape();
         assertEquals(3, result.crawl().pages_crawled());
@@ -14,7 +14,7 @@ class StrategyTest {
     }
 
     @Test
-    void testStrategyBfsDefaultOrder() {
+    void testStrategyBfsDefaultOrder() throws Exception {
         // BFS strategy visits pages in breadth-first order
         var result = Kreuzcrawl.scrape();
         assertEquals(5, result.crawl().pages_crawled());
@@ -22,7 +22,7 @@ class StrategyTest {
     }
 
     @Test
-    void testStrategyDfsDepthFirst() {
+    void testStrategyDfsDepthFirst() throws Exception {
         // DFS strategy visits pages in depth-first order
         var result = Kreuzcrawl.scrape();
         assertEquals(5, result.crawl().pages_crawled());

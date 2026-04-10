@@ -5,7 +5,7 @@ defmodule E2e.CacheTest do
   describe "cache_basic" do
     test "Crawling with disk cache enabled succeeds without errors" do
       result = Kreuzcrawl.scrape!()
-      assert result.status_code == 200
+      assert String.trim(result.status_code) == 200
     end
   end
 end

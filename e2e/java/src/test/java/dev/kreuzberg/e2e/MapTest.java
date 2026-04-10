@@ -6,21 +6,21 @@ import static org.junit.jupiter.api.Assertions.*;
 /** E2e tests for category: map. */
 class MapTest {
     @Test
-    void testMapDiscoverUrls() {
+    void testMapDiscoverUrls() throws Exception {
         // Discovers all URLs on a site without fetching full content
         var result = Kreuzcrawl.scrape();
         assertTrue(result.urls().size() >= 3, "expected >= 3");
     }
 
     @Test
-    void testMapExcludePatterns() {
+    void testMapExcludePatterns() throws Exception {
         // Excludes URLs matching patterns from URL map
         var result = Kreuzcrawl.scrape();
         assertEquals(1, result.urls().size());
     }
 
     @Test
-    void testMapIncludeSubdomains() {
+    void testMapIncludeSubdomains() throws Exception {
         // Includes subdomain URLs in URL map discovery
         var result = Kreuzcrawl.scrape();
         assertTrue(result.urls().size() >= 2, "expected >= 2");
@@ -28,21 +28,21 @@ class MapTest {
     }
 
     @Test
-    void testMapLargeSitemap() {
+    void testMapLargeSitemap() throws Exception {
         // Handles large sitemap with 100+ URLs
         var result = Kreuzcrawl.scrape();
         assertTrue(result.urls().size() >= 100, "expected >= 100");
     }
 
     @Test
-    void testMapLimitPagination() {
+    void testMapLimitPagination() throws Exception {
         // Limits map result count to specified maximum
         var result = Kreuzcrawl.scrape();
         assertTrue(result.urls().size() <= 5, "expected <= 5");
     }
 
     @Test
-    void testMapSearchFilter() {
+    void testMapSearchFilter() throws Exception {
         // Filters map results by search keyword
         var result = Kreuzcrawl.scrape();
         assertTrue(result.urls().size() >= 2, "expected >= 2");

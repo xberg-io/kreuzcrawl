@@ -5,22 +5,22 @@ defmodule E2e.ContentTest do
   describe "content_204_no_content" do
     test "Handles 204 No Content response gracefully" do
       result = Kreuzcrawl.scrape!()
-      assert result.status_code == 204
-      assert result.html == ""
+      assert String.trim(result.status_code) == 204
+      assert String.trim(result.html) == ""
     end
   end
 
   describe "content_charset_iso8859" do
     test "Handles ISO-8859-1 encoded page correctly" do
       result = Kreuzcrawl.scrape!()
-      assert result.content.detected_charset == "iso-8859-1"
+      assert String.trim(result.content.detected_charset) == "iso-8859-1"
     end
   end
 
   describe "content_empty_body" do
     test "Handles 200 response with empty body gracefully" do
       result = Kreuzcrawl.scrape!()
-      assert result.status_code == 200
+      assert String.trim(result.status_code) == 200
     end
   end
 
@@ -28,7 +28,7 @@ defmodule E2e.ContentTest do
     test "Handles response with Accept-Encoding gzip negotiation" do
       result = Kreuzcrawl.scrape!()
       assert result.html != ""
-      assert result.status_code == 200
+      assert String.trim(result.status_code) == 200
     end
   end
 
@@ -42,14 +42,14 @@ defmodule E2e.ContentTest do
   describe "content_main_only" do
     test "Extracts only main content area, excluding nav, sidebar, footer" do
       result = Kreuzcrawl.scrape!()
-      assert result.content.main_content_only == true
+      assert String.trim(result.content.main_content_only) == true
     end
   end
 
   describe "content_pdf_no_extension" do
     test "Detects PDF content by Content-Type header when URL has no .pdf extension" do
       result = Kreuzcrawl.scrape!()
-      assert result.content.is_pdf == true
+      assert String.trim(result.content.is_pdf) == true
     end
   end
 
@@ -63,7 +63,7 @@ defmodule E2e.ContentTest do
   describe "content_utf8_bom" do
     test "Handles UTF-8 content with BOM marker correctly" do
       result = Kreuzcrawl.scrape!()
-      assert result.content.detected_charset == "utf-8"
+      assert String.trim(result.content.detected_charset) == "utf-8"
       assert result.html != ""
     end
   end

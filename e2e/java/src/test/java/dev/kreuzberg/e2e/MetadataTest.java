@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /** E2e tests for category: metadata. */
 class MetadataTest {
     @Test
-    void testMetadataArticleTimes() {
+    void testMetadataArticleTimes() throws Exception {
         // Extracts article:published_time, modified_time, author, section, and tags
         var result = Kreuzcrawl.scrape();
         assertEquals(200, result.status_code());
@@ -18,7 +18,7 @@ class MetadataTest {
     }
 
     @Test
-    void testMetadataFavicons() {
+    void testMetadataFavicons() throws Exception {
         // Extracts favicon link tags including apple-touch-icon
         var result = Kreuzcrawl.scrape();
         assertEquals(200, result.status_code());
@@ -27,7 +27,7 @@ class MetadataTest {
     }
 
     @Test
-    void testMetadataHeadings() {
+    void testMetadataHeadings() throws Exception {
         // Extracts heading hierarchy (h1-h6) from HTML page
         var result = Kreuzcrawl.scrape();
         assertEquals(200, result.status_code());
@@ -37,7 +37,7 @@ class MetadataTest {
     }
 
     @Test
-    void testMetadataHreflang() {
+    void testMetadataHreflang() throws Exception {
         // Extracts hreflang alternate link tags
         var result = Kreuzcrawl.scrape();
         assertEquals(200, result.status_code());
@@ -46,12 +46,12 @@ class MetadataTest {
     }
 
     @Test
-    void testMetadataKeywordsAuthor() {
+    void testMetadataKeywordsAuthor() throws Exception {
         // Extracts keywords, author, viewport, generator, theme-color, robots, lang, dir metadata
         var result = Kreuzcrawl.scrape();
         assertEquals(200, result.status_code());
-        assertEquals("Comprehensive Metadata Test Page", result.metadata().title());
-        assertFalse(result.metadata().canonical_url().isEmpty(), "expected non-empty value");
+        assertEquals("Comprehensive Metadata Test Page", result.metadata().title().orElse(""));
+        assertFalse(result.metadata().canonical_url().orElse("").isEmpty(), "expected non-empty value");
         assertFalse(result.metadata().keywords().isEmpty(), "expected non-empty value");
         assertTrue(result.metadata().keywords().contains("rust"), "expected to contain: " + "rust");
         assertEquals("Jane Developer", result.metadata().author());
@@ -64,7 +64,7 @@ class MetadataTest {
     }
 
     @Test
-    void testMetadataOgVideoAudio() {
+    void testMetadataOgVideoAudio() throws Exception {
         // Extracts og:video, og:audio, and og:locale:alternate metadata
         var result = Kreuzcrawl.scrape();
         assertEquals(200, result.status_code());
@@ -74,7 +74,7 @@ class MetadataTest {
     }
 
     @Test
-    void testMetadataResponseHeaders() {
+    void testMetadataResponseHeaders() throws Exception {
         // Extracts response metadata from HTTP headers (etag, server, content-language)
         var result = Kreuzcrawl.scrape();
         assertEquals(200, result.status_code());
@@ -85,7 +85,7 @@ class MetadataTest {
     }
 
     @Test
-    void testMetadataWordCount() {
+    void testMetadataWordCount() throws Exception {
         // Computes word count from visible page text
         var result = Kreuzcrawl.scrape();
         assertEquals(200, result.status_code());

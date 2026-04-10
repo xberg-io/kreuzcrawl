@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /** E2e tests for category: rate_limit. */
 class RateLimitTest {
     @Test
-    void testRateLimitBasicDelay() {
+    void testRateLimitBasicDelay() throws Exception {
         // Rate limiter adds delay between requests to the same domain
         var result = Kreuzcrawl.scrape();
         assertEquals(3, result.crawl().pages_crawled());
@@ -14,7 +14,7 @@ class RateLimitTest {
     }
 
     @Test
-    void testRateLimitZeroNoDelay() {
+    void testRateLimitZeroNoDelay() throws Exception {
         // Rate limiter with zero delay does not slow crawling
         var result = Kreuzcrawl.scrape();
         assertEquals(2, result.crawl().pages_crawled());

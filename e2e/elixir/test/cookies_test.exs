@@ -5,7 +5,7 @@ defmodule E2e.CookiesTest do
   describe "cookies_per_domain" do
     test "Isolates cookies per domain during crawl" do
       result = Kreuzcrawl.scrape!()
-      assert length(result.cookies) == 1
+      assert String.trim(length(result.cookies)) == 1
       assert String.contains?(result.cookies, "domain_cookie")
     end
   end

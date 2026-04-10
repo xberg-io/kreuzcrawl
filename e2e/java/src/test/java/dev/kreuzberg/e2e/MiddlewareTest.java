@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /** E2e tests for category: middleware. */
 class MiddlewareTest {
     @Test
-    void testMiddlewareEngineCrawlWithDefaults() {
+    void testMiddlewareEngineCrawlWithDefaults() throws Exception {
         // Engine crawl with default middleware chain produces correct multi-page results
         var result = Kreuzcrawl.scrape();
         assertEquals(3, result.crawl().pages_crawled());
@@ -14,11 +14,11 @@ class MiddlewareTest {
     }
 
     @Test
-    void testMiddlewareNoopNoEffect() {
+    void testMiddlewareNoopNoEffect() throws Exception {
         // Default middleware chain does not affect normal scraping
         var result = Kreuzcrawl.scrape();
         assertEquals(200, result.status_code());
-        assertEquals("Middleware Test", result.metadata().title());
+        assertEquals("Middleware Test", result.metadata().title().orElse(""));
     }
 
 }

@@ -10,7 +10,7 @@ public class StealthTests
     public void Test_StealthUaRotationConfig()
     {
         // User-agent rotation config is accepted and crawl succeeds
-        var result = Kreuzcrawl.Scrape();
+        var result = KreuzcrawlLib.Scrape();
         Assert.Equal(200, result.StatusCode.Trim());
     }
 }

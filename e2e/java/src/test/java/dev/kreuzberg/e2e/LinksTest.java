@@ -6,14 +6,14 @@ import static org.junit.jupiter.api.Assertions.*;
 /** E2e tests for category: links. */
 class LinksTest {
     @Test
-    void testLinksAnchorFragment() {
+    void testLinksAnchorFragment() throws Exception {
         // Identifies fragment-only links as anchor type
         var result = Kreuzcrawl.scrape();
         assertTrue(result.links().get("").link_type().contains("anchor"), "expected to contain: " + "anchor");
     }
 
     @Test
-    void testLinksBaseTag() {
+    void testLinksBaseTag() throws Exception {
         // Resolves relative URLs using base tag href
         var result = Kreuzcrawl.scrape();
         assertTrue(result.links().size() > 2, "expected > 2");
@@ -21,14 +21,14 @@ class LinksTest {
     }
 
     @Test
-    void testLinksDocumentTypes() {
+    void testLinksDocumentTypes() throws Exception {
         // Detects PDF, DOCX, XLSX links as document type
         var result = Kreuzcrawl.scrape();
         assertTrue(result.links().get("").link_type().contains("document"), "expected to contain: " + "document");
     }
 
     @Test
-    void testLinksEmptyHref() {
+    void testLinksEmptyHref() throws Exception {
         // Handles empty href attributes without errors
         var result = Kreuzcrawl.scrape();
         assertTrue(result.links().size() > 0, "expected > 0");
@@ -36,7 +36,7 @@ class LinksTest {
     }
 
     @Test
-    void testLinksInternalExternalClassification() {
+    void testLinksInternalExternalClassification() throws Exception {
         // Correctly classifies internal vs external links by domain
         var result = Kreuzcrawl.scrape();
         assertTrue(result.links().size() > 4, "expected > 4");
@@ -45,7 +45,7 @@ class LinksTest {
     }
 
     @Test
-    void testLinksMailtoJavascriptSkip() {
+    void testLinksMailtoJavascriptSkip() throws Exception {
         // Skips mailto:, javascript:, and tel: scheme links
         var result = Kreuzcrawl.scrape();
         assertTrue(result.links().size() > 0, "expected > 0");
@@ -53,7 +53,7 @@ class LinksTest {
     }
 
     @Test
-    void testLinksProtocolRelative() {
+    void testLinksProtocolRelative() throws Exception {
         // Handles protocol-relative URLs (//example.com) correctly
         var result = Kreuzcrawl.scrape();
         assertTrue(result.links().size() > 1, "expected > 1");
@@ -61,14 +61,14 @@ class LinksTest {
     }
 
     @Test
-    void testLinksRelAttributes() {
+    void testLinksRelAttributes() throws Exception {
         // Preserves rel=nofollow and rel=canonical attributes
         var result = Kreuzcrawl.scrape();
         assertTrue(result.links().size() > 0, "expected > 0");
     }
 
     @Test
-    void testLinksRelativeParent() {
+    void testLinksRelativeParent() throws Exception {
         // Resolves ../ and ./ relative parent path links correctly
         var result = Kreuzcrawl.scrape();
         assertTrue(result.links().size() > 3, "expected > 3");

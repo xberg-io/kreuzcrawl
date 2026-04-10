@@ -10,7 +10,7 @@ public class EngineTests
     public void Test_EngineBatchBasic()
     {
         // CrawlEngine with defaults batch scrapes like the free function
-        var result = Kreuzcrawl.Scrape();
+        var result = KreuzcrawlLib.Scrape();
         Assert.Equal(2, result.Batch.CompletedCount.Trim());
         Assert.Equal(2, result.Batch.TotalCount.Trim());
     }
@@ -19,7 +19,7 @@ public class EngineTests
     public void Test_EngineCrawlBasic()
     {
         // CrawlEngine with defaults crawls multiple pages like the free function
-        var result = Kreuzcrawl.Scrape();
+        var result = KreuzcrawlLib.Scrape();
         Assert.Equal(3, result.Crawl.PagesCrawled.Trim());
         Assert.True(result.Crawl.MinPages >= 3, "expected >= 3");
     }
@@ -28,7 +28,7 @@ public class EngineTests
     public void Test_EngineMapBasic()
     {
         // CrawlEngine with defaults discovers URLs like the free function
-        var result = Kreuzcrawl.Scrape();
+        var result = KreuzcrawlLib.Scrape();
         Assert.True(result.Map.MinUrls >= 2, "expected >= 2");
     }
 
@@ -36,7 +36,7 @@ public class EngineTests
     public void Test_EngineScrapeBasic()
     {
         // CrawlEngine with defaults scrapes a page identically to the free function
-        var result = Kreuzcrawl.Scrape();
+        var result = KreuzcrawlLib.Scrape();
         Assert.Equal(200, result.StatusCode.Trim());
         Assert.Equal("text/html", result.ContentType.Trim());
         Assert.Equal("Engine Test", result.Metadata.Title.Trim());
@@ -50,7 +50,7 @@ public class EngineTests
     public void Test_EngineStreamBasic()
     {
         // CrawlEngine with defaults streams events like the free function
-        var result = Kreuzcrawl.Scrape();
+        var result = KreuzcrawlLib.Scrape();
         Assert.Equal(true, result.Stream.HasPageEvent.Trim());
         Assert.Equal(true, result.Stream.HasCompleteEvent.Trim());
         Assert.True(result.Stream.EventCountMin >= 3, "expected >= 3");

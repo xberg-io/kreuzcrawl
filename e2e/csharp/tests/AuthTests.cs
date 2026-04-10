@@ -10,7 +10,7 @@ public class AuthTests
     public void Test_AuthBasicHttp()
     {
         // Sends HTTP Basic authentication header
-        var result = Kreuzcrawl.Scrape();
+        var result = KreuzcrawlLib.Scrape();
         Assert.Equal(true, result.AuthHeaderSent.Trim());
         Assert.Equal(200, result.StatusCode.Trim());
     }
@@ -19,7 +19,7 @@ public class AuthTests
     public void Test_AuthBearerToken()
     {
         // Sends Bearer token in Authorization header
-        var result = Kreuzcrawl.Scrape();
+        var result = KreuzcrawlLib.Scrape();
         Assert.Equal(true, result.AuthHeaderSent.Trim());
         Assert.Equal(200, result.StatusCode.Trim());
     }
@@ -28,7 +28,7 @@ public class AuthTests
     public void Test_AuthCustomHeader()
     {
         // Sends authentication via custom header (X-API-Key)
-        var result = Kreuzcrawl.Scrape();
+        var result = KreuzcrawlLib.Scrape();
         Assert.Equal(true, result.AuthHeaderSent.Trim());
         Assert.Equal(200, result.StatusCode.Trim());
     }

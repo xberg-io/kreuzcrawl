@@ -10,7 +10,7 @@ public class MetadataTests
     public void Test_MetadataArticleTimes()
     {
         // Extracts article:published_time, modified_time, author, section, and tags
-        var result = Kreuzcrawl.Scrape();
+        var result = KreuzcrawlLib.Scrape();
         Assert.Equal(200, result.StatusCode.Trim());
         Assert.Equal("2024-01-15T10:00:00Z", result.Article.PublishedTime.Trim());
         Assert.Equal("2024-06-20T14:30:00Z", result.Article.ModifiedTime.Trim());
@@ -23,7 +23,7 @@ public class MetadataTests
     public void Test_MetadataFavicons()
     {
         // Extracts favicon link tags including apple-touch-icon
-        var result = Kreuzcrawl.Scrape();
+        var result = KreuzcrawlLib.Scrape();
         Assert.Equal(200, result.StatusCode.Trim());
         Assert.Equal(5, result.Favicons.Count.Trim());
         Assert.NotEmpty(result.Favicons[""].AppleTouch);
@@ -33,7 +33,7 @@ public class MetadataTests
     public void Test_MetadataHeadings()
     {
         // Extracts heading hierarchy (h1-h6) from HTML page
-        var result = Kreuzcrawl.Scrape();
+        var result = KreuzcrawlLib.Scrape();
         Assert.Equal(200, result.StatusCode.Trim());
         Assert.Equal(1, result.Headings.H1.Count.Trim());
         Assert.Equal("Primary Heading", result.Headings.H1["0"].Text.Trim());
@@ -44,7 +44,7 @@ public class MetadataTests
     public void Test_MetadataHreflang()
     {
         // Extracts hreflang alternate link tags
-        var result = Kreuzcrawl.Scrape();
+        var result = KreuzcrawlLib.Scrape();
         Assert.Equal(200, result.StatusCode.Trim());
         Assert.Equal(4, result.Hreflang.Count.Trim());
         Assert.Contains("en", result.Hreflang[""].Lang);
@@ -54,7 +54,7 @@ public class MetadataTests
     public void Test_MetadataKeywordsAuthor()
     {
         // Extracts keywords, author, viewport, generator, theme-color, robots, lang, dir metadata
-        var result = Kreuzcrawl.Scrape();
+        var result = KreuzcrawlLib.Scrape();
         Assert.Equal(200, result.StatusCode.Trim());
         Assert.Equal("Comprehensive Metadata Test Page", result.Metadata.Title.Trim());
         Assert.NotEmpty(result.Metadata.CanonicalUrl);
@@ -73,7 +73,7 @@ public class MetadataTests
     public void Test_MetadataOgVideoAudio()
     {
         // Extracts og:video, og:audio, and og:locale:alternate metadata
-        var result = Kreuzcrawl.Scrape();
+        var result = KreuzcrawlLib.Scrape();
         Assert.Equal(200, result.StatusCode.Trim());
         Assert.Equal("https://example.com/video.mp4", result.Og.Video.Trim());
         Assert.Equal("https://example.com/audio.mp3", result.Og.Audio.Trim());
@@ -84,7 +84,7 @@ public class MetadataTests
     public void Test_MetadataResponseHeaders()
     {
         // Extracts response metadata from HTTP headers (etag, server, content-language)
-        var result = Kreuzcrawl.Scrape();
+        var result = KreuzcrawlLib.Scrape();
         Assert.Equal(200, result.StatusCode.Trim());
         Assert.NotEmpty(result.ResponseHeaders.Etag);
         Assert.NotEmpty(result.ResponseHeaders.LastModified);
@@ -96,7 +96,7 @@ public class MetadataTests
     public void Test_MetadataWordCount()
     {
         // Computes word count from visible page text
-        var result = Kreuzcrawl.Scrape();
+        var result = KreuzcrawlLib.Scrape();
         Assert.Equal(200, result.StatusCode.Trim());
         Assert.True(result.Computed.WordCount > 99, "expected > 99");
         Assert.True(result.Computed.WordCount < 301, "expected < 301");

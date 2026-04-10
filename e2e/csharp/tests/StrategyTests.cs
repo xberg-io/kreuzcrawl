@@ -10,7 +10,7 @@ public class StrategyTests
     public void Test_StrategyBestFirstSeed()
     {
         // BestFirst strategy always processes the seed URL first
-        var result = Kreuzcrawl.Scrape();
+        var result = KreuzcrawlLib.Scrape();
         Assert.Equal(3, result.Crawl.PagesCrawled.Trim());
         Assert.Contains("/", result.Strategy.FirstPageUrlContains);
     }
@@ -19,7 +19,7 @@ public class StrategyTests
     public void Test_StrategyBfsDefaultOrder()
     {
         // BFS strategy visits pages in breadth-first order
-        var result = Kreuzcrawl.Scrape();
+        var result = KreuzcrawlLib.Scrape();
         Assert.Equal(5, result.Crawl.PagesCrawled.Trim());
         Assert.Equal(new[] { "/", "/a", "/b", "/a/1", "/b/1" }, result.Strategy.CrawlOrder.Trim());
     }
@@ -28,7 +28,7 @@ public class StrategyTests
     public void Test_StrategyDfsDepthFirst()
     {
         // DFS strategy visits pages in depth-first order
-        var result = Kreuzcrawl.Scrape();
+        var result = KreuzcrawlLib.Scrape();
         Assert.Equal(5, result.Crawl.PagesCrawled.Trim());
         Assert.Equal(new[] { "/", "/b", "/b/1", "/a", "/a/1" }, result.Strategy.CrawlOrder.Trim());
     }

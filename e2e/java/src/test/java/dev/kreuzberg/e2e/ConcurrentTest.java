@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /** E2e tests for category: concurrent. */
 class ConcurrentTest {
     @Test
-    void testConcurrentBasic() {
+    void testConcurrentBasic() throws Exception {
         // Concurrent crawling fetches all pages with max_concurrent workers
         var result = Kreuzcrawl.scrape();
         assertEquals(6, result.pages().size());
@@ -14,28 +14,28 @@ class ConcurrentTest {
     }
 
     @Test
-    void testConcurrentDepthTwoFanOut() {
+    void testConcurrentDepthTwoFanOut() throws Exception {
         // Concurrent depth=2 crawl correctly fans out and deduplicates across levels
         var result = Kreuzcrawl.scrape();
         assertEquals(4, result.pages().size());
     }
 
     @Test
-    void testConcurrentMaxPagesExact() {
+    void testConcurrentMaxPagesExact() throws Exception {
         // Concurrent crawling does not exceed max_pages limit even with high concurrency
         var result = Kreuzcrawl.scrape();
         assertTrue(result.pages().size() <= 3, "expected <= 3");
     }
 
     @Test
-    void testConcurrentPartialErrors() {
+    void testConcurrentPartialErrors() throws Exception {
         // Concurrent crawl handles partial failures gracefully
         var result = Kreuzcrawl.scrape();
         assertTrue(result.pages().size() >= 2, "expected >= 2");
     }
 
     @Test
-    void testConcurrentRespectsMaxPages() {
+    void testConcurrentRespectsMaxPages() throws Exception {
         // Concurrent crawling respects max_pages limit
         var result = Kreuzcrawl.scrape();
         assertTrue(result.pages().size() <= 3, "expected <= 3");
