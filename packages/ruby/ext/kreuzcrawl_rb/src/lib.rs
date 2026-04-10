@@ -167,10 +167,10 @@ impl BrowserConfig {
     fn new(
         mode: BrowserMode = BrowserMode::Auto,
         endpoint: String = "",
-        timeout: u64 = nil,
+        timeout: u64 = 0,
         wait: BrowserWait = nil,
         wait_selector: String = "",
-        extra_wait: u64 = nil
+        extra_wait: u64 = 0
     ) -> Self {
         Self {
             mode,
@@ -309,7 +309,7 @@ impl CrawlConfig {
         include_paths: Vec<String> = [],
         exclude_paths: Vec<String> = [],
         custom_headers: HashMap<String, String> = null,
-        request_timeout: u64 = nil,
+        request_timeout: u64 = 0,
         max_redirects: usize = 10,
         retry_count: usize = 0,
         retry_codes: Vec<u16> = [],
@@ -549,7 +549,7 @@ impl DownloadedDocument {
     fn new(
         url: String = "",
         mime_type: String = "",
-        content: Vec<u8> = nil,
+        content: Vec<u8> = "",
         size: usize = 0,
         filename: String = "",
         content_hash: String = "",
@@ -630,7 +630,7 @@ impl InteractionResult {
         action_results: Vec<ActionResult> = [],
         final_html: String = "",
         final_url: String = "",
-        screenshot: Vec<u8> = nil
+        screenshot: Vec<u8> = ""
     ) -> Self {
         Self {
             action_results,
@@ -833,7 +833,7 @@ impl ScrapeResult {
         markdown: MarkdownResult = nil,
         extracted_data: String = "",
         extraction_meta: ExtractionMeta = nil,
-        screenshot: Vec<u8> = nil,
+        screenshot: Vec<u8> = "",
         downloaded_document: DownloadedDocument = nil
     ) -> Self {
         Self {

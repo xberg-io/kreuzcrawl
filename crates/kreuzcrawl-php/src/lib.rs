@@ -26,7 +26,6 @@ pub struct ExtractionMeta {
 
 #[php_impl]
 impl ExtractionMeta {
-    #[must_use]
     pub fn __construct(
         cost: Option<f64>,
         prompt_tokens: Option<i64>,
@@ -47,7 +46,7 @@ impl ExtractionMeta {
 #[derive(Clone, Default)]
 #[php_class]
 pub struct ProxyConfig {
-    /// Proxy URL (e.g. "<http://proxy:8080>", "<socks5://proxy:1080>").
+    /// Proxy URL (e.g. "http://proxy:8080", "socks5://proxy:1080").
     pub url: String,
     /// Optional username for proxy authentication.
     pub username: Option<String>,
@@ -57,7 +56,6 @@ pub struct ProxyConfig {
 
 #[php_impl]
 impl ProxyConfig {
-    #[must_use]
     pub fn __construct(url: Option<String>, username: Option<String>, password: Option<String>) -> Self {
         Self {
             url: url.unwrap_or_default(),
@@ -93,8 +91,7 @@ impl BrowserConfig {
     }
 
     #[allow(clippy::should_implement_trait)]
-    #[must_use]
-    pub fn default() -> Self {
+    pub fn default() -> BrowserConfig {
         kreuzcrawl::BrowserConfig::default().into()
     }
 }
@@ -182,8 +179,7 @@ impl CrawlConfig {
     }
 
     #[allow(clippy::should_implement_trait)]
-    #[must_use]
-    pub fn default() -> Self {
+    pub fn default() -> CrawlConfig {
         kreuzcrawl::CrawlConfig::default().into()
     }
 }
@@ -209,7 +205,6 @@ pub struct DownloadedDocument {
 
 #[php_impl]
 impl DownloadedDocument {
-    #[must_use]
     pub fn __construct(
         url: Option<String>,
         mime_type: Option<String>,
@@ -270,7 +265,6 @@ pub struct ActionResult {
 
 #[php_impl]
 impl ActionResult {
-    #[must_use]
     pub fn __construct(
         action_index: Option<i64>,
         action_type: Option<String>,
@@ -325,7 +319,7 @@ pub struct ScrapeResult {
     pub was_skipped: bool,
     /// The detected character set encoding.
     pub detected_charset: Option<String>,
-    /// Whether `main_content_only` was active during extraction.
+    /// Whether main_content_only was active during extraction.
     pub main_content_only: bool,
     /// Whether an authentication header was sent with the request.
     pub auth_header_sent: bool,
@@ -339,11 +333,11 @@ pub struct ScrapeResult {
     pub browser_used: bool,
     /// Markdown conversion of the page content.
     pub markdown: Option<MarkdownResult>,
-    /// Structured data extracted by LLM. Populated when using `LlmExtractor`.
+    /// Structured data extracted by LLM. Populated when using LlmExtractor.
     pub extracted_data: Option<String>,
     /// Metadata about the LLM extraction pass (cost, tokens, model).
     pub extraction_meta: Option<ExtractionMeta>,
-    /// Screenshot of the page as PNG bytes. Populated when browser is used and `capture_screenshot` is enabled.
+    /// Screenshot of the page as PNG bytes. Populated when browser is used and capture_screenshot is enabled.
     pub screenshot: Option<Vec<u8>>,
     /// Downloaded non-HTML document (PDF, DOCX, image, code, etc.).
     pub downloaded_document: Option<DownloadedDocument>,
@@ -395,7 +389,7 @@ pub struct CrawlPageResult {
     pub detected_charset: Option<String>,
     /// Markdown conversion of the page content.
     pub markdown: Option<MarkdownResult>,
-    /// Structured data extracted by LLM. Populated when using `LlmExtractor`.
+    /// Structured data extracted by LLM. Populated when using LlmExtractor.
     pub extracted_data: Option<String>,
     /// Metadata about the LLM extraction pass (cost, tokens, model).
     pub extraction_meta: Option<ExtractionMeta>,
@@ -455,7 +449,6 @@ pub struct SitemapUrl {
 
 #[php_impl]
 impl SitemapUrl {
-    #[must_use]
     pub fn __construct(
         url: Option<String>,
         lastmod: Option<String>,
@@ -527,7 +520,6 @@ pub struct CachedPage {
 
 #[php_impl]
 impl CachedPage {
-    #[must_use]
     pub fn __construct(
         url: Option<String>,
         status_code: Option<u16>,
@@ -631,7 +623,6 @@ pub struct JsonLdEntry {
 
 #[php_impl]
 impl JsonLdEntry {
-    #[must_use]
     pub fn __construct(schema_type: Option<String>, name: Option<String>, raw: Option<String>) -> Self {
         Self {
             schema_type: schema_type.unwrap_or_default(),
@@ -656,7 +647,6 @@ pub struct CookieInfo {
 
 #[php_impl]
 impl CookieInfo {
-    #[must_use]
     pub fn __construct(
         name: Option<String>,
         value: Option<String>,
@@ -715,7 +705,6 @@ pub struct ArticleMetadata {
 
 #[php_impl]
 impl ArticleMetadata {
-    #[must_use]
     pub fn __construct(
         published_time: Option<String>,
         modified_time: Option<String>,
@@ -744,7 +733,6 @@ pub struct HreflangEntry {
 
 #[php_impl]
 impl HreflangEntry {
-    #[must_use]
     pub fn __construct(lang: Option<String>, url: Option<String>) -> Self {
         Self {
             lang: lang.unwrap_or_default(),
@@ -769,7 +757,6 @@ pub struct FaviconInfo {
 
 #[php_impl]
 impl FaviconInfo {
-    #[must_use]
     pub fn __construct(
         url: Option<String>,
         rel: Option<String>,
@@ -796,7 +783,6 @@ pub struct HeadingInfo {
 
 #[php_impl]
 impl HeadingInfo {
-    #[must_use]
     pub fn __construct(level: Option<u8>, text: Option<String>) -> Self {
         Self {
             level: level.unwrap_or_default(),
@@ -808,7 +794,7 @@ impl HeadingInfo {
 #[derive(Clone, Default)]
 #[php_class]
 pub struct ResponseMeta {
-    /// The `ETag` header value.
+    /// The ETag header value.
     pub etag: Option<String>,
     /// The Last-Modified header value.
     pub last_modified: Option<String>,
@@ -826,8 +812,7 @@ pub struct ResponseMeta {
 
 #[php_impl]
 impl ResponseMeta {
-    #[must_use]
-    pub const fn __construct(
+    pub fn __construct(
         etag: Option<String>,
         last_modified: Option<String>,
         cache_control: Option<String>,
@@ -977,7 +962,6 @@ pub struct CitationReference {
 
 #[php_impl]
 impl CitationReference {
-    #[must_use]
     pub fn __construct(index: Option<i64>, url: Option<String>, text: Option<String>) -> Self {
         Self {
             index: index.unwrap_or_default(),
@@ -1308,14 +1292,14 @@ impl From<kreuzcrawl::CrawlConfig> for CrawlConfig {
             retry_count: val.retry_count as i64,
             retry_codes: val.retry_codes,
             cookies_enabled: val.cookies_enabled,
-            auth: val.auth.as_ref().map(|v| format!("{v:?}")),
+            auth: val.auth.as_ref().map(|v| format!("{:?}", v)),
             max_body_size: val.max_body_size.map(|v| v as i64),
             main_content_only: val.main_content_only,
             remove_tags: val.remove_tags,
             map_limit: val.map_limit.map(|v| v as i64),
             map_search: val.map_search,
             download_assets: val.download_assets,
-            asset_types: val.asset_types.iter().map(|v| format!("{v:?}")).collect(),
+            asset_types: val.asset_types.iter().map(|v| format!("{:?}", v)).collect(),
             max_asset_size: val.max_asset_size.map(|v| v as i64),
             browser: val.browser.into(),
             proxy: val.proxy.map(Into::into),
@@ -1350,9 +1334,9 @@ impl From<kreuzcrawl::DownloadedDocument> for DownloadedDocument {
         Self {
             url: val.url,
             mime_type: format!("{:?}", val.mime_type),
-            content: val.content.clone(),
+            content: val.content.to_vec(),
             size: val.size as i64,
-            filename: val.filename.as_ref().map(|v| format!("{v:?}")),
+            filename: val.filename.as_ref().map(|v| format!("{:?}", v)),
             content_hash: format!("{:?}", val.content_hash),
             headers: val
                 .headers
@@ -1380,7 +1364,7 @@ impl From<kreuzcrawl::InteractionResult> for InteractionResult {
             action_results: val.action_results.into_iter().map(Into::into).collect(),
             final_html: val.final_html,
             final_url: val.final_url,
-            screenshot: val.screenshot,
+            screenshot: val.screenshot.map(|v| v.to_vec()),
         }
     }
 }
@@ -1473,7 +1457,7 @@ impl From<kreuzcrawl::ScrapeResult> for ScrapeResult {
             markdown: val.markdown.map(Into::into),
             extracted_data: val.extracted_data.as_ref().map(ToString::to_string),
             extraction_meta: val.extraction_meta.map(Into::into),
-            screenshot: val.screenshot,
+            screenshot: val.screenshot.map(|v| v.to_vec()),
             downloaded_document: val.downloaded_document.map(Into::into),
         }
     }
@@ -2117,46 +2101,48 @@ fn crawl_error_to_php_err(e: kreuzcrawl::CrawlError) -> ext_php_rs::exception::P
     #[allow(unreachable_patterns)]
     match &e {
         kreuzcrawl::CrawlError::NotFound(..) => {
-            ext_php_rs::exception::PhpException::default(format!("[NotFound] {msg}"))
+            ext_php_rs::exception::PhpException::default(format!("[NotFound] {}", msg))
         }
         kreuzcrawl::CrawlError::Unauthorized(..) => {
-            ext_php_rs::exception::PhpException::default(format!("[Unauthorized] {msg}"))
+            ext_php_rs::exception::PhpException::default(format!("[Unauthorized] {}", msg))
         }
         kreuzcrawl::CrawlError::Forbidden(..) => {
-            ext_php_rs::exception::PhpException::default(format!("[Forbidden] {msg}"))
+            ext_php_rs::exception::PhpException::default(format!("[Forbidden] {}", msg))
         }
         kreuzcrawl::CrawlError::WafBlocked(..) => {
-            ext_php_rs::exception::PhpException::default(format!("[WafBlocked] {msg}"))
+            ext_php_rs::exception::PhpException::default(format!("[WafBlocked] {}", msg))
         }
-        kreuzcrawl::CrawlError::Timeout(..) => ext_php_rs::exception::PhpException::default(format!("[Timeout] {msg}")),
+        kreuzcrawl::CrawlError::Timeout(..) => {
+            ext_php_rs::exception::PhpException::default(format!("[Timeout] {}", msg))
+        }
         kreuzcrawl::CrawlError::RateLimited(..) => {
-            ext_php_rs::exception::PhpException::default(format!("[RateLimited] {msg}"))
+            ext_php_rs::exception::PhpException::default(format!("[RateLimited] {}", msg))
         }
         kreuzcrawl::CrawlError::ServerError(..) => {
-            ext_php_rs::exception::PhpException::default(format!("[ServerError] {msg}"))
+            ext_php_rs::exception::PhpException::default(format!("[ServerError] {}", msg))
         }
         kreuzcrawl::CrawlError::BadGateway(..) => {
-            ext_php_rs::exception::PhpException::default(format!("[BadGateway] {msg}"))
+            ext_php_rs::exception::PhpException::default(format!("[BadGateway] {}", msg))
         }
-        kreuzcrawl::CrawlError::Gone(..) => ext_php_rs::exception::PhpException::default(format!("[Gone] {msg}")),
+        kreuzcrawl::CrawlError::Gone(..) => ext_php_rs::exception::PhpException::default(format!("[Gone] {}", msg)),
         kreuzcrawl::CrawlError::Connection(..) => {
-            ext_php_rs::exception::PhpException::default(format!("[Connection] {msg}"))
+            ext_php_rs::exception::PhpException::default(format!("[Connection] {}", msg))
         }
-        kreuzcrawl::CrawlError::Dns(..) => ext_php_rs::exception::PhpException::default(format!("[Dns] {msg}")),
-        kreuzcrawl::CrawlError::Ssl(..) => ext_php_rs::exception::PhpException::default(format!("[Ssl] {msg}")),
+        kreuzcrawl::CrawlError::Dns(..) => ext_php_rs::exception::PhpException::default(format!("[Dns] {}", msg)),
+        kreuzcrawl::CrawlError::Ssl(..) => ext_php_rs::exception::PhpException::default(format!("[Ssl] {}", msg)),
         kreuzcrawl::CrawlError::DataLoss(..) => {
-            ext_php_rs::exception::PhpException::default(format!("[DataLoss] {msg}"))
+            ext_php_rs::exception::PhpException::default(format!("[DataLoss] {}", msg))
         }
         kreuzcrawl::CrawlError::BrowserError(..) => {
-            ext_php_rs::exception::PhpException::default(format!("[BrowserError] {msg}"))
+            ext_php_rs::exception::PhpException::default(format!("[BrowserError] {}", msg))
         }
         kreuzcrawl::CrawlError::BrowserTimeout(..) => {
-            ext_php_rs::exception::PhpException::default(format!("[BrowserTimeout] {msg}"))
+            ext_php_rs::exception::PhpException::default(format!("[BrowserTimeout] {}", msg))
         }
         kreuzcrawl::CrawlError::InvalidConfig(..) => {
-            ext_php_rs::exception::PhpException::default(format!("[InvalidConfig] {msg}"))
+            ext_php_rs::exception::PhpException::default(format!("[InvalidConfig] {}", msg))
         }
-        kreuzcrawl::CrawlError::Other(..) => ext_php_rs::exception::PhpException::default(format!("[Other] {msg}")),
+        kreuzcrawl::CrawlError::Other(..) => ext_php_rs::exception::PhpException::default(format!("[Other] {}", msg)),
         _ => ext_php_rs::exception::PhpException::default(msg),
     }
 }

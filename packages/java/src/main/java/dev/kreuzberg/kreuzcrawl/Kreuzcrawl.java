@@ -8,7 +8,7 @@ public final class Kreuzcrawl {
 
     /**
      * Create a new crawl engine with the given configuration.
-     *
+     * 
      * If `config` is `None`, uses [`CrawlConfig::default()`].
      * Returns an error if the configuration is invalid.
      */

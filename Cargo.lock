@@ -2003,6 +2003,7 @@ dependencies = [
  "cbindgen",
  "kreuzcrawl",
  "serde_json",
+ "tokio",
 ]
 
 [[package]]

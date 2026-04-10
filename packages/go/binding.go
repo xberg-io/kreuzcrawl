@@ -8,10 +8,8 @@ package kreuzcrawl
 import "C"
 
 import (
-    "encoding/json"
-    "errors"
     "fmt"
-    "unsafe"
+    "errors"
 )
 
 // lastError retrieves the last error from the FFI layer.
@@ -191,38 +189,38 @@ type ExtractionMeta struct {
 // ExtractionMeta option function
 type ExtractionMetaOption func(*ExtractionMeta)
 
-// WithCost sets the cost field.
-func WithCost(v float64) ExtractionMetaOption {
-    return func(c *ExtractionMeta) { c.Cost = v }
+// WithExtractionMetaCost sets the cost field.
+func WithExtractionMetaCost(v float64) ExtractionMetaOption {
+    return func(c *ExtractionMeta) { c.Cost = &v }
 }
 
-// WithPromptTokens sets the prompt_tokens field.
-func WithPromptTokens(v uint64) ExtractionMetaOption {
-    return func(c *ExtractionMeta) { c.PromptTokens = v }
+// WithExtractionMetaPromptTokens sets the prompt_tokens field.
+func WithExtractionMetaPromptTokens(v uint64) ExtractionMetaOption {
+    return func(c *ExtractionMeta) { c.PromptTokens = &v }
 }
 
-// WithCompletionTokens sets the completion_tokens field.
-func WithCompletionTokens(v uint64) ExtractionMetaOption {
-    return func(c *ExtractionMeta) { c.CompletionTokens = v }
+// WithExtractionMetaCompletionTokens sets the completion_tokens field.
+func WithExtractionMetaCompletionTokens(v uint64) ExtractionMetaOption {
+    return func(c *ExtractionMeta) { c.CompletionTokens = &v }
 }
 
-// WithModel sets the model field.
-func WithModel(v string) ExtractionMetaOption {
-    return func(c *ExtractionMeta) { c.Model = v }
+// WithExtractionMetaModel sets the model field.
+func WithExtractionMetaModel(v string) ExtractionMetaOption {
+    return func(c *ExtractionMeta) { c.Model = &v }
 }
 
-// WithChunksProcessed sets the chunks_processed field.
-func WithChunksProcessed(v uint) ExtractionMetaOption {
+// WithExtractionMetaChunksProcessed sets the chunks_processed field.
+func WithExtractionMetaChunksProcessed(v uint) ExtractionMetaOption {
     return func(c *ExtractionMeta) { c.ChunksProcessed = v }
 }
 
 // NewExtractionMeta creates a ExtractionMeta with optional parameters.
 func NewExtractionMeta(opts ...ExtractionMetaOption) *ExtractionMeta {
     c := &ExtractionMeta {
-        Cost: 0.0,
-        PromptTokens: 0,
-        CompletionTokens: 0,
-        Model: "",
+        Cost: nil,
+        PromptTokens: nil,
+        CompletionTokens: nil,
+        Model: nil,
         ChunksProcessed: 0,
     }
     for _, opt := range opts {
@@ -246,27 +244,27 @@ type ProxyConfig struct {
 // ProxyConfig option function
 type ProxyConfigOption func(*ProxyConfig)
 
-// WithUrl sets the url field.
-func WithUrl(v string) ProxyConfigOption {
+// WithProxyConfigUrl sets the url field.
+func WithProxyConfigUrl(v string) ProxyConfigOption {
     return func(c *ProxyConfig) { c.Url = v }
 }
 
-// WithUsername sets the username field.
-func WithUsername(v string) ProxyConfigOption {
-    return func(c *ProxyConfig) { c.Username = v }
+// WithProxyConfigUsername sets the username field.
+func WithProxyConfigUsername(v string) ProxyConfigOption {
+    return func(c *ProxyConfig) { c.Username = &v }
 }
 
-// WithPassword sets the password field.
-func WithPassword(v string) ProxyConfigOption {
-    return func(c *ProxyConfig) { c.Password = v }
+// WithProxyConfigPassword sets the password field.
+func WithProxyConfigPassword(v string) ProxyConfigOption {
+    return func(c *ProxyConfig) { c.Password = &v }
 }
 
 // NewProxyConfig creates a ProxyConfig with optional parameters.
 func NewProxyConfig(opts ...ProxyConfigOption) *ProxyConfig {
     c := &ProxyConfig {
         Url: "",
-        Username: "",
-        Password: "",
+        Username: nil,
+        Password: nil,
     }
     for _, opt := range opts {
         opt(c)
@@ -295,45 +293,45 @@ type BrowserConfig struct {
 // BrowserConfig option function
 type BrowserConfigOption func(*BrowserConfig)
 
-// WithMode sets the mode field.
-func WithMode(v BrowserMode) BrowserConfigOption {
+// WithBrowserConfigMode sets the mode field.
+func WithBrowserConfigMode(v BrowserMode) BrowserConfigOption {
     return func(c *BrowserConfig) { c.Mode = v }
 }
 
-// WithEndpoint sets the endpoint field.
-func WithEndpoint(v string) BrowserConfigOption {
-    return func(c *BrowserConfig) { c.Endpoint = v }
+// WithBrowserConfigEndpoint sets the endpoint field.
+func WithBrowserConfigEndpoint(v string) BrowserConfigOption {
+    return func(c *BrowserConfig) { c.Endpoint = &v }
 }
 
-// WithTimeout sets the timeout field.
-func WithTimeout(v uint64) BrowserConfigOption {
+// WithBrowserConfigTimeout sets the timeout field.
+func WithBrowserConfigTimeout(v uint64) BrowserConfigOption {
     return func(c *BrowserConfig) { c.Timeout = v }
 }
 
-// WithWait sets the wait field.
-func WithWait(v BrowserWait) BrowserConfigOption {
+// WithBrowserConfigWait sets the wait field.
+func WithBrowserConfigWait(v BrowserWait) BrowserConfigOption {
     return func(c *BrowserConfig) { c.Wait = v }
 }
 
-// WithWaitSelector sets the wait_selector field.
-func WithWaitSelector(v string) BrowserConfigOption {
-    return func(c *BrowserConfig) { c.WaitSelector = v }
+// WithBrowserConfigWaitSelector sets the wait_selector field.
+func WithBrowserConfigWaitSelector(v string) BrowserConfigOption {
+    return func(c *BrowserConfig) { c.WaitSelector = &v }
 }
 
-// WithExtraWait sets the extra_wait field.
-func WithExtraWait(v uint64) BrowserConfigOption {
-    return func(c *BrowserConfig) { c.ExtraWait = v }
+// WithBrowserConfigExtraWait sets the extra_wait field.
+func WithBrowserConfigExtraWait(v uint64) BrowserConfigOption {
+    return func(c *BrowserConfig) { c.ExtraWait = &v }
 }
 
 // NewBrowserConfig creates a BrowserConfig with optional parameters.
 func NewBrowserConfig(opts ...BrowserConfigOption) *BrowserConfig {
     c := &BrowserConfig {
-        Mode: &BrowserMode{},
-        Endpoint: "",
+        Mode: BrowserModeAuto,
+        Endpoint: nil,
         Timeout: 0,
-        Wait: &BrowserWait{},
-        WaitSelector: "",
-        ExtraWait: 0,
+        Wait: "",
+        WaitSelector: nil,
+        ExtraWait: nil,
     }
     for _, opt := range opts {
         opt(c)
@@ -418,212 +416,212 @@ type CrawlConfig struct {
 // CrawlConfig option function
 type CrawlConfigOption func(*CrawlConfig)
 
-// WithMaxDepth sets the max_depth field.
-func WithMaxDepth(v uint) CrawlConfigOption {
-    return func(c *CrawlConfig) { c.MaxDepth = v }
+// WithCrawlConfigMaxDepth sets the max_depth field.
+func WithCrawlConfigMaxDepth(v uint) CrawlConfigOption {
+    return func(c *CrawlConfig) { c.MaxDepth = &v }
 }
 
-// WithMaxPages sets the max_pages field.
-func WithMaxPages(v uint) CrawlConfigOption {
-    return func(c *CrawlConfig) { c.MaxPages = v }
+// WithCrawlConfigMaxPages sets the max_pages field.
+func WithCrawlConfigMaxPages(v uint) CrawlConfigOption {
+    return func(c *CrawlConfig) { c.MaxPages = &v }
 }
 
-// WithMaxConcurrent sets the max_concurrent field.
-func WithMaxConcurrent(v uint) CrawlConfigOption {
-    return func(c *CrawlConfig) { c.MaxConcurrent = v }
+// WithCrawlConfigMaxConcurrent sets the max_concurrent field.
+func WithCrawlConfigMaxConcurrent(v uint) CrawlConfigOption {
+    return func(c *CrawlConfig) { c.MaxConcurrent = &v }
 }
 
-// WithRespectRobotsTxt sets the respect_robots_txt field.
-func WithRespectRobotsTxt(v bool) CrawlConfigOption {
+// WithCrawlConfigRespectRobotsTxt sets the respect_robots_txt field.
+func WithCrawlConfigRespectRobotsTxt(v bool) CrawlConfigOption {
     return func(c *CrawlConfig) { c.RespectRobotsTxt = v }
 }
 
-// WithUserAgent sets the user_agent field.
-func WithUserAgent(v string) CrawlConfigOption {
-    return func(c *CrawlConfig) { c.UserAgent = v }
+// WithCrawlConfigUserAgent sets the user_agent field.
+func WithCrawlConfigUserAgent(v string) CrawlConfigOption {
+    return func(c *CrawlConfig) { c.UserAgent = &v }
 }
 
-// WithStayOnDomain sets the stay_on_domain field.
-func WithStayOnDomain(v bool) CrawlConfigOption {
+// WithCrawlConfigStayOnDomain sets the stay_on_domain field.
+func WithCrawlConfigStayOnDomain(v bool) CrawlConfigOption {
     return func(c *CrawlConfig) { c.StayOnDomain = v }
 }
 
-// WithAllowSubdomains sets the allow_subdomains field.
-func WithAllowSubdomains(v bool) CrawlConfigOption {
+// WithCrawlConfigAllowSubdomains sets the allow_subdomains field.
+func WithCrawlConfigAllowSubdomains(v bool) CrawlConfigOption {
     return func(c *CrawlConfig) { c.AllowSubdomains = v }
 }
 
-// WithIncludePaths sets the include_paths field.
-func WithIncludePaths(v []string) CrawlConfigOption {
+// WithCrawlConfigIncludePaths sets the include_paths field.
+func WithCrawlConfigIncludePaths(v []string) CrawlConfigOption {
     return func(c *CrawlConfig) { c.IncludePaths = v }
 }
 
-// WithExcludePaths sets the exclude_paths field.
-func WithExcludePaths(v []string) CrawlConfigOption {
+// WithCrawlConfigExcludePaths sets the exclude_paths field.
+func WithCrawlConfigExcludePaths(v []string) CrawlConfigOption {
     return func(c *CrawlConfig) { c.ExcludePaths = v }
 }
 
-// WithCustomHeaders sets the custom_headers field.
-func WithCustomHeaders(v map[string]string) CrawlConfigOption {
+// WithCrawlConfigCustomHeaders sets the custom_headers field.
+func WithCrawlConfigCustomHeaders(v map[string]string) CrawlConfigOption {
     return func(c *CrawlConfig) { c.CustomHeaders = v }
 }
 
-// WithRequestTimeout sets the request_timeout field.
-func WithRequestTimeout(v uint64) CrawlConfigOption {
+// WithCrawlConfigRequestTimeout sets the request_timeout field.
+func WithCrawlConfigRequestTimeout(v uint64) CrawlConfigOption {
     return func(c *CrawlConfig) { c.RequestTimeout = v }
 }
 
-// WithMaxRedirects sets the max_redirects field.
-func WithMaxRedirects(v uint) CrawlConfigOption {
+// WithCrawlConfigMaxRedirects sets the max_redirects field.
+func WithCrawlConfigMaxRedirects(v uint) CrawlConfigOption {
     return func(c *CrawlConfig) { c.MaxRedirects = v }
 }
 
-// WithRetryCount sets the retry_count field.
-func WithRetryCount(v uint) CrawlConfigOption {
+// WithCrawlConfigRetryCount sets the retry_count field.
+func WithCrawlConfigRetryCount(v uint) CrawlConfigOption {
     return func(c *CrawlConfig) { c.RetryCount = v }
 }
 
-// WithRetryCodes sets the retry_codes field.
-func WithRetryCodes(v []uint16) CrawlConfigOption {
+// WithCrawlConfigRetryCodes sets the retry_codes field.
+func WithCrawlConfigRetryCodes(v []uint16) CrawlConfigOption {
     return func(c *CrawlConfig) { c.RetryCodes = v }
 }
 
-// WithCookiesEnabled sets the cookies_enabled field.
-func WithCookiesEnabled(v bool) CrawlConfigOption {
+// WithCrawlConfigCookiesEnabled sets the cookies_enabled field.
+func WithCrawlConfigCookiesEnabled(v bool) CrawlConfigOption {
     return func(c *CrawlConfig) { c.CookiesEnabled = v }
 }
 
-// WithAuth sets the auth field.
-func WithAuth(v AuthConfig) CrawlConfigOption {
-    return func(c *CrawlConfig) { c.Auth = v }
+// WithCrawlConfigAuth sets the auth field.
+func WithCrawlConfigAuth(v AuthConfig) CrawlConfigOption {
+    return func(c *CrawlConfig) { c.Auth = &v }
 }
 
-// WithMaxBodySize sets the max_body_size field.
-func WithMaxBodySize(v uint) CrawlConfigOption {
-    return func(c *CrawlConfig) { c.MaxBodySize = v }
+// WithCrawlConfigMaxBodySize sets the max_body_size field.
+func WithCrawlConfigMaxBodySize(v uint) CrawlConfigOption {
+    return func(c *CrawlConfig) { c.MaxBodySize = &v }
 }
 
-// WithMainContentOnly sets the main_content_only field.
-func WithMainContentOnly(v bool) CrawlConfigOption {
+// WithCrawlConfigMainContentOnly sets the main_content_only field.
+func WithCrawlConfigMainContentOnly(v bool) CrawlConfigOption {
     return func(c *CrawlConfig) { c.MainContentOnly = v }
 }
 
-// WithRemoveTags sets the remove_tags field.
-func WithRemoveTags(v []string) CrawlConfigOption {
+// WithCrawlConfigRemoveTags sets the remove_tags field.
+func WithCrawlConfigRemoveTags(v []string) CrawlConfigOption {
     return func(c *CrawlConfig) { c.RemoveTags = v }
 }
 
-// WithMapLimit sets the map_limit field.
-func WithMapLimit(v uint) CrawlConfigOption {
-    return func(c *CrawlConfig) { c.MapLimit = v }
+// WithCrawlConfigMapLimit sets the map_limit field.
+func WithCrawlConfigMapLimit(v uint) CrawlConfigOption {
+    return func(c *CrawlConfig) { c.MapLimit = &v }
 }
 
-// WithMapSearch sets the map_search field.
-func WithMapSearch(v string) CrawlConfigOption {
-    return func(c *CrawlConfig) { c.MapSearch = v }
+// WithCrawlConfigMapSearch sets the map_search field.
+func WithCrawlConfigMapSearch(v string) CrawlConfigOption {
+    return func(c *CrawlConfig) { c.MapSearch = &v }
 }
 
-// WithDownloadAssets sets the download_assets field.
-func WithDownloadAssets(v bool) CrawlConfigOption {
+// WithCrawlConfigDownloadAssets sets the download_assets field.
+func WithCrawlConfigDownloadAssets(v bool) CrawlConfigOption {
     return func(c *CrawlConfig) { c.DownloadAssets = v }
 }
 
-// WithAssetTypes sets the asset_types field.
-func WithAssetTypes(v []AssetCategory) CrawlConfigOption {
+// WithCrawlConfigAssetTypes sets the asset_types field.
+func WithCrawlConfigAssetTypes(v []AssetCategory) CrawlConfigOption {
     return func(c *CrawlConfig) { c.AssetTypes = v }
 }
 
-// WithMaxAssetSize sets the max_asset_size field.
-func WithMaxAssetSize(v uint) CrawlConfigOption {
-    return func(c *CrawlConfig) { c.MaxAssetSize = v }
+// WithCrawlConfigMaxAssetSize sets the max_asset_size field.
+func WithCrawlConfigMaxAssetSize(v uint) CrawlConfigOption {
+    return func(c *CrawlConfig) { c.MaxAssetSize = &v }
 }
 
-// WithBrowser sets the browser field.
-func WithBrowser(v BrowserConfig) CrawlConfigOption {
+// WithCrawlConfigBrowser sets the browser field.
+func WithCrawlConfigBrowser(v BrowserConfig) CrawlConfigOption {
     return func(c *CrawlConfig) { c.Browser = v }
 }
 
-// WithProxy sets the proxy field.
-func WithProxy(v ProxyConfig) CrawlConfigOption {
-    return func(c *CrawlConfig) { c.Proxy = v }
+// WithCrawlConfigProxy sets the proxy field.
+func WithCrawlConfigProxy(v ProxyConfig) CrawlConfigOption {
+    return func(c *CrawlConfig) { c.Proxy = &v }
 }
 
-// WithUserAgents sets the user_agents field.
-func WithUserAgents(v []string) CrawlConfigOption {
+// WithCrawlConfigUserAgents sets the user_agents field.
+func WithCrawlConfigUserAgents(v []string) CrawlConfigOption {
     return func(c *CrawlConfig) { c.UserAgents = v }
 }
 
-// WithCaptureScreenshot sets the capture_screenshot field.
-func WithCaptureScreenshot(v bool) CrawlConfigOption {
+// WithCrawlConfigCaptureScreenshot sets the capture_screenshot field.
+func WithCrawlConfigCaptureScreenshot(v bool) CrawlConfigOption {
     return func(c *CrawlConfig) { c.CaptureScreenshot = v }
 }
 
-// WithDownloadDocuments sets the download_documents field.
-func WithDownloadDocuments(v bool) CrawlConfigOption {
+// WithCrawlConfigDownloadDocuments sets the download_documents field.
+func WithCrawlConfigDownloadDocuments(v bool) CrawlConfigOption {
     return func(c *CrawlConfig) { c.DownloadDocuments = v }
 }
 
-// WithDocumentMaxSize sets the document_max_size field.
-func WithDocumentMaxSize(v uint) CrawlConfigOption {
-    return func(c *CrawlConfig) { c.DocumentMaxSize = v }
+// WithCrawlConfigDocumentMaxSize sets the document_max_size field.
+func WithCrawlConfigDocumentMaxSize(v uint) CrawlConfigOption {
+    return func(c *CrawlConfig) { c.DocumentMaxSize = &v }
 }
 
-// WithDocumentMimeTypes sets the document_mime_types field.
-func WithDocumentMimeTypes(v []string) CrawlConfigOption {
+// WithCrawlConfigDocumentMimeTypes sets the document_mime_types field.
+func WithCrawlConfigDocumentMimeTypes(v []string) CrawlConfigOption {
     return func(c *CrawlConfig) { c.DocumentMimeTypes = v }
 }
 
-// WithWarcOutput sets the warc_output field.
-func WithWarcOutput(v string) CrawlConfigOption {
-    return func(c *CrawlConfig) { c.WarcOutput = v }
+// WithCrawlConfigWarcOutput sets the warc_output field.
+func WithCrawlConfigWarcOutput(v string) CrawlConfigOption {
+    return func(c *CrawlConfig) { c.WarcOutput = &v }
 }
 
-// WithBrowserProfile sets the browser_profile field.
-func WithBrowserProfile(v string) CrawlConfigOption {
-    return func(c *CrawlConfig) { c.BrowserProfile = v }
+// WithCrawlConfigBrowserProfile sets the browser_profile field.
+func WithCrawlConfigBrowserProfile(v string) CrawlConfigOption {
+    return func(c *CrawlConfig) { c.BrowserProfile = &v }
 }
 
-// WithSaveBrowserProfile sets the save_browser_profile field.
-func WithSaveBrowserProfile(v bool) CrawlConfigOption {
+// WithCrawlConfigSaveBrowserProfile sets the save_browser_profile field.
+func WithCrawlConfigSaveBrowserProfile(v bool) CrawlConfigOption {
     return func(c *CrawlConfig) { c.SaveBrowserProfile = v }
 }
 
 // NewCrawlConfig creates a CrawlConfig with optional parameters.
 func NewCrawlConfig(opts ...CrawlConfigOption) *CrawlConfig {
     c := &CrawlConfig {
-        MaxDepth: 0,
-        MaxPages: 0,
-        MaxConcurrent: 0,
+        MaxDepth: nil,
+        MaxPages: nil,
+        MaxConcurrent: nil,
         RespectRobotsTxt: false,
-        UserAgent: "",
+        UserAgent: nil,
         StayOnDomain: false,
         AllowSubdomains: false,
-        IncludePaths: [][]string,
-        ExcludePaths: [][]string,
-        CustomHeaders: make(map[string]string),
+        IncludePaths: nil,
+        ExcludePaths: nil,
+        CustomHeaders: nil,
         RequestTimeout: 0,
-        MaxRedirects: 0,
+        MaxRedirects: 10,
         RetryCount: 0,
-        RetryCodes: [][]uint16,
+        RetryCodes: nil,
         CookiesEnabled: false,
-        Auth: &AuthConfig{},
-        MaxBodySize: 0,
+        Auth: nil,
+        MaxBodySize: nil,
         MainContentOnly: false,
-        RemoveTags: [][]string,
-        MapLimit: 0,
-        MapSearch: "",
+        RemoveTags: nil,
+        MapLimit: nil,
+        MapSearch: nil,
         DownloadAssets: false,
-        AssetTypes: [][]AssetCategory,
-        MaxAssetSize: 0,
-        Browser: &BrowserConfig{},
-        Proxy: &ProxyConfig{},
-        UserAgents: [][]string,
+        AssetTypes: nil,
+        MaxAssetSize: nil,
+        Browser: BrowserConfig{},
+        Proxy: nil,
+        UserAgents: nil,
         CaptureScreenshot: false,
-        DownloadDocuments: false,
-        DocumentMaxSize: 0,
-        DocumentMimeTypes: [][]string,
-        WarcOutput: "",
-        BrowserProfile: "",
+        DownloadDocuments: true,
+        DocumentMaxSize: nil,
+        DocumentMimeTypes: nil,
+        WarcOutput: nil,
+        BrowserProfile: nil,
         SaveBrowserProfile: false,
     }
     for _, opt := range opts {
@@ -659,38 +657,38 @@ type DownloadedDocument struct {
 // DownloadedDocument option function
 type DownloadedDocumentOption func(*DownloadedDocument)
 
-// WithUrl sets the url field.
-func WithUrl(v string) DownloadedDocumentOption {
+// WithDownloadedDocumentUrl sets the url field.
+func WithDownloadedDocumentUrl(v string) DownloadedDocumentOption {
     return func(c *DownloadedDocument) { c.Url = v }
 }
 
-// WithMimeType sets the mime_type field.
-func WithMimeType(v string) DownloadedDocumentOption {
+// WithDownloadedDocumentMimeType sets the mime_type field.
+func WithDownloadedDocumentMimeType(v string) DownloadedDocumentOption {
     return func(c *DownloadedDocument) { c.MimeType = v }
 }
 
-// WithContent sets the content field.
-func WithContent(v []byte) DownloadedDocumentOption {
+// WithDownloadedDocumentContent sets the content field.
+func WithDownloadedDocumentContent(v []byte) DownloadedDocumentOption {
     return func(c *DownloadedDocument) { c.Content = v }
 }
 
-// WithSize sets the size field.
-func WithSize(v uint) DownloadedDocumentOption {
+// WithDownloadedDocumentSize sets the size field.
+func WithDownloadedDocumentSize(v uint) DownloadedDocumentOption {
     return func(c *DownloadedDocument) { c.Size = v }
 }
 
-// WithFilename sets the filename field.
-func WithFilename(v string) DownloadedDocumentOption {
-    return func(c *DownloadedDocument) { c.Filename = v }
+// WithDownloadedDocumentFilename sets the filename field.
+func WithDownloadedDocumentFilename(v string) DownloadedDocumentOption {
+    return func(c *DownloadedDocument) { c.Filename = &v }
 }
 
-// WithContentHash sets the content_hash field.
-func WithContentHash(v string) DownloadedDocumentOption {
+// WithDownloadedDocumentContentHash sets the content_hash field.
+func WithDownloadedDocumentContentHash(v string) DownloadedDocumentOption {
     return func(c *DownloadedDocument) { c.ContentHash = v }
 }
 
-// WithHeaders sets the headers field.
-func WithHeaders(v map[string]string) DownloadedDocumentOption {
+// WithDownloadedDocumentHeaders sets the headers field.
+func WithDownloadedDocumentHeaders(v map[string]string) DownloadedDocumentOption {
     return func(c *DownloadedDocument) { c.Headers = v }
 }
 
@@ -701,9 +699,9 @@ func NewDownloadedDocument(opts ...DownloadedDocumentOption) *DownloadedDocument
         MimeType: "",
         Content: []byte{},
         Size: 0,
-        Filename: "",
+        Filename: nil,
         ContentHash: "",
-        Headers: make(map[string]string),
+        Headers: nil,
     }
     for _, opt := range opts {
         opt(c)
@@ -728,33 +726,33 @@ type InteractionResult struct {
 // InteractionResult option function
 type InteractionResultOption func(*InteractionResult)
 
-// WithActionResults sets the action_results field.
-func WithActionResults(v []ActionResult) InteractionResultOption {
+// WithInteractionResultActionResults sets the action_results field.
+func WithInteractionResultActionResults(v []ActionResult) InteractionResultOption {
     return func(c *InteractionResult) { c.ActionResults = v }
 }
 
-// WithFinalHtml sets the final_html field.
-func WithFinalHtml(v string) InteractionResultOption {
+// WithInteractionResultFinalHtml sets the final_html field.
+func WithInteractionResultFinalHtml(v string) InteractionResultOption {
     return func(c *InteractionResult) { c.FinalHtml = v }
 }
 
-// WithFinalUrl sets the final_url field.
-func WithFinalUrl(v string) InteractionResultOption {
+// WithInteractionResultFinalUrl sets the final_url field.
+func WithInteractionResultFinalUrl(v string) InteractionResultOption {
     return func(c *InteractionResult) { c.FinalUrl = v }
 }
 
-// WithScreenshot sets the screenshot field.
-func WithScreenshot(v []byte) InteractionResultOption {
-    return func(c *InteractionResult) { c.Screenshot = v }
+// WithInteractionResultScreenshot sets the screenshot field.
+func WithInteractionResultScreenshot(v []byte) InteractionResultOption {
+    return func(c *InteractionResult) { c.Screenshot = &v }
 }
 
 // NewInteractionResult creates a InteractionResult with optional parameters.
 func NewInteractionResult(opts ...InteractionResultOption) *InteractionResult {
     c := &InteractionResult {
-        ActionResults: [][]ActionResult,
+        ActionResults: nil,
         FinalHtml: "",
         FinalUrl: "",
-        Screenshot: []byte{},
+        Screenshot: nil,
     }
     for _, opt := range opts {
         opt(c)
@@ -781,29 +779,29 @@ type ActionResult struct {
 // ActionResult option function
 type ActionResultOption func(*ActionResult)
 
-// WithActionIndex sets the action_index field.
-func WithActionIndex(v uint) ActionResultOption {
+// WithActionResultActionIndex sets the action_index field.
+func WithActionResultActionIndex(v uint) ActionResultOption {
     return func(c *ActionResult) { c.ActionIndex = v }
 }
 
-// WithActionType sets the action_type field.
-func WithActionType(v string) ActionResultOption {
+// WithActionResultActionType sets the action_type field.
+func WithActionResultActionType(v string) ActionResultOption {
     return func(c *ActionResult) { c.ActionType = v }
 }
 
-// WithSuccess sets the success field.
-func WithSuccess(v bool) ActionResultOption {
+// WithActionResultSuccess sets the success field.
+func WithActionResultSuccess(v bool) ActionResultOption {
     return func(c *ActionResult) { c.Success = v }
 }
 
-// WithData sets the data field.
-func WithData(v map[string]interface{}) ActionResultOption {
-    return func(c *ActionResult) { c.Data = v }
+// WithActionResultData sets the data field.
+func WithActionResultData(v map[string]interface{}) ActionResultOption {
+    return func(c *ActionResult) { c.Data = &v }
 }
 
-// WithError sets the error field.
-func WithError(v string) ActionResultOption {
-    return func(c *ActionResult) { c.Error = v }
+// WithActionResultError sets the error field.
+func WithActionResultError(v string) ActionResultOption {
+    return func(c *ActionResult) { c.Error = &v }
 }
 
 // NewActionResult creates a ActionResult with optional parameters.
@@ -812,8 +810,8 @@ func NewActionResult(opts ...ActionResultOption) *ActionResult {
         ActionIndex: 0,
         ActionType: "",
         Success: false,
-        Data: "",
-        Error: "",
+        Data: nil,
+        Error: nil,
     }
     for _, opt := range opts {
         opt(c)
@@ -886,144 +884,144 @@ type ScrapeResult struct {
 // ScrapeResult option function
 type ScrapeResultOption func(*ScrapeResult)
 
-// WithStatusCode sets the status_code field.
-func WithStatusCode(v uint16) ScrapeResultOption {
+// WithScrapeResultStatusCode sets the status_code field.
+func WithScrapeResultStatusCode(v uint16) ScrapeResultOption {
     return func(c *ScrapeResult) { c.StatusCode = v }
 }
 
-// WithContentType sets the content_type field.
-func WithContentType(v string) ScrapeResultOption {
+// WithScrapeResultContentType sets the content_type field.
+func WithScrapeResultContentType(v string) ScrapeResultOption {
     return func(c *ScrapeResult) { c.ContentType = v }
 }
 
-// WithHtml sets the html field.
-func WithHtml(v string) ScrapeResultOption {
+// WithScrapeResultHtml sets the html field.
+func WithScrapeResultHtml(v string) ScrapeResultOption {
     return func(c *ScrapeResult) { c.Html = v }
 }
 
-// WithBodySize sets the body_size field.
-func WithBodySize(v uint) ScrapeResultOption {
+// WithScrapeResultBodySize sets the body_size field.
+func WithScrapeResultBodySize(v uint) ScrapeResultOption {
     return func(c *ScrapeResult) { c.BodySize = v }
 }
 
-// WithMetadata sets the metadata field.
-func WithMetadata(v PageMetadata) ScrapeResultOption {
+// WithScrapeResultMetadata sets the metadata field.
+func WithScrapeResultMetadata(v PageMetadata) ScrapeResultOption {
     return func(c *ScrapeResult) { c.Metadata = v }
 }
 
-// WithLinks sets the links field.
-func WithLinks(v []LinkInfo) ScrapeResultOption {
+// WithScrapeResultLinks sets the links field.
+func WithScrapeResultLinks(v []LinkInfo) ScrapeResultOption {
     return func(c *ScrapeResult) { c.Links = v }
 }
 
-// WithImages sets the images field.
-func WithImages(v []ImageInfo) ScrapeResultOption {
+// WithScrapeResultImages sets the images field.
+func WithScrapeResultImages(v []ImageInfo) ScrapeResultOption {
     return func(c *ScrapeResult) { c.Images = v }
 }
 
-// WithFeeds sets the feeds field.
-func WithFeeds(v []FeedInfo) ScrapeResultOption {
+// WithScrapeResultFeeds sets the feeds field.
+func WithScrapeResultFeeds(v []FeedInfo) ScrapeResultOption {
     return func(c *ScrapeResult) { c.Feeds = v }
 }
 
-// WithJsonLd sets the json_ld field.
-func WithJsonLd(v []JsonLdEntry) ScrapeResultOption {
+// WithScrapeResultJsonLd sets the json_ld field.
+func WithScrapeResultJsonLd(v []JsonLdEntry) ScrapeResultOption {
     return func(c *ScrapeResult) { c.JsonLd = v }
 }
 
-// WithIsAllowed sets the is_allowed field.
-func WithIsAllowed(v bool) ScrapeResultOption {
+// WithScrapeResultIsAllowed sets the is_allowed field.
+func WithScrapeResultIsAllowed(v bool) ScrapeResultOption {
     return func(c *ScrapeResult) { c.IsAllowed = v }
 }
 
-// WithCrawlDelay sets the crawl_delay field.
-func WithCrawlDelay(v uint64) ScrapeResultOption {
-    return func(c *ScrapeResult) { c.CrawlDelay = v }
+// WithScrapeResultCrawlDelay sets the crawl_delay field.
+func WithScrapeResultCrawlDelay(v uint64) ScrapeResultOption {
+    return func(c *ScrapeResult) { c.CrawlDelay = &v }
 }
 
-// WithNoindexDetected sets the noindex_detected field.
-func WithNoindexDetected(v bool) ScrapeResultOption {
+// WithScrapeResultNoindexDetected sets the noindex_detected field.
+func WithScrapeResultNoindexDetected(v bool) ScrapeResultOption {
     return func(c *ScrapeResult) { c.NoindexDetected = v }
 }
 
-// WithNofollowDetected sets the nofollow_detected field.
-func WithNofollowDetected(v bool) ScrapeResultOption {
+// WithScrapeResultNofollowDetected sets the nofollow_detected field.
+func WithScrapeResultNofollowDetected(v bool) ScrapeResultOption {
     return func(c *ScrapeResult) { c.NofollowDetected = v }
 }
 
-// WithXRobotsTag sets the x_robots_tag field.
-func WithXRobotsTag(v string) ScrapeResultOption {
-    return func(c *ScrapeResult) { c.XRobotsTag = v }
+// WithScrapeResultXRobotsTag sets the x_robots_tag field.
+func WithScrapeResultXRobotsTag(v string) ScrapeResultOption {
+    return func(c *ScrapeResult) { c.XRobotsTag = &v }
 }
 
-// WithIsPdf sets the is_pdf field.
-func WithIsPdf(v bool) ScrapeResultOption {
+// WithScrapeResultIsPdf sets the is_pdf field.
+func WithScrapeResultIsPdf(v bool) ScrapeResultOption {
     return func(c *ScrapeResult) { c.IsPdf = v }
 }
 
-// WithWasSkipped sets the was_skipped field.
-func WithWasSkipped(v bool) ScrapeResultOption {
+// WithScrapeResultWasSkipped sets the was_skipped field.
+func WithScrapeResultWasSkipped(v bool) ScrapeResultOption {
     return func(c *ScrapeResult) { c.WasSkipped = v }
 }
 
-// WithDetectedCharset sets the detected_charset field.
-func WithDetectedCharset(v string) ScrapeResultOption {
-    return func(c *ScrapeResult) { c.DetectedCharset = v }
+// WithScrapeResultDetectedCharset sets the detected_charset field.
+func WithScrapeResultDetectedCharset(v string) ScrapeResultOption {
+    return func(c *ScrapeResult) { c.DetectedCharset = &v }
 }
 
-// WithMainContentOnly sets the main_content_only field.
-func WithMainContentOnly(v bool) ScrapeResultOption {
+// WithScrapeResultMainContentOnly sets the main_content_only field.
+func WithScrapeResultMainContentOnly(v bool) ScrapeResultOption {
     return func(c *ScrapeResult) { c.MainContentOnly = v }
 }
 
-// WithAuthHeaderSent sets the auth_header_sent field.
-func WithAuthHeaderSent(v bool) ScrapeResultOption {
+// WithScrapeResultAuthHeaderSent sets the auth_header_sent field.
+func WithScrapeResultAuthHeaderSent(v bool) ScrapeResultOption {
     return func(c *ScrapeResult) { c.AuthHeaderSent = v }
 }
 
-// WithResponseMeta sets the response_meta field.
-func WithResponseMeta(v ResponseMeta) ScrapeResultOption {
-    return func(c *ScrapeResult) { c.ResponseMeta = v }
+// WithScrapeResultResponseMeta sets the response_meta field.
+func WithScrapeResultResponseMeta(v ResponseMeta) ScrapeResultOption {
+    return func(c *ScrapeResult) { c.ResponseMeta = &v }
 }
 
-// WithAssets sets the assets field.
-func WithAssets(v []DownloadedAsset) ScrapeResultOption {
+// WithScrapeResultAssets sets the assets field.
+func WithScrapeResultAssets(v []DownloadedAsset) ScrapeResultOption {
     return func(c *ScrapeResult) { c.Assets = v }
 }
 
-// WithJsRenderHint sets the js_render_hint field.
-func WithJsRenderHint(v bool) ScrapeResultOption {
+// WithScrapeResultJsRenderHint sets the js_render_hint field.
+func WithScrapeResultJsRenderHint(v bool) ScrapeResultOption {
     return func(c *ScrapeResult) { c.JsRenderHint = v }
 }
 
-// WithBrowserUsed sets the browser_used field.
-func WithBrowserUsed(v bool) ScrapeResultOption {
+// WithScrapeResultBrowserUsed sets the browser_used field.
+func WithScrapeResultBrowserUsed(v bool) ScrapeResultOption {
     return func(c *ScrapeResult) { c.BrowserUsed = v }
 }
 
-// WithMarkdown sets the markdown field.
-func WithMarkdown(v MarkdownResult) ScrapeResultOption {
-    return func(c *ScrapeResult) { c.Markdown = v }
+// WithScrapeResultMarkdown sets the markdown field.
+func WithScrapeResultMarkdown(v MarkdownResult) ScrapeResultOption {
+    return func(c *ScrapeResult) { c.Markdown = &v }
 }
 
-// WithExtractedData sets the extracted_data field.
-func WithExtractedData(v map[string]interface{}) ScrapeResultOption {
-    return func(c *ScrapeResult) { c.ExtractedData = v }
+// WithScrapeResultExtractedData sets the extracted_data field.
+func WithScrapeResultExtractedData(v map[string]interface{}) ScrapeResultOption {
+    return func(c *ScrapeResult) { c.ExtractedData = &v }
 }
 
-// WithExtractionMeta sets the extraction_meta field.
-func WithExtractionMeta(v ExtractionMeta) ScrapeResultOption {
-    return func(c *ScrapeResult) { c.ExtractionMeta = v }
+// WithScrapeResultExtractionMeta sets the extraction_meta field.
+func WithScrapeResultExtractionMeta(v ExtractionMeta) ScrapeResultOption {
+    return func(c *ScrapeResult) { c.ExtractionMeta = &v }
 }
 
-// WithScreenshot sets the screenshot field.
-func WithScreenshot(v []byte) ScrapeResultOption {
-    return func(c *ScrapeResult) { c.Screenshot = v }
+// WithScrapeResultScreenshot sets the screenshot field.
+func WithScrapeResultScreenshot(v []byte) ScrapeResultOption {
+    return func(c *ScrapeResult) { c.Screenshot = &v }
 }
 
-// WithDownloadedDocument sets the downloaded_document field.
-func WithDownloadedDocument(v DownloadedDocument) ScrapeResultOption {
-    return func(c *ScrapeResult) { c.DownloadedDocument = v }
+// WithScrapeResultDownloadedDocument sets the downloaded_document field.
+func WithScrapeResultDownloadedDocument(v DownloadedDocument) ScrapeResultOption {
+    return func(c *ScrapeResult) { c.DownloadedDocument = &v }
 }
 
 // NewScrapeResult creates a ScrapeResult with optional parameters.
@@ -1033,30 +1031,30 @@ func NewScrapeResult(opts ...ScrapeResultOption) *ScrapeResult {
         ContentType: "",
         Html: "",
         BodySize: 0,
-        Metadata: &PageMetadata{},
-        Links: [][]LinkInfo,
-        Images: [][]ImageInfo,
-        Feeds: [][]FeedInfo,
-        JsonLd: [][]JsonLdEntry,
+        Metadata: PageMetadata{},
+        Links: nil,
+        Images: nil,
+        Feeds: nil,
+        JsonLd: nil,
         IsAllowed: false,
-        CrawlDelay: 0,
+        CrawlDelay: nil,
         NoindexDetected: false,
         NofollowDetected: false,
-        XRobotsTag: "",
+        XRobotsTag: nil,
         IsPdf: false,
         WasSkipped: false,
-        DetectedCharset: "",
+        DetectedCharset: nil,
         MainContentOnly: false,
         AuthHeaderSent: false,
-        ResponseMeta: &ResponseMeta{},
-        Assets: [][]DownloadedAsset,
+        ResponseMeta: nil,
+        Assets: nil,
         JsRenderHint: false,
         BrowserUsed: false,
-        Markdown: &MarkdownResult{},
-        ExtractedData: "",
-        ExtractionMeta: &ExtractionMeta{},
-        Screenshot: []byte{},
-        DownloadedDocument: &DownloadedDocument{},
+        Markdown: nil,
+        ExtractedData: nil,
+        ExtractionMeta: nil,
+        Screenshot: nil,
+        DownloadedDocument: nil,
     }
     for _, opt := range opts {
         opt(c)
@@ -1113,104 +1111,104 @@ type CrawlPageResult struct {
 // CrawlPageResult option function
 type CrawlPageResultOption func(*CrawlPageResult)
 
-// WithUrl sets the url field.
-func WithUrl(v string) CrawlPageResultOption {
+// WithCrawlPageResultUrl sets the url field.
+func WithCrawlPageResultUrl(v string) CrawlPageResultOption {
     return func(c *CrawlPageResult) { c.Url = v }
 }
 
-// WithNormalizedUrl sets the normalized_url field.
-func WithNormalizedUrl(v string) CrawlPageResultOption {
+// WithCrawlPageResultNormalizedUrl sets the normalized_url field.
+func WithCrawlPageResultNormalizedUrl(v string) CrawlPageResultOption {
     return func(c *CrawlPageResult) { c.NormalizedUrl = v }
 }
 
-// WithStatusCode sets the status_code field.
-func WithStatusCode(v uint16) CrawlPageResultOption {
+// WithCrawlPageResultStatusCode sets the status_code field.
+func WithCrawlPageResultStatusCode(v uint16) CrawlPageResultOption {
     return func(c *CrawlPageResult) { c.StatusCode = v }
 }
 
-// WithContentType sets the content_type field.
-func WithContentType(v string) CrawlPageResultOption {
+// WithCrawlPageResultContentType sets the content_type field.
+func WithCrawlPageResultContentType(v string) CrawlPageResultOption {
     return func(c *CrawlPageResult) { c.ContentType = v }
 }
 
-// WithHtml sets the html field.
-func WithHtml(v string) CrawlPageResultOption {
+// WithCrawlPageResultHtml sets the html field.
+func WithCrawlPageResultHtml(v string) CrawlPageResultOption {
     return func(c *CrawlPageResult) { c.Html = v }
 }
 
-// WithBodySize sets the body_size field.
-func WithBodySize(v uint) CrawlPageResultOption {
+// WithCrawlPageResultBodySize sets the body_size field.
+func WithCrawlPageResultBodySize(v uint) CrawlPageResultOption {
     return func(c *CrawlPageResult) { c.BodySize = v }
 }
 
-// WithMetadata sets the metadata field.
-func WithMetadata(v PageMetadata) CrawlPageResultOption {
+// WithCrawlPageResultMetadata sets the metadata field.
+func WithCrawlPageResultMetadata(v PageMetadata) CrawlPageResultOption {
     return func(c *CrawlPageResult) { c.Metadata = v }
 }
 
-// WithLinks sets the links field.
-func WithLinks(v []LinkInfo) CrawlPageResultOption {
+// WithCrawlPageResultLinks sets the links field.
+func WithCrawlPageResultLinks(v []LinkInfo) CrawlPageResultOption {
     return func(c *CrawlPageResult) { c.Links = v }
 }
 
-// WithImages sets the images field.
-func WithImages(v []ImageInfo) CrawlPageResultOption {
+// WithCrawlPageResultImages sets the images field.
+func WithCrawlPageResultImages(v []ImageInfo) CrawlPageResultOption {
     return func(c *CrawlPageResult) { c.Images = v }
 }
 
-// WithFeeds sets the feeds field.
-func WithFeeds(v []FeedInfo) CrawlPageResultOption {
+// WithCrawlPageResultFeeds sets the feeds field.
+func WithCrawlPageResultFeeds(v []FeedInfo) CrawlPageResultOption {
     return func(c *CrawlPageResult) { c.Feeds = v }
 }
 
-// WithJsonLd sets the json_ld field.
-func WithJsonLd(v []JsonLdEntry) CrawlPageResultOption {
+// WithCrawlPageResultJsonLd sets the json_ld field.
+func WithCrawlPageResultJsonLd(v []JsonLdEntry) CrawlPageResultOption {
     return func(c *CrawlPageResult) { c.JsonLd = v }
 }
 
-// WithDepth sets the depth field.
-func WithDepth(v uint) CrawlPageResultOption {
+// WithCrawlPageResultDepth sets the depth field.
+func WithCrawlPageResultDepth(v uint) CrawlPageResultOption {
     return func(c *CrawlPageResult) { c.Depth = v }
 }
 
-// WithStayedOnDomain sets the stayed_on_domain field.
-func WithStayedOnDomain(v bool) CrawlPageResultOption {
+// WithCrawlPageResultStayedOnDomain sets the stayed_on_domain field.
+func WithCrawlPageResultStayedOnDomain(v bool) CrawlPageResultOption {
     return func(c *CrawlPageResult) { c.StayedOnDomain = v }
 }
 
-// WithWasSkipped sets the was_skipped field.
-func WithWasSkipped(v bool) CrawlPageResultOption {
+// WithCrawlPageResultWasSkipped sets the was_skipped field.
+func WithCrawlPageResultWasSkipped(v bool) CrawlPageResultOption {
     return func(c *CrawlPageResult) { c.WasSkipped = v }
 }
 
-// WithIsPdf sets the is_pdf field.
-func WithIsPdf(v bool) CrawlPageResultOption {
+// WithCrawlPageResultIsPdf sets the is_pdf field.
+func WithCrawlPageResultIsPdf(v bool) CrawlPageResultOption {
     return func(c *CrawlPageResult) { c.IsPdf = v }
 }
 
-// WithDetectedCharset sets the detected_charset field.
-func WithDetectedCharset(v string) CrawlPageResultOption {
-    return func(c *CrawlPageResult) { c.DetectedCharset = v }
+// WithCrawlPageResultDetectedCharset sets the detected_charset field.
+func WithCrawlPageResultDetectedCharset(v string) CrawlPageResultOption {
+    return func(c *CrawlPageResult) { c.DetectedCharset = &v }
 }
 
-// WithMarkdown sets the markdown field.
-func WithMarkdown(v MarkdownResult) CrawlPageResultOption {
-    return func(c *CrawlPageResult) { c.Markdown = v }
+// WithCrawlPageResultMarkdown sets the markdown field.
+func WithCrawlPageResultMarkdown(v MarkdownResult) CrawlPageResultOption {
+    return func(c *CrawlPageResult) { c.Markdown = &v }
 }
 
-// WithExtractedData sets the extracted_data field.
-func WithExtractedData(v map[string]interface{}) CrawlPageResultOption {
-    return func(c *CrawlPageResult) { c.ExtractedData = v }
+// WithCrawlPageResultExtractedData sets the extracted_data field.
+func WithCrawlPageResultExtractedData(v map[string]interface{}) CrawlPageResultOption {
+    return func(c *CrawlPageResult) { c.ExtractedData = &v }
 }
 
-// WithExtractionMeta sets the extraction_meta field.
-func WithExtractionMeta(v ExtractionMeta) CrawlPageResultOption {
-    return func(c *CrawlPageResult) { c.ExtractionMeta = v }
+// WithCrawlPageResultExtractionMeta sets the extraction_meta field.
+func WithCrawlPageResultExtractionMeta(v ExtractionMeta) CrawlPageResultOption {
+    return func(c *CrawlPageResult) { c.ExtractionMeta = &v }
 }
 
-// WithDownloadedDocument sets the downloaded_document field.
-func WithDownloadedDocument(v DownloadedDocument) CrawlPageResultOption {
-    return func(c *CrawlPageResult) { c.DownloadedDocument = v }
+// WithCrawlPageResultDownloadedDocument sets the downloaded_document field.
+func WithCrawlPageResultDownloadedDocument(v DownloadedDocument) CrawlPageResultOption {
+    return func(c *CrawlPageResult) { c.DownloadedDocument = &v }
 }
 
 // NewCrawlPageResult creates a CrawlPageResult with optional parameters.
@@ -1222,20 +1220,20 @@ func NewCrawlPageResult(opts ...CrawlPageResultOption) *CrawlPageResult {
         ContentType: "",
         Html: "",
         BodySize: 0,
-        Metadata: &PageMetadata{},
-        Links: [][]LinkInfo,
-        Images: [][]ImageInfo,
-        Feeds: [][]FeedInfo,
-        JsonLd: [][]JsonLdEntry,
+        Metadata: PageMetadata{},
+        Links: nil,
+        Images: nil,
+        Feeds: nil,
+        JsonLd: nil,
         Depth: 0,
         StayedOnDomain: false,
         WasSkipped: false,
         IsPdf: false,
-        DetectedCharset: "",
-        Markdown: &MarkdownResult{},
-        ExtractedData: "",
-        ExtractionMeta: &ExtractionMeta{},
-        DownloadedDocument: &DownloadedDocument{},
+        DetectedCharset: nil,
+        Markdown: nil,
+        ExtractedData: nil,
+        ExtractionMeta: nil,
+        DownloadedDocument: nil,
     }
     for _, opt := range opts {
         opt(c)
@@ -1266,51 +1264,51 @@ type CrawlResult struct {
 // CrawlResult option function
 type CrawlResultOption func(*CrawlResult)
 
-// WithPages sets the pages field.
-func WithPages(v []CrawlPageResult) CrawlResultOption {
+// WithCrawlResultPages sets the pages field.
+func WithCrawlResultPages(v []CrawlPageResult) CrawlResultOption {
     return func(c *CrawlResult) { c.Pages = v }
 }
 
-// WithFinalUrl sets the final_url field.
-func WithFinalUrl(v string) CrawlResultOption {
+// WithCrawlResultFinalUrl sets the final_url field.
+func WithCrawlResultFinalUrl(v string) CrawlResultOption {
     return func(c *CrawlResult) { c.FinalUrl = v }
 }
 
-// WithRedirectCount sets the redirect_count field.
-func WithRedirectCount(v uint) CrawlResultOption {
+// WithCrawlResultRedirectCount sets the redirect_count field.
+func WithCrawlResultRedirectCount(v uint) CrawlResultOption {
     return func(c *CrawlResult) { c.RedirectCount = v }
 }
 
-// WithWasSkipped sets the was_skipped field.
-func WithWasSkipped(v bool) CrawlResultOption {
+// WithCrawlResultWasSkipped sets the was_skipped field.
+func WithCrawlResultWasSkipped(v bool) CrawlResultOption {
     return func(c *CrawlResult) { c.WasSkipped = v }
 }
 
-// WithError sets the error field.
-func WithError(v string) CrawlResultOption {
-    return func(c *CrawlResult) { c.Error = v }
+// WithCrawlResultError sets the error field.
+func WithCrawlResultError(v string) CrawlResultOption {
+    return func(c *CrawlResult) { c.Error = &v }
 }
 
-// WithCookies sets the cookies field.
-func WithCookies(v []CookieInfo) CrawlResultOption {
+// WithCrawlResultCookies sets the cookies field.
+func WithCrawlResultCookies(v []CookieInfo) CrawlResultOption {
     return func(c *CrawlResult) { c.Cookies = v }
 }
 
-// WithNormalizedUrls sets the normalized_urls field.
-func WithNormalizedUrls(v []string) CrawlResultOption {
+// WithCrawlResultNormalizedUrls sets the normalized_urls field.
+func WithCrawlResultNormalizedUrls(v []string) CrawlResultOption {
     return func(c *CrawlResult) { c.NormalizedUrls = v }
 }
 
 // NewCrawlResult creates a CrawlResult with optional parameters.
 func NewCrawlResult(opts ...CrawlResultOption) *CrawlResult {
     c := &CrawlResult {
-        Pages: [][]CrawlPageResult,
+        Pages: nil,
         FinalUrl: "",
         RedirectCount: 0,
         WasSkipped: false,
-        Error: "",
-        Cookies: [][]CookieInfo,
-        NormalizedUrls: [][]string,
+        Error: nil,
+        Cookies: nil,
+        NormalizedUrls: nil,
     }
     for _, opt := range opts {
         opt(c)
@@ -1335,33 +1333,33 @@ type SitemapUrl struct {
 // SitemapUrl option function
 type SitemapUrlOption func(*SitemapUrl)
 
-// WithUrl sets the url field.
-func WithUrl(v string) SitemapUrlOption {
+// WithSitemapUrlUrl sets the url field.
+func WithSitemapUrlUrl(v string) SitemapUrlOption {
     return func(c *SitemapUrl) { c.Url = v }
 }
 
-// WithLastmod sets the lastmod field.
-func WithLastmod(v string) SitemapUrlOption {
-    return func(c *SitemapUrl) { c.Lastmod = v }
+// WithSitemapUrlLastmod sets the lastmod field.
+func WithSitemapUrlLastmod(v string) SitemapUrlOption {
+    return func(c *SitemapUrl) { c.Lastmod = &v }
 }
 
-// WithChangefreq sets the changefreq field.
-func WithChangefreq(v string) SitemapUrlOption {
-    return func(c *SitemapUrl) { c.Changefreq = v }
+// WithSitemapUrlChangefreq sets the changefreq field.
+func WithSitemapUrlChangefreq(v string) SitemapUrlOption {
+    return func(c *SitemapUrl) { c.Changefreq = &v }
 }
 
-// WithPriority sets the priority field.
-func WithPriority(v string) SitemapUrlOption {
-    return func(c *SitemapUrl) { c.Priority = v }
+// WithSitemapUrlPriority sets the priority field.
+func WithSitemapUrlPriority(v string) SitemapUrlOption {
+    return func(c *SitemapUrl) { c.Priority = &v }
 }
 
 // NewSitemapUrl creates a SitemapUrl with optional parameters.
 func NewSitemapUrl(opts ...SitemapUrlOption) *SitemapUrl {
     c := &SitemapUrl {
         Url: "",
-        Lastmod: "",
-        Changefreq: "",
-        Priority: "",
+        Lastmod: nil,
+        Changefreq: nil,
+        Priority: nil,
     }
     for _, opt := range opts {
         opt(c)
@@ -1380,15 +1378,15 @@ type MapResult struct {
 // MapResult option function
 type MapResultOption func(*MapResult)
 
-// WithUrls sets the urls field.
-func WithUrls(v []SitemapUrl) MapResultOption {
+// WithMapResultUrls sets the urls field.
+func WithMapResultUrls(v []SitemapUrl) MapResultOption {
     return func(c *MapResult) { c.Urls = v }
 }
 
 // NewMapResult creates a MapResult with optional parameters.
 func NewMapResult(opts ...MapResultOption) *MapResult {
     c := &MapResult {
-        Urls: [][]SitemapUrl,
+        Urls: nil,
     }
     for _, opt := range opts {
         opt(c)
@@ -1417,45 +1415,45 @@ type MarkdownResult struct {
 // MarkdownResult option function
 type MarkdownResultOption func(*MarkdownResult)
 
-// WithContent sets the content field.
-func WithContent(v string) MarkdownResultOption {
+// WithMarkdownResultContent sets the content field.
+func WithMarkdownResultContent(v string) MarkdownResultOption {
     return func(c *MarkdownResult) { c.Content = v }
 }
 
-// WithDocumentStructure sets the document_structure field.
-func WithDocumentStructure(v map[string]interface{}) MarkdownResultOption {
-    return func(c *MarkdownResult) { c.DocumentStructure = v }
+// WithMarkdownResultDocumentStructure sets the document_structure field.
+func WithMarkdownResultDocumentStructure(v map[string]interface{}) MarkdownResultOption {
+    return func(c *MarkdownResult) { c.DocumentStructure = &v }
 }
 
-// WithTables sets the tables field.
-func WithTables(v []map[string]interface{}) MarkdownResultOption {
+// WithMarkdownResultTables sets the tables field.
+func WithMarkdownResultTables(v []map[string]interface{}) MarkdownResultOption {
     return func(c *MarkdownResult) { c.Tables = v }
 }
 
-// WithWarnings sets the warnings field.
-func WithWarnings(v []string) MarkdownResultOption {
+// WithMarkdownResultWarnings sets the warnings field.
+func WithMarkdownResultWarnings(v []string) MarkdownResultOption {
     return func(c *MarkdownResult) { c.Warnings = v }
 }
 
-// WithCitations sets the citations field.
-func WithCitations(v CitationResult) MarkdownResultOption {
-    return func(c *MarkdownResult) { c.Citations = v }
+// WithMarkdownResultCitations sets the citations field.
+func WithMarkdownResultCitations(v CitationResult) MarkdownResultOption {
+    return func(c *MarkdownResult) { c.Citations = &v }
 }
 
-// WithFitContent sets the fit_content field.
-func WithFitContent(v string) MarkdownResultOption {
-    return func(c *MarkdownResult) { c.FitContent = v }
+// WithMarkdownResultFitContent sets the fit_content field.
+func WithMarkdownResultFitContent(v string) MarkdownResultOption {
+    return func(c *MarkdownResult) { c.FitContent = &v }
 }
 
 // NewMarkdownResult creates a MarkdownResult with optional parameters.
 func NewMarkdownResult(opts ...MarkdownResultOption) *MarkdownResult {
     c := &MarkdownResult {
         Content: "",
-        DocumentStructure: "",
-        Tables: [][]map[string]interface{},
-        Warnings: [][]string,
-        Citations: &CitationResult{},
-        FitContent: "",
+        DocumentStructure: nil,
+        Tables: nil,
+        Warnings: nil,
+        Citations: nil,
+        FitContent: nil,
     }
     for _, opt := range opts {
         opt(c)
@@ -1479,38 +1477,38 @@ type CachedPage struct {
 // CachedPage option function
 type CachedPageOption func(*CachedPage)
 
-// WithUrl sets the url field.
-func WithUrl(v string) CachedPageOption {
+// WithCachedPageUrl sets the url field.
+func WithCachedPageUrl(v string) CachedPageOption {
     return func(c *CachedPage) { c.Url = v }
 }
 
-// WithStatusCode sets the status_code field.
-func WithStatusCode(v uint16) CachedPageOption {
+// WithCachedPageStatusCode sets the status_code field.
+func WithCachedPageStatusCode(v uint16) CachedPageOption {
     return func(c *CachedPage) { c.StatusCode = v }
 }
 
-// WithContentType sets the content_type field.
-func WithContentType(v string) CachedPageOption {
+// WithCachedPageContentType sets the content_type field.
+func WithCachedPageContentType(v string) CachedPageOption {
     return func(c *CachedPage) { c.ContentType = v }
 }
 
-// WithBody sets the body field.
-func WithBody(v string) CachedPageOption {
+// WithCachedPageBody sets the body field.
+func WithCachedPageBody(v string) CachedPageOption {
     return func(c *CachedPage) { c.Body = v }
 }
 
-// WithEtag sets the etag field.
-func WithEtag(v string) CachedPageOption {
-    return func(c *CachedPage) { c.Etag = v }
+// WithCachedPageEtag sets the etag field.
+func WithCachedPageEtag(v string) CachedPageOption {
+    return func(c *CachedPage) { c.Etag = &v }
 }
 
-// WithLastModified sets the last_modified field.
-func WithLastModified(v string) CachedPageOption {
-    return func(c *CachedPage) { c.LastModified = v }
+// WithCachedPageLastModified sets the last_modified field.
+func WithCachedPageLastModified(v string) CachedPageOption {
+    return func(c *CachedPage) { c.LastModified = &v }
 }
 
-// WithCachedAt sets the cached_at field.
-func WithCachedAt(v uint64) CachedPageOption {
+// WithCachedPageCachedAt sets the cached_at field.
+func WithCachedPageCachedAt(v uint64) CachedPageOption {
     return func(c *CachedPage) { c.CachedAt = v }
 }
 
@@ -1521,8 +1519,8 @@ func NewCachedPage(opts ...CachedPageOption) *CachedPage {
         StatusCode: 0,
         ContentType: "",
         Body: "",
-        Etag: "",
-        LastModified: "",
+        Etag: nil,
+        LastModified: nil,
         CachedAt: 0,
     }
     for _, opt := range opts {
@@ -1550,28 +1548,28 @@ type LinkInfo struct {
 // LinkInfo option function
 type LinkInfoOption func(*LinkInfo)
 
-// WithUrl sets the url field.
-func WithUrl(v string) LinkInfoOption {
+// WithLinkInfoUrl sets the url field.
+func WithLinkInfoUrl(v string) LinkInfoOption {
     return func(c *LinkInfo) { c.Url = v }
 }
 
-// WithText sets the text field.
-func WithText(v string) LinkInfoOption {
+// WithLinkInfoText sets the text field.
+func WithLinkInfoText(v string) LinkInfoOption {
     return func(c *LinkInfo) { c.Text = v }
 }
 
-// WithLinkType sets the link_type field.
-func WithLinkType(v LinkType) LinkInfoOption {
+// WithLinkInfoLinkType sets the link_type field.
+func WithLinkInfoLinkType(v LinkType) LinkInfoOption {
     return func(c *LinkInfo) { c.LinkType = v }
 }
 
-// WithRel sets the rel field.
-func WithRel(v string) LinkInfoOption {
-    return func(c *LinkInfo) { c.Rel = v }
+// WithLinkInfoRel sets the rel field.
+func WithLinkInfoRel(v string) LinkInfoOption {
+    return func(c *LinkInfo) { c.Rel = &v }
 }
 
-// WithNofollow sets the nofollow field.
-func WithNofollow(v bool) LinkInfoOption {
+// WithLinkInfoNofollow sets the nofollow field.
+func WithLinkInfoNofollow(v bool) LinkInfoOption {
     return func(c *LinkInfo) { c.Nofollow = v }
 }
 
@@ -1580,8 +1578,8 @@ func NewLinkInfo(opts ...LinkInfoOption) *LinkInfo {
     c := &LinkInfo {
         Url: "",
         Text: "",
-        LinkType: &LinkType{},
-        Rel: "",
+        LinkType: "",
+        Rel: nil,
         Nofollow: false,
     }
     for _, opt := range opts {
@@ -1609,28 +1607,28 @@ type ImageInfo struct {
 // ImageInfo option function
 type ImageInfoOption func(*ImageInfo)
 
-// WithUrl sets the url field.
-func WithUrl(v string) ImageInfoOption {
+// WithImageInfoUrl sets the url field.
+func WithImageInfoUrl(v string) ImageInfoOption {
     return func(c *ImageInfo) { c.Url = v }
 }
 
-// WithAlt sets the alt field.
-func WithAlt(v string) ImageInfoOption {
-    return func(c *ImageInfo) { c.Alt = v }
+// WithImageInfoAlt sets the alt field.
+func WithImageInfoAlt(v string) ImageInfoOption {
+    return func(c *ImageInfo) { c.Alt = &v }
 }
 
-// WithWidth sets the width field.
-func WithWidth(v uint32) ImageInfoOption {
-    return func(c *ImageInfo) { c.Width = v }
+// WithImageInfoWidth sets the width field.
+func WithImageInfoWidth(v uint32) ImageInfoOption {
+    return func(c *ImageInfo) { c.Width = &v }
 }
 
-// WithHeight sets the height field.
-func WithHeight(v uint32) ImageInfoOption {
-    return func(c *ImageInfo) { c.Height = v }
+// WithImageInfoHeight sets the height field.
+func WithImageInfoHeight(v uint32) ImageInfoOption {
+    return func(c *ImageInfo) { c.Height = &v }
 }
 
-// WithSource sets the source field.
-func WithSource(v ImageSource) ImageInfoOption {
+// WithImageInfoSource sets the source field.
+func WithImageInfoSource(v ImageSource) ImageInfoOption {
     return func(c *ImageInfo) { c.Source = v }
 }
 
@@ -1638,10 +1636,10 @@ func WithSource(v ImageSource) ImageInfoOption {
 func NewImageInfo(opts ...ImageInfoOption) *ImageInfo {
     c := &ImageInfo {
         Url: "",
-        Alt: "",
-        Width: 0,
-        Height: 0,
-        Source: &ImageSource{},
+        Alt: nil,
+        Width: nil,
+        Height: nil,
+        Source: "",
     }
     for _, opt := range opts {
         opt(c)
@@ -1664,18 +1662,18 @@ type FeedInfo struct {
 // FeedInfo option function
 type FeedInfoOption func(*FeedInfo)
 
-// WithUrl sets the url field.
-func WithUrl(v string) FeedInfoOption {
+// WithFeedInfoUrl sets the url field.
+func WithFeedInfoUrl(v string) FeedInfoOption {
     return func(c *FeedInfo) { c.Url = v }
 }
 
-// WithTitle sets the title field.
-func WithTitle(v string) FeedInfoOption {
-    return func(c *FeedInfo) { c.Title = v }
+// WithFeedInfoTitle sets the title field.
+func WithFeedInfoTitle(v string) FeedInfoOption {
+    return func(c *FeedInfo) { c.Title = &v }
 }
 
-// WithFeedType sets the feed_type field.
-func WithFeedType(v FeedType) FeedInfoOption {
+// WithFeedInfoFeedType sets the feed_type field.
+func WithFeedInfoFeedType(v FeedType) FeedInfoOption {
     return func(c *FeedInfo) { c.FeedType = v }
 }
 
@@ -1683,8 +1681,8 @@ func WithFeedType(v FeedType) FeedInfoOption {
 func NewFeedInfo(opts ...FeedInfoOption) *FeedInfo {
     c := &FeedInfo {
         Url: "",
-        Title: "",
-        FeedType: &FeedType{},
+        Title: nil,
+        FeedType: "",
     }
     for _, opt := range opts {
         opt(c)
@@ -1707,18 +1705,18 @@ type JsonLdEntry struct {
 // JsonLdEntry option function
 type JsonLdEntryOption func(*JsonLdEntry)
 
-// WithSchemaType sets the schema_type field.
-func WithSchemaType(v string) JsonLdEntryOption {
+// WithJsonLdEntrySchemaType sets the schema_type field.
+func WithJsonLdEntrySchemaType(v string) JsonLdEntryOption {
     return func(c *JsonLdEntry) { c.SchemaType = v }
 }
 
-// WithName sets the name field.
-func WithName(v string) JsonLdEntryOption {
-    return func(c *JsonLdEntry) { c.Name = v }
+// WithJsonLdEntryName sets the name field.
+func WithJsonLdEntryName(v string) JsonLdEntryOption {
+    return func(c *JsonLdEntry) { c.Name = &v }
 }
 
-// WithRaw sets the raw field.
-func WithRaw(v string) JsonLdEntryOption {
+// WithJsonLdEntryRaw sets the raw field.
+func WithJsonLdEntryRaw(v string) JsonLdEntryOption {
     return func(c *JsonLdEntry) { c.Raw = v }
 }
 
@@ -1726,7 +1724,7 @@ func WithRaw(v string) JsonLdEntryOption {
 func NewJsonLdEntry(opts ...JsonLdEntryOption) *JsonLdEntry {
     c := &JsonLdEntry {
         SchemaType: "",
-        Name: "",
+        Name: nil,
         Raw: "",
     }
     for _, opt := range opts {
@@ -1752,24 +1750,24 @@ type CookieInfo struct {
 // CookieInfo option function
 type CookieInfoOption func(*CookieInfo)
 
-// WithName sets the name field.
-func WithName(v string) CookieInfoOption {
+// WithCookieInfoName sets the name field.
+func WithCookieInfoName(v string) CookieInfoOption {
     return func(c *CookieInfo) { c.Name = v }
 }
 
-// WithValue sets the value field.
-func WithValue(v string) CookieInfoOption {
+// WithCookieInfoValue sets the value field.
+func WithCookieInfoValue(v string) CookieInfoOption {
     return func(c *CookieInfo) { c.Value = v }
 }
 
-// WithDomain sets the domain field.
-func WithDomain(v string) CookieInfoOption {
-    return func(c *CookieInfo) { c.Domain = v }
+// WithCookieInfoDomain sets the domain field.
+func WithCookieInfoDomain(v string) CookieInfoOption {
+    return func(c *CookieInfo) { c.Domain = &v }
 }
 
-// WithPath sets the path field.
-func WithPath(v string) CookieInfoOption {
-    return func(c *CookieInfo) { c.Path = v }
+// WithCookieInfoPath sets the path field.
+func WithCookieInfoPath(v string) CookieInfoOption {
+    return func(c *CookieInfo) { c.Path = &v }
 }
 
 // NewCookieInfo creates a CookieInfo with optional parameters.
@@ -1777,8 +1775,8 @@ func NewCookieInfo(opts ...CookieInfoOption) *CookieInfo {
     c := &CookieInfo {
         Name: "",
         Value: "",
-        Domain: "",
-        Path: "",
+        Domain: nil,
+        Path: nil,
     }
     for _, opt := range opts {
         opt(c)
@@ -1807,34 +1805,34 @@ type DownloadedAsset struct {
 // DownloadedAsset option function
 type DownloadedAssetOption func(*DownloadedAsset)
 
-// WithUrl sets the url field.
-func WithUrl(v string) DownloadedAssetOption {
+// WithDownloadedAssetUrl sets the url field.
+func WithDownloadedAssetUrl(v string) DownloadedAssetOption {
     return func(c *DownloadedAsset) { c.Url = v }
 }
 
-// WithContentHash sets the content_hash field.
-func WithContentHash(v string) DownloadedAssetOption {
+// WithDownloadedAssetContentHash sets the content_hash field.
+func WithDownloadedAssetContentHash(v string) DownloadedAssetOption {
     return func(c *DownloadedAsset) { c.ContentHash = v }
 }
 
-// WithMimeType sets the mime_type field.
-func WithMimeType(v string) DownloadedAssetOption {
-    return func(c *DownloadedAsset) { c.MimeType = v }
+// WithDownloadedAssetMimeType sets the mime_type field.
+func WithDownloadedAssetMimeType(v string) DownloadedAssetOption {
+    return func(c *DownloadedAsset) { c.MimeType = &v }
 }
 
-// WithSize sets the size field.
-func WithSize(v uint) DownloadedAssetOption {
+// WithDownloadedAssetSize sets the size field.
+func WithDownloadedAssetSize(v uint) DownloadedAssetOption {
     return func(c *DownloadedAsset) { c.Size = v }
 }
 
-// WithAssetCategory sets the asset_category field.
-func WithAssetCategory(v AssetCategory) DownloadedAssetOption {
+// WithDownloadedAssetAssetCategory sets the asset_category field.
+func WithDownloadedAssetAssetCategory(v AssetCategory) DownloadedAssetOption {
     return func(c *DownloadedAsset) { c.AssetCategory = v }
 }
 
-// WithHtmlTag sets the html_tag field.
-func WithHtmlTag(v string) DownloadedAssetOption {
-    return func(c *DownloadedAsset) { c.HtmlTag = v }
+// WithDownloadedAssetHtmlTag sets the html_tag field.
+func WithDownloadedAssetHtmlTag(v string) DownloadedAssetOption {
+    return func(c *DownloadedAsset) { c.HtmlTag = &v }
 }
 
 // NewDownloadedAsset creates a DownloadedAsset with optional parameters.
@@ -1842,10 +1840,10 @@ func NewDownloadedAsset(opts ...DownloadedAssetOption) *DownloadedAsset {
     c := &DownloadedAsset {
         Url: "",
         ContentHash: "",
-        MimeType: "",
+        MimeType: nil,
         Size: 0,
-        AssetCategory: &AssetCategory{},
-        HtmlTag: "",
+        AssetCategory: "",
+        HtmlTag: nil,
     }
     for _, opt := range opts {
         opt(c)
@@ -1872,39 +1870,39 @@ type ArticleMetadata struct {
 // ArticleMetadata option function
 type ArticleMetadataOption func(*ArticleMetadata)
 
-// WithPublishedTime sets the published_time field.
-func WithPublishedTime(v string) ArticleMetadataOption {
-    return func(c *ArticleMetadata) { c.PublishedTime = v }
+// WithArticleMetadataPublishedTime sets the published_time field.
+func WithArticleMetadataPublishedTime(v string) ArticleMetadataOption {
+    return func(c *ArticleMetadata) { c.PublishedTime = &v }
 }
 
-// WithModifiedTime sets the modified_time field.
-func WithModifiedTime(v string) ArticleMetadataOption {
-    return func(c *ArticleMetadata) { c.ModifiedTime = v }
+// WithArticleMetadataModifiedTime sets the modified_time field.
+func WithArticleMetadataModifiedTime(v string) ArticleMetadataOption {
+    return func(c *ArticleMetadata) { c.ModifiedTime = &v }
 }
 
-// WithAuthor sets the author field.
-func WithAuthor(v string) ArticleMetadataOption {
-    return func(c *ArticleMetadata) { c.Author = v }
+// WithArticleMetadataAuthor sets the author field.
+func WithArticleMetadataAuthor(v string) ArticleMetadataOption {
+    return func(c *ArticleMetadata) { c.Author = &v }
 }
 
-// WithSection sets the section field.
-func WithSection(v string) ArticleMetadataOption {
-    return func(c *ArticleMetadata) { c.Section = v }
+// WithArticleMetadataSection sets the section field.
+func WithArticleMetadataSection(v string) ArticleMetadataOption {
+    return func(c *ArticleMetadata) { c.Section = &v }
 }
 
-// WithTags sets the tags field.
-func WithTags(v []string) ArticleMetadataOption {
+// WithArticleMetadataTags sets the tags field.
+func WithArticleMetadataTags(v []string) ArticleMetadataOption {
     return func(c *ArticleMetadata) { c.Tags = v }
 }
 
 // NewArticleMetadata creates a ArticleMetadata with optional parameters.
 func NewArticleMetadata(opts ...ArticleMetadataOption) *ArticleMetadata {
     c := &ArticleMetadata {
-        PublishedTime: "",
-        ModifiedTime: "",
-        Author: "",
-        Section: "",
-        Tags: [][]string,
+        PublishedTime: nil,
+        ModifiedTime: nil,
+        Author: nil,
+        Section: nil,
+        Tags: nil,
     }
     for _, opt := range opts {
         opt(c)
@@ -1925,13 +1923,13 @@ type HreflangEntry struct {
 // HreflangEntry option function
 type HreflangEntryOption func(*HreflangEntry)
 
-// WithLang sets the lang field.
-func WithLang(v string) HreflangEntryOption {
+// WithHreflangEntryLang sets the lang field.
+func WithHreflangEntryLang(v string) HreflangEntryOption {
     return func(c *HreflangEntry) { c.Lang = v }
 }
 
-// WithUrl sets the url field.
-func WithUrl(v string) HreflangEntryOption {
+// WithHreflangEntryUrl sets the url field.
+func WithHreflangEntryUrl(v string) HreflangEntryOption {
     return func(c *HreflangEntry) { c.Url = v }
 }
 
@@ -1964,24 +1962,24 @@ type FaviconInfo struct {
 // FaviconInfo option function
 type FaviconInfoOption func(*FaviconInfo)
 
-// WithUrl sets the url field.
-func WithUrl(v string) FaviconInfoOption {
+// WithFaviconInfoUrl sets the url field.
+func WithFaviconInfoUrl(v string) FaviconInfoOption {
     return func(c *FaviconInfo) { c.Url = v }
 }
 
-// WithRel sets the rel field.
-func WithRel(v string) FaviconInfoOption {
+// WithFaviconInfoRel sets the rel field.
+func WithFaviconInfoRel(v string) FaviconInfoOption {
     return func(c *FaviconInfo) { c.Rel = v }
 }
 
-// WithSizes sets the sizes field.
-func WithSizes(v string) FaviconInfoOption {
-    return func(c *FaviconInfo) { c.Sizes = v }
+// WithFaviconInfoSizes sets the sizes field.
+func WithFaviconInfoSizes(v string) FaviconInfoOption {
+    return func(c *FaviconInfo) { c.Sizes = &v }
 }
 
-// WithMimeType sets the mime_type field.
-func WithMimeType(v string) FaviconInfoOption {
-    return func(c *FaviconInfo) { c.MimeType = v }
+// WithFaviconInfoMimeType sets the mime_type field.
+func WithFaviconInfoMimeType(v string) FaviconInfoOption {
+    return func(c *FaviconInfo) { c.MimeType = &v }
 }
 
 // NewFaviconInfo creates a FaviconInfo with optional parameters.
@@ -1989,8 +1987,8 @@ func NewFaviconInfo(opts ...FaviconInfoOption) *FaviconInfo {
     c := &FaviconInfo {
         Url: "",
         Rel: "",
-        Sizes: "",
-        MimeType: "",
+        Sizes: nil,
+        MimeType: nil,
     }
     for _, opt := range opts {
         opt(c)
@@ -2011,13 +2009,13 @@ type HeadingInfo struct {
 // HeadingInfo option function
 type HeadingInfoOption func(*HeadingInfo)
 
-// WithLevel sets the level field.
-func WithLevel(v uint8) HeadingInfoOption {
+// WithHeadingInfoLevel sets the level field.
+func WithHeadingInfoLevel(v uint8) HeadingInfoOption {
     return func(c *HeadingInfo) { c.Level = v }
 }
 
-// WithText sets the text field.
-func WithText(v string) HeadingInfoOption {
+// WithHeadingInfoText sets the text field.
+func WithHeadingInfoText(v string) HeadingInfoOption {
     return func(c *HeadingInfo) { c.Text = v }
 }
 
@@ -2056,51 +2054,51 @@ type ResponseMeta struct {
 // ResponseMeta option function
 type ResponseMetaOption func(*ResponseMeta)
 
-// WithEtag sets the etag field.
-func WithEtag(v string) ResponseMetaOption {
-    return func(c *ResponseMeta) { c.Etag = v }
+// WithResponseMetaEtag sets the etag field.
+func WithResponseMetaEtag(v string) ResponseMetaOption {
+    return func(c *ResponseMeta) { c.Etag = &v }
 }
 
-// WithLastModified sets the last_modified field.
-func WithLastModified(v string) ResponseMetaOption {
-    return func(c *ResponseMeta) { c.LastModified = v }
+// WithResponseMetaLastModified sets the last_modified field.
+func WithResponseMetaLastModified(v string) ResponseMetaOption {
+    return func(c *ResponseMeta) { c.LastModified = &v }
 }
 
-// WithCacheControl sets the cache_control field.
-func WithCacheControl(v string) ResponseMetaOption {
-    return func(c *ResponseMeta) { c.CacheControl = v }
+// WithResponseMetaCacheControl sets the cache_control field.
+func WithResponseMetaCacheControl(v string) ResponseMetaOption {
+    return func(c *ResponseMeta) { c.CacheControl = &v }
 }
 
-// WithServer sets the server field.
-func WithServer(v string) ResponseMetaOption {
-    return func(c *ResponseMeta) { c.Server = v }
+// WithResponseMetaServer sets the server field.
+func WithResponseMetaServer(v string) ResponseMetaOption {
+    return func(c *ResponseMeta) { c.Server = &v }
 }
 
-// WithXPoweredBy sets the x_powered_by field.
-func WithXPoweredBy(v string) ResponseMetaOption {
-    return func(c *ResponseMeta) { c.XPoweredBy = v }
+// WithResponseMetaXPoweredBy sets the x_powered_by field.
+func WithResponseMetaXPoweredBy(v string) ResponseMetaOption {
+    return func(c *ResponseMeta) { c.XPoweredBy = &v }
 }
 
-// WithContentLanguage sets the content_language field.
-func WithContentLanguage(v string) ResponseMetaOption {
-    return func(c *ResponseMeta) { c.ContentLanguage = v }
+// WithResponseMetaContentLanguage sets the content_language field.
+func WithResponseMetaContentLanguage(v string) ResponseMetaOption {
+    return func(c *ResponseMeta) { c.ContentLanguage = &v }
 }
 
-// WithContentEncoding sets the content_encoding field.
-func WithContentEncoding(v string) ResponseMetaOption {
-    return func(c *ResponseMeta) { c.ContentEncoding = v }
+// WithResponseMetaContentEncoding sets the content_encoding field.
+func WithResponseMetaContentEncoding(v string) ResponseMetaOption {
+    return func(c *ResponseMeta) { c.ContentEncoding = &v }
 }
 
 // NewResponseMeta creates a ResponseMeta with optional parameters.
 func NewResponseMeta(opts ...ResponseMetaOption) *ResponseMeta {
     c := &ResponseMeta {
-        Etag: "",
-        LastModified: "",
-        CacheControl: "",
-        Server: "",
-        XPoweredBy: "",
-        ContentLanguage: "",
-        ContentEncoding: "",
+        Etag: nil,
+        LastModified: nil,
+        CacheControl: nil,
+        Server: nil,
+        XPoweredBy: nil,
+        ContentLanguage: nil,
+        ContentEncoding: nil,
     }
     for _, opt := range opts {
         opt(c)
@@ -2203,267 +2201,267 @@ type PageMetadata struct {
 // PageMetadata option function
 type PageMetadataOption func(*PageMetadata)
 
-// WithTitle sets the title field.
-func WithTitle(v string) PageMetadataOption {
-    return func(c *PageMetadata) { c.Title = v }
+// WithPageMetadataTitle sets the title field.
+func WithPageMetadataTitle(v string) PageMetadataOption {
+    return func(c *PageMetadata) { c.Title = &v }
 }
 
-// WithDescription sets the description field.
-func WithDescription(v string) PageMetadataOption {
-    return func(c *PageMetadata) { c.Description = v }
+// WithPageMetadataDescription sets the description field.
+func WithPageMetadataDescription(v string) PageMetadataOption {
+    return func(c *PageMetadata) { c.Description = &v }
 }
 
-// WithCanonicalUrl sets the canonical_url field.
-func WithCanonicalUrl(v string) PageMetadataOption {
-    return func(c *PageMetadata) { c.CanonicalUrl = v }
+// WithPageMetadataCanonicalUrl sets the canonical_url field.
+func WithPageMetadataCanonicalUrl(v string) PageMetadataOption {
+    return func(c *PageMetadata) { c.CanonicalUrl = &v }
 }
 
-// WithKeywords sets the keywords field.
-func WithKeywords(v string) PageMetadataOption {
-    return func(c *PageMetadata) { c.Keywords = v }
+// WithPageMetadataKeywords sets the keywords field.
+func WithPageMetadataKeywords(v string) PageMetadataOption {
+    return func(c *PageMetadata) { c.Keywords = &v }
 }
 
-// WithAuthor sets the author field.
-func WithAuthor(v string) PageMetadataOption {
-    return func(c *PageMetadata) { c.Author = v }
+// WithPageMetadataAuthor sets the author field.
+func WithPageMetadataAuthor(v string) PageMetadataOption {
+    return func(c *PageMetadata) { c.Author = &v }
 }
 
-// WithViewport sets the viewport field.
-func WithViewport(v string) PageMetadataOption {
-    return func(c *PageMetadata) { c.Viewport = v }
+// WithPageMetadataViewport sets the viewport field.
+func WithPageMetadataViewport(v string) PageMetadataOption {
+    return func(c *PageMetadata) { c.Viewport = &v }
 }
 
-// WithThemeColor sets the theme_color field.
-func WithThemeColor(v string) PageMetadataOption {
-    return func(c *PageMetadata) { c.ThemeColor = v }
+// WithPageMetadataThemeColor sets the theme_color field.
+func WithPageMetadataThemeColor(v string) PageMetadataOption {
+    return func(c *PageMetadata) { c.ThemeColor = &v }
 }
 
-// WithGenerator sets the generator field.
-func WithGenerator(v string) PageMetadataOption {
-    return func(c *PageMetadata) { c.Generator = v }
+// WithPageMetadataGenerator sets the generator field.
+func WithPageMetadataGenerator(v string) PageMetadataOption {
+    return func(c *PageMetadata) { c.Generator = &v }
 }
 
-// WithRobots sets the robots field.
-func WithRobots(v string) PageMetadataOption {
-    return func(c *PageMetadata) { c.Robots = v }
+// WithPageMetadataRobots sets the robots field.
+func WithPageMetadataRobots(v string) PageMetadataOption {
+    return func(c *PageMetadata) { c.Robots = &v }
 }
 
-// WithHtmlLang sets the html_lang field.
-func WithHtmlLang(v string) PageMetadataOption {
-    return func(c *PageMetadata) { c.HtmlLang = v }
+// WithPageMetadataHtmlLang sets the html_lang field.
+func WithPageMetadataHtmlLang(v string) PageMetadataOption {
+    return func(c *PageMetadata) { c.HtmlLang = &v }
 }
 
-// WithHtmlDir sets the html_dir field.
-func WithHtmlDir(v string) PageMetadataOption {
-    return func(c *PageMetadata) { c.HtmlDir = v }
+// WithPageMetadataHtmlDir sets the html_dir field.
+func WithPageMetadataHtmlDir(v string) PageMetadataOption {
+    return func(c *PageMetadata) { c.HtmlDir = &v }
 }
 
-// WithOgTitle sets the og_title field.
-func WithOgTitle(v string) PageMetadataOption {
-    return func(c *PageMetadata) { c.OgTitle = v }
+// WithPageMetadataOgTitle sets the og_title field.
+func WithPageMetadataOgTitle(v string) PageMetadataOption {
+    return func(c *PageMetadata) { c.OgTitle = &v }
 }
 
-// WithOgType sets the og_type field.
-func WithOgType(v string) PageMetadataOption {
-    return func(c *PageMetadata) { c.OgType = v }
+// WithPageMetadataOgType sets the og_type field.
+func WithPageMetadataOgType(v string) PageMetadataOption {
+    return func(c *PageMetadata) { c.OgType = &v }
 }
 
-// WithOgImage sets the og_image field.
-func WithOgImage(v string) PageMetadataOption {
-    return func(c *PageMetadata) { c.OgImage = v }
+// WithPageMetadataOgImage sets the og_image field.
+func WithPageMetadataOgImage(v string) PageMetadataOption {
+    return func(c *PageMetadata) { c.OgImage = &v }
 }
 
-// WithOgDescription sets the og_description field.
-func WithOgDescription(v string) PageMetadataOption {
-    return func(c *PageMetadata) { c.OgDescription = v }
+// WithPageMetadataOgDescription sets the og_description field.
+func WithPageMetadataOgDescription(v string) PageMetadataOption {
+    return func(c *PageMetadata) { c.OgDescription = &v }
 }
 
-// WithOgUrl sets the og_url field.
-func WithOgUrl(v string) PageMetadataOption {
-    return func(c *PageMetadata) { c.OgUrl = v }
+// WithPageMetadataOgUrl sets the og_url field.
+func WithPageMetadataOgUrl(v string) PageMetadataOption {
+    return func(c *PageMetadata) { c.OgUrl = &v }
 }
 
-// WithOgSiteName sets the og_site_name field.
-func WithOgSiteName(v string) PageMetadataOption {
-    return func(c *PageMetadata) { c.OgSiteName = v }
+// WithPageMetadataOgSiteName sets the og_site_name field.
+func WithPageMetadataOgSiteName(v string) PageMetadataOption {
+    return func(c *PageMetadata) { c.OgSiteName = &v }
 }
 
-// WithOgLocale sets the og_locale field.
-func WithOgLocale(v string) PageMetadataOption {
-    return func(c *PageMetadata) { c.OgLocale = v }
+// WithPageMetadataOgLocale sets the og_locale field.
+func WithPageMetadataOgLocale(v string) PageMetadataOption {
+    return func(c *PageMetadata) { c.OgLocale = &v }
 }
 
-// WithOgVideo sets the og_video field.
-func WithOgVideo(v string) PageMetadataOption {
-    return func(c *PageMetadata) { c.OgVideo = v }
+// WithPageMetadataOgVideo sets the og_video field.
+func WithPageMetadataOgVideo(v string) PageMetadataOption {
+    return func(c *PageMetadata) { c.OgVideo = &v }
 }
 
-// WithOgAudio sets the og_audio field.
-func WithOgAudio(v string) PageMetadataOption {
-    return func(c *PageMetadata) { c.OgAudio = v }
+// WithPageMetadataOgAudio sets the og_audio field.
+func WithPageMetadataOgAudio(v string) PageMetadataOption {
+    return func(c *PageMetadata) { c.OgAudio = &v }
 }
 
-// WithOgLocaleAlternates sets the og_locale_alternates field.
-func WithOgLocaleAlternates(v []string) PageMetadataOption {
-    return func(c *PageMetadata) { c.OgLocaleAlternates = v }
+// WithPageMetadataOgLocaleAlternates sets the og_locale_alternates field.
+func WithPageMetadataOgLocaleAlternates(v []string) PageMetadataOption {
+    return func(c *PageMetadata) { c.OgLocaleAlternates = &v }
 }
 
-// WithTwitterCard sets the twitter_card field.
-func WithTwitterCard(v string) PageMetadataOption {
-    return func(c *PageMetadata) { c.TwitterCard = v }
+// WithPageMetadataTwitterCard sets the twitter_card field.
+func WithPageMetadataTwitterCard(v string) PageMetadataOption {
+    return func(c *PageMetadata) { c.TwitterCard = &v }
 }
 
-// WithTwitterTitle sets the twitter_title field.
-func WithTwitterTitle(v string) PageMetadataOption {
-    return func(c *PageMetadata) { c.TwitterTitle = v }
+// WithPageMetadataTwitterTitle sets the twitter_title field.
+func WithPageMetadataTwitterTitle(v string) PageMetadataOption {
+    return func(c *PageMetadata) { c.TwitterTitle = &v }
 }
 
-// WithTwitterDescription sets the twitter_description field.
-func WithTwitterDescription(v string) PageMetadataOption {
-    return func(c *PageMetadata) { c.TwitterDescription = v }
+// WithPageMetadataTwitterDescription sets the twitter_description field.
+func WithPageMetadataTwitterDescription(v string) PageMetadataOption {
+    return func(c *PageMetadata) { c.TwitterDescription = &v }
 }
 
-// WithTwitterImage sets the twitter_image field.
-func WithTwitterImage(v string) PageMetadataOption {
-    return func(c *PageMetadata) { c.TwitterImage = v }
+// WithPageMetadataTwitterImage sets the twitter_image field.
+func WithPageMetadataTwitterImage(v string) PageMetadataOption {
+    return func(c *PageMetadata) { c.TwitterImage = &v }
 }
 
-// WithTwitterSite sets the twitter_site field.
-func WithTwitterSite(v string) PageMetadataOption {
-    return func(c *PageMetadata) { c.TwitterSite = v }
+// WithPageMetadataTwitterSite sets the twitter_site field.
+func WithPageMetadataTwitterSite(v string) PageMetadataOption {
+    return func(c *PageMetadata) { c.TwitterSite = &v }
 }
 
-// WithTwitterCreator sets the twitter_creator field.
-func WithTwitterCreator(v string) PageMetadataOption {
-    return func(c *PageMetadata) { c.TwitterCreator = v }
+// WithPageMetadataTwitterCreator sets the twitter_creator field.
+func WithPageMetadataTwitterCreator(v string) PageMetadataOption {
+    return func(c *PageMetadata) { c.TwitterCreator = &v }
 }
 
-// WithDcTitle sets the dc_title field.
-func WithDcTitle(v string) PageMetadataOption {
-    return func(c *PageMetadata) { c.DcTitle = v }
+// WithPageMetadataDcTitle sets the dc_title field.
+func WithPageMetadataDcTitle(v string) PageMetadataOption {
+    return func(c *PageMetadata) { c.DcTitle = &v }
 }
 
-// WithDcCreator sets the dc_creator field.
-func WithDcCreator(v string) PageMetadataOption {
-    return func(c *PageMetadata) { c.DcCreator = v }
+// WithPageMetadataDcCreator sets the dc_creator field.
+func WithPageMetadataDcCreator(v string) PageMetadataOption {
+    return func(c *PageMetadata) { c.DcCreator = &v }
 }
 
-// WithDcSubject sets the dc_subject field.
-func WithDcSubject(v string) PageMetadataOption {
-    return func(c *PageMetadata) { c.DcSubject = v }
+// WithPageMetadataDcSubject sets the dc_subject field.
+func WithPageMetadataDcSubject(v string) PageMetadataOption {
+    return func(c *PageMetadata) { c.DcSubject = &v }
 }
 
-// WithDcDescription sets the dc_description field.
-func WithDcDescription(v string) PageMetadataOption {
-    return func(c *PageMetadata) { c.DcDescription = v }
+// WithPageMetadataDcDescription sets the dc_description field.
+func WithPageMetadataDcDescription(v string) PageMetadataOption {
+    return func(c *PageMetadata) { c.DcDescription = &v }
 }
 
-// WithDcPublisher sets the dc_publisher field.
-func WithDcPublisher(v string) PageMetadataOption {
-    return func(c *PageMetadata) { c.DcPublisher = v }
+// WithPageMetadataDcPublisher sets the dc_publisher field.
+func WithPageMetadataDcPublisher(v string) PageMetadataOption {
+    return func(c *PageMetadata) { c.DcPublisher = &v }
 }
 
-// WithDcDate sets the dc_date field.
-func WithDcDate(v string) PageMetadataOption {
-    return func(c *PageMetadata) { c.DcDate = v }
+// WithPageMetadataDcDate sets the dc_date field.
+func WithPageMetadataDcDate(v string) PageMetadataOption {
+    return func(c *PageMetadata) { c.DcDate = &v }
 }
 
-// WithDcType sets the dc_type field.
-func WithDcType(v string) PageMetadataOption {
-    return func(c *PageMetadata) { c.DcType = v }
+// WithPageMetadataDcType sets the dc_type field.
+func WithPageMetadataDcType(v string) PageMetadataOption {
+    return func(c *PageMetadata) { c.DcType = &v }
 }
 
-// WithDcFormat sets the dc_format field.
-func WithDcFormat(v string) PageMetadataOption {
-    return func(c *PageMetadata) { c.DcFormat = v }
+// WithPageMetadataDcFormat sets the dc_format field.
+func WithPageMetadataDcFormat(v string) PageMetadataOption {
+    return func(c *PageMetadata) { c.DcFormat = &v }
 }
 
-// WithDcIdentifier sets the dc_identifier field.
-func WithDcIdentifier(v string) PageMetadataOption {
-    return func(c *PageMetadata) { c.DcIdentifier = v }
+// WithPageMetadataDcIdentifier sets the dc_identifier field.
+func WithPageMetadataDcIdentifier(v string) PageMetadataOption {
+    return func(c *PageMetadata) { c.DcIdentifier = &v }
 }
 
-// WithDcLanguage sets the dc_language field.
-func WithDcLanguage(v string) PageMetadataOption {
-    return func(c *PageMetadata) { c.DcLanguage = v }
+// WithPageMetadataDcLanguage sets the dc_language field.
+func WithPageMetadataDcLanguage(v string) PageMetadataOption {
+    return func(c *PageMetadata) { c.DcLanguage = &v }
 }
 
-// WithDcRights sets the dc_rights field.
-func WithDcRights(v string) PageMetadataOption {
-    return func(c *PageMetadata) { c.DcRights = v }
+// WithPageMetadataDcRights sets the dc_rights field.
+func WithPageMetadataDcRights(v string) PageMetadataOption {
+    return func(c *PageMetadata) { c.DcRights = &v }
 }
 
-// WithArticle sets the article field.
-func WithArticle(v ArticleMetadata) PageMetadataOption {
-    return func(c *PageMetadata) { c.Article = v }
+// WithPageMetadataArticle sets the article field.
+func WithPageMetadataArticle(v ArticleMetadata) PageMetadataOption {
+    return func(c *PageMetadata) { c.Article = &v }
 }
 
-// WithHreflangs sets the hreflangs field.
-func WithHreflangs(v []HreflangEntry) PageMetadataOption {
-    return func(c *PageMetadata) { c.Hreflangs = v }
+// WithPageMetadataHreflangs sets the hreflangs field.
+func WithPageMetadataHreflangs(v []HreflangEntry) PageMetadataOption {
+    return func(c *PageMetadata) { c.Hreflangs = &v }
 }
 
-// WithFavicons sets the favicons field.
-func WithFavicons(v []FaviconInfo) PageMetadataOption {
-    return func(c *PageMetadata) { c.Favicons = v }
+// WithPageMetadataFavicons sets the favicons field.
+func WithPageMetadataFavicons(v []FaviconInfo) PageMetadataOption {
+    return func(c *PageMetadata) { c.Favicons = &v }
 }
 
-// WithHeadings sets the headings field.
-func WithHeadings(v []HeadingInfo) PageMetadataOption {
-    return func(c *PageMetadata) { c.Headings = v }
+// WithPageMetadataHeadings sets the headings field.
+func WithPageMetadataHeadings(v []HeadingInfo) PageMetadataOption {
+    return func(c *PageMetadata) { c.Headings = &v }
 }
 
-// WithWordCount sets the word_count field.
-func WithWordCount(v uint) PageMetadataOption {
-    return func(c *PageMetadata) { c.WordCount = v }
+// WithPageMetadataWordCount sets the word_count field.
+func WithPageMetadataWordCount(v uint) PageMetadataOption {
+    return func(c *PageMetadata) { c.WordCount = &v }
 }
 
 // NewPageMetadata creates a PageMetadata with optional parameters.
 func NewPageMetadata(opts ...PageMetadataOption) *PageMetadata {
     c := &PageMetadata {
-        Title: "",
-        Description: "",
-        CanonicalUrl: "",
-        Keywords: "",
-        Author: "",
-        Viewport: "",
-        ThemeColor: "",
-        Generator: "",
-        Robots: "",
-        HtmlLang: "",
-        HtmlDir: "",
-        OgTitle: "",
-        OgType: "",
-        OgImage: "",
-        OgDescription: "",
-        OgUrl: "",
-        OgSiteName: "",
-        OgLocale: "",
-        OgVideo: "",
-        OgAudio: "",
-        OgLocaleAlternates: [][]string,
-        TwitterCard: "",
-        TwitterTitle: "",
-        TwitterDescription: "",
-        TwitterImage: "",
-        TwitterSite: "",
-        TwitterCreator: "",
-        DcTitle: "",
-        DcCreator: "",
-        DcSubject: "",
-        DcDescription: "",
-        DcPublisher: "",
-        DcDate: "",
-        DcType: "",
-        DcFormat: "",
-        DcIdentifier: "",
-        DcLanguage: "",
-        DcRights: "",
-        Article: &ArticleMetadata{},
-        Hreflangs: [][]HreflangEntry,
-        Favicons: [][]FaviconInfo,
-        Headings: [][]HeadingInfo,
-        WordCount: 0,
+        Title: nil,
+        Description: nil,
+        CanonicalUrl: nil,
+        Keywords: nil,
+        Author: nil,
+        Viewport: nil,
+        ThemeColor: nil,
+        Generator: nil,
+        Robots: nil,
+        HtmlLang: nil,
+        HtmlDir: nil,
+        OgTitle: nil,
+        OgType: nil,
+        OgImage: nil,
+        OgDescription: nil,
+        OgUrl: nil,
+        OgSiteName: nil,
+        OgLocale: nil,
+        OgVideo: nil,
+        OgAudio: nil,
+        OgLocaleAlternates: nil,
+        TwitterCard: nil,
+        TwitterTitle: nil,
+        TwitterDescription: nil,
+        TwitterImage: nil,
+        TwitterSite: nil,
+        TwitterCreator: nil,
+        DcTitle: nil,
+        DcCreator: nil,
+        DcSubject: nil,
+        DcDescription: nil,
+        DcPublisher: nil,
+        DcDate: nil,
+        DcType: nil,
+        DcFormat: nil,
+        DcIdentifier: nil,
+        DcLanguage: nil,
+        DcRights: nil,
+        Article: nil,
+        Hreflangs: nil,
+        Favicons: nil,
+        Headings: nil,
+        WordCount: nil,
     }
     for _, opt := range opts {
         opt(c)
@@ -2484,13 +2482,13 @@ type CitationResult struct {
 // CitationResult option function
 type CitationResultOption func(*CitationResult)
 
-// WithContent sets the content field.
-func WithContent(v string) CitationResultOption {
+// WithCitationResultContent sets the content field.
+func WithCitationResultContent(v string) CitationResultOption {
     return func(c *CitationResult) { c.Content = v }
 }
 
-// WithReferences sets the references field.
-func WithReferences(v []CitationReference) CitationResultOption {
+// WithCitationResultReferences sets the references field.
+func WithCitationResultReferences(v []CitationReference) CitationResultOption {
     return func(c *CitationResult) { c.References = v }
 }
 
@@ -2498,7 +2496,7 @@ func WithReferences(v []CitationReference) CitationResultOption {
 func NewCitationResult(opts ...CitationResultOption) *CitationResult {
     c := &CitationResult {
         Content: "",
-        References: [][]CitationReference,
+        References: nil,
     }
     for _, opt := range opts {
         opt(c)
@@ -2518,18 +2516,18 @@ type CitationReference struct {
 // CitationReference option function
 type CitationReferenceOption func(*CitationReference)
 
-// WithIndex sets the index field.
-func WithIndex(v uint) CitationReferenceOption {
+// WithCitationReferenceIndex sets the index field.
+func WithCitationReferenceIndex(v uint) CitationReferenceOption {
     return func(c *CitationReference) { c.Index = v }
 }
 
-// WithUrl sets the url field.
-func WithUrl(v string) CitationReferenceOption {
+// WithCitationReferenceUrl sets the url field.
+func WithCitationReferenceUrl(v string) CitationReferenceOption {
     return func(c *CitationReference) { c.Url = v }
 }
 
-// WithText sets the text field.
-func WithText(v string) CitationReferenceOption {
+// WithCitationReferenceText sets the text field.
+func WithCitationReferenceText(v string) CitationReferenceOption {
     return func(c *CitationReference) { c.Text = v }
 }
 
@@ -2570,27 +2568,27 @@ type BatchScrapeResult struct {
 // BatchScrapeResult option function
 type BatchScrapeResultOption func(*BatchScrapeResult)
 
-// WithUrl sets the url field.
-func WithUrl(v string) BatchScrapeResultOption {
+// WithBatchScrapeResultUrl sets the url field.
+func WithBatchScrapeResultUrl(v string) BatchScrapeResultOption {
     return func(c *BatchScrapeResult) { c.Url = v }
 }
 
-// WithResult sets the result field.
-func WithResult(v ScrapeResult) BatchScrapeResultOption {
-    return func(c *BatchScrapeResult) { c.Result = v }
+// WithBatchScrapeResultResult sets the result field.
+func WithBatchScrapeResultResult(v ScrapeResult) BatchScrapeResultOption {
+    return func(c *BatchScrapeResult) { c.Result = &v }
 }
 
-// WithError sets the error field.
-func WithError(v string) BatchScrapeResultOption {
-    return func(c *BatchScrapeResult) { c.Error = v }
+// WithBatchScrapeResultError sets the error field.
+func WithBatchScrapeResultError(v string) BatchScrapeResultOption {
+    return func(c *BatchScrapeResult) { c.Error = &v }
 }
 
 // NewBatchScrapeResult creates a BatchScrapeResult with optional parameters.
 func NewBatchScrapeResult(opts ...BatchScrapeResultOption) *BatchScrapeResult {
     c := &BatchScrapeResult {
         Url: "",
-        Result: &ScrapeResult{},
-        Error: "",
+        Result: nil,
+        Error: nil,
     }
     for _, opt := range opts {
         opt(c)
@@ -2613,27 +2611,27 @@ type BatchCrawlResult struct {
 // BatchCrawlResult option function
 type BatchCrawlResultOption func(*BatchCrawlResult)
 
-// WithUrl sets the url field.
-func WithUrl(v string) BatchCrawlResultOption {
+// WithBatchCrawlResultUrl sets the url field.
+func WithBatchCrawlResultUrl(v string) BatchCrawlResultOption {
     return func(c *BatchCrawlResult) { c.Url = v }
 }
 
-// WithResult sets the result field.
-func WithResult(v CrawlResult) BatchCrawlResultOption {
-    return func(c *BatchCrawlResult) { c.Result = v }
+// WithBatchCrawlResultResult sets the result field.
+func WithBatchCrawlResultResult(v CrawlResult) BatchCrawlResultOption {
+    return func(c *BatchCrawlResult) { c.Result = &v }
 }
 
-// WithError sets the error field.
-func WithError(v string) BatchCrawlResultOption {
-    return func(c *BatchCrawlResult) { c.Error = v }
+// WithBatchCrawlResultError sets the error field.
+func WithBatchCrawlResultError(v string) BatchCrawlResultOption {
+    return func(c *BatchCrawlResult) { c.Error = &v }
 }
 
 // NewBatchCrawlResult creates a BatchCrawlResult with optional parameters.
 func NewBatchCrawlResult(opts ...BatchCrawlResultOption) *BatchCrawlResult {
     c := &BatchCrawlResult {
         Url: "",
-        Result: &CrawlResult{},
-        Error: "",
+        Result: nil,
+        Error: nil,
     }
     for _, opt := range opts {
         opt(c)
@@ -2641,124 +2639,3 @@ func NewBatchCrawlResult(opts ...BatchCrawlResultOption) *BatchCrawlResult {
     return c
 }
 
-
-// Create a new crawl engine with the given configuration.
-//
-// If `config` is `None`, uses [`CrawlConfig::default()`].
-// Returns an error if the configuration is invalid.
-func CreateEngine(config *CrawlConfig) (*CrawlEngineHandle, error) {
-    jsonBytes, err := json.Marshal(config)
-    if err != nil {
-        return fmt.Errorf("failed to marshal: %w", err)
-    }
-    cConfig := C.CString(string(jsonBytes))
-    defer C.free(unsafe.Pointer(cConfig))
-
-    ptr := C.kcrawl_create_engine(cConfig)
-    if err := lastError(); err != nil {
-        return nil, err
-    }
-    return unmarshalCrawlEngineHandle(ptr), nil
-}
-
-
-// Scrape a single URL, returning extracted page data.
-func Scrape(engine CrawlEngineHandle, url string) (*ScrapeResult, error) {
-    jsonBytes, err := json.Marshal(engine)
-    if err != nil {
-        return fmt.Errorf("failed to marshal: %w", err)
-    }
-    cEngine := C.CString(string(jsonBytes))
-    defer C.free(unsafe.Pointer(cEngine))
-
-    cUrl := C.CString(url)
-    defer C.free(unsafe.Pointer(cUrl))
-
-    ptr := C.kcrawl_scrape(cEngine, cUrl)
-    if err := lastError(); err != nil {
-        return nil, err
-    }
-    return unmarshalScrapeResult(ptr), nil
-}
-
-
-// Crawl a website starting from `url`, following links up to the configured depth.
-func Crawl(engine CrawlEngineHandle, url string) (*CrawlResult, error) {
-    jsonBytes, err := json.Marshal(engine)
-    if err != nil {
-        return fmt.Errorf("failed to marshal: %w", err)
-    }
-    cEngine := C.CString(string(jsonBytes))
-    defer C.free(unsafe.Pointer(cEngine))
-
-    cUrl := C.CString(url)
-    defer C.free(unsafe.Pointer(cUrl))
-
-    ptr := C.kcrawl_crawl(cEngine, cUrl)
-    if err := lastError(); err != nil {
-        return nil, err
-    }
-    return unmarshalCrawlResult(ptr), nil
-}
-
-
-// Discover all pages on a website by following links and sitemaps.
-func MapUrls(engine CrawlEngineHandle, url string) (*MapResult, error) {
-    jsonBytes, err := json.Marshal(engine)
-    if err != nil {
-        return fmt.Errorf("failed to marshal: %w", err)
-    }
-    cEngine := C.CString(string(jsonBytes))
-    defer C.free(unsafe.Pointer(cEngine))
-
-    cUrl := C.CString(url)
-    defer C.free(unsafe.Pointer(cUrl))
-
-    ptr := C.kcrawl_map_urls(cEngine, cUrl)
-    if err := lastError(); err != nil {
-        return nil, err
-    }
-    return unmarshalMapResult(ptr), nil
-}
-
-
-// Scrape multiple URLs concurrently.
-func BatchScrape(engine CrawlEngineHandle, urls []string) *[]BatchScrapeResult {
-    jsonBytes, err := json.Marshal(engine)
-    if err != nil {
-        return fmt.Errorf("failed to marshal: %w", err)
-    }
-    cEngine := C.CString(string(jsonBytes))
-    defer C.free(unsafe.Pointer(cEngine))
-
-    ptr := C.kcrawl_batch_scrape(cEngine, cUrls)
-    return unmarshalListBatchScrapeResult(ptr)
-}
-
-
-// Crawl multiple seed URLs concurrently, each following links to configured depth.
-func BatchCrawl(engine CrawlEngineHandle, urls []string) *[]BatchCrawlResult {
-    jsonBytes, err := json.Marshal(engine)
-    if err != nil {
-        return fmt.Errorf("failed to marshal: %w", err)
-    }
-    cEngine := C.CString(string(jsonBytes))
-    defer C.free(unsafe.Pointer(cEngine))
-
-    ptr := C.kcrawl_batch_crawl(cEngine, cUrls)
-    return unmarshalListBatchCrawlResult(ptr)
-}
-
-
-// Default is a method.
-func (r *BrowserConfig) Default() *BrowserConfig {
-    ptr := C.kcrawl_browser_config_default (unsafe.Pointer(r), )
-    return unmarshalBrowserConfig(ptr)
-}
-
-
-// Default is a method.
-func (r *CrawlConfig) Default() *CrawlConfig {
-    ptr := C.kcrawl_crawl_config_default (unsafe.Pointer(r), )
-    return unmarshalCrawlConfig(ptr)
-}

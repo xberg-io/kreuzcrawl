@@ -5,7 +5,7 @@ import java.lang.foreign.MemorySegment;
 
 /**
  * Opaque handle to a configured crawl engine.
- *
+ * 
  * Constructed via [`create_engine`] with an optional [`CrawlConfig`].
  * All default trait implementations (BFS strategy, in-memory frontier,
  * per-domain throttle, etc.) are used internally.

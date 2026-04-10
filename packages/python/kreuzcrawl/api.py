@@ -107,3 +107,5 @@ def batch_scrape(engine: CrawlEngineHandle, urls: list[str]) -> list[_rust.Batch
 def batch_crawl(engine: CrawlEngineHandle, urls: list[str]) -> list[_rust.BatchCrawlResult]:
     """Crawl multiple seed URLs concurrently, each following links to configured depth."""
     return _rust.batch_crawl(engine, urls)
+
+

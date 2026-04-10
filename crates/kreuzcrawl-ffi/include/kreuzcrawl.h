@@ -2276,6 +2276,51 @@ int32_t kcrawl_asset_category_from_str(const char *name);
  * Caller must ensure all pointer arguments are valid or null.
  * Returned pointers must be freed with the appropriate free function.
  */
-KCRAWLCrawlEngineHandle *kcrawl_create_engine(const KCRAWLCrawlConfig *_config);
+KCRAWLCrawlEngineHandle *kcrawl_create_engine(const KCRAWLCrawlConfig *config);
+
+/**
+ * Scrape a single URL, returning extracted page data.
+ * # Safety
+ * Caller must ensure all pointer arguments are valid or null.
+ * Returned pointers must be freed with the appropriate free function.
+ */
+KCRAWLScrapeResult *kcrawl_scrape(const KCRAWLCrawlEngineHandle *engine,
+                                  const char *url);
+
+/**
+ * Crawl a website starting from `url`, following links up to the configured depth.
+ * # Safety
+ * Caller must ensure all pointer arguments are valid or null.
+ * Returned pointers must be freed with the appropriate free function.
+ */
+KCRAWLCrawlResult *kcrawl_crawl(const KCRAWLCrawlEngineHandle *engine,
+                                const char *url);
+
+/**
+ * Discover all pages on a website by following links and sitemaps.
+ * # Safety
+ * Caller must ensure all pointer arguments are valid or null.
+ * Returned pointers must be freed with the appropriate free function.
+ */
+KCRAWLMapResult *kcrawl_map_urls(const KCRAWLCrawlEngineHandle *engine,
+                                 const char *url);
+
+/**
+ * Scrape multiple URLs concurrently.
+ * # Safety
+ * Caller must ensure all pointer arguments are valid or null.
+ * Returned pointers must be freed with the appropriate free function.
+ */
+char *kcrawl_batch_scrape(const KCRAWLCrawlEngineHandle *engine,
+                          const char *urls);
+
+/**
+ * Crawl multiple seed URLs concurrently, each following links to configured depth.
+ * # Safety
+ * Caller must ensure all pointer arguments are valid or null.
+ * Returned pointers must be freed with the appropriate free function.
+ */
+char *kcrawl_batch_crawl(const KCRAWLCrawlEngineHandle *engine,
+                         const char *urls);
 
 #endif  /* KCRAWL_H */

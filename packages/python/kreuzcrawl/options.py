@@ -539,7 +539,6 @@ class CachedPage:
     last_modified: str | None = ""
     cached_at: int = 0
 
-
 @dataclass
 class LinkInfo:
     """Information about a link found on a page."""
@@ -884,7 +883,6 @@ class CitationReference:
     url: str = ""
     text: str = ""
 
-
 @dataclass
 class BatchScrapeResult:
     """Result from a single URL in a batch scrape operation."""
@@ -911,3 +909,5 @@ class BatchCrawlResult:
 
     error: str | None = ""
     """The error message, if the crawl failed."""
+
+
