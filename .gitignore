@@ -1,38 +1,164 @@
+# Build artifacts
 target/
-*.swp
-*.swo
-.DS_Store
-.env
-.claude/
-.idea/
-.vscode/
-CLAUDE.md
-AGENTS.md
-
-# AI Rules generated files
-.codex/
-GEMINI.md
-.gemini/
-.alef/
-__pycache__/
-*.so
-*.pyd
-.venv/
-*.egg-info/
+build/
 dist/
-node_modules/
+*.so
+*.dylib
+*.dll
+*.pdb
 *.node
-.gems/
-vendor/bundle/
-vendor/
-*.h.bak
-*.test
-*.class
-bin/
-obj/
+*.whl
+*.tar.gz
+*.gem
+*.jar
+wheels/
+**/bin/
+!**/src/bin/
+**/obj/
+
+# Rust
+*.rs.bk
+*.profraw
+rust-coverage.lcov
+rust_out
+
+# Python
+*.py[cod]
+*$py.class
+*.egg-info/
+__pycache__/
+.venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.hypothesis/
+.coverage
+.coverage*
+htmlcov/
+share/python-wheels/
+
+# Node.js / WASM
+node_modules/
+*.tsbuildinfo
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+crates/kreuzcrawl-node/index.d.ts
+crates/kreuzcrawl-node/index.js
+.wrangler/
+.pnpm-store/
+
+# Ruby
+packages/ruby/.bundle/
+packages/ruby/vendor/
+*.Cache
+
+# PHP
+php-kreuzcrawl.ini
+packages/php/php-kreuzcrawl.ini
+packages/php/tests.xml
+.php-cs-fixer.cache
+
+# Java / C# / .NET
+*.suo
+*.user
+*.cscfg
+*.cobertura.xml
 *.nupkg
-pkg/
-site/
+*.versionsBackup
+TestResults/
+
+# Generated test apps
+test_apps/
+
+# Elixir
 packages/elixir/_build/
 packages/elixir/deps/
-packages/php/.php-cs-fixer.cache
+.nox/
+
+# C FFI
+crates/kreuzcrawl-ffi/tests/c/test_*
+!crates/kreuzcrawl-ffi/tests/c/test_*.c
+crates/kreuzcrawl-ffi/tests/c/*.o
+crates/kreuzcrawl-ffi/tests/c/*.dSYM/
+e2e/c/test_*
+!e2e/c/test_*.c
+e2e/c/*.o
+e2e/c/*.dSYM/
+
+# Generated pkg-config
+*.pc
+
+# Coverage
+coverage/
+coverage.info
+coverage.json
+coverage.lcov
+coverage.out
+coverage.xml
+packages/*/.coverage
+packages/*/coverage.json
+packages/*/coverage.out
+packages/*/htmlcov/
+packages/*/test-results/
+packages/*/TestResults/
+
+# IDE / Editor
+.idea/
+.vscode/
+.run/
+.DS_Store
+*.swp
+*.swo
+Thumbs.db
+
+# CI / Tools
+.cache/
+.rumdl_cache/
+.tmp/
+*temp/
+*.temp
+*.tmp
+*.log
+.mvn/
+.tox/
+.artifacts/
+.remote-cache/
+docker-logs/
+
+# Docs
+docs/_build/
+docs/build/
+site/
+
+# Tests
+test_report.json
+tests/e2e/logs/
+tests/e2e/test_report.json
+temp-test-*
+
+# AI / MCP / Agent config
+.claude/
+.codex/
+.gemini/
+.mcp.json
+.playwright-mcp/
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+.cursorrules
+.windsurfrules
+[Tt][Oo][Dd][Oo]*
+
+# Git worktrees
+.worktrees/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Misc
+output.txt
+/tmp/kreuzcrawl-docker-test-results.json
