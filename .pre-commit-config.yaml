@@ -76,21 +76,52 @@ repos:
       # Clippy: split by compilation unit so only changed code recompiles
       - id: cargo-clippy
         name: clippy (workspace — core, cli, ffi, bindings)
-        args: ["--fix", "--allow-dirty", "--allow-staged", "--workspace",
-               "--exclude=kreuzcrawl-php", "--exclude=kreuzcrawl-wasm",
-               "--all-features", "--all-targets", "--", "-D", "warnings"]
+        args:
+          [
+            "--fix",
+            "--allow-dirty",
+            "--allow-staged",
+            "--workspace",
+            "--exclude=kreuzcrawl-php",
+            "--exclude=kreuzcrawl-wasm",
+            "--all-features",
+            "--all-targets",
+            "--",
+            "-D",
+            "warnings",
+          ]
         files: ^(crates/|tools/|e2e/rust/|Cargo\.(toml|lock))
         types_or: [rust, toml]
       - id: cargo-clippy
         name: clippy (kreuzcrawl-php)
-        args: ["--fix", "--allow-dirty", "--allow-staged",
-               "-p", "kreuzcrawl-php", "--all-targets", "--", "-D", "warnings"]
+        args:
+          [
+            "--fix",
+            "--allow-dirty",
+            "--allow-staged",
+            "-p",
+            "kreuzcrawl-php",
+            "--all-targets",
+            "--",
+            "-D",
+            "warnings",
+          ]
         files: ^crates/kreuzcrawl-php/
         types: [rust]
       - id: cargo-clippy
         name: clippy (kreuzcrawl-wasm)
-        args: ["--fix", "--allow-dirty", "--allow-staged",
-               "-p", "kreuzcrawl-wasm", "--all-targets", "--", "-D", "warnings"]
+        args:
+          [
+            "--fix",
+            "--allow-dirty",
+            "--allow-staged",
+            "-p",
+            "kreuzcrawl-wasm",
+            "--all-targets",
+            "--",
+            "-D",
+            "warnings",
+          ]
         files: ^crates/kreuzcrawl-wasm/
         types: [rust]
 
@@ -164,7 +195,7 @@ repos:
     rev: v0.11.0
     hooks:
       - id: shellcheck
-        args: ['-x']
+        args: ["-x"]
         exclude: ^test_apps/docker/tests/
 
   # Markdown: linting
