@@ -5,7 +5,7 @@ require 'kreuzcrawl'
 RSpec.describe 'engine' do
   it 'engine_scrape_basic: CrawlEngine with defaults scrapes a page identically to the free function' do
     engine = Kreuzcrawl.create_engine(nil)
-    url = "#{ENV.fetch('MOCK_SERVER_URL', nil)}/fixtures/engine_scrape_basic"
+    url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/engine_scrape_basic"
     result = Kreuzcrawl.scrape(engine, url)
     expect(result.status_code).to eq(200)
     expect(result.content_type).to eq('text/html')

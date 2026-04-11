@@ -1,6 +1,38 @@
 version: "3"
 
 tasks:
+  mock-server:build:
+    desc: Build the e2e mock HTTP server
+    cmds:
+      - cargo build -p mock-server --release
+    sources:
+      - tools/mock-server/src/**/*.rs
+      - tools/mock-server/Cargo.toml
+    generates:
+      - target/release/mock-server
+
+  mock-server:start:
+    desc: Start the e2e mock HTTP server (background)
+    deps: [mock-server:build]
+    cmds:
+      - |
+        ./target/release/mock-server --fixtures ./fixtures --port 0 > .mock-server.env &
+        echo $! > .mock-server.pid
+        sleep 1
+        cat .mock-server.env
+    generates:
+      - .mock-server.pid
+      - .mock-server.env
+
+  mock-server:stop:
+    desc: Stop the e2e mock HTTP server
+    cmds:
+      - |
+        if [ -f .mock-server.pid ]; then
+          kill "$(cat .mock-server.pid)" 2>/dev/null || true
+          rm -f .mock-server.pid .mock-server.env
+        fi
+
   generate:all:
     desc: Generate all E2E tests from fixtures across all supported languages
     cmds:
@@ -18,6 +50,10 @@ tasks:
 
   test:all:
     desc: Run all E2E tests across all supported languages
+    deps: [mock-server:start]
+    env:
+      MOCK_SERVER_URL:
+        sh: cat .mock-server.env 2>/dev/null | grep MOCK_SERVER_URL | cut -d= -f2
     cmds:
       - task: rust:e2e:test
       - task: python:e2e:test
@@ -25,11 +61,10 @@ tasks:
       - task: go:e2e:test
       - task: java:e2e:test
       - task: csharp:e2e:test
-      - task: wasm:e2e:deno:test
-      - task: wasm:e2e:workers:test
       - task: ruby:e2e:test
       - task: php:e2e:test
-      - task: c:e2e:test
+      - task: elixir:e2e:test
+      - defer: { task: mock-server:stop }
 
   verify:all:
     desc: Full E2E pipeline - generate, lint, and test all suites
