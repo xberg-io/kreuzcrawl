@@ -2,6 +2,7 @@ package dev.kreuzberg.e2e;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import dev.kreuzberg.kreuzcrawl.Kreuzcrawl;
 
 /** E2e tests for category: robots. */
 class RobotsTest {

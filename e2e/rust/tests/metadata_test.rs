@@ -3,13 +3,13 @@
 use kreuzcrawl::scrape;
 use kreuzcrawl::create_engine;
 
-#[test]
-fn test_metadata_article_times() {
+#[tokio::test]
+async fn test_metadata_article_times() {
     // Extracts article:published_time, modified_time, author, section, and tags
     let engine = kreuzcrawl::create_engine(None).expect("handle creation should succeed");
     let url = String::new();
-    let result = scrape(&engine, url).expect("should succeed");
-    assert_eq!(result.status_code, "200", "equals assertion failed");
+    let result = scrape(&engine, &url).await.expect("should succeed");
+    assert_eq!(result.status_code, 200, "equals assertion failed");
     // skipped: field 'article.published_time' not available on result type
     // skipped: field 'article.modified_time' not available on result type
     // skipped: field 'article.author' not available on result type
@@ -17,46 +17,46 @@ fn test_metadata_article_times() {
     // skipped: field 'article.tags.length' not available on result type
 }
 
-#[test]
-fn test_metadata_favicons() {
+#[tokio::test]
+async fn test_metadata_favicons() {
     // Extracts favicon link tags including apple-touch-icon
     let engine = kreuzcrawl::create_engine(None).expect("handle creation should succeed");
     let url = String::new();
-    let result = scrape(&engine, url).expect("should succeed");
-    assert_eq!(result.status_code, "200", "equals assertion failed");
+    let result = scrape(&engine, &url).await.expect("should succeed");
+    assert_eq!(result.status_code, 200, "equals assertion failed");
     // skipped: field 'favicons.length' not available on result type
     // skipped: field 'favicons[].apple_touch' not available on result type
 }
 
-#[test]
-fn test_metadata_headings() {
+#[tokio::test]
+async fn test_metadata_headings() {
     // Extracts heading hierarchy (h1-h6) from HTML page
     let engine = kreuzcrawl::create_engine(None).expect("handle creation should succeed");
     let url = String::new();
-    let result = scrape(&engine, url).expect("should succeed");
-    assert_eq!(result.status_code, "200", "equals assertion failed");
+    let result = scrape(&engine, &url).await.expect("should succeed");
+    assert_eq!(result.status_code, 200, "equals assertion failed");
     // skipped: field 'headings.h1.length' not available on result type
     // skipped: field 'headings.h1[0].text' not available on result type
     // skipped: field 'headings.length' not available on result type
 }
 
-#[test]
-fn test_metadata_hreflang() {
+#[tokio::test]
+async fn test_metadata_hreflang() {
     // Extracts hreflang alternate link tags
     let engine = kreuzcrawl::create_engine(None).expect("handle creation should succeed");
     let url = String::new();
-    let result = scrape(&engine, url).expect("should succeed");
-    assert_eq!(result.status_code, "200", "equals assertion failed");
+    let result = scrape(&engine, &url).await.expect("should succeed");
+    assert_eq!(result.status_code, 200, "equals assertion failed");
     // skipped: field 'hreflang.length' not available on result type
     // skipped: field 'hreflang[].lang' not available on result type
 }
 
-#[test]
-fn test_metadata_keywords_author() {
+#[tokio::test]
+async fn test_metadata_keywords_author() {
     // Extracts keywords, author, viewport, generator, theme-color, robots, lang, dir metadata
     let engine = kreuzcrawl::create_engine(None).expect("handle creation should succeed");
     let url = String::new();
-    let result = scrape(&engine, url).expect("should succeed");
+    let result = scrape(&engine, &url).await.expect("should succeed");
     let metadata_title = result.metadata.title.as_deref().unwrap_or("");
     let metadata_keywords = result.metadata.keywords.as_deref().unwrap_or("");
     let metadata_author = result.metadata.author.as_deref().unwrap_or("");
@@ -65,11 +65,11 @@ fn test_metadata_keywords_author() {
     let metadata_robots = result.metadata.robots.as_deref().unwrap_or("");
     let metadata_html_lang = result.metadata.html_lang.as_deref().unwrap_or("");
     let metadata_html_dir = result.metadata.html_dir.as_deref().unwrap_or("");
-    assert_eq!(result.status_code, "200", "equals assertion failed");
+    assert_eq!(result.status_code, 200, "equals assertion failed");
     assert_eq!(metadata_title.trim(), r#"Comprehensive Metadata Test Page"#, "equals assertion failed");
     assert!(result.metadata.canonical_url.is_some(), "expected metadata.canonical_url to be present");
     assert!(!metadata_keywords.is_empty(), "expected non-empty value");
-    assert!(metadata_keywords.contains(r#"rust"#), "expected to contain: {}", r#"rust"#);
+    assert!(metadata_keywords.to_string().contains(r#"rust"#), "expected to contain: {}", r#"rust"#);
     assert_eq!(metadata_author.trim(), r#"Jane Developer"#, "equals assertion failed");
     assert!(result.metadata.viewport.is_some(), "expected metadata.viewport to be present");
     assert_eq!(metadata_generator.trim(), r#"kreuzcrawl/1.0"#, "equals assertion failed");
@@ -79,40 +79,40 @@ fn test_metadata_keywords_author() {
     assert_eq!(metadata_html_dir.trim(), r#"ltr"#, "equals assertion failed");
 }
 
-#[test]
-fn test_metadata_og_video_audio() {
+#[tokio::test]
+async fn test_metadata_og_video_audio() {
     // Extracts og:video, og:audio, and og:locale:alternate metadata
     let engine = kreuzcrawl::create_engine(None).expect("handle creation should succeed");
     let url = String::new();
-    let result = scrape(&engine, url).expect("should succeed");
+    let result = scrape(&engine, &url).await.expect("should succeed");
     let metadata_og_video = result.metadata.og_video.as_deref().unwrap_or("");
     let metadata_og_audio = result.metadata.og_audio.as_deref().unwrap_or("");
-    assert_eq!(result.status_code, "200", "equals assertion failed");
+    assert_eq!(result.status_code, 200, "equals assertion failed");
     assert_eq!(metadata_og_video.trim(), r#"https://example.com/video.mp4"#, "equals assertion failed");
     assert_eq!(metadata_og_audio.trim(), r#"https://example.com/audio.mp3"#, "equals assertion failed");
     // skipped: field 'og.locale_alternate.length' not available on result type
 }
 
-#[test]
-fn test_metadata_response_headers() {
+#[tokio::test]
+async fn test_metadata_response_headers() {
     // Extracts response metadata from HTTP headers (etag, server, content-language)
     let engine = kreuzcrawl::create_engine(None).expect("handle creation should succeed");
     let url = String::new();
-    let result = scrape(&engine, url).expect("should succeed");
-    assert_eq!(result.status_code, "200", "equals assertion failed");
+    let result = scrape(&engine, &url).await.expect("should succeed");
+    assert_eq!(result.status_code, 200, "equals assertion failed");
     // skipped: field 'response_headers.etag' not available on result type
     // skipped: field 'response_headers.last_modified' not available on result type
     // skipped: field 'response_headers.server' not available on result type
     // skipped: field 'response_headers.content_language' not available on result type
 }
 
-#[test]
-fn test_metadata_word_count() {
+#[tokio::test]
+async fn test_metadata_word_count() {
     // Computes word count from visible page text
     let engine = kreuzcrawl::create_engine(None).expect("handle creation should succeed");
     let url = String::new();
-    let result = scrape(&engine, url).expect("should succeed");
-    assert_eq!(result.status_code, "200", "equals assertion failed");
+    let result = scrape(&engine, &url).await.expect("should succeed");
+    assert_eq!(result.status_code, 200, "equals assertion failed");
     // skipped: field 'computed.word_count' not available on result type
     // skipped: field 'computed.word_count' not available on result type
 }

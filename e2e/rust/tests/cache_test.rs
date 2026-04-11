@@ -3,12 +3,11 @@
 use kreuzcrawl::scrape;
 use kreuzcrawl::create_engine;
 
-#[test]
-fn test_cache_basic() {
+#[tokio::test]
+async fn test_cache_basic() {
     // Crawling with disk cache enabled succeeds without errors
     let engine = kreuzcrawl::create_engine(None).expect("handle creation should succeed");
     let url = String::new();
-    let result = scrape(&engine, url).expect("should succeed");
-    assert_eq!(result.status_code, "200", "equals assertion failed");
+    let result = scrape(&engine, &url).await.expect("should succeed");
+    assert_eq!(result.status_code, 200, "equals assertion failed");
 }
-

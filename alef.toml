@@ -258,6 +258,9 @@ function = "scrape"
 module = "github.com/kreuzberg-dev/kreuzcrawl"
 function = "Scrape"
 
+[e2e.call.overrides.java]
+class = "dev.kreuzberg.kreuzcrawl.Kreuzcrawl"
+
 [e2e.call.overrides.rust]
 crate_name = "kreuzcrawl"
 
