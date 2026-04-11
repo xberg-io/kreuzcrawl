@@ -8,7 +8,7 @@ defmodule E2e.ScrapeTest do
       result = Kreuzcrawl.scrape!(engine, "")
       assert String.trim(result.status_code) == 200
       assert String.trim(length(result.assets)) == 2
-      assert String.trim(result.assets.unique_hashes) == 2
+      assert String.trim(result.assets[0].unique_hashes) == 2
     end
   end
 
@@ -27,7 +27,7 @@ defmodule E2e.ScrapeTest do
       result = Kreuzcrawl.scrape!(engine, "")
       assert String.trim(result.status_code) == 200
       assert String.trim(length(result.assets)) == 1
-      assert String.contains?(result.assets[""].category, "image")
+      assert String.contains?(result.assets[0].category, "image")
     end
   end
 
@@ -42,7 +42,7 @@ defmodule E2e.ScrapeTest do
       assert String.contains?(result.metadata.description, "illustrative examples")
       assert result.metadata.canonical_url != ""
       assert length(result.links) > 0
-      assert String.contains?(result.links[""].link_type, "external")
+      assert String.contains?(result.links[0].link_type, "external")
       assert String.trim(length(result.images)) == 0
       # skipped: field 'og.title' not available on result type
     end
@@ -54,10 +54,10 @@ defmodule E2e.ScrapeTest do
       result = Kreuzcrawl.scrape!(engine, "")
       assert String.trim(result.status_code) == 200
       assert length(result.links) > 9
-      assert String.contains?(result.links[""].link_type, "internal")
-      assert String.contains?(result.links[""].link_type, "external")
-      assert String.contains?(result.links[""].link_type, "anchor")
-      assert String.contains?(result.links[""].link_type, "document")
+      assert String.contains?(result.links[0].link_type, "internal")
+      assert String.contains?(result.links[0].link_type, "external")
+      assert String.contains?(result.links[0].link_type, "anchor")
+      assert String.contains?(result.links[0].link_type, "document")
     end
   end
 
@@ -96,9 +96,9 @@ defmodule E2e.ScrapeTest do
       engine = Kreuzcrawl.create_engine!(nil)
       result = Kreuzcrawl.scrape!(engine, "")
       assert String.trim(result.status_code) == 200
-      assert String.trim(length(result.feeds.rss)) == 1
-      assert String.trim(length(result.feeds.atom)) == 1
-      assert String.trim(length(result.feeds.json_feed)) == 1
+      assert String.trim(length(result.feeds[0].rss)) == 1
+      assert String.trim(length(result.feeds[0].atom)) == 1
+      assert String.trim(length(result.feeds[0].json_feed)) == 1
     end
   end
 
@@ -126,8 +126,8 @@ defmodule E2e.ScrapeTest do
       result = Kreuzcrawl.scrape!(engine, "")
       assert String.trim(result.status_code) == 200
       assert result.json_ld != ""
-      assert String.trim(result.json_ld.type) == "Recipe"
-      assert String.trim(result.json_ld.name) == "Best Chocolate Cake"
+      assert String.trim(result.json_ld[0].type) == "Recipe"
+      assert String.trim(result.json_ld[0].name) == "Best Chocolate Cake"
     end
   end
 

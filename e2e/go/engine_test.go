@@ -14,7 +14,7 @@ func Test_EngineBatchBasic(t *testing.T) {
 	if createErr != nil {
 		t.Fatalf("create handle failed: %v", createErr)
 	}
-	result, err := pkg.Scrape(engine, "")
+	_, err := pkg.Scrape(engine, "")
 	if err != nil {
 		t.Fatalf("call failed: %v", err)
 	}
@@ -28,7 +28,7 @@ func Test_EngineCrawlBasic(t *testing.T) {
 	if createErr != nil {
 		t.Fatalf("create handle failed: %v", createErr)
 	}
-	result, err := pkg.Scrape(engine, "")
+	_, err := pkg.Scrape(engine, "")
 	if err != nil {
 		t.Fatalf("call failed: %v", err)
 	}
@@ -42,7 +42,7 @@ func Test_EngineMapBasic(t *testing.T) {
 	if createErr != nil {
 		t.Fatalf("create handle failed: %v", createErr)
 	}
-	result, err := pkg.Scrape(engine, "")
+	_, err := pkg.Scrape(engine, "")
 	if err != nil {
 		t.Fatalf("call failed: %v", err)
 	}
@@ -63,6 +63,10 @@ func Test_EngineScrapeBasic(t *testing.T) {
 	if result.Metadata.Title != nil {
 		metadata_title = *result.Metadata.Title
 	}
+	var metadata_description string
+	if result.Metadata.Description != nil {
+		metadata_description = *result.Metadata.Description
+	}
 	if result.StatusCode != 200 {
 		t.Errorf("equals mismatch: got %q", result.StatusCode)
 	}
@@ -72,15 +76,12 @@ func Test_EngineScrapeBasic(t *testing.T) {
 	if metadata_title != `Engine Test` {
 		t.Errorf("equals mismatch: got %q", metadata_title)
 	}
-	if result.Metadata != nil {
-	if !strings.Contains(result.Metadata.DescriptionContains, `Testing the engine`) {
-		t.Errorf("expected to contain %s, got %q", `Testing the engine`, result.Metadata.DescriptionContains)
+	if !strings.Contains(metadata_description, `Testing the engine`) {
+		t.Errorf("expected to contain %s, got %q", `Testing the engine`, metadata_description)
 	}
+	if len(result.Links) < 1 {
+		t.Errorf("expected >= 1, got %v", len(result.Links))
 	}
-	if result.Links.MinCount < 1 {
-		t.Errorf("expected >= 1, got %v", result.Links.MinCount)
-	}
-	// skipped: field 'headings.h1_count' not available on result type
 	// skipped: field 'headings.h1_text' not available on result type
 }
 
@@ -90,7 +91,7 @@ func Test_EngineStreamBasic(t *testing.T) {
 	if createErr != nil {
 		t.Fatalf("create handle failed: %v", createErr)
 	}
-	result, err := pkg.Scrape(engine, "")
+	_, err := pkg.Scrape(engine, "")
 	if err != nil {
 		t.Fatalf("call failed: %v", err)
 	}

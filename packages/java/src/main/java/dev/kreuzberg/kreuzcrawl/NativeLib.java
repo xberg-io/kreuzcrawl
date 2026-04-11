@@ -89,9 +89,4 @@ final class NativeLib {
         LIB.find("kcrawl_map_result_free").orElseThrow(),
         FunctionDescriptor.ofVoid(ValueLayout.ADDRESS)
     );
-
-    static final MethodHandle KCRAWL_CRAWL_ENGINE_HANDLE_FREE = LINKER.downcallHandle(
-        LIB.find("kcrawl_crawl_engine_handle_free").orElseThrow(),
-        FunctionDescriptor.ofVoid(ValueLayout.ADDRESS)
-    );
 }

@@ -8,7 +8,7 @@ RSpec.describe "scrape" do
     result = Kreuzcrawl.scrape(engine, "")
     expect(result.status_code).to eq(200)
     expect(result.assets.length).to eq(2)
-    expect(result.assets.unique_hashes).to eq(2)
+    expect(result.assets[0].unique_hashes).to eq(2)
   end
 
   it "scrape_asset_max_size: Skips assets exceeding max_asset_size limit" do
@@ -23,7 +23,7 @@ RSpec.describe "scrape" do
     result = Kreuzcrawl.scrape(engine, "")
     expect(result.status_code).to eq(200)
     expect(result.assets.length).to eq(1)
-    expect(result.assets.get("").category).to include("image")
+    expect(result.assets[0].category).to include("image")
   end
 
   it "scrape_basic_html_page: Scrapes a simple HTML page and extracts title, description, and links" do
@@ -36,7 +36,7 @@ RSpec.describe "scrape" do
     expect(result.metadata.description).to include("illustrative examples")
     expect(result.metadata.canonical_url).not_to be_empty
     expect(result.links.length).to be > 0
-    expect(result.links.get("").link_type).to include("external")
+    expect(result.links[0].link_type).to include("external")
     expect(result.images.length).to eq(0)
       # skipped: field 'og.title' not available on result type
   end
@@ -46,10 +46,10 @@ RSpec.describe "scrape" do
     result = Kreuzcrawl.scrape(engine, "")
     expect(result.status_code).to eq(200)
     expect(result.links.length).to be > 9
-    expect(result.links.get("").link_type).to include("internal")
-    expect(result.links.get("").link_type).to include("external")
-    expect(result.links.get("").link_type).to include("anchor")
-    expect(result.links.get("").link_type).to include("document")
+    expect(result.links[0].link_type).to include("internal")
+    expect(result.links[0].link_type).to include("external")
+    expect(result.links[0].link_type).to include("anchor")
+    expect(result.links[0].link_type).to include("document")
   end
 
   it "scrape_download_assets: Downloads CSS, JS, and image assets from page" do
@@ -80,9 +80,9 @@ RSpec.describe "scrape" do
     engine = Kreuzcrawl.create_engine(nil)
     result = Kreuzcrawl.scrape(engine, "")
     expect(result.status_code).to eq(200)
-    expect(result.feeds.rss.length).to eq(1)
-    expect(result.feeds.atom.length).to eq(1)
-    expect(result.feeds.json_feed.length).to eq(1)
+    expect(result.feeds[0].rss.length).to eq(1)
+    expect(result.feeds[0].atom.length).to eq(1)
+    expect(result.feeds[0].json_feed.length).to eq(1)
   end
 
   it "scrape_image_sources: Extracts images from img, picture, og:image, twitter:image" do
@@ -104,8 +104,8 @@ RSpec.describe "scrape" do
     result = Kreuzcrawl.scrape(engine, "")
     expect(result.status_code).to eq(200)
     expect(result.json_ld).not_to be_empty
-    expect(result.json_ld.type).to eq("Recipe")
-    expect(result.json_ld.name).to eq("Best Chocolate Cake")
+    expect(result.json_ld[0].type).to eq("Recipe")
+    expect(result.json_ld[0].name).to eq("Best Chocolate Cake")
   end
 
   it "scrape_malformed_html: Gracefully handles broken HTML without crashing" do

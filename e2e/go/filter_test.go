@@ -14,7 +14,7 @@ func Test_FilterBm25CrawlIntegration(t *testing.T) {
 	if createErr != nil {
 		t.Fatalf("create handle failed: %v", createErr)
 	}
-	result, err := pkg.Scrape(engine, "")
+	_, err := pkg.Scrape(engine, "")
 	if err != nil {
 		t.Fatalf("call failed: %v", err)
 	}
@@ -27,7 +27,7 @@ func Test_FilterBm25EmptyQuery(t *testing.T) {
 	if createErr != nil {
 		t.Fatalf("create handle failed: %v", createErr)
 	}
-	result, err := pkg.Scrape(engine, "")
+	_, err := pkg.Scrape(engine, "")
 	if err != nil {
 		t.Fatalf("call failed: %v", err)
 	}
@@ -40,7 +40,7 @@ func Test_FilterBm25HighThreshold(t *testing.T) {
 	if createErr != nil {
 		t.Fatalf("create handle failed: %v", createErr)
 	}
-	result, err := pkg.Scrape(engine, "")
+	_, err := pkg.Scrape(engine, "")
 	if err != nil {
 		t.Fatalf("call failed: %v", err)
 	}
@@ -53,7 +53,7 @@ func Test_FilterBm25RelevantPages(t *testing.T) {
 	if createErr != nil {
 		t.Fatalf("create handle failed: %v", createErr)
 	}
-	result, err := pkg.Scrape(engine, "")
+	_, err := pkg.Scrape(engine, "")
 	if err != nil {
 		t.Fatalf("call failed: %v", err)
 	}
@@ -66,7 +66,7 @@ func Test_FilterBm25ThresholdZero(t *testing.T) {
 	if createErr != nil {
 		t.Fatalf("create handle failed: %v", createErr)
 	}
-	result, err := pkg.Scrape(engine, "")
+	_, err := pkg.Scrape(engine, "")
 	if err != nil {
 		t.Fatalf("call failed: %v", err)
 	}
@@ -79,7 +79,7 @@ func Test_FilterNoopCrawlAllKept(t *testing.T) {
 	if createErr != nil {
 		t.Fatalf("create handle failed: %v", createErr)
 	}
-	result, err := pkg.Scrape(engine, "")
+	_, err := pkg.Scrape(engine, "")
 	if err != nil {
 		t.Fatalf("call failed: %v", err)
 	}
@@ -92,7 +92,7 @@ func Test_FilterNoopPassesAll(t *testing.T) {
 	if createErr != nil {
 		t.Fatalf("create handle failed: %v", createErr)
 	}
-	result, err := pkg.Scrape(engine, "")
+	_, err := pkg.Scrape(engine, "")
 	if err != nil {
 		t.Fatalf("call failed: %v", err)
 	}

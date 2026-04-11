@@ -6,7 +6,7 @@ defmodule E2e.LinksTest do
     test "Identifies fragment-only links as anchor type" do
       engine = Kreuzcrawl.create_engine!(nil)
       result = Kreuzcrawl.scrape!(engine, "")
-      assert String.contains?(result.links[""].link_type, "anchor")
+      assert String.contains?(result.links[0].link_type, "anchor")
     end
   end
 
@@ -15,7 +15,7 @@ defmodule E2e.LinksTest do
       engine = Kreuzcrawl.create_engine!(nil)
       result = Kreuzcrawl.scrape!(engine, "")
       assert length(result.links) > 2
-      assert String.contains?(result.links[""].url, "example.com")
+      assert String.contains?(result.links[0].url, "example.com")
     end
   end
 
@@ -23,7 +23,7 @@ defmodule E2e.LinksTest do
     test "Detects PDF, DOCX, XLSX links as document type" do
       engine = Kreuzcrawl.create_engine!(nil)
       result = Kreuzcrawl.scrape!(engine, "")
-      assert String.contains?(result.links[""].link_type, "document")
+      assert String.contains?(result.links[0].link_type, "document")
     end
   end
 
@@ -32,7 +32,7 @@ defmodule E2e.LinksTest do
       engine = Kreuzcrawl.create_engine!(nil)
       result = Kreuzcrawl.scrape!(engine, "")
       assert length(result.links) > 0
-      assert String.contains?(result.links[""].url, "/valid")
+      assert String.contains?(result.links[0].url, "/valid")
     end
   end
 
@@ -41,8 +41,8 @@ defmodule E2e.LinksTest do
       engine = Kreuzcrawl.create_engine!(nil)
       result = Kreuzcrawl.scrape!(engine, "")
       assert length(result.links) > 4
-      assert String.contains?(result.links[""].link_type, "internal")
-      assert String.contains?(result.links[""].link_type, "external")
+      assert String.contains?(result.links[0].link_type, "internal")
+      assert String.contains?(result.links[0].link_type, "external")
     end
   end
 
@@ -51,7 +51,7 @@ defmodule E2e.LinksTest do
       engine = Kreuzcrawl.create_engine!(nil)
       result = Kreuzcrawl.scrape!(engine, "")
       assert length(result.links) > 0
-      refute String.contains?(result.links[""].url, "mailto:")
+      refute String.contains?(result.links[0].url, "mailto:")
     end
   end
 
@@ -60,7 +60,7 @@ defmodule E2e.LinksTest do
       engine = Kreuzcrawl.create_engine!(nil)
       result = Kreuzcrawl.scrape!(engine, "")
       assert length(result.links) > 1
-      assert result.links[""].protocol_relative != ""
+      assert String.contains?(result.links[0].url, "//")
     end
   end
 

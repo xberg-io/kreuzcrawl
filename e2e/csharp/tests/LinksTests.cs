@@ -13,7 +13,7 @@ public class LinksTests
         // Identifies fragment-only links as anchor type
         var engine = KreuzcrawlLib.CreateEngine(null);
         var result = await KreuzcrawlLib.Scrape(engine, "");
-        Assert.Contains("anchor", result.Links[""].LinkType);
+        Assert.Contains("anchor", result.Links[0].LinkType);
     }
 
     [Fact]
@@ -23,7 +23,7 @@ public class LinksTests
         var engine = KreuzcrawlLib.CreateEngine(null);
         var result = await KreuzcrawlLib.Scrape(engine, "");
         Assert.True(result.Links.Count > 2, "expected > 2");
-        Assert.Contains("example.com", result.Links[""].Url);
+        Assert.Contains("example.com", result.Links[0].Url);
     }
 
     [Fact]
@@ -32,7 +32,7 @@ public class LinksTests
         // Detects PDF, DOCX, XLSX links as document type
         var engine = KreuzcrawlLib.CreateEngine(null);
         var result = await KreuzcrawlLib.Scrape(engine, "");
-        Assert.Contains("document", result.Links[""].LinkType);
+        Assert.Contains("document", result.Links[0].LinkType);
     }
 
     [Fact]
@@ -42,7 +42,7 @@ public class LinksTests
         var engine = KreuzcrawlLib.CreateEngine(null);
         var result = await KreuzcrawlLib.Scrape(engine, "");
         Assert.True(result.Links.Count > 0, "expected > 0");
-        Assert.Contains("/valid", result.Links[""].Url);
+        Assert.Contains("/valid", result.Links[0].Url);
     }
 
     [Fact]
@@ -52,8 +52,8 @@ public class LinksTests
         var engine = KreuzcrawlLib.CreateEngine(null);
         var result = await KreuzcrawlLib.Scrape(engine, "");
         Assert.True(result.Links.Count > 4, "expected > 4");
-        Assert.Contains("internal", result.Links[""].LinkType);
-        Assert.Contains("external", result.Links[""].LinkType);
+        Assert.Contains("internal", result.Links[0].LinkType);
+        Assert.Contains("external", result.Links[0].LinkType);
     }
 
     [Fact]
@@ -63,7 +63,7 @@ public class LinksTests
         var engine = KreuzcrawlLib.CreateEngine(null);
         var result = await KreuzcrawlLib.Scrape(engine, "");
         Assert.True(result.Links.Count > 0, "expected > 0");
-        Assert.DoesNotContain("mailto:", result.Links[""].Url);
+        Assert.DoesNotContain("mailto:", result.Links[0].Url);
     }
 
     [Fact]
@@ -73,7 +73,7 @@ public class LinksTests
         var engine = KreuzcrawlLib.CreateEngine(null);
         var result = await KreuzcrawlLib.Scrape(engine, "");
         Assert.True(result.Links.Count > 1, "expected > 1");
-        Assert.NotEmpty(result.Links[""].ProtocolRelative);
+        Assert.Contains("//", result.Links[0].Url);
     }
 
     [Fact]

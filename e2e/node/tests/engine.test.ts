@@ -28,9 +28,8 @@ describe('engine', () => {
     expect(result.statusCode).toBe(200);
     expect(result.contentType).toBe("text/html");
     expect(result.metadata.title).toBe("Engine Test");
-    expect(result.metadata.descriptionContains).toContain("Testing the engine");
-    expect(result.links.minCount).toBeGreaterThanOrEqual(1);
-    // skipped: field 'headings.h1_count' not available on result type
+    expect(result.metadata.description).toContain("Testing the engine");
+    expect(result.links.length).toBeGreaterThanOrEqual(1);
     // skipped: field 'headings.h1_text' not available on result type
   });
 

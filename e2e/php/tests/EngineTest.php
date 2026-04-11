@@ -44,9 +44,8 @@ final class EngineTest extends TestCase
         $this->assertEquals(200, $result->status_code);
         $this->assertEquals("text/html", $result->content_type);
         $this->assertEquals("Engine Test", $result->metadata->title);
-        $this->assertStringContainsString("Testing the engine", $result->metadata->description_contains);
-        $this->assertGreaterThanOrEqual(1, $result->links->min_count);
-        // skipped: field 'headings.h1_count' not available on result type
+        $this->assertStringContainsString("Testing the engine", $result->metadata->description);
+        $this->assertGreaterThanOrEqual(1, count($result->links));
         // skipped: field 'headings.h1_text' not available on result type
     }
 

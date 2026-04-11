@@ -19,7 +19,7 @@
          Run: mvn install -f ../../packages/java/pom.xml -DskipTests before testing. -->
     <dependencies>
         <dependency>
-            <groupId>dev.kreuzberg.kreuzcrawl</groupId>
+            <groupId>dev.kreuzberg</groupId>
             <artifactId>kreuzcrawl</artifactId>
             <version>0.1.0</version>
         </dependency>

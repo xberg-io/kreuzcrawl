@@ -9,7 +9,7 @@ fn test_links_anchor_fragment() {
     let engine = kreuzcrawl::create_engine(None).expect("handle creation should succeed");
     let url = String::new();
     let result = scrape(&engine, url).expect("should succeed");
-    assert!(result.links.get("").map(|s| s.as_str()).link_type.contains(r#"anchor"#), "expected to contain: {}", r#"anchor"#);
+    assert!(result.links[0].link_type.contains(r#"anchor"#), "expected to contain: {}", r#"anchor"#);
 }
 
 #[test]
@@ -19,7 +19,7 @@ fn test_links_base_tag() {
     let url = String::new();
     let result = scrape(&engine, url).expect("should succeed");
     assert!(result.links.len() > 2_f64, "expected > 2");
-    assert!(result.links.get("").map(|s| s.as_str()).url.contains(r#"example.com"#), "expected to contain: {}", r#"example.com"#);
+    assert!(result.links[0].url.contains(r#"example.com"#), "expected to contain: {}", r#"example.com"#);
 }
 
 #[test]
@@ -28,7 +28,7 @@ fn test_links_document_types() {
     let engine = kreuzcrawl::create_engine(None).expect("handle creation should succeed");
     let url = String::new();
     let result = scrape(&engine, url).expect("should succeed");
-    assert!(result.links.get("").map(|s| s.as_str()).link_type.contains(r#"document"#), "expected to contain: {}", r#"document"#);
+    assert!(result.links[0].link_type.contains(r#"document"#), "expected to contain: {}", r#"document"#);
 }
 
 #[test]
@@ -38,7 +38,7 @@ fn test_links_empty_href() {
     let url = String::new();
     let result = scrape(&engine, url).expect("should succeed");
     assert!(result.links.len() > 0_f64, "expected > 0");
-    assert!(result.links.get("").map(|s| s.as_str()).url.contains(r#"/valid"#), "expected to contain: {}", r#"/valid"#);
+    assert!(result.links[0].url.contains(r#"/valid"#), "expected to contain: {}", r#"/valid"#);
 }
 
 #[test]
@@ -48,8 +48,8 @@ fn test_links_internal_external_classification() {
     let url = String::new();
     let result = scrape(&engine, url).expect("should succeed");
     assert!(result.links.len() > 4_f64, "expected > 4");
-    assert!(result.links.get("").map(|s| s.as_str()).link_type.contains(r#"internal"#), "expected to contain: {}", r#"internal"#);
-    assert!(result.links.get("").map(|s| s.as_str()).link_type.contains(r#"external"#), "expected to contain: {}", r#"external"#);
+    assert!(result.links[0].link_type.contains(r#"internal"#), "expected to contain: {}", r#"internal"#);
+    assert!(result.links[0].link_type.contains(r#"external"#), "expected to contain: {}", r#"external"#);
 }
 
 #[test]
@@ -59,7 +59,7 @@ fn test_links_mailto_javascript_skip() {
     let url = String::new();
     let result = scrape(&engine, url).expect("should succeed");
     assert!(result.links.len() > 0_f64, "expected > 0");
-    assert!(!result.links.get("").map(|s| s.as_str()).url.contains(r#"mailto:"#), "expected NOT to contain: {}", r#"mailto:"#);
+    assert!(!result.links[0].url.contains(r#"mailto:"#), "expected NOT to contain: {}", r#"mailto:"#);
 }
 
 #[test]
@@ -69,7 +69,7 @@ fn test_links_protocol_relative() {
     let url = String::new();
     let result = scrape(&engine, url).expect("should succeed");
     assert!(result.links.len() > 1_f64, "expected > 1");
-    assert!(!result.links.get("").map(|s| s.as_str()).protocol_relative.is_empty(), "expected non-empty value");
+    assert!(result.links[0].url.contains(r#"//"#), "expected to contain: {}", r#"//"#);
 }
 
 #[test]

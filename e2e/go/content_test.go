@@ -32,7 +32,7 @@ func Test_ContentCharsetIso8859(t *testing.T) {
 	if createErr != nil {
 		t.Fatalf("create handle failed: %v", createErr)
 	}
-	result, err := pkg.Scrape(engine, "")
+	_, err := pkg.Scrape(engine, "")
 	if err != nil {
 		t.Fatalf("call failed: %v", err)
 	}
@@ -78,7 +78,7 @@ func Test_ContentLargePageLimit(t *testing.T) {
 	if createErr != nil {
 		t.Fatalf("create handle failed: %v", createErr)
 	}
-	result, err := pkg.Scrape(engine, "")
+	_, err := pkg.Scrape(engine, "")
 	if err != nil {
 		t.Fatalf("call failed: %v", err)
 	}
@@ -91,7 +91,7 @@ func Test_ContentMainOnly(t *testing.T) {
 	if createErr != nil {
 		t.Fatalf("create handle failed: %v", createErr)
 	}
-	result, err := pkg.Scrape(engine, "")
+	_, err := pkg.Scrape(engine, "")
 	if err != nil {
 		t.Fatalf("call failed: %v", err)
 	}
@@ -104,7 +104,7 @@ func Test_ContentPdfNoExtension(t *testing.T) {
 	if createErr != nil {
 		t.Fatalf("create handle failed: %v", createErr)
 	}
-	result, err := pkg.Scrape(engine, "")
+	_, err := pkg.Scrape(engine, "")
 	if err != nil {
 		t.Fatalf("call failed: %v", err)
 	}

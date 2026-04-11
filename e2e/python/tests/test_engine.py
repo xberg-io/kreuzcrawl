@@ -34,9 +34,8 @@ def test_engine_scrape_basic() -> None:
     assert result.status_code == 200
     assert result.content_type == "text/html"
     assert result.metadata.title == "Engine Test"
-    assert "Testing the engine" in result.metadata.description_contains
-    assert result.links.min_count >= 1
-    # skipped: field 'headings.h1_count' not available on result type
+    assert "Testing the engine" in result.metadata.description
+    assert len(result.links) >= 1
     # skipped: field 'headings.h1_text' not available on result type
 
 def test_engine_stream_basic() -> None:

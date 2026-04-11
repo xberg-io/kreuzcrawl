@@ -14,7 +14,7 @@ func Test_SitemapBasic(t *testing.T) {
 	if createErr != nil {
 		t.Fatalf("create handle failed: %v", createErr)
 	}
-	result, err := pkg.Scrape(engine, "")
+	_, err := pkg.Scrape(engine, "")
 	if err != nil {
 		t.Fatalf("call failed: %v", err)
 	}
@@ -28,7 +28,7 @@ func Test_SitemapCompressedGzip(t *testing.T) {
 	if createErr != nil {
 		t.Fatalf("create handle failed: %v", createErr)
 	}
-	result, err := pkg.Scrape(engine, "")
+	_, err := pkg.Scrape(engine, "")
 	if err != nil {
 		t.Fatalf("call failed: %v", err)
 	}
@@ -41,7 +41,7 @@ func Test_SitemapEmpty(t *testing.T) {
 	if createErr != nil {
 		t.Fatalf("create handle failed: %v", createErr)
 	}
-	result, err := pkg.Scrape(engine, "")
+	_, err := pkg.Scrape(engine, "")
 	if err != nil {
 		t.Fatalf("call failed: %v", err)
 	}
@@ -54,7 +54,7 @@ func Test_SitemapFromRobotsTxt(t *testing.T) {
 	if createErr != nil {
 		t.Fatalf("create handle failed: %v", createErr)
 	}
-	result, err := pkg.Scrape(engine, "")
+	_, err := pkg.Scrape(engine, "")
 	if err != nil {
 		t.Fatalf("call failed: %v", err)
 	}
@@ -67,7 +67,7 @@ func Test_SitemapIndex(t *testing.T) {
 	if createErr != nil {
 		t.Fatalf("create handle failed: %v", createErr)
 	}
-	result, err := pkg.Scrape(engine, "")
+	_, err := pkg.Scrape(engine, "")
 	if err != nil {
 		t.Fatalf("call failed: %v", err)
 	}
@@ -80,7 +80,7 @@ func Test_SitemapLastmodFilter(t *testing.T) {
 	if createErr != nil {
 		t.Fatalf("create handle failed: %v", createErr)
 	}
-	result, err := pkg.Scrape(engine, "")
+	_, err := pkg.Scrape(engine, "")
 	if err != nil {
 		t.Fatalf("call failed: %v", err)
 	}
@@ -94,7 +94,7 @@ func Test_SitemapOnlyMode(t *testing.T) {
 	if createErr != nil {
 		t.Fatalf("create handle failed: %v", createErr)
 	}
-	result, err := pkg.Scrape(engine, "")
+	_, err := pkg.Scrape(engine, "")
 	if err != nil {
 		t.Fatalf("call failed: %v", err)
 	}
@@ -107,7 +107,7 @@ func Test_SitemapXhtmlLinks(t *testing.T) {
 	if createErr != nil {
 		t.Fatalf("create handle failed: %v", createErr)
 	}
-	result, err := pkg.Scrape(engine, "")
+	_, err := pkg.Scrape(engine, "")
 	if err != nil {
 		t.Fatalf("call failed: %v", err)
 	}

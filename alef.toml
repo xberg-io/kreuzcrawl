@@ -139,6 +139,13 @@ fields_optional = [
     "screenshot",
     "downloaded_document",
 ]
+fields_array = [
+    "links",
+    "images",
+    "feeds",
+    "json_ld",
+    "assets",
+]
 result_fields = [
     "status_code",
     "content_type",

@@ -11,7 +11,7 @@ class MarkdownTest {
         var engine = Kreuzcrawl.createEngine(null);
         var result = Kreuzcrawl.scrape(engine, "");
         assertEquals(200, result.statusCode());
-        assertEquals("Test", result.metadata().title().orElse(""));
+        assertEquals("Test", result.metadata().orElseThrow().title().orElse(""));
         assertFalse(result.html().isEmpty(), "expected non-empty value");
         assertFalse(result.markdown().orElse("").isEmpty(), "expected non-empty value");
         assertTrue(result.markdown().orElse("").contains("Hello World"), "expected to contain: " + "Hello World");

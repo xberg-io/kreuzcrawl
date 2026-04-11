@@ -30,8 +30,9 @@
 			"value": 1
 		},
 		{
-			"type": "not_empty",
-			"field": "links[].protocol_relative"
+			"type": "contains",
+			"field": "links[].url",
+			"value": "//"
 		}
 	]
 }

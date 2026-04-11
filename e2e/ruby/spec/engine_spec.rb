@@ -29,9 +29,8 @@ RSpec.describe "engine" do
     expect(result.status_code).to eq(200)
     expect(result.content_type).to eq("text/html")
     expect(result.metadata.title).to eq("Engine Test")
-    expect(result.metadata.description_contains).to include("Testing the engine")
-    expect(result.links.min_count).to be >= 1
-      # skipped: field 'headings.h1_count' not available on result type
+    expect(result.metadata.description).to include("Testing the engine")
+    expect(result.links.length).to be >= 1
       # skipped: field 'headings.h1_text' not available on result type
   end
 

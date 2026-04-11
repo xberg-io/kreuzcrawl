@@ -14,7 +14,7 @@ func Test_MapDiscoverUrls(t *testing.T) {
 	if createErr != nil {
 		t.Fatalf("create handle failed: %v", createErr)
 	}
-	result, err := pkg.Scrape(engine, "")
+	_, err := pkg.Scrape(engine, "")
 	if err != nil {
 		t.Fatalf("call failed: %v", err)
 	}
@@ -27,7 +27,7 @@ func Test_MapExcludePatterns(t *testing.T) {
 	if createErr != nil {
 		t.Fatalf("create handle failed: %v", createErr)
 	}
-	result, err := pkg.Scrape(engine, "")
+	_, err := pkg.Scrape(engine, "")
 	if err != nil {
 		t.Fatalf("call failed: %v", err)
 	}
@@ -40,7 +40,7 @@ func Test_MapIncludeSubdomains(t *testing.T) {
 	if createErr != nil {
 		t.Fatalf("create handle failed: %v", createErr)
 	}
-	result, err := pkg.Scrape(engine, "")
+	_, err := pkg.Scrape(engine, "")
 	if err != nil {
 		t.Fatalf("call failed: %v", err)
 	}
@@ -54,7 +54,7 @@ func Test_MapLargeSitemap(t *testing.T) {
 	if createErr != nil {
 		t.Fatalf("create handle failed: %v", createErr)
 	}
-	result, err := pkg.Scrape(engine, "")
+	_, err := pkg.Scrape(engine, "")
 	if err != nil {
 		t.Fatalf("call failed: %v", err)
 	}
@@ -67,7 +67,7 @@ func Test_MapLimitPagination(t *testing.T) {
 	if createErr != nil {
 		t.Fatalf("create handle failed: %v", createErr)
 	}
-	result, err := pkg.Scrape(engine, "")
+	_, err := pkg.Scrape(engine, "")
 	if err != nil {
 		t.Fatalf("call failed: %v", err)
 	}
@@ -80,7 +80,7 @@ func Test_MapSearchFilter(t *testing.T) {
 	if createErr != nil {
 		t.Fatalf("create handle failed: %v", createErr)
 	}
-	result, err := pkg.Scrape(engine, "")
+	_, err := pkg.Scrape(engine, "")
 	if err != nil {
 		t.Fatalf("call failed: %v", err)
 	}

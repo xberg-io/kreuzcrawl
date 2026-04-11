@@ -15,7 +15,7 @@ public class ScrapeTests
         var result = await KreuzcrawlLib.Scrape(engine, "");
         Assert.Equal(200, result.StatusCode);
         Assert.Equal(2, result.Assets.Count);
-        Assert.Equal(2, result.Assets.UniqueHashes);
+        Assert.Equal(2, result.Assets[0].UniqueHashes);
     }
 
     [Fact]
@@ -36,7 +36,7 @@ public class ScrapeTests
         var result = await KreuzcrawlLib.Scrape(engine, "");
         Assert.Equal(200, result.StatusCode);
         Assert.Equal(1, result.Assets.Count);
-        Assert.Contains("image", result.Assets[""].Category);
+        Assert.Contains("image", result.Assets[0].Category);
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public class ScrapeTests
         Assert.Contains("illustrative examples", result.Metadata.Description);
         Assert.NotEmpty(result.Metadata.CanonicalUrl);
         Assert.True(result.Links.Count > 0, "expected > 0");
-        Assert.Contains("external", result.Links[""].LinkType);
+        Assert.Contains("external", result.Links[0].LinkType);
         Assert.Equal(0, result.Images.Count);
         // skipped: field 'og.title' not available on result type
     }
@@ -65,10 +65,10 @@ public class ScrapeTests
         var result = await KreuzcrawlLib.Scrape(engine, "");
         Assert.Equal(200, result.StatusCode);
         Assert.True(result.Links.Count > 9, "expected > 9");
-        Assert.Contains("internal", result.Links[""].LinkType);
-        Assert.Contains("external", result.Links[""].LinkType);
-        Assert.Contains("anchor", result.Links[""].LinkType);
-        Assert.Contains("document", result.Links[""].LinkType);
+        Assert.Contains("internal", result.Links[0].LinkType);
+        Assert.Contains("external", result.Links[0].LinkType);
+        Assert.Contains("anchor", result.Links[0].LinkType);
+        Assert.Contains("document", result.Links[0].LinkType);
     }
 
     [Fact]
@@ -111,9 +111,9 @@ public class ScrapeTests
         var engine = KreuzcrawlLib.CreateEngine(null);
         var result = await KreuzcrawlLib.Scrape(engine, "");
         Assert.Equal(200, result.StatusCode);
-        Assert.Equal(1, result.Feeds.Rss.Count);
-        Assert.Equal(1, result.Feeds.Atom.Count);
-        Assert.Equal(1, result.Feeds.JsonFeed.Count);
+        Assert.Equal(1, result.Feeds[0].Rss.Count);
+        Assert.Equal(1, result.Feeds[0].Atom.Count);
+        Assert.Equal(1, result.Feeds[0].JsonFeed.Count);
     }
 
     [Fact]
@@ -144,8 +144,8 @@ public class ScrapeTests
         var result = await KreuzcrawlLib.Scrape(engine, "");
         Assert.Equal(200, result.StatusCode);
         Assert.NotEmpty(result.JsonLd);
-        Assert.Equal("Recipe", result.JsonLd.Type.Trim());
-        Assert.Equal("Best Chocolate Cake", result.JsonLd.Name.Trim());
+        Assert.Equal("Recipe", result.JsonLd[0].Type.Trim());
+        Assert.Equal("Best Chocolate Cake", result.JsonLd[0].Name.Trim());
     }
 
     [Fact]

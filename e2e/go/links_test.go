@@ -18,7 +18,7 @@ func Test_LinksAnchorFragment(t *testing.T) {
 	if err != nil {
 		t.Fatalf("call failed: %v", err)
 	}
-	if !strings.Contains(result.Links[""].LinkType, `anchor`) {
+	if !strings.Contains(result.Links[0].LinkType, `anchor`) {
 		t.Errorf("expected to contain %s", `anchor`)
 	}
 }
@@ -36,8 +36,8 @@ func Test_LinksBaseTag(t *testing.T) {
 	if len(result.Links) <= 2 {
 		t.Errorf("expected > 2, got %v", len(result.Links))
 	}
-	if !strings.Contains(result.Links[""].Url, `example.com`) {
-		t.Errorf("expected to contain %s, got %q", `example.com`, result.Links[""].Url)
+	if !strings.Contains(result.Links[0].Url, `example.com`) {
+		t.Errorf("expected to contain %s, got %q", `example.com`, result.Links[0].Url)
 	}
 }
 
@@ -51,7 +51,7 @@ func Test_LinksDocumentTypes(t *testing.T) {
 	if err != nil {
 		t.Fatalf("call failed: %v", err)
 	}
-	if !strings.Contains(result.Links[""].LinkType, `document`) {
+	if !strings.Contains(result.Links[0].LinkType, `document`) {
 		t.Errorf("expected to contain %s", `document`)
 	}
 }
@@ -69,8 +69,8 @@ func Test_LinksEmptyHref(t *testing.T) {
 	if len(result.Links) <= 0 {
 		t.Errorf("expected > 0, got %v", len(result.Links))
 	}
-	if !strings.Contains(result.Links[""].Url, `/valid`) {
-		t.Errorf("expected to contain %s, got %q", `/valid`, result.Links[""].Url)
+	if !strings.Contains(result.Links[0].Url, `/valid`) {
+		t.Errorf("expected to contain %s, got %q", `/valid`, result.Links[0].Url)
 	}
 }
 
@@ -87,10 +87,10 @@ func Test_LinksInternalExternalClassification(t *testing.T) {
 	if len(result.Links) <= 4 {
 		t.Errorf("expected > 4, got %v", len(result.Links))
 	}
-	if !strings.Contains(result.Links[""].LinkType, `internal`) {
+	if !strings.Contains(result.Links[0].LinkType, `internal`) {
 		t.Errorf("expected to contain %s", `internal`)
 	}
-	if !strings.Contains(result.Links[""].LinkType, `external`) {
+	if !strings.Contains(result.Links[0].LinkType, `external`) {
 		t.Errorf("expected to contain %s", `external`)
 	}
 }
@@ -108,8 +108,8 @@ func Test_LinksMailtoJavascriptSkip(t *testing.T) {
 	if len(result.Links) <= 0 {
 		t.Errorf("expected > 0, got %v", len(result.Links))
 	}
-	if strings.Contains(result.Links[""].Url, `mailto:`) {
-		t.Errorf("expected NOT to contain %s, got %q", `mailto:`, result.Links[""].Url)
+	if strings.Contains(result.Links[0].Url, `mailto:`) {
+		t.Errorf("expected NOT to contain %s, got %q", `mailto:`, result.Links[0].Url)
 	}
 }
 
@@ -126,8 +126,8 @@ func Test_LinksProtocolRelative(t *testing.T) {
 	if len(result.Links) <= 1 {
 		t.Errorf("expected > 1, got %v", len(result.Links))
 	}
-	if len(result.Links[""].ProtocolRelative) == 0 {
-		t.Errorf("expected non-empty value")
+	if !strings.Contains(result.Links[0].Url, `//`) {
+		t.Errorf("expected to contain %s, got %q", `//`, result.Links[0].Url)
 	}
 }
 

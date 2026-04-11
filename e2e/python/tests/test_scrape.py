@@ -10,7 +10,7 @@ def test_scrape_asset_dedup() -> None:
     result = scrape(engine=engine, url=url)
     assert result.status_code == 200
     assert len(result.assets) == 2
-    assert result.assets.unique_hashes == 2
+    assert result.assets[0].unique_hashes == 2
 
 def test_scrape_asset_max_size() -> None:
     """Skips assets exceeding max_asset_size limit."""
@@ -27,7 +27,7 @@ def test_scrape_asset_type_filter() -> None:
     result = scrape(engine=engine, url=url)
     assert result.status_code == 200
     assert len(result.assets) == 1
-    assert "image" in result.assets.get("").category
+    assert "image" in result.assets[0].category
 
 def test_scrape_basic_html_page() -> None:
     """Scrapes a simple HTML page and extracts title, description, and links."""
@@ -41,7 +41,7 @@ def test_scrape_basic_html_page() -> None:
     assert "illustrative examples" in result.metadata.description
     assert result.metadata.canonical_url
     assert len(result.links) > 0
-    assert "external" in result.links.get("").link_type
+    assert "external" in result.links[0].link_type
     assert len(result.images) == 0
     # skipped: field 'og.title' not available on result type
 
@@ -52,10 +52,10 @@ def test_scrape_complex_links() -> None:
     result = scrape(engine=engine, url=url)
     assert result.status_code == 200
     assert len(result.links) > 9
-    assert "internal" in result.links.get("").link_type
-    assert "external" in result.links.get("").link_type
-    assert "anchor" in result.links.get("").link_type
-    assert "document" in result.links.get("").link_type
+    assert "internal" in result.links[0].link_type
+    assert "external" in result.links[0].link_type
+    assert "anchor" in result.links[0].link_type
+    assert "document" in result.links[0].link_type
 
 def test_scrape_download_assets() -> None:
     """Downloads CSS, JS, and image assets from page."""
@@ -90,9 +90,9 @@ def test_scrape_feed_discovery() -> None:
     url = ""
     result = scrape(engine=engine, url=url)
     assert result.status_code == 200
-    assert len(result.feeds.rss) == 1
-    assert len(result.feeds.atom) == 1
-    assert len(result.feeds.json_feed) == 1
+    assert len(result.feeds[0].rss) == 1
+    assert len(result.feeds[0].atom) == 1
+    assert len(result.feeds[0].json_feed) == 1
 
 def test_scrape_image_sources() -> None:
     """Extracts images from img, picture, og:image, twitter:image."""
@@ -117,8 +117,8 @@ def test_scrape_json_ld() -> None:
     result = scrape(engine=engine, url=url)
     assert result.status_code == 200
     assert result.json_ld
-    assert result.json_ld.type == "Recipe"
-    assert result.json_ld.name == "Best Chocolate Cake"
+    assert result.json_ld[0].type == "Recipe"
+    assert result.json_ld[0].name == "Best Chocolate Cake"
 
 def test_scrape_malformed_html() -> None:
     """Gracefully handles broken HTML without crashing."""

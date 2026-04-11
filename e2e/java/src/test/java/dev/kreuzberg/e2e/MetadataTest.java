@@ -55,17 +55,17 @@ class MetadataTest {
         var engine = Kreuzcrawl.createEngine(null);
         var result = Kreuzcrawl.scrape(engine, "");
         assertEquals(200, result.statusCode());
-        assertEquals("Comprehensive Metadata Test Page", result.metadata().title().orElse(""));
-        assertFalse(result.metadata().canonicalUrl().orElse("").isEmpty(), "expected non-empty value");
-        assertFalse(result.metadata().keywords().isEmpty(), "expected non-empty value");
-        assertTrue(result.metadata().keywords().contains("rust"), "expected to contain: " + "rust");
-        assertEquals("Jane Developer", result.metadata().author());
-        assertFalse(result.metadata().viewport().isEmpty(), "expected non-empty value");
-        assertEquals("kreuzcrawl/1.0", result.metadata().generator());
-        assertEquals("#ff6600", result.metadata().themeColor());
-        assertEquals("index, follow", result.metadata().robots());
-        assertEquals("en", result.metadata().lang());
-        assertEquals("ltr", result.metadata().dir());
+        assertEquals("Comprehensive Metadata Test Page", result.metadata().orElseThrow().title().orElse(""));
+        assertFalse(result.metadata().orElseThrow().canonicalUrl().orElse("").isEmpty(), "expected non-empty value");
+        assertFalse(result.metadata().orElseThrow().keywords().isEmpty(), "expected non-empty value");
+        assertTrue(result.metadata().orElseThrow().keywords().contains("rust"), "expected to contain: " + "rust");
+        assertEquals("Jane Developer", result.metadata().orElseThrow().author());
+        assertFalse(result.metadata().orElseThrow().viewport().isEmpty(), "expected non-empty value");
+        assertEquals("kreuzcrawl/1.0", result.metadata().orElseThrow().generator());
+        assertEquals("#ff6600", result.metadata().orElseThrow().themeColor());
+        assertEquals("index, follow", result.metadata().orElseThrow().robots());
+        assertEquals("en", result.metadata().orElseThrow().lang());
+        assertEquals("ltr", result.metadata().orElseThrow().dir());
     }
 
     @Test

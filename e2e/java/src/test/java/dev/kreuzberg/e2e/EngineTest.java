@@ -38,10 +38,9 @@ class EngineTest {
         var result = Kreuzcrawl.scrape(engine, "");
         assertEquals(200, result.statusCode());
         assertEquals("text/html", result.contentType());
-        assertEquals("Engine Test", result.metadata().title().orElse(""));
-        assertTrue(result.metadata().descriptionContains().contains("Testing the engine"), "expected to contain: " + "Testing the engine");
-        assertTrue(result.links().minCount() >= 1, "expected >= 1");
-        // skipped: field 'headings.h1_count' not available on result type
+        assertEquals("Engine Test", result.metadata().orElseThrow().title().orElse(""));
+        assertTrue(result.metadata().orElseThrow().description().orElse("").contains("Testing the engine"), "expected to contain: " + "Testing the engine");
+        assertTrue(result.links().size() >= 1, "expected >= 1");
         // skipped: field 'headings.h1_text' not available on result type
     }
 

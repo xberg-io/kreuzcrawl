@@ -11,7 +11,7 @@ fn test_scrape_asset_dedup() {
     let result = scrape(&engine, url).expect("should succeed");
     assert_eq!(result.status_code, "200", "equals assertion failed");
     assert_eq!(result.assets.len(), "2", "equals assertion failed");
-    assert_eq!(result.assets.unique_hashes, "2", "equals assertion failed");
+    assert_eq!(result.assets[0].unique_hashes, "2", "equals assertion failed");
 }
 
 #[test]
@@ -32,7 +32,7 @@ fn test_scrape_asset_type_filter() {
     let result = scrape(&engine, url).expect("should succeed");
     assert_eq!(result.status_code, "200", "equals assertion failed");
     assert_eq!(result.assets.len(), "1", "equals assertion failed");
-    assert!(result.assets.get("").map(|s| s.as_str()).category.contains(r#"image"#), "expected to contain: {}", r#"image"#);
+    assert!(result.assets[0].category.contains(r#"image"#), "expected to contain: {}", r#"image"#);
 }
 
 #[test]
@@ -50,7 +50,7 @@ fn test_scrape_basic_html_page() {
     assert!(metadata_description.contains(r#"illustrative examples"#), "expected to contain: {}", r#"illustrative examples"#);
     assert!(result.metadata.canonical_url.is_some(), "expected metadata.canonical_url to be present");
     assert!(result.links.len() > 0_f64, "expected > 0");
-    assert!(result.links.get("").map(|s| s.as_str()).link_type.contains(r#"external"#), "expected to contain: {}", r#"external"#);
+    assert!(result.links[0].link_type.contains(r#"external"#), "expected to contain: {}", r#"external"#);
     assert_eq!(result.images.len(), "0", "equals assertion failed");
     // skipped: field 'og.title' not available on result type
 }
@@ -63,10 +63,10 @@ fn test_scrape_complex_links() {
     let result = scrape(&engine, url).expect("should succeed");
     assert_eq!(result.status_code, "200", "equals assertion failed");
     assert!(result.links.len() > 9_f64, "expected > 9");
-    assert!(result.links.get("").map(|s| s.as_str()).link_type.contains(r#"internal"#), "expected to contain: {}", r#"internal"#);
-    assert!(result.links.get("").map(|s| s.as_str()).link_type.contains(r#"external"#), "expected to contain: {}", r#"external"#);
-    assert!(result.links.get("").map(|s| s.as_str()).link_type.contains(r#"anchor"#), "expected to contain: {}", r#"anchor"#);
-    assert!(result.links.get("").map(|s| s.as_str()).link_type.contains(r#"document"#), "expected to contain: {}", r#"document"#);
+    assert!(result.links[0].link_type.contains(r#"internal"#), "expected to contain: {}", r#"internal"#);
+    assert!(result.links[0].link_type.contains(r#"external"#), "expected to contain: {}", r#"external"#);
+    assert!(result.links[0].link_type.contains(r#"anchor"#), "expected to contain: {}", r#"anchor"#);
+    assert!(result.links[0].link_type.contains(r#"document"#), "expected to contain: {}", r#"document"#);
 }
 
 #[test]
@@ -109,9 +109,9 @@ fn test_scrape_feed_discovery() {
     let url = String::new();
     let result = scrape(&engine, url).expect("should succeed");
     assert_eq!(result.status_code, "200", "equals assertion failed");
-    assert_eq!(result.feeds.rss.len(), "1", "equals assertion failed");
-    assert_eq!(result.feeds.atom.len(), "1", "equals assertion failed");
-    assert_eq!(result.feeds.json_feed.len(), "1", "equals assertion failed");
+    assert_eq!(result.feeds[0].rss.len(), "1", "equals assertion failed");
+    assert_eq!(result.feeds[0].atom.len(), "1", "equals assertion failed");
+    assert_eq!(result.feeds[0].json_feed.len(), "1", "equals assertion failed");
 }
 
 #[test]
@@ -142,8 +142,8 @@ fn test_scrape_json_ld() {
     let result = scrape(&engine, url).expect("should succeed");
     assert_eq!(result.status_code, "200", "equals assertion failed");
     assert!(!result.json_ld.is_empty(), "expected non-empty value");
-    assert_eq!(result.json_ld.type, r#"Recipe"#, "equals assertion failed");
-    assert_eq!(result.json_ld.name, r#"Best Chocolate Cake"#, "equals assertion failed");
+    assert_eq!(result.json_ld[0].type, r#"Recipe"#, "equals assertion failed");
+    assert_eq!(result.json_ld[0].name, r#"Best Chocolate Cake"#, "equals assertion failed");
 }
 
 #[test]

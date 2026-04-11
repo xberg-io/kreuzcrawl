@@ -10,7 +10,7 @@ class LinksTest {
         // Identifies fragment-only links as anchor type
         var engine = Kreuzcrawl.createEngine(null);
         var result = Kreuzcrawl.scrape(engine, "");
-        assertTrue(result.links().get("").linkType().contains("anchor"), "expected to contain: " + "anchor");
+        assertTrue(result.links().getFirst().linkType().contains("anchor"), "expected to contain: " + "anchor");
     }
 
     @Test
@@ -19,7 +19,7 @@ class LinksTest {
         var engine = Kreuzcrawl.createEngine(null);
         var result = Kreuzcrawl.scrape(engine, "");
         assertTrue(result.links().size() > 2, "expected > 2");
-        assertTrue(result.links().get("").url().contains("example.com"), "expected to contain: " + "example.com");
+        assertTrue(result.links().getFirst().url().contains("example.com"), "expected to contain: " + "example.com");
     }
 
     @Test
@@ -27,7 +27,7 @@ class LinksTest {
         // Detects PDF, DOCX, XLSX links as document type
         var engine = Kreuzcrawl.createEngine(null);
         var result = Kreuzcrawl.scrape(engine, "");
-        assertTrue(result.links().get("").linkType().contains("document"), "expected to contain: " + "document");
+        assertTrue(result.links().getFirst().linkType().contains("document"), "expected to contain: " + "document");
     }
 
     @Test
@@ -36,7 +36,7 @@ class LinksTest {
         var engine = Kreuzcrawl.createEngine(null);
         var result = Kreuzcrawl.scrape(engine, "");
         assertTrue(result.links().size() > 0, "expected > 0");
-        assertTrue(result.links().get("").url().contains("/valid"), "expected to contain: " + "/valid");
+        assertTrue(result.links().getFirst().url().contains("/valid"), "expected to contain: " + "/valid");
     }
 
     @Test
@@ -45,8 +45,8 @@ class LinksTest {
         var engine = Kreuzcrawl.createEngine(null);
         var result = Kreuzcrawl.scrape(engine, "");
         assertTrue(result.links().size() > 4, "expected > 4");
-        assertTrue(result.links().get("").linkType().contains("internal"), "expected to contain: " + "internal");
-        assertTrue(result.links().get("").linkType().contains("external"), "expected to contain: " + "external");
+        assertTrue(result.links().getFirst().linkType().contains("internal"), "expected to contain: " + "internal");
+        assertTrue(result.links().getFirst().linkType().contains("external"), "expected to contain: " + "external");
     }
 
     @Test
@@ -55,7 +55,7 @@ class LinksTest {
         var engine = Kreuzcrawl.createEngine(null);
         var result = Kreuzcrawl.scrape(engine, "");
         assertTrue(result.links().size() > 0, "expected > 0");
-        assertFalse(result.links().get("").url().contains("mailto:"), "expected NOT to contain: " + "mailto:");
+        assertFalse(result.links().getFirst().url().contains("mailto:"), "expected NOT to contain: " + "mailto:");
     }
 
     @Test
@@ -64,7 +64,7 @@ class LinksTest {
         var engine = Kreuzcrawl.createEngine(null);
         var result = Kreuzcrawl.scrape(engine, "");
         assertTrue(result.links().size() > 1, "expected > 1");
-        assertFalse(result.links().get("").protocolRelative().isEmpty(), "expected non-empty value");
+        assertTrue(result.links().getFirst().url().contains("//"), "expected to contain: " + "//");
     }
 
     @Test

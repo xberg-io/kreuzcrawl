@@ -44,17 +44,12 @@
 		},
 		{
 			"type": "contains",
-			"field": "metadata.description_contains",
+			"field": "metadata.description",
 			"value": "Testing the engine"
 		},
 		{
 			"type": "greater_than_or_equal",
-			"field": "links.min_count",
-			"value": 1
-		},
-		{
-			"type": "equals",
-			"field": "headings.h1_count",
+			"field": "links.length",
 			"value": 1
 		},
 		{

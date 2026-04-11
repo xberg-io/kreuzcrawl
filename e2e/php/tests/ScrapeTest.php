@@ -17,7 +17,7 @@ final class ScrapeTest extends TestCase
         $result = Kreuzcrawl::scrape($engine, "");
         $this->assertEquals(200, $result->status_code);
         $this->assertEquals(2, count($result->assets));
-        $this->assertEquals(2, $result->assets->unique_hashes);
+        $this->assertEquals(2, $result->assets[0]->unique_hashes);
     }
 
     /** Skips assets exceeding max_asset_size limit */
@@ -36,7 +36,7 @@ final class ScrapeTest extends TestCase
         $result = Kreuzcrawl::scrape($engine, "");
         $this->assertEquals(200, $result->status_code);
         $this->assertEquals(1, count($result->assets));
-        $this->assertStringContainsString("image", $result->assets[""]->category);
+        $this->assertStringContainsString("image", $result->assets[0]->category);
     }
 
     /** Scrapes a simple HTML page and extracts title, description, and links */
@@ -51,7 +51,7 @@ final class ScrapeTest extends TestCase
         $this->assertStringContainsString("illustrative examples", $result->metadata->description);
         $this->assertNotEmpty($result->metadata->canonical_url);
         $this->assertGreaterThan(0, count($result->links));
-        $this->assertStringContainsString("external", $result->links[""]->link_type);
+        $this->assertStringContainsString("external", $result->links[0]->link_type);
         $this->assertEquals(0, count($result->images));
         // skipped: field 'og.title' not available on result type
     }
@@ -63,10 +63,10 @@ final class ScrapeTest extends TestCase
         $result = Kreuzcrawl::scrape($engine, "");
         $this->assertEquals(200, $result->status_code);
         $this->assertGreaterThan(9, count($result->links));
-        $this->assertStringContainsString("internal", $result->links[""]->link_type);
-        $this->assertStringContainsString("external", $result->links[""]->link_type);
-        $this->assertStringContainsString("anchor", $result->links[""]->link_type);
-        $this->assertStringContainsString("document", $result->links[""]->link_type);
+        $this->assertStringContainsString("internal", $result->links[0]->link_type);
+        $this->assertStringContainsString("external", $result->links[0]->link_type);
+        $this->assertStringContainsString("anchor", $result->links[0]->link_type);
+        $this->assertStringContainsString("document", $result->links[0]->link_type);
     }
 
     /** Downloads CSS, JS, and image assets from page */
@@ -105,9 +105,9 @@ final class ScrapeTest extends TestCase
         $engine = Kreuzcrawl::createEngine(null);
         $result = Kreuzcrawl::scrape($engine, "");
         $this->assertEquals(200, $result->status_code);
-        $this->assertEquals(1, count($result->feeds->rss));
-        $this->assertEquals(1, count($result->feeds->atom));
-        $this->assertEquals(1, count($result->feeds->json_feed));
+        $this->assertEquals(1, count($result->feeds[0]->rss));
+        $this->assertEquals(1, count($result->feeds[0]->atom));
+        $this->assertEquals(1, count($result->feeds[0]->json_feed));
     }
 
     /** Extracts images from img, picture, og:image, twitter:image */
@@ -135,8 +135,8 @@ final class ScrapeTest extends TestCase
         $result = Kreuzcrawl::scrape($engine, "");
         $this->assertEquals(200, $result->status_code);
         $this->assertNotEmpty($result->json_ld);
-        $this->assertEquals("Recipe", $result->json_ld->type);
-        $this->assertEquals("Best Chocolate Cake", $result->json_ld->name);
+        $this->assertEquals("Recipe", $result->json_ld[0]->type);
+        $this->assertEquals("Best Chocolate Cake", $result->json_ld[0]->name);
     }
 
     /** Gracefully handles broken HTML without crashing */

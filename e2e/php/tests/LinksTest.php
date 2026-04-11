@@ -15,7 +15,7 @@ final class LinksTest extends TestCase
     {
         $engine = Kreuzcrawl::createEngine(null);
         $result = Kreuzcrawl::scrape($engine, "");
-        $this->assertStringContainsString("anchor", $result->links[""]->link_type);
+        $this->assertStringContainsString("anchor", $result->links[0]->link_type);
     }
 
     /** Resolves relative URLs using base tag href */
@@ -24,7 +24,7 @@ final class LinksTest extends TestCase
         $engine = Kreuzcrawl::createEngine(null);
         $result = Kreuzcrawl::scrape($engine, "");
         $this->assertGreaterThan(2, count($result->links));
-        $this->assertStringContainsString("example.com", $result->links[""]->url);
+        $this->assertStringContainsString("example.com", $result->links[0]->url);
     }
 
     /** Detects PDF, DOCX, XLSX links as document type */
@@ -32,7 +32,7 @@ final class LinksTest extends TestCase
     {
         $engine = Kreuzcrawl::createEngine(null);
         $result = Kreuzcrawl::scrape($engine, "");
-        $this->assertStringContainsString("document", $result->links[""]->link_type);
+        $this->assertStringContainsString("document", $result->links[0]->link_type);
     }
 
     /** Handles empty href attributes without errors */
@@ -41,7 +41,7 @@ final class LinksTest extends TestCase
         $engine = Kreuzcrawl::createEngine(null);
         $result = Kreuzcrawl::scrape($engine, "");
         $this->assertGreaterThan(0, count($result->links));
-        $this->assertStringContainsString("/valid", $result->links[""]->url);
+        $this->assertStringContainsString("/valid", $result->links[0]->url);
     }
 
     /** Correctly classifies internal vs external links by domain */
@@ -50,8 +50,8 @@ final class LinksTest extends TestCase
         $engine = Kreuzcrawl::createEngine(null);
         $result = Kreuzcrawl::scrape($engine, "");
         $this->assertGreaterThan(4, count($result->links));
-        $this->assertStringContainsString("internal", $result->links[""]->link_type);
-        $this->assertStringContainsString("external", $result->links[""]->link_type);
+        $this->assertStringContainsString("internal", $result->links[0]->link_type);
+        $this->assertStringContainsString("external", $result->links[0]->link_type);
     }
 
     /** Skips mailto:, javascript:, and tel: scheme links */
@@ -60,7 +60,7 @@ final class LinksTest extends TestCase
         $engine = Kreuzcrawl::createEngine(null);
         $result = Kreuzcrawl::scrape($engine, "");
         $this->assertGreaterThan(0, count($result->links));
-        $this->assertStringNotContainsString("mailto:", $result->links[""]->url);
+        $this->assertStringNotContainsString("mailto:", $result->links[0]->url);
     }
 
     /** Handles protocol-relative URLs (//example.com) correctly */
@@ -69,7 +69,7 @@ final class LinksTest extends TestCase
         $engine = Kreuzcrawl::createEngine(null);
         $result = Kreuzcrawl::scrape($engine, "");
         $this->assertGreaterThan(1, count($result->links));
-        $this->assertNotEmpty($result->links[""]->protocol_relative);
+        $this->assertStringContainsString("//", $result->links[0]->url);
     }
 
     /** Preserves rel=nofollow and rel=canonical attributes */

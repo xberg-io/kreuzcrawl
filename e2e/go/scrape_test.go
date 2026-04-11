@@ -24,8 +24,8 @@ func Test_ScrapeAssetDedup(t *testing.T) {
 	if len(result.Assets) != 2 {
 		t.Errorf("equals mismatch: got %q", len(result.Assets))
 	}
-	if result.Assets.UniqueHashes != 2 {
-		t.Errorf("equals mismatch: got %q", result.Assets.UniqueHashes)
+	if result.Assets[0].UniqueHashes != 2 {
+		t.Errorf("equals mismatch: got %q", result.Assets[0].UniqueHashes)
 	}
 }
 
@@ -63,8 +63,8 @@ func Test_ScrapeAssetTypeFilter(t *testing.T) {
 	if len(result.Assets) != 1 {
 		t.Errorf("equals mismatch: got %q", len(result.Assets))
 	}
-	if !strings.Contains(result.Assets[""].Category, `image`) {
-		t.Errorf("expected to contain %s, got %q", `image`, result.Assets[""].Category)
+	if !strings.Contains(result.Assets[0].Category, `image`) {
+		t.Errorf("expected to contain %s, got %q", `image`, result.Assets[0].Category)
 	}
 }
 
@@ -111,7 +111,7 @@ func Test_ScrapeBasicHtmlPage(t *testing.T) {
 	if len(result.Links) <= 0 {
 		t.Errorf("expected > 0, got %v", len(result.Links))
 	}
-	if !strings.Contains(result.Links[""].LinkType, `external`) {
+	if !strings.Contains(result.Links[0].LinkType, `external`) {
 		t.Errorf("expected to contain %s", `external`)
 	}
 	if len(result.Images) != 0 {
@@ -136,16 +136,16 @@ func Test_ScrapeComplexLinks(t *testing.T) {
 	if len(result.Links) <= 9 {
 		t.Errorf("expected > 9, got %v", len(result.Links))
 	}
-	if !strings.Contains(result.Links[""].LinkType, `internal`) {
+	if !strings.Contains(result.Links[0].LinkType, `internal`) {
 		t.Errorf("expected to contain %s", `internal`)
 	}
-	if !strings.Contains(result.Links[""].LinkType, `external`) {
+	if !strings.Contains(result.Links[0].LinkType, `external`) {
 		t.Errorf("expected to contain %s", `external`)
 	}
-	if !strings.Contains(result.Links[""].LinkType, `anchor`) {
+	if !strings.Contains(result.Links[0].LinkType, `anchor`) {
 		t.Errorf("expected to contain %s", `anchor`)
 	}
-	if !strings.Contains(result.Links[""].LinkType, `document`) {
+	if !strings.Contains(result.Links[0].LinkType, `document`) {
 		t.Errorf("expected to contain %s", `document`)
 	}
 }
@@ -220,14 +220,14 @@ func Test_ScrapeFeedDiscovery(t *testing.T) {
 	if result.StatusCode != 200 {
 		t.Errorf("equals mismatch: got %q", result.StatusCode)
 	}
-	if len(result.Feeds.Rss) != 1 {
-		t.Errorf("equals mismatch: got %q", len(result.Feeds.Rss))
+	if len(result.Feeds[0].Rss) != 1 {
+		t.Errorf("equals mismatch: got %q", len(result.Feeds[0].Rss))
 	}
-	if len(result.Feeds.Atom) != 1 {
-		t.Errorf("equals mismatch: got %q", len(result.Feeds.Atom))
+	if len(result.Feeds[0].Atom) != 1 {
+		t.Errorf("equals mismatch: got %q", len(result.Feeds[0].Atom))
 	}
-	if len(result.Feeds.JsonFeed) != 1 {
-		t.Errorf("equals mismatch: got %q", len(result.Feeds.JsonFeed))
+	if len(result.Feeds[0].JsonFeed) != 1 {
+		t.Errorf("equals mismatch: got %q", len(result.Feeds[0].JsonFeed))
 	}
 }
 
@@ -281,11 +281,11 @@ func Test_ScrapeJsonLd(t *testing.T) {
 	if len(result.JsonLd) == 0 {
 		t.Errorf("expected non-empty value")
 	}
-	if result.JsonLd.Type != `Recipe` {
-		t.Errorf("equals mismatch: got %q", result.JsonLd.Type)
+	if result.JsonLd[0].Type != `Recipe` {
+		t.Errorf("equals mismatch: got %q", result.JsonLd[0].Type)
 	}
-	if result.JsonLd.Name != `Best Chocolate Cake` {
-		t.Errorf("equals mismatch: got %q", result.JsonLd.Name)
+	if result.JsonLd[0].Name != `Best Chocolate Cake` {
+		t.Errorf("equals mismatch: got %q", result.JsonLd[0].Name)
 	}
 }
 

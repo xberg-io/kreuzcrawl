@@ -8,8 +8,10 @@ package kreuzcrawl
 import "C"
 
 import (
-    "fmt"
+    "encoding/json"
     "errors"
+    "fmt"
+    "unsafe"
 )
 
 // lastError retrieves the last error from the FFI layer.
@@ -2551,6 +2553,15 @@ func NewCitationReference(opts ...CitationReferenceOption) *CitationReference {
 // All default trait implementations (BFS strategy, in-memory frontier,
 // per-domain throttle, etc.) are used internally.
 type CrawlEngineHandle struct {
+    ptr unsafe.Pointer
+}
+
+// Free releases the resources held by this handle.
+func (h *CrawlEngineHandle) Free() {
+    if h.ptr != nil {
+        C.kcrawl_crawl_engine_handle_free((*C.KCRAWLCrawlEngineHandle)(h.ptr))
+        h.ptr = nil
+    }
 }
 
 
@@ -2665,28 +2676,13 @@ func CreateEngine(config ...*CrawlConfig) (*CrawlEngineHandle, error) {
         }
         return nil, err
     }
-    defer C.kcrawl_crawl_engine_handle_free(ptr)
-    return func() *CrawlEngineHandle {
-	jsonPtr := C.kcrawl_crawl_engine_handle_to_json(ptr)
-	if jsonPtr == nil { return nil }
-	defer C.kcrawl_free_string(jsonPtr)
-	var result CrawlEngineHandle
-	if err := json.Unmarshal([]byte(C.GoString(jsonPtr)), &result); err != nil { return nil }
-	return &result
-}(), nil
+    return &CrawlEngineHandle{ptr: unsafe.Pointer(ptr)}, nil
 }
 
 
 // Scrape a single URL, returning extracted page data.
-func Scrape(engine CrawlEngineHandle, url string) (*ScrapeResult, error) {
-    jsonBytescEngine, err := json.Marshal(engine)
-    if err != nil {
-        return nil, fmt.Errorf("failed to marshal: %w", err)
-    }
-    tmpStrcEngine := C.CString(string(jsonBytescEngine))
-    cEngine := C.kcrawl_crawl_engine_handle_from_json(tmpStrcEngine)
-    C.free(unsafe.Pointer(tmpStrcEngine))
-    defer C.kcrawl_crawl_engine_handle_free(cEngine)
+func Scrape(engine *CrawlEngineHandle, url string) (*ScrapeResult, error) {
+    cEngine := (*C.KCRAWLCrawlEngineHandle)(unsafe.Pointer(engine.ptr))
 
     cUrl := C.CString(url)
     defer C.free(unsafe.Pointer(cUrl))
@@ -2711,15 +2707,8 @@ func Scrape(engine CrawlEngineHandle, url string) (*ScrapeResult, error) {
 
 
 // Crawl a website starting from `url`, following links up to the configured depth.
-func Crawl(engine CrawlEngineHandle, url string) (*CrawlResult, error) {
-    jsonBytescEngine, err := json.Marshal(engine)
-    if err != nil {
-        return nil, fmt.Errorf("failed to marshal: %w", err)
-    }
-    tmpStrcEngine := C.CString(string(jsonBytescEngine))
-    cEngine := C.kcrawl_crawl_engine_handle_from_json(tmpStrcEngine)
-    C.free(unsafe.Pointer(tmpStrcEngine))
-    defer C.kcrawl_crawl_engine_handle_free(cEngine)
+func Crawl(engine *CrawlEngineHandle, url string) (*CrawlResult, error) {
+    cEngine := (*C.KCRAWLCrawlEngineHandle)(unsafe.Pointer(engine.ptr))
 
     cUrl := C.CString(url)
     defer C.free(unsafe.Pointer(cUrl))
@@ -2744,15 +2733,8 @@ func Crawl(engine CrawlEngineHandle, url string) (*CrawlResult, error) {
 
 
 // Discover all pages on a website by following links and sitemaps.
-func MapUrls(engine CrawlEngineHandle, url string) (*MapResult, error) {
-    jsonBytescEngine, err := json.Marshal(engine)
-    if err != nil {
-        return nil, fmt.Errorf("failed to marshal: %w", err)
-    }
-    tmpStrcEngine := C.CString(string(jsonBytescEngine))
-    cEngine := C.kcrawl_crawl_engine_handle_from_json(tmpStrcEngine)
-    C.free(unsafe.Pointer(tmpStrcEngine))
-    defer C.kcrawl_crawl_engine_handle_free(cEngine)
+func MapUrls(engine *CrawlEngineHandle, url string) (*MapResult, error) {
+    cEngine := (*C.KCRAWLCrawlEngineHandle)(unsafe.Pointer(engine.ptr))
 
     cUrl := C.CString(url)
     defer C.free(unsafe.Pointer(cUrl))
@@ -2777,15 +2759,8 @@ func MapUrls(engine CrawlEngineHandle, url string) (*MapResult, error) {
 
 
 // Scrape multiple URLs concurrently.
-func BatchScrape(engine CrawlEngineHandle, urls []string) *[]BatchScrapeResult {
-    jsonBytescEngine, err := json.Marshal(engine)
-    if err != nil {
-        panic(fmt.Sprintf("failed to marshal: %v", err))
-    }
-    tmpStrcEngine := C.CString(string(jsonBytescEngine))
-    cEngine := C.kcrawl_crawl_engine_handle_from_json(tmpStrcEngine)
-    C.free(unsafe.Pointer(tmpStrcEngine))
-    defer C.kcrawl_crawl_engine_handle_free(cEngine)
+func BatchScrape(engine *CrawlEngineHandle, urls []string) *[]BatchScrapeResult {
+    cEngine := (*C.KCRAWLCrawlEngineHandle)(unsafe.Pointer(engine.ptr))
 
     jsonBytescUrls, err := json.Marshal(urls)
     if err != nil {
@@ -2795,20 +2770,19 @@ func BatchScrape(engine CrawlEngineHandle, urls []string) *[]BatchScrapeResult {
     defer C.free(unsafe.Pointer(cUrls))
 
     ptr := C.kcrawl_batch_scrape(cEngine, cUrls)
-    return unmarshalListBatchScrapeResult(ptr)
+    return func() *[]BatchScrapeResult {
+	if ptr == nil { return nil }
+	defer C.kcrawl_free_string(ptr)
+	var result []BatchScrapeResult
+	if err := json.Unmarshal([]byte(C.GoString(ptr)), &result); err != nil { return nil }
+	return &result
+}()
 }
 
 
 // Crawl multiple seed URLs concurrently, each following links to configured depth.
-func BatchCrawl(engine CrawlEngineHandle, urls []string) *[]BatchCrawlResult {
-    jsonBytescEngine, err := json.Marshal(engine)
-    if err != nil {
-        panic(fmt.Sprintf("failed to marshal: %v", err))
-    }
-    tmpStrcEngine := C.CString(string(jsonBytescEngine))
-    cEngine := C.kcrawl_crawl_engine_handle_from_json(tmpStrcEngine)
-    C.free(unsafe.Pointer(tmpStrcEngine))
-    defer C.kcrawl_crawl_engine_handle_free(cEngine)
+func BatchCrawl(engine *CrawlEngineHandle, urls []string) *[]BatchCrawlResult {
+    cEngine := (*C.KCRAWLCrawlEngineHandle)(unsafe.Pointer(engine.ptr))
 
     jsonBytescUrls, err := json.Marshal(urls)
     if err != nil {
@@ -2818,6 +2792,12 @@ func BatchCrawl(engine CrawlEngineHandle, urls []string) *[]BatchCrawlResult {
     defer C.free(unsafe.Pointer(cUrls))
 
     ptr := C.kcrawl_batch_crawl(cEngine, cUrls)
-    return unmarshalListBatchCrawlResult(ptr)
+    return func() *[]BatchCrawlResult {
+	if ptr == nil { return nil }
+	defer C.kcrawl_free_string(ptr)
+	var result []BatchCrawlResult
+	if err := json.Unmarshal([]byte(C.GoString(ptr)), &result); err != nil { return nil }
+	return &result
+}()
 }
 

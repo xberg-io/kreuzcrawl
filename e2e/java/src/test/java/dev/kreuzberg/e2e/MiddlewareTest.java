@@ -20,7 +20,7 @@ class MiddlewareTest {
         var engine = Kreuzcrawl.createEngine(null);
         var result = Kreuzcrawl.scrape(engine, "");
         assertEquals(200, result.statusCode());
-        assertEquals("Middleware Test", result.metadata().title().orElse(""));
+        assertEquals("Middleware Test", result.metadata().orElseThrow().title().orElse(""));
     }
 
 }

@@ -39,12 +39,12 @@ fn test_engine_scrape_basic() {
     let url = String::new();
     let result = scrape(&engine, url).expect("should succeed");
     let metadata_title = result.metadata.title.as_deref().unwrap_or("");
+    let metadata_description = result.metadata.description.as_deref().unwrap_or("");
     assert_eq!(result.status_code, "200", "equals assertion failed");
     assert_eq!(result.content_type, r#"text/html"#, "equals assertion failed");
     assert_eq!(metadata_title, r#"Engine Test"#, "equals assertion failed");
-    assert!(result.metadata.description_contains.contains(r#"Testing the engine"#), "expected to contain: {}", r#"Testing the engine"#);
-    assert!(result.links.min_count >= 1_f64, "expected >= 1");
-    // skipped: field 'headings.h1_count' not available on result type
+    assert!(metadata_description.contains(r#"Testing the engine"#), "expected to contain: {}", r#"Testing the engine"#);
+    assert!(result.links.len() >= 1_f64, "expected >= 1");
     // skipped: field 'headings.h1_text' not available on result type
 }
 

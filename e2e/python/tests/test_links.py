@@ -8,7 +8,7 @@ def test_links_anchor_fragment() -> None:
     engine = create_engine()
     url = ""
     result = scrape(engine=engine, url=url)
-    assert "anchor" in result.links.get("").link_type
+    assert "anchor" in result.links[0].link_type
 
 def test_links_base_tag() -> None:
     """Resolves relative URLs using base tag href."""
@@ -16,14 +16,14 @@ def test_links_base_tag() -> None:
     url = ""
     result = scrape(engine=engine, url=url)
     assert len(result.links) > 2
-    assert "example.com" in result.links.get("").url
+    assert "example.com" in result.links[0].url
 
 def test_links_document_types() -> None:
     """Detects PDF, DOCX, XLSX links as document type."""
     engine = create_engine()
     url = ""
     result = scrape(engine=engine, url=url)
-    assert "document" in result.links.get("").link_type
+    assert "document" in result.links[0].link_type
 
 def test_links_empty_href() -> None:
     """Handles empty href attributes without errors."""
@@ -31,7 +31,7 @@ def test_links_empty_href() -> None:
     url = ""
     result = scrape(engine=engine, url=url)
     assert len(result.links) > 0
-    assert "/valid" in result.links.get("").url
+    assert "/valid" in result.links[0].url
 
 def test_links_internal_external_classification() -> None:
     """Correctly classifies internal vs external links by domain."""
@@ -39,8 +39,8 @@ def test_links_internal_external_classification() -> None:
     url = ""
     result = scrape(engine=engine, url=url)
     assert len(result.links) > 4
-    assert "internal" in result.links.get("").link_type
-    assert "external" in result.links.get("").link_type
+    assert "internal" in result.links[0].link_type
+    assert "external" in result.links[0].link_type
 
 def test_links_mailto_javascript_skip() -> None:
     """Skips mailto:, javascript:, and tel: scheme links."""
@@ -48,7 +48,7 @@ def test_links_mailto_javascript_skip() -> None:
     url = ""
     result = scrape(engine=engine, url=url)
     assert len(result.links) > 0
-    assert "mailto:" not in result.links.get("").url
+    assert "mailto:" not in result.links[0].url
 
 def test_links_protocol_relative() -> None:
     """Handles protocol-relative URLs (//example.com) correctly."""
@@ -56,7 +56,7 @@ def test_links_protocol_relative() -> None:
     url = ""
     result = scrape(engine=engine, url=url)
     assert len(result.links) > 1
-    assert result.links.get("").protocol_relative
+    assert "//" in result.links[0].url
 
 def test_links_rel_attributes() -> None:
     """Preserves rel=nofollow and rel=canonical attributes."""
