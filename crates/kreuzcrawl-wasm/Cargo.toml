@@ -6,6 +6,9 @@ license = "Elastic-2.0"
 description = "High-performance web crawling engine"
 repository = "https://github.com/kreuzberg-dev/kreuzcrawl"
 
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = false
+
 [package.metadata.cargo-machete]
 ignored = ["wasm-bindgen-futures"]
 
