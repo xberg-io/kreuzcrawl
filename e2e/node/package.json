@@ -8,6 +8,6 @@
 	},
 	"devDependencies": {
 		"@kreuzberg/kreuzcrawl": "file:../../crates/kreuzcrawl-node",
-		"vitest": "^3.0.0"
+		"vitest": "^4.1.4"
 	}
 }

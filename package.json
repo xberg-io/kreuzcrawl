@@ -3,8 +3,8 @@
 	"private": true,
 	"packageManager": "pnpm@10.33.0+sha512.10568bb4a6afb58c9eb3630da90cc9516417abebd3fabbe6739f0ae795728da1491e9db5a544c76ad8eb7570f5c4bb3d6c637b2cb41bfdcdb47fa823c8649319",
 	"devDependencies": {
-		"@biomejs/biome": "^2.4.11",
-		"@napi-rs/cli": "^3.6.1",
+		"@biomejs/biome": "^2.4.12",
+		"@napi-rs/cli": "^3.6.2",
 		"@textlint-rule/textlint-rule-no-invalid-control-character": "^3.0.0",
 		"@textlint-rule/textlint-rule-no-unmatched-pair": "^2.0.4",
 		"textlint": "^15.5.4",

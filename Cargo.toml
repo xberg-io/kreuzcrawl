@@ -39,7 +39,7 @@ dirs = "6"
 # Binding framework dependencies
 ext-php-rs = "0.15"
 flate2 = "1"
-html-to-markdown-rs = { version = "3.1", features = ["full"] }
+html-to-markdown-rs = { version = "3.2", features = ["full"] }
 itertools = "0.14"
 libc = "0.2"
 liter-llm = { version = "1.2", features = ["native-http"] }

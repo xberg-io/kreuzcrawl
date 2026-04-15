@@ -127,19 +127,19 @@ repos:
         types: [rust]
 
   - repo: https://github.com/bnjbvr/cargo-machete
-    rev: v0.9.1
+    rev: v0.9.2
     hooks:
       - id: cargo-machete
 
   - repo: https://github.com/EmbarkStudios/cargo-deny
-    rev: 0.19.2
+    rev: 0.19.4
     hooks:
       - id: cargo-deny
         args: ["check"]
 
   # JavaScript/TypeScript/JSON/CSS: biome (formatting + linting with autofixes)
   - repo: https://github.com/biomejs/pre-commit
-    rev: v2.4.11
+    rev: v2.4.12
     hooks:
       - id: biome-format
         exclude: ^tools/benchmark-harness/fixtures/
@@ -201,7 +201,7 @@ repos:
 
   # Markdown: linting
   - repo: https://github.com/rvben/rumdl-pre-commit
-    rev: "v0.1.71"
+    rev: "v0.1.72"
     hooks:
       - id: rumdl-fmt
         exclude: '^(test_apps/|tools/benchmark-harness/vendored/|docs/index\.md|docs/getting-started/installation\.md)'
