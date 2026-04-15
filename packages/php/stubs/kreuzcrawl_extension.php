@@ -28,6 +28,12 @@ namespace Kreuzcrawl {
      */
     class ExtractionMeta
     {
+        public ?float $cost;
+        public ?int $prompt_tokens;
+        public ?int $completion_tokens;
+        public ?string $model;
+        public int $chunks_processed;
+
         public function __construct(
             int $chunks_processed,
             ?float $cost = null,
@@ -48,6 +54,10 @@ namespace Kreuzcrawl {
      */
     class ProxyConfig
     {
+        public string $url;
+        public ?string $username;
+        public ?string $password;
+
         public function __construct(
             string $url,
             ?string $username = null,
@@ -64,6 +74,13 @@ namespace Kreuzcrawl {
      */
     class BrowserConfig
     {
+        public BrowserMode $mode;
+        public ?string $endpoint;
+        public float $timeout;
+        public BrowserWait $wait;
+        public ?string $wait_selector;
+        public ?float $extra_wait;
+
         public function __construct(
             BrowserMode $mode,
             float $timeout,
@@ -86,6 +103,49 @@ namespace Kreuzcrawl {
      */
     class CrawlConfig
     {
+        public ?int $max_depth;
+        public ?int $max_pages;
+        public ?int $max_concurrent;
+        public bool $respect_robots_txt;
+        public ?string $user_agent;
+        public bool $stay_on_domain;
+        public bool $allow_subdomains;
+        /** @var array<string> */
+        public array $include_paths;
+        /** @var array<string> */
+        public array $exclude_paths;
+        /** @var array<string, string> */
+        public array $custom_headers;
+        public float $request_timeout;
+        public int $max_redirects;
+        public int $retry_count;
+        /** @var array<int> */
+        public array $retry_codes;
+        public bool $cookies_enabled;
+        public ?AuthConfig $auth;
+        public ?int $max_body_size;
+        public bool $main_content_only;
+        /** @var array<string> */
+        public array $remove_tags;
+        public ?int $map_limit;
+        public ?string $map_search;
+        public bool $download_assets;
+        /** @var array<AssetCategory> */
+        public array $asset_types;
+        public ?int $max_asset_size;
+        public BrowserConfig $browser;
+        public ?ProxyConfig $proxy;
+        /** @var array<string> */
+        public array $user_agents;
+        public bool $capture_screenshot;
+        public bool $download_documents;
+        public ?int $document_max_size;
+        /** @var array<string> */
+        public array $document_mime_types;
+        public ?string $warc_output;
+        public ?string $browser_profile;
+        public bool $save_browser_profile;
+
         /**
          * @param array<string> $include_paths
          * @param array<string> $exclude_paths
@@ -186,6 +246,15 @@ namespace Kreuzcrawl {
      */
     class DownloadedDocument
     {
+        public string $url;
+        public string $mime_type;
+        public string $content;
+        public int $size;
+        public ?string $filename;
+        public string $content_hash;
+        /** @var array<string, string> */
+        public array $headers;
+
         /**
          * @param array<string, string> $headers
          */
@@ -214,6 +283,12 @@ namespace Kreuzcrawl {
      */
     class InteractionResult
     {
+        /** @var array<ActionResult> */
+        public array $action_results;
+        public string $final_html;
+        public string $final_url;
+        public ?string $screenshot;
+
         /**
          * @param array<ActionResult> $action_results
          */
@@ -236,6 +311,12 @@ namespace Kreuzcrawl {
      */
     class ActionResult
     {
+        public int $action_index;
+        public string $action_type;
+        public bool $success;
+        public ?string $data;
+        public ?string $error;
+
         public function __construct(
             int $action_index,
             string $action_type,
@@ -256,6 +337,40 @@ namespace Kreuzcrawl {
      */
     class ScrapeResult
     {
+        public int $status_code;
+        public string $content_type;
+        public string $html;
+        public int $body_size;
+        public PageMetadata $metadata;
+        /** @var array<LinkInfo> */
+        public array $links;
+        /** @var array<ImageInfo> */
+        public array $images;
+        /** @var array<FeedInfo> */
+        public array $feeds;
+        /** @var array<JsonLdEntry> */
+        public array $json_ld;
+        public bool $is_allowed;
+        public ?int $crawl_delay;
+        public bool $noindex_detected;
+        public bool $nofollow_detected;
+        public ?string $x_robots_tag;
+        public bool $is_pdf;
+        public bool $was_skipped;
+        public ?string $detected_charset;
+        public bool $main_content_only;
+        public bool $auth_header_sent;
+        public ?ResponseMeta $response_meta;
+        /** @var array<DownloadedAsset> */
+        public array $assets;
+        public bool $js_render_hint;
+        public bool $browser_used;
+        public ?MarkdownResult $markdown;
+        public ?string $extracted_data;
+        public ?ExtractionMeta $extraction_meta;
+        public ?string $screenshot;
+        public ?DownloadedDocument $downloaded_document;
+
         /**
          * @param array<LinkInfo> $links
          * @param array<ImageInfo> $images
@@ -334,6 +449,31 @@ namespace Kreuzcrawl {
      */
     class CrawlPageResult
     {
+        public string $url;
+        public string $normalized_url;
+        public int $status_code;
+        public string $content_type;
+        public string $html;
+        public int $body_size;
+        public PageMetadata $metadata;
+        /** @var array<LinkInfo> */
+        public array $links;
+        /** @var array<ImageInfo> */
+        public array $images;
+        /** @var array<FeedInfo> */
+        public array $feeds;
+        /** @var array<JsonLdEntry> */
+        public array $json_ld;
+        public int $depth;
+        public bool $stayed_on_domain;
+        public bool $was_skipped;
+        public bool $is_pdf;
+        public ?string $detected_charset;
+        public ?MarkdownResult $markdown;
+        public ?string $extracted_data;
+        public ?ExtractionMeta $extraction_meta;
+        public ?DownloadedDocument $downloaded_document;
+
         /**
          * @param array<LinkInfo> $links
          * @param array<ImageInfo> $images
@@ -394,6 +534,17 @@ namespace Kreuzcrawl {
      */
     class CrawlResult
     {
+        /** @var array<CrawlPageResult> */
+        public array $pages;
+        public string $final_url;
+        public int $redirect_count;
+        public bool $was_skipped;
+        public ?string $error;
+        /** @var array<CookieInfo> */
+        public array $cookies;
+        /** @var array<string> */
+        public array $normalized_urls;
+
         /**
          * @param array<CrawlPageResult> $pages
          * @param array<CookieInfo> $cookies
@@ -426,6 +577,11 @@ namespace Kreuzcrawl {
      */
     class SitemapUrl
     {
+        public string $url;
+        public ?string $lastmod;
+        public ?string $changefreq;
+        public ?string $priority;
+
         public function __construct(
             string $url,
             ?string $lastmod = null,
@@ -444,6 +600,9 @@ namespace Kreuzcrawl {
      */
     class MapResult
     {
+        /** @var array<SitemapUrl> */
+        public array $urls;
+
         /**
          * @param array<SitemapUrl> $urls
          */
@@ -460,6 +619,15 @@ namespace Kreuzcrawl {
      */
     class MarkdownResult
     {
+        public string $content;
+        public ?string $document_structure;
+        /** @var array<string> */
+        public array $tables;
+        /** @var array<string> */
+        public array $warnings;
+        public ?CitationResult $citations;
+        public ?string $fit_content;
+
         /**
          * @param array<string> $tables
          * @param array<string> $warnings
@@ -488,6 +656,14 @@ namespace Kreuzcrawl {
      */
     class CachedPage
     {
+        public string $url;
+        public int $status_code;
+        public string $content_type;
+        public string $body;
+        public ?string $etag;
+        public ?string $last_modified;
+        public int $cached_at;
+
         public function __construct(
             string $url,
             int $status_code,
@@ -512,6 +688,12 @@ namespace Kreuzcrawl {
      */
     class LinkInfo
     {
+        public string $url;
+        public string $text;
+        public LinkType $link_type;
+        public ?string $rel;
+        public bool $nofollow;
+
         public function __construct(
             string $url,
             string $text,
@@ -532,6 +714,12 @@ namespace Kreuzcrawl {
      */
     class ImageInfo
     {
+        public string $url;
+        public ?string $alt;
+        public ?int $width;
+        public ?int $height;
+        public ImageSource $source;
+
         public function __construct(
             string $url,
             ImageSource $source,
@@ -552,6 +740,10 @@ namespace Kreuzcrawl {
      */
     class FeedInfo
     {
+        public string $url;
+        public ?string $title;
+        public FeedType $feed_type;
+
         public function __construct(
             string $url,
             FeedType $feed_type,
@@ -568,6 +760,10 @@ namespace Kreuzcrawl {
      */
     class JsonLdEntry
     {
+        public string $schema_type;
+        public ?string $name;
+        public string $raw;
+
         public function __construct(
             string $schema_type,
             string $raw,
@@ -584,6 +780,11 @@ namespace Kreuzcrawl {
      */
     class CookieInfo
     {
+        public string $name;
+        public string $value;
+        public ?string $domain;
+        public ?string $path;
+
         public function __construct(
             string $name,
             string $value,
@@ -602,6 +803,13 @@ namespace Kreuzcrawl {
      */
     class DownloadedAsset
     {
+        public string $url;
+        public string $content_hash;
+        public ?string $mime_type;
+        public int $size;
+        public AssetCategory $asset_category;
+        public ?string $html_tag;
+
         public function __construct(
             string $url,
             string $content_hash,
@@ -624,6 +832,13 @@ namespace Kreuzcrawl {
      */
     class ArticleMetadata
     {
+        public ?string $published_time;
+        public ?string $modified_time;
+        public ?string $author;
+        public ?string $section;
+        /** @var array<string> */
+        public array $tags;
+
         /**
          * @param array<string> $tags
          */
@@ -648,6 +863,9 @@ namespace Kreuzcrawl {
      */
     class HreflangEntry
     {
+        public string $lang;
+        public string $url;
+
         public function __construct(
             string $lang,
             string $url
@@ -662,6 +880,11 @@ namespace Kreuzcrawl {
      */
     class FaviconInfo
     {
+        public string $url;
+        public string $rel;
+        public ?string $sizes;
+        public ?string $mime_type;
+
         public function __construct(
             string $url,
             string $rel,
@@ -680,6 +903,9 @@ namespace Kreuzcrawl {
      */
     class HeadingInfo
     {
+        public int $level;
+        public string $text;
+
         public function __construct(
             int $level,
             string $text
@@ -694,6 +920,14 @@ namespace Kreuzcrawl {
      */
     class ResponseMeta
     {
+        public ?string $etag;
+        public ?string $last_modified;
+        public ?string $cache_control;
+        public ?string $server;
+        public ?string $x_powered_by;
+        public ?string $content_language;
+        public ?string $content_encoding;
+
         public function __construct(
             ?string $etag = null,
             ?string $last_modified = null,
@@ -718,6 +952,54 @@ namespace Kreuzcrawl {
      */
     class PageMetadata
     {
+        public ?string $title;
+        public ?string $description;
+        public ?string $canonical_url;
+        public ?string $keywords;
+        public ?string $author;
+        public ?string $viewport;
+        public ?string $theme_color;
+        public ?string $generator;
+        public ?string $robots;
+        public ?string $html_lang;
+        public ?string $html_dir;
+        public ?string $og_title;
+        public ?string $og_type;
+        public ?string $og_image;
+        public ?string $og_description;
+        public ?string $og_url;
+        public ?string $og_site_name;
+        public ?string $og_locale;
+        public ?string $og_video;
+        public ?string $og_audio;
+        /** @var ?array<string> */
+        public ?array $og_locale_alternates;
+        public ?string $twitter_card;
+        public ?string $twitter_title;
+        public ?string $twitter_description;
+        public ?string $twitter_image;
+        public ?string $twitter_site;
+        public ?string $twitter_creator;
+        public ?string $dc_title;
+        public ?string $dc_creator;
+        public ?string $dc_subject;
+        public ?string $dc_description;
+        public ?string $dc_publisher;
+        public ?string $dc_date;
+        public ?string $dc_type;
+        public ?string $dc_format;
+        public ?string $dc_identifier;
+        public ?string $dc_language;
+        public ?string $dc_rights;
+        public ?ArticleMetadata $article;
+        /** @var ?array<HreflangEntry> */
+        public ?array $hreflangs;
+        /** @var ?array<FaviconInfo> */
+        public ?array $favicons;
+        /** @var ?array<HeadingInfo> */
+        public ?array $headings;
+        public ?int $word_count;
+
         /**
          * @param ?array<string> $og_locale_alternates
          * @param ?array<HreflangEntry> $hreflangs
@@ -824,6 +1106,10 @@ namespace Kreuzcrawl {
      */
     class CitationResult
     {
+        public string $content;
+        /** @var array<CitationReference> */
+        public array $references;
+
         /**
          * @param array<CitationReference> $references
          */
@@ -839,6 +1125,10 @@ namespace Kreuzcrawl {
 
     class CitationReference
     {
+        public int $index;
+        public string $url;
+        public string $text;
+
         public function __construct(
             int $index,
             string $url,
@@ -855,6 +1145,10 @@ namespace Kreuzcrawl {
      */
     class BatchScrapeResult
     {
+        public string $url;
+        public ?ScrapeResult $result;
+        public ?string $error;
+
         public function __construct(
             string $url,
             ?ScrapeResult $result = null,
@@ -871,6 +1165,10 @@ namespace Kreuzcrawl {
      */
     class BatchCrawlResult
     {
+        public string $url;
+        public ?CrawlResult $result;
+        public ?string $error;
+
         public function __construct(
             string $url,
             ?CrawlResult $result = null,
@@ -965,7 +1263,6 @@ namespace Kreuzcrawl {
          * @return array<\Kreuzcrawl\BatchCrawlResult>
          */
         public static function batchCrawlAsync(\Kreuzcrawl\CrawlEngineHandle $engine, array $urls): array {}
-        public static function createEngineFromJson(?string $json = null): \Kreuzcrawl\CrawlEngineHandle {}
     }
 
 } // end namespace

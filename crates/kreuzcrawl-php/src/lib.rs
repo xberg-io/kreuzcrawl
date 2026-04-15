@@ -1524,16 +1524,6 @@ impl KreuzcrawlApi {
         let result = WORKER_RUNTIME.block_on(async { kreuzcrawl::batch_crawl(&engine.inner, urls).await });
         result.into_iter().map(Into::into).collect()
     }
-
-    pub fn create_engine_from_json(json: Option<String>) -> PhpResult<CrawlEngineHandle> {
-        let config: Option<kreuzcrawl::CrawlConfig> = json
-            .map(|s| serde_json::from_str(&s).map_err(|e| PhpException::default(e.to_string())))
-            .transpose()?;
-        let result = kreuzcrawl::create_engine(config).map_err(|e| PhpException::default(e.to_string()))?;
-        Ok(CrawlEngineHandle {
-            inner: Arc::new(result),
-        })
-    }
 }
 
 impl From<ExtractionMeta> for kreuzcrawl::ExtractionMeta {
@@ -1590,13 +1580,13 @@ impl From<BrowserConfig> for kreuzcrawl::BrowserConfig {
 impl From<kreuzcrawl::BrowserConfig> for BrowserConfig {
     fn from(val: kreuzcrawl::BrowserConfig) -> Self {
         Self {
-            mode: serde_json::to_value(&val.mode)
+            mode: serde_json::to_value(val.mode)
                 .ok()
                 .and_then(|s| s.as_str().map(String::from))
                 .unwrap_or_default(),
             endpoint: val.endpoint,
             timeout: Some(val.timeout.as_millis() as u64 as i64),
-            wait: serde_json::to_value(&val.wait)
+            wait: serde_json::to_value(val.wait)
                 .ok()
                 .and_then(|s| s.as_str().map(String::from))
                 .unwrap_or_default(),
@@ -1951,7 +1941,7 @@ impl From<kreuzcrawl::LinkInfo> for LinkInfo {
         Self {
             url: val.url,
             text: val.text,
-            link_type: serde_json::to_value(&val.link_type)
+            link_type: serde_json::to_value(val.link_type)
                 .ok()
                 .and_then(|s| s.as_str().map(String::from))
                 .unwrap_or_default(),
@@ -1975,7 +1965,7 @@ impl From<kreuzcrawl::ImageInfo> for ImageInfo {
             alt: val.alt,
             width: val.width,
             height: val.height,
-            source: serde_json::to_value(&val.source)
+            source: serde_json::to_value(val.source)
                 .ok()
                 .and_then(|s| s.as_str().map(String::from))
                 .unwrap_or_default(),
@@ -1995,7 +1985,7 @@ impl From<kreuzcrawl::FeedInfo> for FeedInfo {
         Self {
             url: val.url,
             title: val.title,
-            feed_type: serde_json::to_value(&val.feed_type)
+            feed_type: serde_json::to_value(val.feed_type)
                 .ok()
                 .and_then(|s| s.as_str().map(String::from))
                 .unwrap_or_default(),
@@ -2059,7 +2049,7 @@ impl From<kreuzcrawl::DownloadedAsset> for DownloadedAsset {
             content_hash: val.content_hash,
             mime_type: val.mime_type,
             size: val.size as i64,
-            asset_category: serde_json::to_value(&val.asset_category)
+            asset_category: serde_json::to_value(val.asset_category)
                 .ok()
                 .and_then(|s| s.as_str().map(String::from))
                 .unwrap_or_default(),

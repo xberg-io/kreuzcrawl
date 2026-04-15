@@ -85,15 +85,4 @@ final class Kreuzcrawl
         return \Kreuzcrawl\KreuzcrawlApi::batchCrawlAsync($engine, $urls); // delegate to native extension class
     }
 
-    /**
-     * Create engine from JSON config string (handles complex nested config).
-     *
-     * @param ?string $json
-     * @return CrawlEngineHandle
-     */
-    public static function createEngineFromJson(?string $json = null): CrawlEngineHandle
-    {
-        return \Kreuzcrawl\KreuzcrawlApi::createEngineFromJson($json);
-    }
-
 }

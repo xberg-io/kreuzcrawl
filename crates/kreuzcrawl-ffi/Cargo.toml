@@ -2,8 +2,8 @@
 name = "kreuzcrawl-ffi"
 version = "0.1.0-rc.1"
 edition = "2021"
-description = "High-performance web crawling engine"
 license = "Elastic-2.0"
+description = "High-performance web crawling engine"
 repository = "https://github.com/kreuzberg-dev/kreuzcrawl"
 
 [lib]

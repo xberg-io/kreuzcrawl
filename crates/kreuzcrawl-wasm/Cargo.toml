@@ -2,8 +2,8 @@
 name = "kreuzcrawl-wasm"
 version = "0.1.0-rc.1"
 edition = "2024"
-description = "High-performance web crawling engine"
 license = "Elastic-2.0"
+description = "High-performance web crawling engine"
 repository = "https://github.com/kreuzberg-dev/kreuzcrawl"
 
 [package.metadata.cargo-machete]

@@ -11,9 +11,22 @@
 		"friendsofphp/php-cs-fixer": "^3.95",
 		"phpunit/phpunit": "^11.0"
 	},
+	"autoload": {
+		"psr-4": {
+			"Kreuzcrawl\\\\": "src/"
+		},
+		"files": ["src/functions.php"]
+	},
+	"scripts": {
+		"phpstan": "php -d detect_unicode=0 vendor/bin/phpstan --configuration=phpstan.neon --memory-limit=512M",
+		"format": "PHP_CS_FIXER_IGNORE_ENV=1 php vendor/bin/php-cs-fixer fix --config php-cs-fixer.php src tests",
+		"format:check": "PHP_CS_FIXER_IGNORE_ENV=1 php vendor/bin/php-cs-fixer fix --config php-cs-fixer.php --dry-run src tests",
+		"test": "php vendor/bin/phpunit",
+		"lint": "@phpstan",
+		"lint:fix": "PHP_CS_FIXER_IGNORE_ENV=1 php vendor/bin/php-cs-fixer fix --config php-cs-fixer.php src tests && php -d detect_unicode=0 vendor/bin/phpstan --configuration=phpstan.neon --memory-limit=512M"
+	},
 	"extra": {
 		"ext-name": "kreuzcrawl"
 	},
-	"keywords": ["crawl", "scrape", "web", "spider"],
-	"version": "0.1.0-rc.1"
+	"keywords": ["crawl", "scrape", "web", "spider"]
 }

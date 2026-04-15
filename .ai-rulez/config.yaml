@@ -1,24 +1,26 @@
 $schema: https://raw.githubusercontent.com/Goldziher/ai-rulez/main/schema/ai-rules-v3.schema.json
-description: Rust document intelligence library with polyglot bindings (Python/TypeScript/Ruby/Java/Go/Elixir/C#/PHP)
+description: Web crawler with Rust core and Python/TypeScript bindings
 gitignore: true
 name: Kreuzcrawl
+
+header:
+  style: minimal
 
 # Include shared ai-rulez configuration from git repository
 includes:
   - name: kreuzberg-core
     source: https://github.com/kreuzberg-dev/ai-rulez.git
+    local_override: ../ai-rulez
     path: modules/core
     merge_strategy: local-override
   - name: kreuzberg-cicd
     source: https://github.com/kreuzberg-dev/ai-rulez.git
+    local_override: ../ai-rulez
     path: modules/cicd
-    merge_strategy: local-override
-  - name: kreuzberg-infrastructure
-    source: https://github.com/kreuzberg-dev/ai-rulez.git
-    path: modules/infrastructure
     merge_strategy: local-override
   - name: kreuzberg-e2e-generator
     source: https://github.com/kreuzberg-dev/ai-rulez.git
+    local_override: ../ai-rulez
     path: modules/e2e-generator
     merge_strategy: local-override
 
@@ -28,17 +30,6 @@ builtins:
   - pyo3
   - typescript
   - napi-rs
-  - go
-  - java
-  - ruby
-  - magnus
-  - php
-  - ext-php-rs
-  - csharp
-  - elixir
-  - rustler
-  - r
-  - wasm
   - security
   - git-workflow
   - code-quality
