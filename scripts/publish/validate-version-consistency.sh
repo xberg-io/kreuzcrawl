@@ -57,7 +57,7 @@ fi
 
 ruby_version_file="$(find packages/ruby -name version.rb -path '*/kreuzcrawl/version.rb' 2>/dev/null | head -1)"
 if [ -n "$ruby_version_file" ]; then
-  ruby_version="$(grep "VERSION =" "$ruby_version_file" | cut -d"'" -f2)"
+  ruby_version="$(grep 'VERSION' "$ruby_version_file" | sed -n 's/.*VERSION *= *"\([^"]*\)".*/\1/p')"
   check_version "$ruby_version_file" "$ruby_version" "$expected"
 fi
 
@@ -121,12 +121,16 @@ elif [ -f packages/go/go.mod ]; then
 fi
 
 if [ -f packages/php/composer.json ]; then
-  php_version="$(jq -r '.version' packages/php/composer.json)"
-  check_version "packages/php/composer.json" "$php_version" "$expected"
+  php_version="$(jq -r '.version // empty' packages/php/composer.json)"
+  if [ -n "$php_version" ]; then
+    check_version "packages/php/composer.json" "$php_version" "$expected"
+  else
+    echo "packages/php/composer.json: (no version field, skipping)"
+  fi
 fi
 
 if [ -f packages/elixir/mix.exs ]; then
-  elixir_version="$(grep '@version' packages/elixir/mix.exs | head -1 | cut -d'"' -f2 || true)"
+  elixir_version="$(grep 'version:' packages/elixir/mix.exs | head -1 | sed -n 's/.*version: *"\([^"]*\)".*/\1/p')"
   check_version "packages/elixir/mix.exs" "$elixir_version" "$expected"
 fi
 

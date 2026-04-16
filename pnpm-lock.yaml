@@ -72,20 +72,7 @@ importers:
         specifier: ^3.6.2
         version: 3.6.2(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)
 
-  e2e/node:
-    devDependencies:
-      '@kreuzberg/kreuzcrawl':
-        specifier: file:../../crates/kreuzcrawl-node
-        version: link:../../crates/kreuzcrawl-node
-      vitest:
-        specifier: ^4.1.4
-        version: 4.1.4(vite@8.0.8(esbuild@0.27.7))
-
-  packages/typescript:
-    devDependencies:
-      '@napi-rs/cli':
-        specifier: ^3.6.2
-        version: 3.6.2(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)
+  crates/kreuzcrawl-wasm: {}
 
 packages:
 

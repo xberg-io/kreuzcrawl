@@ -1,7 +1,3 @@
 packages:
-  - "."
-  - "crates/*"
-  - "packages/*"
-  - "packages/**/*"
-  - "e2e/**/*"
-  - "e2e/*"
+  - "crates/kreuzcrawl-node"
+  - "crates/kreuzcrawl-wasm"
