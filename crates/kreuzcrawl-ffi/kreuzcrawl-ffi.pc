@@ -1,0 +1,11 @@
+prefix=/usr/local
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: kreuzcrawl-ffi
+Description: C FFI bindings for Kreuzcrawl web crawling library
+Version: 0.1.0-rc.2
+URL: https://github.com/kreuzberg-dev/kreuzcrawl
+Libs: -L${libdir} -lkreuzcrawl_ffi
+Cflags: -I${includedir}
