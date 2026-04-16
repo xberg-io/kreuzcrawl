@@ -744,7 +744,7 @@ jobs:
         run: scripts/publish/ubuntu/free-disk-space.sh
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v6
+        uses: pnpm/action-setup@v5
         with:
           package_json_file: package.json
 
@@ -2801,7 +2801,7 @@ jobs:
           ref: ${{ needs.prepare.outputs.ref }}
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v6
+        uses: pnpm/action-setup@v5
         with:
           package_json_file: package.json
 
@@ -2929,7 +2929,7 @@ jobs:
           registry-url: https://registry.npmjs.org/
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v6
+        uses: pnpm/action-setup@v5
         with:
           package_json_file: package.json
           run_install: false
