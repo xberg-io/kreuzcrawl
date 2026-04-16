@@ -33,10 +33,8 @@ COPY crates/kreuzcrawl/ crates/kreuzcrawl/
 COPY crates/kreuzcrawl-bindings-common/ crates/kreuzcrawl-bindings-common/
 COPY packages/elixir/native/kreuzcrawl_nif/ packages/elixir/native/kreuzcrawl_nif/
 
-# Replace the crates/* glob with only the crates we have, and remove other members
-RUN sed -i \
-    's|"crates/\*"|"crates/kreuzcrawl", "crates/kreuzcrawl-bindings-common"|; /e2e\/rust/d; /tools\/\*/d' \
-    Cargo.toml
+# Replace workspace members with only the crates we have
+RUN sed -i 's|members = \[.*\]|members = ["crates/kreuzcrawl", "crates/kreuzcrawl-bindings-common", "packages/elixir/native/kreuzcrawl_nif"]|' Cargo.toml
 
 # Build the Rustler NIF shared library
 RUN cargo build --release --package kreuzcrawl_nif && \

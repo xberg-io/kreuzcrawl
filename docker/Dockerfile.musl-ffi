@@ -33,9 +33,8 @@ COPY crates/kreuzcrawl/ crates/kreuzcrawl/
 COPY crates/kreuzcrawl-ffi/ crates/kreuzcrawl-ffi/
 COPY crates/kreuzcrawl-bindings-common/ crates/kreuzcrawl-bindings-common/
 
-# Replace the crates/* glob with only the crates we have, and remove other members
-RUN sed -i \
-    's|"crates/\*"|"crates/kreuzcrawl", "crates/kreuzcrawl-ffi", "crates/kreuzcrawl-bindings-common"|; /e2e\/rust/d; /kreuzcrawl_nif/d; /tools\/\*/d' \
+# Replace workspace members with only the crates we have
+RUN sed -i 's|members = \[.*\]|members = ["crates/kreuzcrawl", "crates/kreuzcrawl-ffi", "crates/kreuzcrawl-bindings-common"]|' \
     Cargo.toml
 
 # Build the FFI shared library
