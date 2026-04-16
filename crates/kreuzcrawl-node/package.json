@@ -5,6 +5,7 @@
 	"types": "index.d.ts",
 	"napi": {
 		"name": "kreuzcrawl",
+		"binaryName": "kreuzcrawl-node",
 		"triples": {
 			"defaults": true
 		}
