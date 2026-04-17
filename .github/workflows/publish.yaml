@@ -1173,7 +1173,6 @@ jobs:
       - name: Install system dependencies (macOS)
         if: runner.os == 'macOS'
         run: |
-          brew update
           brew install openssl@3 cmake pkg-config
           echo "OPENSSL_DIR=$(brew --prefix openssl@3)" >> "$GITHUB_ENV"
           echo "PKG_CONFIG_PATH=$(brew --prefix openssl@3)/lib/pkgconfig:${PKG_CONFIG_PATH:-}" >> "$GITHUB_ENV"
@@ -1193,8 +1192,6 @@ jobs:
           ruby-version: "3.3"
           bundler: none
           bundler-cache: false
-        env:
-          OPENSSL_DIR: ${{ env.OPENSSL_DIR }}
 
       - name: Install Bundler
         shell: bash
