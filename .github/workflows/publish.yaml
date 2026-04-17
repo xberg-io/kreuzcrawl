@@ -1185,8 +1185,6 @@ jobs:
           ruby-version: "3.4"
           bundler: none
           bundler-cache: false
-        env:
-          RUBY_CONFIGURE_OPTS: "--with-openssl-dir=${{ env.OPENSSL_DIR }}"
 
       - name: Install Bundler
         shell: bash
