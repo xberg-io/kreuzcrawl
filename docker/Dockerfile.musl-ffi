@@ -38,7 +38,8 @@ RUN sed -i 's|members = \[.*\]|members = ["crates/kreuzcrawl", "crates/kreuzcraw
     Cargo.toml
 
 # Build the FFI shared library
-RUN cargo build --release --package kreuzcrawl-ffi && \
+RUN . "$HOME/.cargo/env" && \
+    cargo build --release --package kreuzcrawl-ffi && \
     cp target/release/libkreuzcrawl_ffi.so /build/libkreuzcrawl_ffi.so && \
     strip /build/libkreuzcrawl_ffi.so
 
