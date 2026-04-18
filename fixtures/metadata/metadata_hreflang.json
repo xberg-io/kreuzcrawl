@@ -1,11 +1,9 @@
 {
 	"id": "metadata_hreflang",
 	"description": "Extracts hreflang alternate link tags",
-	"tags": ["metadata"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"metadata"
+	],
 	"input": {
 		"mock_responses": [
 			{

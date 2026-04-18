@@ -1,11 +1,10 @@
 {
 	"id": "crawl_include_path_pattern",
 	"description": "Only follows URLs matching the include path pattern",
-	"tags": ["crawl", "filter"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"crawl",
+		"filter"
+	],
 	"input": {
 		"mock_responses": [
 			{
@@ -38,7 +37,9 @@
 		],
 		"config": {
 			"max_depth": 1,
-			"include_paths": ["/blog/.*"],
+			"include_paths": [
+				"/blog/.*"
+			],
 			"respect_robots_txt": false
 		}
 	},

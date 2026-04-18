@@ -1,11 +1,9 @@
 {
 	"id": "error_500_server",
 	"description": "Handles 500 server error",
-	"tags": ["error"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"error"
+	],
 	"input": {
 		"mock_responses": [
 			{

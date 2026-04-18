@@ -1,11 +1,10 @@
 {
 	"id": "redirect_meta_refresh",
 	"description": "Follows HTML meta-refresh redirect to target page",
-	"tags": ["redirect", "html"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"redirect",
+		"html"
+	],
 	"input": {
 		"mock_responses": [
 			{

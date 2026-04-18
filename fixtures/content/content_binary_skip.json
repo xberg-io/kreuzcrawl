@@ -2,11 +2,10 @@
 	"id": "content_binary_skip",
 	"description": "Skips image and video content types gracefully",
 	"category": "crawl",
-	"tags": ["content", "binary"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"content",
+		"binary"
+	],
 	"input": {
 		"mock_responses": [
 			{

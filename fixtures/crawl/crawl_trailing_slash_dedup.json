@@ -1,11 +1,10 @@
 {
 	"id": "crawl_trailing_slash_dedup",
 	"description": "Deduplicates /page and /page/ as the same URL",
-	"tags": ["crawl", "normalization"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"crawl",
+		"normalization"
+	],
 	"input": {
 		"mock_responses": [
 			{

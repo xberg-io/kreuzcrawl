@@ -1,11 +1,11 @@
 {
 	"id": "browser_fallback_waf_blocked",
 	"description": "Browser fallback triggers when WAF blocks the HTTP request (Cloudflare 403)",
-	"tags": ["browser", "fallback", "waf"],
-	"skip": {
-		"languages": ["wasm", "c", "go", "java", "csharp"],
-		"reason": "requires browser feature; requires browser; Requires a running Chrome/Chromium instance"
-	},
+	"tags": [
+		"browser",
+		"fallback",
+		"waf"
+	],
 	"input": {
 		"mock_responses": [
 			{

@@ -1,11 +1,10 @@
 {
 	"id": "content_utf8_bom",
 	"description": "Handles UTF-8 content with BOM marker correctly",
-	"tags": ["content", "charset"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"content",
+		"charset"
+	],
 	"input": {
 		"mock_responses": [
 			{

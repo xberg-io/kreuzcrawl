@@ -1,11 +1,10 @@
 {
 	"id": "error_waf_akamai",
 	"description": "Akamai WAF detection returns WafBlocked error",
-	"tags": ["error", "waf"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"error",
+		"waf"
+	],
 	"input": {
 		"mock_responses": [
 			{

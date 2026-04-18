@@ -1,11 +1,10 @@
 {
 	"id": "scrape_feed_discovery",
 	"description": "Discovers RSS, Atom, and JSON feed links",
-	"tags": ["scrape", "feeds"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"scrape",
+		"feeds"
+	],
 	"input": {
 		"mock_responses": [
 			{

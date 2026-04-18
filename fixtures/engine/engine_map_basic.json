@@ -1,11 +1,10 @@
 {
 	"id": "engine_map_basic",
 	"description": "CrawlEngine with defaults discovers URLs like the free function",
-	"tags": ["engine", "map"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"engine",
+		"map"
+	],
 	"input": {
 		"mock_responses": [
 			{

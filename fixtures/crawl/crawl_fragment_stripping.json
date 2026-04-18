@@ -1,11 +1,10 @@
 {
 	"id": "crawl_fragment_stripping",
 	"description": "Strips #fragment from URLs for deduplication",
-	"tags": ["crawl", "normalization"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"crawl",
+		"normalization"
+	],
 	"input": {
 		"mock_responses": [
 			{

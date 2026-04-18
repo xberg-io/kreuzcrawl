@@ -1,11 +1,10 @@
 {
 	"id": "strategy_dfs_depth_first",
 	"description": "DFS strategy visits pages in depth-first order",
-	"tags": ["strategy", "dfs"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"strategy",
+		"dfs"
+	],
 	"input": {
 		"mock_responses": [
 			{
@@ -59,7 +58,13 @@
 		{
 			"type": "equals",
 			"field": "strategy.crawl_order",
-			"value": ["/", "/b", "/b/1", "/a", "/a/1"]
+			"value": [
+				"/",
+				"/b",
+				"/b/1",
+				"/a",
+				"/a/1"
+			]
 		}
 	]
 }

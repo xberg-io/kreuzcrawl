@@ -1,11 +1,10 @@
 {
 	"id": "crawl_redirect_in_traversal",
 	"description": "Links that redirect are followed during crawl traversal",
-	"tags": ["crawl", "redirect"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"crawl",
+		"redirect"
+	],
 	"input": {
 		"mock_responses": [
 			{

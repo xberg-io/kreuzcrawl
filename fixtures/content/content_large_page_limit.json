@@ -1,11 +1,10 @@
 {
 	"id": "content_large_page_limit",
 	"description": "Respects max body size limit and truncates or skips oversized pages",
-	"tags": ["content", "limits"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"content",
+		"limits"
+	],
 	"input": {
 		"mock_responses": [
 			{

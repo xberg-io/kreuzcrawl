@@ -1,11 +1,10 @@
 {
 	"id": "robots_comments_handling",
 	"description": "Correctly parses robots.txt with inline and line comments",
-	"tags": ["robots", "parsing"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"robots",
+		"parsing"
+	],
 	"input": {
 		"mock_responses": [
 			{

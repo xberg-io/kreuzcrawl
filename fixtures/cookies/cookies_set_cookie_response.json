@@ -1,11 +1,9 @@
 {
 	"id": "cookies_set_cookie_response",
 	"description": "Respects Set-Cookie header from server responses",
-	"tags": ["cookies"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"cookies"
+	],
 	"input": {
 		"mock_responses": [
 			{

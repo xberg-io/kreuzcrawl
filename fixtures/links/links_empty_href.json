@@ -1,11 +1,10 @@
 {
 	"id": "links_empty_href",
 	"description": "Handles empty href attributes without errors",
-	"tags": ["links", "edge-case"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"links",
+		"edge-case"
+	],
 	"input": {
 		"mock_responses": [
 			{

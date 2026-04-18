@@ -1,11 +1,9 @@
 {
 	"id": "crawl_depth_one",
 	"description": "Follows links one level deep from start page",
-	"tags": ["crawl"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"crawl"
+	],
 	"input": {
 		"mock_responses": [
 			{

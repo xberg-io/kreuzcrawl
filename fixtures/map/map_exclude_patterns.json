@@ -1,11 +1,10 @@
 {
 	"id": "map_exclude_patterns",
 	"description": "Excludes URLs matching patterns from URL map",
-	"tags": ["map", "filter"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"map",
+		"filter"
+	],
 	"input": {
 		"mock_responses": [
 			{
@@ -18,7 +17,10 @@
 		],
 		"config": {
 			"max_depth": 0,
-			"exclude_paths": ["/private/.*", "/api/.*"],
+			"exclude_paths": [
+				"/private/.*",
+				"/api/.*"
+			],
 			"respect_robots_txt": false
 		}
 	},

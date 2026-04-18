@@ -1,11 +1,10 @@
 {
 	"id": "filter_bm25_threshold_zero",
 	"description": "BM25 filter with zero threshold passes all pages",
-	"tags": ["filter", "bm25"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"filter",
+		"bm25"
+	],
 	"input": {
 		"mock_responses": [
 			{

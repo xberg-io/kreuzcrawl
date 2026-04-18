@@ -1,11 +1,10 @@
 {
 	"id": "browser_detect_react_shell",
 	"description": "Detects React SPA shell with empty #root div as needing JS rendering",
-	"tags": ["browser", "detection"],
-	"skip": {
-		"languages": ["wasm", "c", "go", "java", "csharp"],
-		"reason": "requires browser feature"
-	},
+	"tags": [
+		"browser",
+		"detection"
+	],
 	"input": {
 		"mock_responses": [
 			{

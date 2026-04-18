@@ -1,11 +1,9 @@
 {
 	"id": "robots_allow_all",
 	"description": "Permissive robots.txt allows all paths",
-	"tags": ["robots"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"robots"
+	],
 	"input": {
 		"mock_responses": [
 			{

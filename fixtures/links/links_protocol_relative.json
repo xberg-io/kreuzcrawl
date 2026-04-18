@@ -1,11 +1,10 @@
 {
 	"id": "links_protocol_relative",
 	"description": "Handles protocol-relative URLs (//example.com) correctly",
-	"tags": ["links", "edge-case"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"links",
+		"edge-case"
+	],
 	"input": {
 		"mock_responses": [
 			{

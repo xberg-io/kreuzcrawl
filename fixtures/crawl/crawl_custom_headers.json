@@ -1,11 +1,10 @@
 {
 	"id": "crawl_custom_headers",
 	"description": "Sends custom headers on all crawl requests",
-	"tags": ["crawl", "headers"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"crawl",
+		"headers"
+	],
 	"input": {
 		"mock_responses": [
 			{

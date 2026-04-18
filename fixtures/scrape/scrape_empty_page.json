@@ -1,11 +1,10 @@
 {
 	"id": "scrape_empty_page",
 	"description": "Handles an empty HTML document without errors",
-	"tags": ["scrape", "edge-case"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"scrape",
+		"edge-case"
+	],
 	"input": {
 		"mock_responses": [
 			{

@@ -63,7 +63,7 @@ RSpec.describe 'content' do
   end
 
   it 'content_remove_tags: Removes specified HTML elements by CSS selector before processing' do
-    engine_config = { 'remove_tags' => %w[nav aside footer], 'respect_robots_txt' => false }
+    engine_config = { 'remove_tags' => ['nav', 'aside', 'footer'], 'respect_robots_txt' => false }
     engine = Kreuzcrawl.create_engine(engine_config.to_json)
     url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/content_remove_tags"
     result = Kreuzcrawl.scrape(engine, url)

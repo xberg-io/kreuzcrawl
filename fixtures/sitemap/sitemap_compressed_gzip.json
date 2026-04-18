@@ -1,11 +1,10 @@
 {
 	"id": "sitemap_compressed_gzip",
 	"description": "Parses a gzip-compressed sitemap file",
-	"tags": ["sitemap", "compression"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server; Binary gzip body requires load_response_body_bytes helper; not yet supported by generator"
-	},
+	"tags": [
+		"sitemap",
+		"compression"
+	],
 	"input": {
 		"mock_responses": [
 			{

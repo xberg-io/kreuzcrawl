@@ -1,11 +1,10 @@
 {
 	"id": "markdown_crawl_all_pages",
 	"description": "All crawled pages have markdown field populated",
-	"tags": ["markdown", "crawl"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"markdown",
+		"crawl"
+	],
 	"input": {
 		"mock_responses": [
 			{

@@ -1,11 +1,10 @@
 {
 	"id": "robots_sitemap_directive",
 	"description": "Discovers sitemap URL from Sitemap directive in robots.txt",
-	"tags": ["robots", "sitemap"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"robots",
+		"sitemap"
+	],
 	"input": {
 		"mock_responses": [
 			{

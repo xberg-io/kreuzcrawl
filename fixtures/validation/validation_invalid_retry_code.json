@@ -4,13 +4,6 @@
 	"tags": [
 		"validation"
 	],
-	"skip": {
-		"languages": [
-			"wasm",
-			"c"
-		],
-		"reason": "requires mock HTTP server"
-	},
 	"input": {
 		"mock_responses": [
 			{

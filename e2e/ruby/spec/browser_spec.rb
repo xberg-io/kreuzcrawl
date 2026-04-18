@@ -11,6 +11,8 @@ RSpec.describe 'browser' do
     url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/browser_config_auto_no_feature"
     result = Kreuzcrawl.scrape(engine, url)
     expect(result.status_code).to eq(200)
+    # skipped: field 'browser.js_render_hint' not available on result type
+    # skipped: field 'browser.browser_used' not available on result type
   end
 
   it 'browser_config_never_mode: Browser mode \'never\' prevents browser fallback even for SPA shell content' do
@@ -19,6 +21,8 @@ RSpec.describe 'browser' do
     url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/browser_config_never_mode"
     result = Kreuzcrawl.scrape(engine, url)
     expect(result.status_code).to eq(200)
+    # skipped: field 'browser.js_render_hint' not available on result type
+    # skipped: field 'browser.browser_used' not available on result type
   end
 
   it 'browser_detect_minimal_page: Does NOT flag a short but real content page as needing JS rendering' do
@@ -26,6 +30,8 @@ RSpec.describe 'browser' do
     url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/browser_detect_minimal_page"
     result = Kreuzcrawl.scrape(engine, url)
     expect(result.status_code).to eq(200)
+    # skipped: field 'browser.js_render_hint' not available on result type
+    # skipped: field 'browser.browser_used' not available on result type
   end
 
   it 'browser_detect_next_empty: Detects Next.js page with __NEXT_DATA__ but no rendered content as needing JS rendering' do
@@ -33,6 +39,8 @@ RSpec.describe 'browser' do
     url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/browser_detect_next_empty"
     result = Kreuzcrawl.scrape(engine, url)
     expect(result.status_code).to eq(200)
+    # skipped: field 'browser.js_render_hint' not available on result type
+    # skipped: field 'browser.browser_used' not available on result type
   end
 
   it 'browser_detect_next_rendered: Does NOT flag Next.js page with full SSR content as needing JS rendering' do
@@ -40,6 +48,9 @@ RSpec.describe 'browser' do
     url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/browser_detect_next_rendered"
     result = Kreuzcrawl.scrape(engine, url)
     expect(result.status_code).to eq(200)
+    # skipped: field 'html_not_empty' not available on result type
+    # skipped: field 'browser.js_render_hint' not available on result type
+    # skipped: field 'browser.browser_used' not available on result type
   end
 
   it 'browser_detect_normal_page: Does NOT flag a normal server-rendered page as needing JS rendering' do
@@ -47,6 +58,8 @@ RSpec.describe 'browser' do
     url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/browser_detect_normal_page"
     result = Kreuzcrawl.scrape(engine, url)
     expect(result.status_code).to eq(200)
+    # skipped: field 'browser.js_render_hint' not available on result type
+    # skipped: field 'browser.browser_used' not available on result type
   end
 
   it 'browser_detect_nuxt_shell: Detects Nuxt SPA shell with empty #__nuxt div as needing JS rendering' do
@@ -54,6 +67,8 @@ RSpec.describe 'browser' do
     url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/browser_detect_nuxt_shell"
     result = Kreuzcrawl.scrape(engine, url)
     expect(result.status_code).to eq(200)
+    # skipped: field 'browser.js_render_hint' not available on result type
+    # skipped: field 'browser.browser_used' not available on result type
   end
 
   it 'browser_detect_react_shell: Detects React SPA shell with empty #root div as needing JS rendering' do
@@ -61,6 +76,9 @@ RSpec.describe 'browser' do
     url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/browser_detect_react_shell"
     result = Kreuzcrawl.scrape(engine, url)
     expect(result.status_code).to eq(200)
+    # skipped: field 'html_not_empty' not available on result type
+    # skipped: field 'browser.js_render_hint' not available on result type
+    # skipped: field 'browser.browser_used' not available on result type
   end
 
   it 'browser_detect_vue_shell: Detects Vue SPA shell with empty #app div as needing JS rendering' do
@@ -68,5 +86,32 @@ RSpec.describe 'browser' do
     url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/browser_detect_vue_shell"
     result = Kreuzcrawl.scrape(engine, url)
     expect(result.status_code).to eq(200)
+    # skipped: field 'browser.js_render_hint' not available on result type
+    # skipped: field 'browser.browser_used' not available on result type
+  end
+
+  it 'browser_fallback_spa_render: Browser auto re-fetches SPA shell when JS rendering is detected' do
+    engine_config = { 'browser' => { 'mode' => 'auto' } }
+    engine = Kreuzcrawl.create_engine(engine_config.to_json)
+    url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/browser_fallback_spa_render"
+    Kreuzcrawl.scrape(engine, url)
+    # skipped: field 'browser.js_render_hint' not available on result type
+    # skipped: field 'browser.browser_used' not available on result type
+  end
+
+  it 'browser_fallback_waf_blocked: Browser fallback triggers when WAF blocks the HTTP request (Cloudflare 403)' do
+    engine_config = { 'browser' => { 'mode' => 'auto' } }
+    engine = Kreuzcrawl.create_engine(engine_config.to_json)
+    url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/browser_fallback_waf_blocked"
+    Kreuzcrawl.scrape(engine, url)
+    # skipped: field 'browser.browser_used' not available on result type
+  end
+
+  it 'browser_mode_always: Browser mode \'always\' uses browser even for normal server-rendered pages' do
+    engine_config = { 'browser' => { 'mode' => 'always' } }
+    engine = Kreuzcrawl.create_engine(engine_config.to_json)
+    url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/browser_mode_always"
+    Kreuzcrawl.scrape(engine, url)
+    # skipped: field 'browser.browser_used' not available on result type
   end
 end

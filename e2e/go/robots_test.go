@@ -72,6 +72,46 @@ func Test_RobotsCommentsHandling(t *testing.T) {
 	}
 }
 
+func Test_RobotsCrawlDelay(t *testing.T) {
+	// Respects crawl-delay directive from robots.txt
+	var engineConfig pkg.CrawlConfig
+	if err := json.Unmarshal([]byte(`{"respect_robots_txt":true,"user_agent":"kreuzcrawl"}`), &engineConfig); err != nil {
+		t.Fatalf("config parse failed: %v", err)
+	}
+	engine, createErr := pkg.CreateEngine(&engineConfig)
+	if createErr != nil {
+		t.Fatalf("create handle failed: %v", createErr)
+	}
+	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/robots_crawl_delay"
+	result, err := pkg.Scrape(engine, url)
+	if err != nil {
+		t.Fatalf("call failed: %v", err)
+	}
+	if result.CrawlDelay != nil && *result.CrawlDelay != 2 {
+		t.Errorf("equals mismatch: got %v", result.CrawlDelay)
+	}
+}
+
+func Test_RobotsDisallowPath(t *testing.T) {
+	// Robots.txt disallows specific paths
+	var engineConfig pkg.CrawlConfig
+	if err := json.Unmarshal([]byte(`{"respect_robots_txt":true}`), &engineConfig); err != nil {
+		t.Fatalf("config parse failed: %v", err)
+	}
+	engine, createErr := pkg.CreateEngine(&engineConfig)
+	if createErr != nil {
+		t.Fatalf("create handle failed: %v", createErr)
+	}
+	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/robots_disallow_path"
+	result, err := pkg.Scrape(engine, url)
+	if err != nil {
+		t.Fatalf("call failed: %v", err)
+	}
+	if result.IsAllowed != false {
+		t.Errorf("equals mismatch: got %v", result.IsAllowed)
+	}
+}
+
 func Test_RobotsMetaNofollow(t *testing.T) {
 	// Detects nofollow meta robots tag and skips link extraction
 	var engineConfig pkg.CrawlConfig
@@ -152,6 +192,29 @@ func Test_RobotsMultipleUserAgents(t *testing.T) {
 	}
 }
 
+func Test_RobotsRequestRate(t *testing.T) {
+	// Parses request-rate directive from robots.txt
+	var engineConfig pkg.CrawlConfig
+	if err := json.Unmarshal([]byte(`{"respect_robots_txt":true,"user_agent":"kreuzcrawl"}`), &engineConfig); err != nil {
+		t.Fatalf("config parse failed: %v", err)
+	}
+	engine, createErr := pkg.CreateEngine(&engineConfig)
+	if createErr != nil {
+		t.Fatalf("create handle failed: %v", createErr)
+	}
+	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/robots_request_rate"
+	result, err := pkg.Scrape(engine, url)
+	if err != nil {
+		t.Fatalf("call failed: %v", err)
+	}
+	if result.CrawlDelay != nil && *result.CrawlDelay != 5 {
+		t.Errorf("equals mismatch: got %v", result.CrawlDelay)
+	}
+	if result.IsAllowed != true {
+		t.Errorf("equals mismatch: got %v", result.IsAllowed)
+	}
+}
+
 func Test_RobotsSitemapDirective(t *testing.T) {
 	// Discovers sitemap URL from Sitemap directive in robots.txt
 	var engineConfig pkg.CrawlConfig
@@ -168,6 +231,46 @@ func Test_RobotsSitemapDirective(t *testing.T) {
 		t.Fatalf("call failed: %v", err)
 	}
 	if result.IsAllowed != true {
+		t.Errorf("equals mismatch: got %v", result.IsAllowed)
+	}
+}
+
+func Test_RobotsUserAgentSpecific(t *testing.T) {
+	// Matches user-agent specific rules in robots.txt
+	var engineConfig pkg.CrawlConfig
+	if err := json.Unmarshal([]byte(`{"respect_robots_txt":true,"user_agent":"KreuzcrawlBot"}`), &engineConfig); err != nil {
+		t.Fatalf("config parse failed: %v", err)
+	}
+	engine, createErr := pkg.CreateEngine(&engineConfig)
+	if createErr != nil {
+		t.Fatalf("create handle failed: %v", createErr)
+	}
+	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/robots_user_agent_specific"
+	result, err := pkg.Scrape(engine, url)
+	if err != nil {
+		t.Fatalf("call failed: %v", err)
+	}
+	if result.IsAllowed != false {
+		t.Errorf("equals mismatch: got %v", result.IsAllowed)
+	}
+}
+
+func Test_RobotsWildcardPaths(t *testing.T) {
+	// Handles wildcard Disallow patterns in robots.txt
+	var engineConfig pkg.CrawlConfig
+	if err := json.Unmarshal([]byte(`{"respect_robots_txt":true}`), &engineConfig); err != nil {
+		t.Fatalf("config parse failed: %v", err)
+	}
+	engine, createErr := pkg.CreateEngine(&engineConfig)
+	if createErr != nil {
+		t.Fatalf("create handle failed: %v", createErr)
+	}
+	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/robots_wildcard_paths"
+	result, err := pkg.Scrape(engine, url)
+	if err != nil {
+		t.Fatalf("call failed: %v", err)
+	}
+	if result.IsAllowed != false {
 		t.Errorf("equals mismatch: got %v", result.IsAllowed)
 	}
 }

@@ -1,11 +1,10 @@
 {
 	"id": "browser_detect_minimal_page",
 	"description": "Does NOT flag a short but real content page as needing JS rendering",
-	"tags": ["browser", "detection"],
-	"skip": {
-		"languages": ["wasm", "c", "go", "java", "csharp"],
-		"reason": "requires browser feature"
-	},
+	"tags": [
+		"browser",
+		"detection"
+	],
 	"input": {
 		"mock_responses": [
 			{

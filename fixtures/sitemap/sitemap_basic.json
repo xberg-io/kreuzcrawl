@@ -1,11 +1,9 @@
 {
 	"id": "sitemap_basic",
 	"description": "Parses a standard urlset sitemap",
-	"tags": ["sitemap"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"sitemap"
+	],
 	"input": {
 		"mock_responses": [
 			{

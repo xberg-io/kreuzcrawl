@@ -1,11 +1,10 @@
 {
 	"id": "stream_with_error_event",
 	"description": "Stream emits page and complete events even when some pages fail",
-	"tags": ["stream", "error"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"stream",
+		"error"
+	],
 	"input": {
 		"mock_responses": [
 			{

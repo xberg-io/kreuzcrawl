@@ -1,11 +1,9 @@
 {
 	"id": "robots_missing_404",
 	"description": "Missing robots.txt (404) allows all crawling",
-	"tags": ["robots"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"robots"
+	],
 	"input": {
 		"mock_responses": [
 			{

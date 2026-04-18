@@ -43,6 +43,26 @@ class RobotsTest {
     }
 
     @Test
+    void testRobotsCrawlDelay() throws Exception {
+        // Respects crawl-delay directive from robots.txt
+        var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":true,\"user_agent\":\"kreuzcrawl\"}", CrawlConfig.class);
+        var engine = Kreuzcrawl.createEngine(engineConfig);
+        String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/robots_crawl_delay";
+        var result = Kreuzcrawl.scrape(engine, url);
+        assertEquals(2, result.crawlDelay().orElse(""));
+    }
+
+    @Test
+    void testRobotsDisallowPath() throws Exception {
+        // Robots.txt disallows specific paths
+        var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":true}", CrawlConfig.class);
+        var engine = Kreuzcrawl.createEngine(engineConfig);
+        String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/robots_disallow_path";
+        var result = Kreuzcrawl.scrape(engine, url);
+        assertEquals(false, result.isAllowed());
+    }
+
+    @Test
     void testRobotsMetaNofollow() throws Exception {
         // Detects nofollow meta robots tag and skips link extraction
         var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":true}", CrawlConfig.class);
@@ -83,6 +103,17 @@ class RobotsTest {
     }
 
     @Test
+    void testRobotsRequestRate() throws Exception {
+        // Parses request-rate directive from robots.txt
+        var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":true,\"user_agent\":\"kreuzcrawl\"}", CrawlConfig.class);
+        var engine = Kreuzcrawl.createEngine(engineConfig);
+        String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/robots_request_rate";
+        var result = Kreuzcrawl.scrape(engine, url);
+        assertEquals(5, result.crawlDelay().orElse(""));
+        assertEquals(true, result.isAllowed());
+    }
+
+    @Test
     void testRobotsSitemapDirective() throws Exception {
         // Discovers sitemap URL from Sitemap directive in robots.txt
         var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":true}", CrawlConfig.class);
@@ -90,6 +121,26 @@ class RobotsTest {
         String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/robots_sitemap_directive";
         var result = Kreuzcrawl.scrape(engine, url);
         assertEquals(true, result.isAllowed());
+    }
+
+    @Test
+    void testRobotsUserAgentSpecific() throws Exception {
+        // Matches user-agent specific rules in robots.txt
+        var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":true,\"user_agent\":\"KreuzcrawlBot\"}", CrawlConfig.class);
+        var engine = Kreuzcrawl.createEngine(engineConfig);
+        String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/robots_user_agent_specific";
+        var result = Kreuzcrawl.scrape(engine, url);
+        assertEquals(false, result.isAllowed());
+    }
+
+    @Test
+    void testRobotsWildcardPaths() throws Exception {
+        // Handles wildcard Disallow patterns in robots.txt
+        var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":true}", CrawlConfig.class);
+        var engine = Kreuzcrawl.createEngine(engineConfig);
+        String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/robots_wildcard_paths";
+        var result = Kreuzcrawl.scrape(engine, url);
+        assertEquals(false, result.isAllowed());
     }
 
     @Test

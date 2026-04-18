@@ -1,11 +1,11 @@
 {
 	"id": "map_large_sitemap",
 	"description": "Handles large sitemap with 100+ URLs",
-	"tags": ["map", "sitemap", "large"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"map",
+		"sitemap",
+		"large"
+	],
 	"input": {
 		"mock_responses": [
 			{

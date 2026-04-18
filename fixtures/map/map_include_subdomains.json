@@ -1,11 +1,10 @@
 {
 	"id": "map_include_subdomains",
 	"description": "Includes subdomain URLs in URL map discovery",
-	"tags": ["map", "subdomain"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"map",
+		"subdomain"
+	],
 	"input": {
 		"mock_responses": [
 			{

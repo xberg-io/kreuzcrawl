@@ -1,11 +1,11 @@
 {
 	"id": "scrape_json_ld",
 	"description": "Extracts JSON-LD structured data from a page",
-	"tags": ["scrape", "metadata", "json-ld"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"scrape",
+		"metadata",
+		"json-ld"
+	],
 	"input": {
 		"mock_responses": [
 			{

@@ -1,11 +1,10 @@
 {
 	"id": "redirect_loop",
 	"description": "Detects redirect loop (A -> B -> A) and returns error",
-	"tags": ["redirect", "error"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"redirect",
+		"error"
+	],
 	"input": {
 		"mock_responses": [
 			{

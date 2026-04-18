@@ -1,11 +1,10 @@
 {
 	"id": "engine_stream_basic",
 	"description": "CrawlEngine with defaults streams events like the free function",
-	"tags": ["engine", "stream"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"engine",
+		"stream"
+	],
 	"input": {
 		"mock_responses": [
 			{

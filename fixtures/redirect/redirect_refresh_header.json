@@ -1,11 +1,9 @@
 {
 	"id": "redirect_refresh_header",
 	"description": "Handles HTTP Refresh header redirect",
-	"tags": ["redirect"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"redirect"
+	],
 	"input": {
 		"mock_responses": [
 			{

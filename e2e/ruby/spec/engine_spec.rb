@@ -5,6 +5,30 @@ require 'kreuzcrawl'
 require 'json'
 
 RSpec.describe 'engine' do
+  it 'engine_batch_basic: CrawlEngine with defaults batch scrapes like the free function' do
+    engine = Kreuzcrawl.create_engine(nil)
+    url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/engine_batch_basic"
+    Kreuzcrawl.scrape(engine, url)
+    # skipped: field 'batch.completed_count' not available on result type
+    # skipped: field 'batch.total_count' not available on result type
+  end
+
+  it 'engine_crawl_basic: CrawlEngine with defaults crawls multiple pages like the free function' do
+    engine_config = { 'max_depth' => 1 }
+    engine = Kreuzcrawl.create_engine(engine_config.to_json)
+    url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/engine_crawl_basic"
+    Kreuzcrawl.scrape(engine, url)
+    # skipped: field 'crawl.pages_crawled' not available on result type
+    # skipped: field 'crawl.min_pages' not available on result type
+  end
+
+  it 'engine_map_basic: CrawlEngine with defaults discovers URLs like the free function' do
+    engine = Kreuzcrawl.create_engine(nil)
+    url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/engine_map_basic"
+    Kreuzcrawl.scrape(engine, url)
+    # skipped: field 'map.min_urls' not available on result type
+  end
+
   it 'engine_scrape_basic: CrawlEngine with defaults scrapes a page identically to the free function' do
     engine = Kreuzcrawl.create_engine(nil)
     url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/engine_scrape_basic"
@@ -15,5 +39,15 @@ RSpec.describe 'engine' do
     expect(result.metadata.description.to_s).to include('Testing the engine')
     expect(result.links.length).to be >= 1
     expect(result.metadata.headings.length).to be >= 1
+  end
+
+  it 'engine_stream_basic: CrawlEngine with defaults streams events like the free function' do
+    engine_config = { 'max_depth' => 1 }
+    engine = Kreuzcrawl.create_engine(engine_config.to_json)
+    url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/engine_stream_basic"
+    Kreuzcrawl.scrape(engine, url)
+    # skipped: field 'stream.has_page_event' not available on result type
+    # skipped: field 'stream.has_complete_event' not available on result type
+    # skipped: field 'stream.event_count_min' not available on result type
   end
 end

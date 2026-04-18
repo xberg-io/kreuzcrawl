@@ -5,6 +5,15 @@ require 'kreuzcrawl'
 require 'json'
 
 RSpec.describe 'middleware' do
+  it 'middleware_engine_crawl_with_defaults: Engine crawl with default middleware chain produces correct multi-page results' do
+    engine_config = { 'max_depth' => 1 }
+    engine = Kreuzcrawl.create_engine(engine_config.to_json)
+    url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/middleware_engine_crawl_with_defaults"
+    Kreuzcrawl.scrape(engine, url)
+    # skipped: field 'crawl.pages_crawled' not available on result type
+    # skipped: field 'crawl.min_pages' not available on result type
+  end
+
   it 'middleware_noop_no_effect: Default middleware chain does not affect normal scraping' do
     engine = Kreuzcrawl.create_engine(nil)
     url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/middleware_noop_no_effect"

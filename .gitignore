@@ -71,8 +71,6 @@ packages/php/tests.xml
 *.versionsBackup
 TestResults/
 
-# Generated test apps
-test_apps/
 
 # Elixir
 packages/elixir/_build/

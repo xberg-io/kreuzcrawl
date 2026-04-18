@@ -1,11 +1,9 @@
 {
 	"id": "error_502_bad_gateway",
 	"description": "Handles 502 Bad Gateway response correctly",
-	"tags": ["error"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"error"
+	],
 	"input": {
 		"mock_responses": [
 			{

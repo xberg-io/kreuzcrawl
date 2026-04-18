@@ -2,11 +2,10 @@
 	"id": "content_pdf_link_skip",
 	"description": "Encounters PDF link and skips or marks as document type",
 	"category": "crawl",
-	"tags": ["content", "pdf"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"content",
+		"pdf"
+	],
 	"input": {
 		"mock_responses": [
 			{

@@ -1,11 +1,10 @@
 {
 	"id": "content_main_only",
 	"description": "Extracts only main content area, excluding nav, sidebar, footer",
-	"tags": ["content", "extraction"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"content",
+		"extraction"
+	],
 	"input": {
 		"mock_responses": [
 			{

@@ -1,11 +1,10 @@
 {
 	"id": "robots_user_agent_specific",
 	"description": "Matches user-agent specific rules in robots.txt",
-	"tags": ["robots", "user-agent"],
-	"skip": {
-		"languages": ["rust", "python", "node", "go", "java", "csharp", "ruby", "php", "elixir"],
-		"reason": "mock server namespaces routes per fixture; robots.txt must be at server root"
-	},
+	"tags": [
+		"robots",
+		"user-agent"
+	],
 	"input": {
 		"mock_responses": [
 			{

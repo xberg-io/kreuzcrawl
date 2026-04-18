@@ -1,11 +1,10 @@
 {
 	"id": "content_charset_iso8859",
 	"description": "Handles ISO-8859-1 encoded page correctly",
-	"tags": ["content", "charset"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"content",
+		"charset"
+	],
 	"input": {
 		"mock_responses": [
 			{

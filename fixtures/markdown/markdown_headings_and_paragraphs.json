@@ -1,11 +1,10 @@
 {
 	"id": "markdown_headings_and_paragraphs",
 	"description": "Markdown conversion preserves heading hierarchy and paragraph text",
-	"tags": ["markdown", "content"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"markdown",
+		"content"
+	],
 	"input": {
 		"mock_responses": [
 			{

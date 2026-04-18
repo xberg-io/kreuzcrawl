@@ -1,11 +1,9 @@
 {
 	"id": "rate_limit_basic_delay",
 	"description": "Rate limiter adds delay between requests to the same domain",
-	"tags": ["rate_limit"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"rate_limit"
+	],
 	"input": {
 		"mock_responses": [
 			{

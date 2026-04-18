@@ -1,11 +1,10 @@
 {
 	"id": "redirect_to_404",
 	"description": "Redirect target returns 404 Not Found",
-	"tags": ["redirect", "error"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"redirect",
+		"error"
+	],
 	"input": {
 		"mock_responses": [
 			{

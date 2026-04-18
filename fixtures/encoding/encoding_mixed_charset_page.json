@@ -1,11 +1,10 @@
 {
 	"id": "encoding_mixed_charset_page",
 	"description": "Handles charset mismatch between HTTP header and HTML meta tag",
-	"tags": ["encoding", "charset"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"encoding",
+		"charset"
+	],
 	"input": {
 		"mock_responses": [
 			{

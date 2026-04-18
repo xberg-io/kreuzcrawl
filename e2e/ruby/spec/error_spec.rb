@@ -47,6 +47,28 @@ RSpec.describe 'error' do
     expect { Kreuzcrawl.scrape(engine, url) }.to raise_error
   end
 
+  it 'error_connection_refused: Handles connection refused error gracefully' do
+    engine_config = { 'request_timeout' => 5000, 'respect_robots_txt' => false }
+    engine = Kreuzcrawl.create_engine(engine_config.to_json)
+    url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/error_connection_refused"
+    expect { Kreuzcrawl.scrape(engine, url) }.to raise_error
+  end
+
+  it 'error_dns_resolution: Handles DNS resolution failure gracefully' do
+    engine_config = { 'request_timeout' => 5000, 'respect_robots_txt' => false }
+    engine = Kreuzcrawl.create_engine(engine_config.to_json)
+    url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/error_dns_resolution"
+    expect { Kreuzcrawl.scrape(engine, url) }.to raise_error
+  end
+
+  it 'error_empty_response: Handles 200 with completely empty body gracefully' do
+    engine = Kreuzcrawl.create_engine(nil)
+    url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/error_empty_response"
+    Kreuzcrawl.scrape(engine, url)
+    # skipped: field 'html_not_empty' not available on result type
+    # skipped: field 'error.is_error' not available on result type
+  end
+
   it 'error_invalid_proxy: Proxy pointing to unreachable address causes connection error during scrape' do
     engine_config = { 'proxy' => { 'url' => 'http://127.0.0.1:1' }, 'request_timeout' => 2000 }
     engine = Kreuzcrawl.create_engine(engine_config.to_json)
@@ -78,6 +100,13 @@ RSpec.describe 'error' do
     engine_config = { 'respect_robots_txt' => false, 'retry_codes' => [429], 'retry_count' => 3 }
     engine = Kreuzcrawl.create_engine(engine_config.to_json)
     url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/error_retry_backoff"
+    expect { Kreuzcrawl.scrape(engine, url) }.to raise_error
+  end
+
+  it 'error_ssl_invalid_cert: Handles SSL certificate validation error' do
+    engine_config = { 'request_timeout' => 5000, 'respect_robots_txt' => false }
+    engine = Kreuzcrawl.create_engine(engine_config.to_json)
+    url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/error_ssl_invalid_cert"
     expect { Kreuzcrawl.scrape(engine, url) }.to raise_error
   end
 

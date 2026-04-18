@@ -1,11 +1,9 @@
 {
 	"id": "middleware_noop_no_effect",
 	"description": "Default middleware chain does not affect normal scraping",
-	"tags": ["middleware"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"middleware"
+	],
 	"input": {
 		"mock_responses": [
 			{

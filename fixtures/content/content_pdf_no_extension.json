@@ -1,11 +1,10 @@
 {
 	"id": "content_pdf_no_extension",
 	"description": "Detects PDF content by Content-Type header when URL has no .pdf extension",
-	"tags": ["content", "pdf"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"content",
+		"pdf"
+	],
 	"input": {
 		"mock_responses": [
 			{

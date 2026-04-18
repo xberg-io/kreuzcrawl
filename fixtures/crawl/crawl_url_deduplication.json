@@ -1,11 +1,10 @@
 {
 	"id": "crawl_url_deduplication",
 	"description": "Deduplicates URLs that differ only by fragment or query params",
-	"tags": ["crawl", "dedup"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"crawl",
+		"dedup"
+	],
 	"input": {
 		"mock_responses": [
 			{

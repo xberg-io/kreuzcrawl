@@ -1,11 +1,10 @@
 {
 	"id": "strategy_bfs_default_order",
 	"description": "BFS strategy visits pages in breadth-first order",
-	"tags": ["strategy", "bfs"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"strategy",
+		"bfs"
+	],
 	"input": {
 		"mock_responses": [
 			{
@@ -59,7 +58,13 @@
 		{
 			"type": "equals",
 			"field": "strategy.crawl_order",
-			"value": ["/", "/a", "/b", "/a/1", "/b/1"]
+			"value": [
+				"/",
+				"/a",
+				"/b",
+				"/a/1",
+				"/b/1"
+			]
 		}
 	]
 }

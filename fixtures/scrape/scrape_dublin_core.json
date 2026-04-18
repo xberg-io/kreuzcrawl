@@ -1,11 +1,11 @@
 {
 	"id": "scrape_dublin_core",
 	"description": "Extracts Dublin Core metadata from a page",
-	"tags": ["scrape", "metadata", "dublin-core"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"scrape",
+		"metadata",
+		"dublin-core"
+	],
 	"input": {
 		"mock_responses": [
 			{

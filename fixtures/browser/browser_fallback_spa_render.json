@@ -1,11 +1,11 @@
 {
 	"id": "browser_fallback_spa_render",
 	"description": "Browser auto re-fetches SPA shell when JS rendering is detected",
-	"tags": ["browser", "fallback", "spa"],
-	"skip": {
-		"languages": ["wasm", "c", "go", "java", "csharp"],
-		"reason": "requires browser feature; requires browser; Requires a running Chrome/Chromium instance to render the SPA"
-	},
+	"tags": [
+		"browser",
+		"fallback",
+		"spa"
+	],
 	"input": {
 		"mock_responses": [
 			{

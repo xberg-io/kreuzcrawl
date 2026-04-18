@@ -1,11 +1,10 @@
 {
 	"id": "scrape_malformed_html",
 	"description": "Gracefully handles broken HTML without crashing",
-	"tags": ["scrape", "edge-case"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"scrape",
+		"edge-case"
+	],
 	"input": {
 		"mock_responses": [
 			{

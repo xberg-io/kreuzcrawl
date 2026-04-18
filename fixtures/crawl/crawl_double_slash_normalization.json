@@ -1,11 +1,10 @@
 {
 	"id": "crawl_double_slash_normalization",
 	"description": "Normalizes double slashes in URL paths (//page to /page)",
-	"tags": ["crawl", "normalization"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"crawl",
+		"normalization"
+	],
 	"input": {
 		"mock_responses": [
 			{

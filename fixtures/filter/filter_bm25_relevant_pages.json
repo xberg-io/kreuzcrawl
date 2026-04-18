@@ -1,11 +1,10 @@
 {
 	"id": "filter_bm25_relevant_pages",
 	"description": "BM25 filter keeps only pages relevant to the query",
-	"tags": ["filter", "bm25"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"filter",
+		"bm25"
+	],
 	"input": {
 		"mock_responses": [
 			{

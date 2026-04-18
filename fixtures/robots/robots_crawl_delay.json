@@ -1,11 +1,10 @@
 {
 	"id": "robots_crawl_delay",
 	"description": "Respects crawl-delay directive from robots.txt",
-	"tags": ["robots", "rate-limit"],
-	"skip": {
-		"languages": ["rust", "python", "node", "go", "java", "csharp", "ruby", "php", "elixir"],
-		"reason": "mock server namespaces routes per fixture; robots.txt must be at server root"
-	},
+	"tags": [
+		"robots",
+		"rate-limit"
+	],
 	"input": {
 		"mock_responses": [
 			{

@@ -1,11 +1,9 @@
 {
 	"id": "markdown_links_converted",
 	"description": "HTML links are converted to markdown link syntax",
-	"tags": ["markdown"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"markdown"
+	],
 	"input": {
 		"mock_responses": [
 			{

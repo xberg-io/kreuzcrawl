@@ -29,6 +29,22 @@ RSpec.describe 'robots' do
     expect(result.is_allowed).to be(true)
   end
 
+  it 'robots_crawl_delay: Respects crawl-delay directive from robots.txt' do
+    engine_config = { 'respect_robots_txt' => true, 'user_agent' => 'kreuzcrawl' }
+    engine = Kreuzcrawl.create_engine(engine_config.to_json)
+    url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/robots_crawl_delay"
+    result = Kreuzcrawl.scrape(engine, url)
+    expect(result.crawl_delay).to eq(2)
+  end
+
+  it 'robots_disallow_path: Robots.txt disallows specific paths' do
+    engine_config = { 'respect_robots_txt' => true }
+    engine = Kreuzcrawl.create_engine(engine_config.to_json)
+    url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/robots_disallow_path"
+    result = Kreuzcrawl.scrape(engine, url)
+    expect(result.is_allowed).to be(false)
+  end
+
   it 'robots_meta_nofollow: Detects nofollow meta robots tag and skips link extraction' do
     engine_config = { 'respect_robots_txt' => true }
     engine = Kreuzcrawl.create_engine(engine_config.to_json)
@@ -61,12 +77,37 @@ RSpec.describe 'robots' do
     expect(result.is_allowed).to be(true)
   end
 
+  it 'robots_request_rate: Parses request-rate directive from robots.txt' do
+    engine_config = { 'respect_robots_txt' => true, 'user_agent' => 'kreuzcrawl' }
+    engine = Kreuzcrawl.create_engine(engine_config.to_json)
+    url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/robots_request_rate"
+    result = Kreuzcrawl.scrape(engine, url)
+    expect(result.crawl_delay).to eq(5)
+    expect(result.is_allowed).to be(true)
+  end
+
   it 'robots_sitemap_directive: Discovers sitemap URL from Sitemap directive in robots.txt' do
     engine_config = { 'respect_robots_txt' => true }
     engine = Kreuzcrawl.create_engine(engine_config.to_json)
     url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/robots_sitemap_directive"
     result = Kreuzcrawl.scrape(engine, url)
     expect(result.is_allowed).to be(true)
+  end
+
+  it 'robots_user_agent_specific: Matches user-agent specific rules in robots.txt' do
+    engine_config = { 'respect_robots_txt' => true, 'user_agent' => 'KreuzcrawlBot' }
+    engine = Kreuzcrawl.create_engine(engine_config.to_json)
+    url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/robots_user_agent_specific"
+    result = Kreuzcrawl.scrape(engine, url)
+    expect(result.is_allowed).to be(false)
+  end
+
+  it 'robots_wildcard_paths: Handles wildcard Disallow patterns in robots.txt' do
+    engine_config = { 'respect_robots_txt' => true }
+    engine = Kreuzcrawl.create_engine(engine_config.to_json)
+    url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/robots_wildcard_paths"
+    result = Kreuzcrawl.scrape(engine, url)
+    expect(result.is_allowed).to be(false)
   end
 
   it 'robots_x_robots_tag: Respects X-Robots-Tag HTTP header directives' do

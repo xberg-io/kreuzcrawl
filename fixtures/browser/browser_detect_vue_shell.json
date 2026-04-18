@@ -1,11 +1,10 @@
 {
 	"id": "browser_detect_vue_shell",
 	"description": "Detects Vue SPA shell with empty #app div as needing JS rendering",
-	"tags": ["browser", "detection"],
-	"skip": {
-		"languages": ["wasm", "c", "go", "java", "csharp"],
-		"reason": "requires browser feature"
-	},
+	"tags": [
+		"browser",
+		"detection"
+	],
 	"input": {
 		"mock_responses": [
 			{

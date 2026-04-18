@@ -1,11 +1,9 @@
 {
 	"id": "validation_max_redirects_too_high",
 	"description": "max_redirects > 100 is rejected as invalid config",
-	"tags": ["validation"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"validation"
+	],
 	"input": {
 		"mock_responses": [
 			{

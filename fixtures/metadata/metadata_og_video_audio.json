@@ -1,11 +1,9 @@
 {
 	"id": "metadata_og_video_audio",
 	"description": "Extracts og:video, og:audio, and og:locale:alternate metadata",
-	"tags": ["metadata"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"metadata"
+	],
 	"input": {
 		"mock_responses": [
 			{

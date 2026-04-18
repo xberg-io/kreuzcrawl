@@ -5,10 +5,6 @@
 		"error",
 		"ssl"
 	],
-	"skip": {
-		"languages": ["rust", "python", "node", "go", "java", "csharp", "ruby", "php", "elixir"],
-		"reason": "requires real network failure, cannot be tested via mock server"
-	},
 	"input": {
 		"mock_responses": [
 			{

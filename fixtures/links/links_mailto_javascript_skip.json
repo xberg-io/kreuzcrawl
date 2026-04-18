@@ -1,11 +1,10 @@
 {
 	"id": "links_mailto_javascript_skip",
 	"description": "Skips mailto:, javascript:, and tel: scheme links",
-	"tags": ["links", "filtering"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"links",
+		"filtering"
+	],
 	"input": {
 		"mock_responses": [
 			{

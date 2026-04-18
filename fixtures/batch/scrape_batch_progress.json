@@ -1,11 +1,9 @@
 {
 	"id": "scrape_batch_progress",
 	"description": "Batch scrape results include specific URL",
-	"tags": ["batch"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"batch"
+	],
 	"input": {
 		"mock_responses": [
 			{
@@ -33,7 +31,10 @@
 				"body_inline": "<html><body><h1>Other Page</h1></body></html>"
 			}
 		],
-		"batch_urls": ["/target", "/other"],
+		"batch_urls": [
+			"/target",
+			"/other"
+		],
 		"config": {}
 	},
 	"assertions": [

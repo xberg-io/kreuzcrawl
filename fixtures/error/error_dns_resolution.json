@@ -1,11 +1,10 @@
 {
 	"id": "error_dns_resolution",
 	"description": "Handles DNS resolution failure gracefully",
-	"tags": ["error", "network"],
-	"skip": {
-		"languages": ["rust", "python", "node", "go", "java", "csharp", "ruby", "php", "elixir"],
-		"reason": "requires real network failure, cannot be tested via mock server"
-	},
+	"tags": [
+		"error",
+		"network"
+	],
 	"input": {
 		"mock_responses": [
 			{

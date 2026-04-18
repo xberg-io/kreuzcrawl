@@ -126,7 +126,7 @@ keywords = ["crawl", "scrape", "web", "spider"]
 [e2e]
 fixtures = "fixtures"
 output = "e2e"
-languages = ["rust", "python", "node", "go", "java", "csharp", "php", "ruby", "elixir"]
+languages = ["rust", "python", "node", "go", "java", "csharp", "php", "ruby", "elixir", "wasm", "brew"]
 fields_optional = [
     "markdown",
     "metadata.title",
@@ -279,6 +279,10 @@ crate_name = "kreuzcrawl"
 [e2e.call.overrides.elixir]
 handle_struct_type = "CrawlConfig"
 handle_atom_list_fields = ["asset_types"]
+
+[e2e.call.overrides.brew]
+function = "scrape"
+cli_args = ["--format", "json"]
 
 [e2e.fields]
 # Existing
@@ -539,7 +543,7 @@ basic_usage = "getting-started/basic_usage.md"
 # ---------------------------------------------------------------------------
 [e2e.registry]
 output = "test_apps"
-categories = ["smoke"]
+categories = ["scrape", "markdown", "metadata"]
 
 [e2e.registry.packages.python]
 name = "kreuzcrawl"
@@ -580,6 +584,10 @@ version = "~> 0.1.0-rc.2"
 [e2e.registry.packages.wasm]
 name = "@kreuzberg/kreuzcrawl-wasm"
 version = "^0.1.0-rc.2"
+
+[e2e.registry.packages.brew]
+name = "kreuzcrawl"
+version = "0.1.0-rc.2"
 
 [e2e.registry.packages.c]
 name = "kreuzcrawl-ffi"

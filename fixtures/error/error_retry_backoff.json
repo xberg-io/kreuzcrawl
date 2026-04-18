@@ -1,11 +1,11 @@
 {
 	"id": "error_retry_backoff",
 	"description": "Implements exponential backoff when retrying failed requests",
-	"tags": ["error", "retry", "backoff"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"error",
+		"retry",
+		"backoff"
+	],
 	"input": {
 		"mock_responses": [
 			{
@@ -20,7 +20,9 @@
 		"config": {
 			"respect_robots_txt": false,
 			"retry_count": 3,
-			"retry_codes": [429]
+			"retry_codes": [
+				429
+			]
 		}
 	},
 	"assertions": [

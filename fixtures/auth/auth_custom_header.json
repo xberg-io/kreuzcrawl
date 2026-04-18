@@ -1,11 +1,10 @@
 {
 	"id": "auth_custom_header",
 	"description": "Sends authentication via custom header (X-API-Key)",
-	"tags": ["auth", "api-key"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"auth",
+		"api-key"
+	],
 	"input": {
 		"mock_responses": [
 			{

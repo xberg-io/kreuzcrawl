@@ -1,11 +1,9 @@
 {
 	"id": "redirect_302_found",
 	"description": "Follows 302 Found redirect correctly",
-	"tags": ["redirect"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"redirect"
+	],
 	"input": {
 		"mock_responses": [
 			{

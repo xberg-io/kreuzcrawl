@@ -1,11 +1,10 @@
 {
 	"id": "encoding_double_encoded",
 	"description": "Handles double-encoded URL characters (%25C3%25B6)",
-	"tags": ["encoding", "edge-case"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"encoding",
+		"edge-case"
+	],
 	"input": {
 		"mock_responses": [
 			{

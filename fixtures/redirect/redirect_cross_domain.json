@@ -1,11 +1,9 @@
 {
 	"id": "redirect_cross_domain",
 	"description": "Reports cross-domain redirect target without following to external domain",
-	"tags": ["redirect"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"redirect"
+	],
 	"input": {
 		"mock_responses": [
 			{

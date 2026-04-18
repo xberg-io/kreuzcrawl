@@ -1,11 +1,9 @@
 {
 	"id": "validation_timeout_zero",
 	"description": "Zero request timeout is rejected as invalid config",
-	"tags": ["validation"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"validation"
+	],
 	"input": {
 		"mock_responses": [
 			{

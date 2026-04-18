@@ -1,11 +1,9 @@
 {
 	"id": "crawl_single_page_no_links",
 	"description": "Crawling a page with no links returns only the seed page",
-	"tags": ["crawl"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"crawl"
+	],
 	"input": {
 		"mock_responses": [
 			{

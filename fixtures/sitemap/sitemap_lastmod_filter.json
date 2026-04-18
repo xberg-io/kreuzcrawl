@@ -1,11 +1,10 @@
 {
 	"id": "sitemap_lastmod_filter",
 	"description": "Filters sitemap URLs by lastmod date",
-	"tags": ["sitemap", "lastmod"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"sitemap",
+		"lastmod"
+	],
 	"input": {
 		"mock_responses": [
 			{

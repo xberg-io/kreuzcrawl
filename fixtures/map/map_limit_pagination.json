@@ -1,11 +1,10 @@
 {
 	"id": "map_limit_pagination",
 	"description": "Limits map result count to specified maximum",
-	"tags": ["map", "pagination"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"map",
+		"pagination"
+	],
 	"input": {
 		"mock_responses": [
 			{

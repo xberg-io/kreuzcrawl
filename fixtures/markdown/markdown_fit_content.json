@@ -1,11 +1,10 @@
 {
 	"id": "markdown_fit_content",
 	"description": "Fit markdown removes navigation and boilerplate content",
-	"tags": ["markdown", "fit"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"markdown",
+		"fit"
+	],
 	"input": {
 		"mock_responses": [
 			{

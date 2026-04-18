@@ -1,11 +1,9 @@
 {
 	"id": "cache_basic",
 	"description": "Crawling with disk cache enabled succeeds without errors",
-	"tags": ["cache"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"cache"
+	],
 	"input": {
 		"mock_responses": [
 			{

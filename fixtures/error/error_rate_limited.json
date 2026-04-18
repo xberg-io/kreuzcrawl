@@ -1,11 +1,10 @@
 {
 	"id": "error_rate_limited",
 	"description": "Handles 429 rate limiting with Retry-After",
-	"tags": ["error", "rate-limit"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"error",
+		"rate-limit"
+	],
 	"input": {
 		"mock_responses": [
 			{

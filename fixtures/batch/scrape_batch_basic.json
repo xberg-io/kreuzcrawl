@@ -1,11 +1,9 @@
 {
 	"id": "scrape_batch_basic",
 	"description": "Batch scrape of multiple URLs all succeeding",
-	"tags": ["batch"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"batch"
+	],
 	"input": {
 		"mock_responses": [
 			{
@@ -41,7 +39,11 @@
 				"body_inline": "<html><body><h1>Page 3</h1></body></html>"
 			}
 		],
-		"batch_urls": ["/page1", "/page2", "/page3"],
+		"batch_urls": [
+			"/page1",
+			"/page2",
+			"/page3"
+		],
 		"config": {}
 	},
 	"assertions": [

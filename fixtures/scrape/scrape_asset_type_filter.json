@@ -1,11 +1,10 @@
 {
 	"id": "scrape_asset_type_filter",
 	"description": "Only downloads image assets when asset_types filter is set",
-	"tags": ["scrape", "assets"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"scrape",
+		"assets"
+	],
 	"input": {
 		"mock_responses": [
 			{
@@ -43,7 +42,9 @@
 		],
 		"config": {
 			"download_assets": true,
-			"asset_types": ["image"]
+			"asset_types": [
+				"image"
+			]
 		}
 	},
 	"assertions": [

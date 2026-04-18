@@ -1,11 +1,9 @@
 {
 	"id": "error_401_unauthorized",
 	"description": "Handles 401 Unauthorized response correctly",
-	"tags": ["error"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"error"
+	],
 	"input": {
 		"mock_responses": [
 			{

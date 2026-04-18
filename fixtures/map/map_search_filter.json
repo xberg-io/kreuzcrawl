@@ -1,11 +1,10 @@
 {
 	"id": "map_search_filter",
 	"description": "Filters map results by search keyword",
-	"tags": ["map", "filtering"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"map",
+		"filtering"
+	],
 	"input": {
 		"mock_responses": [
 			{

@@ -1,11 +1,10 @@
 {
 	"id": "crawl_query_param_dedup",
 	"description": "Deduplicates URLs with same query params in different order",
-	"tags": ["crawl", "normalization"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"crawl",
+		"normalization"
+	],
 	"input": {
 		"mock_responses": [
 			{

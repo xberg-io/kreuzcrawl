@@ -1,11 +1,10 @@
 {
 	"id": "concurrent_partial_errors",
 	"description": "Concurrent crawl handles partial failures gracefully",
-	"tags": ["concurrent", "error"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"concurrent",
+		"error"
+	],
 	"input": {
 		"mock_responses": [
 			{

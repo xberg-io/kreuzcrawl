@@ -1,11 +1,10 @@
 {
 	"id": "sitemap_empty",
 	"description": "Handles empty sitemap gracefully",
-	"tags": ["sitemap", "edge-case"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"sitemap",
+		"edge-case"
+	],
 	"input": {
 		"mock_responses": [
 			{

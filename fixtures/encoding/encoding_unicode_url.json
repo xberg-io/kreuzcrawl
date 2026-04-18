@@ -1,11 +1,10 @@
 {
 	"id": "encoding_unicode_url",
 	"description": "Handles Unicode characters in URLs (Hebrew, Japanese, Cyrillic)",
-	"tags": ["encoding", "unicode"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"encoding",
+		"unicode"
+	],
 	"input": {
 		"mock_responses": [
 			{

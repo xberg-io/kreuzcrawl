@@ -1,11 +1,10 @@
 {
 	"id": "robots_wildcard_paths",
 	"description": "Handles wildcard Disallow patterns in robots.txt",
-	"tags": ["robots", "wildcard"],
-	"skip": {
-		"languages": ["rust", "python", "node", "go", "java", "csharp", "ruby", "php", "elixir"],
-		"reason": "mock server namespaces routes per fixture; robots.txt must be at server root"
-	},
+	"tags": [
+		"robots",
+		"wildcard"
+	],
 	"input": {
 		"mock_responses": [
 			{

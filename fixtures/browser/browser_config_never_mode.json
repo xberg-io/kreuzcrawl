@@ -1,11 +1,10 @@
 {
 	"id": "browser_config_never_mode",
 	"description": "Browser mode 'never' prevents browser fallback even for SPA shell content",
-	"tags": ["browser", "config"],
-	"skip": {
-		"languages": ["wasm", "c", "go", "java", "csharp"],
-		"reason": "requires browser feature"
-	},
+	"tags": [
+		"browser",
+		"config"
+	],
 	"input": {
 		"mock_responses": [
 			{

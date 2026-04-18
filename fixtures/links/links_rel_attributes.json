@@ -1,11 +1,9 @@
 {
 	"id": "links_rel_attributes",
 	"description": "Preserves rel=nofollow and rel=canonical attributes",
-	"tags": ["links"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"links"
+	],
 	"input": {
 		"mock_responses": [
 			{

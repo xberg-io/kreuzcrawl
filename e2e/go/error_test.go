@@ -102,6 +102,40 @@ func Test_Error502BadGateway(t *testing.T) {
 	}
 }
 
+func Test_ErrorConnectionRefused(t *testing.T) {
+	// Handles connection refused error gracefully
+	var engineConfig pkg.CrawlConfig
+	if err := json.Unmarshal([]byte(`{"request_timeout":5000,"respect_robots_txt":false}`), &engineConfig); err != nil {
+		t.Fatalf("config parse failed: %v", err)
+	}
+	engine, createErr := pkg.CreateEngine(&engineConfig)
+	if createErr != nil {
+		t.Fatalf("create handle failed: %v", createErr)
+	}
+	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/error_connection_refused"
+	_, err := pkg.Scrape(engine, url)
+	if err == nil {
+		t.Errorf("expected an error, but call succeeded")
+	}
+}
+
+func Test_ErrorDnsResolution(t *testing.T) {
+	// Handles DNS resolution failure gracefully
+	var engineConfig pkg.CrawlConfig
+	if err := json.Unmarshal([]byte(`{"request_timeout":5000,"respect_robots_txt":false}`), &engineConfig); err != nil {
+		t.Fatalf("config parse failed: %v", err)
+	}
+	engine, createErr := pkg.CreateEngine(&engineConfig)
+	if createErr != nil {
+		t.Fatalf("create handle failed: %v", createErr)
+	}
+	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/error_dns_resolution"
+	_, err := pkg.Scrape(engine, url)
+	if err == nil {
+		t.Errorf("expected an error, but call succeeded")
+	}
+}
+
 func Test_ErrorEmptyResponse(t *testing.T) {
 	// Handles 200 with completely empty body gracefully
 	engine, createErr := pkg.CreateEngine()
@@ -192,6 +226,23 @@ func Test_ErrorRetryBackoff(t *testing.T) {
 		t.Fatalf("create handle failed: %v", createErr)
 	}
 	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/error_retry_backoff"
+	_, err := pkg.Scrape(engine, url)
+	if err == nil {
+		t.Errorf("expected an error, but call succeeded")
+	}
+}
+
+func Test_ErrorSslInvalidCert(t *testing.T) {
+	// Handles SSL certificate validation error
+	var engineConfig pkg.CrawlConfig
+	if err := json.Unmarshal([]byte(`{"request_timeout":5000,"respect_robots_txt":false}`), &engineConfig); err != nil {
+		t.Fatalf("config parse failed: %v", err)
+	}
+	engine, createErr := pkg.CreateEngine(&engineConfig)
+	if createErr != nil {
+		t.Fatalf("create handle failed: %v", createErr)
+	}
+	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/error_ssl_invalid_cert"
 	_, err := pkg.Scrape(engine, url)
 	if err == nil {
 		t.Errorf("expected an error, but call succeeded")

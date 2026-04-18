@@ -76,6 +76,26 @@ public class ErrorTests
     }
 
     [Fact]
+    public async Task Test_ErrorConnectionRefused()
+    {
+        // Handles connection refused error gracefully
+        var engineConfig = JsonSerializer.Deserialize<CrawlConfig>("{\"request_timeout\":5000,\"respect_robots_txt\":false}", ConfigOptions)!;
+        var engine = KreuzcrawlLib.CreateEngine(engineConfig);
+        var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/error_connection_refused";
+        await Assert.ThrowsAsync<KreuzcrawlException>(() => KreuzcrawlLib.Scrape(engine, url));
+    }
+
+    [Fact]
+    public async Task Test_ErrorDnsResolution()
+    {
+        // Handles DNS resolution failure gracefully
+        var engineConfig = JsonSerializer.Deserialize<CrawlConfig>("{\"request_timeout\":5000,\"respect_robots_txt\":false}", ConfigOptions)!;
+        var engine = KreuzcrawlLib.CreateEngine(engineConfig);
+        var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/error_dns_resolution";
+        await Assert.ThrowsAsync<KreuzcrawlException>(() => KreuzcrawlLib.Scrape(engine, url));
+    }
+
+    [Fact]
     public async Task Test_ErrorEmptyResponse()
     {
         // Handles 200 with completely empty body gracefully
@@ -132,6 +152,16 @@ public class ErrorTests
         var engineConfig = JsonSerializer.Deserialize<CrawlConfig>("{\"respect_robots_txt\":false,\"retry_codes\":[429],\"retry_count\":3}", ConfigOptions)!;
         var engine = KreuzcrawlLib.CreateEngine(engineConfig);
         var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/error_retry_backoff";
+        await Assert.ThrowsAsync<KreuzcrawlException>(() => KreuzcrawlLib.Scrape(engine, url));
+    }
+
+    [Fact]
+    public async Task Test_ErrorSslInvalidCert()
+    {
+        // Handles SSL certificate validation error
+        var engineConfig = JsonSerializer.Deserialize<CrawlConfig>("{\"request_timeout\":5000,\"respect_robots_txt\":false}", ConfigOptions)!;
+        var engine = KreuzcrawlLib.CreateEngine(engineConfig);
+        var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/error_ssl_invalid_cert";
         await Assert.ThrowsAsync<KreuzcrawlException>(() => KreuzcrawlLib.Scrape(engine, url));
     }
 

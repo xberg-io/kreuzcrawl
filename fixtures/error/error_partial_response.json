@@ -1,11 +1,10 @@
 {
 	"id": "error_partial_response",
 	"description": "Handles incomplete or truncated HTTP response",
-	"tags": ["error", "network"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server; Wiremock overrides content-length header; needs raw TCP or custom mock"
-	},
+	"tags": [
+		"error",
+		"network"
+	],
 	"input": {
 		"mock_responses": [
 			{

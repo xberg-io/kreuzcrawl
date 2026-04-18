@@ -1,11 +1,10 @@
 {
 	"id": "filter_bm25_empty_query",
 	"description": "BM25 filter with empty query passes all pages through",
-	"tags": ["filter", "bm25"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"filter",
+		"bm25"
+	],
 	"input": {
 		"mock_responses": [
 			{

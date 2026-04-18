@@ -1,11 +1,11 @@
 {
 	"id": "scrape_basic_html_page",
 	"description": "Scrapes a simple HTML page and extracts title, description, and links",
-	"tags": ["scrape", "metadata", "smoke"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"scrape",
+		"metadata",
+		"smoke"
+	],
 	"input": {
 		"mock_responses": [
 			{
@@ -58,7 +58,9 @@
 		{
 			"type": "contains_all",
 			"field": "links[].link_type",
-			"values": ["external"]
+			"values": [
+				"external"
+			]
 		},
 		{
 			"type": "equals",

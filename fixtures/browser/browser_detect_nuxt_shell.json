@@ -1,11 +1,10 @@
 {
 	"id": "browser_detect_nuxt_shell",
 	"description": "Detects Nuxt SPA shell with empty #__nuxt div as needing JS rendering",
-	"tags": ["browser", "detection"],
-	"skip": {
-		"languages": ["wasm", "c", "go", "java", "csharp"],
-		"reason": "requires browser feature"
-	},
+	"tags": [
+		"browser",
+		"detection"
+	],
 	"input": {
 		"mock_responses": [
 			{

@@ -1,11 +1,10 @@
 {
 	"id": "sitemap_only_mode",
 	"description": "Uses sitemap URLs exclusively without following page links",
-	"tags": ["sitemap", "mode"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"sitemap",
+		"mode"
+	],
 	"input": {
 		"mock_responses": [
 			{

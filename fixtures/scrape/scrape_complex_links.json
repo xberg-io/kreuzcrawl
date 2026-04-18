@@ -1,11 +1,10 @@
 {
 	"id": "scrape_complex_links",
 	"description": "Classifies links by type: internal, external, anchor, document, image",
-	"tags": ["scrape", "links"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"scrape",
+		"links"
+	],
 	"input": {
 		"mock_responses": [
 			{

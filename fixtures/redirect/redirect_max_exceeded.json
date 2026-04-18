@@ -1,11 +1,10 @@
 {
 	"id": "redirect_max_exceeded",
 	"description": "Aborts when redirect count exceeds max_redirects limit",
-	"tags": ["redirect", "error"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"redirect",
+		"error"
+	],
 	"input": {
 		"mock_responses": [
 			{

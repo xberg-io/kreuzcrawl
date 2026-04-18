@@ -1,11 +1,10 @@
 {
 	"id": "robots_multiple_user_agents",
 	"description": "Picks the most specific user-agent block from robots.txt",
-	"tags": ["robots", "user-agent"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"robots",
+		"user-agent"
+	],
 	"input": {
 		"mock_responses": [
 			{

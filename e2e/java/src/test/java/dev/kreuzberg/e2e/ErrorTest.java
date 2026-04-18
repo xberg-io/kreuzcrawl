@@ -69,6 +69,24 @@ class ErrorTest {
     }
 
     @Test
+    void testErrorConnectionRefused() throws Exception {
+        // Handles connection refused error gracefully
+        var engineConfig = MAPPER.readValue("{\"request_timeout\":5000,\"respect_robots_txt\":false}", CrawlConfig.class);
+        var engine = Kreuzcrawl.createEngine(engineConfig);
+        String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/error_connection_refused";
+        assertThrows(Exception.class, () -> Kreuzcrawl.scrape(engine, url));
+    }
+
+    @Test
+    void testErrorDnsResolution() throws Exception {
+        // Handles DNS resolution failure gracefully
+        var engineConfig = MAPPER.readValue("{\"request_timeout\":5000,\"respect_robots_txt\":false}", CrawlConfig.class);
+        var engine = Kreuzcrawl.createEngine(engineConfig);
+        String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/error_dns_resolution";
+        assertThrows(Exception.class, () -> Kreuzcrawl.scrape(engine, url));
+    }
+
+    @Test
     void testErrorEmptyResponse() throws Exception {
         // Handles 200 with completely empty body gracefully
         var engine = Kreuzcrawl.createEngine(null);
@@ -119,6 +137,15 @@ class ErrorTest {
         var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":false,\"retry_codes\":[429],\"retry_count\":3}", CrawlConfig.class);
         var engine = Kreuzcrawl.createEngine(engineConfig);
         String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/error_retry_backoff";
+        assertThrows(Exception.class, () -> Kreuzcrawl.scrape(engine, url));
+    }
+
+    @Test
+    void testErrorSslInvalidCert() throws Exception {
+        // Handles SSL certificate validation error
+        var engineConfig = MAPPER.readValue("{\"request_timeout\":5000,\"respect_robots_txt\":false}", CrawlConfig.class);
+        var engine = Kreuzcrawl.createEngine(engineConfig);
+        String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/error_ssl_invalid_cert";
         assertThrows(Exception.class, () -> Kreuzcrawl.scrape(engine, url));
     }
 

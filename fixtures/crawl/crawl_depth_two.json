@@ -1,11 +1,10 @@
 {
 	"id": "crawl_depth_two",
 	"description": "Crawls 3 levels deep (depth 0, 1, 2)",
-	"tags": ["crawl", "depth"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"crawl",
+		"depth"
+	],
 	"input": {
 		"mock_responses": [
 			{

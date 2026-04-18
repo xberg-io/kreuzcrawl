@@ -1,11 +1,10 @@
 {
 	"id": "scrape_js_heavy_spa",
 	"description": "Handles SPA page with JavaScript-only content (no server-rendered HTML)",
-	"tags": ["scrape", "javascript"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"scrape",
+		"javascript"
+	],
 	"input": {
 		"mock_responses": [
 			{

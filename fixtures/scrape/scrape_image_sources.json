@@ -1,11 +1,10 @@
 {
 	"id": "scrape_image_sources",
 	"description": "Extracts images from img, picture, og:image, twitter:image",
-	"tags": ["scrape", "images"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"scrape",
+		"images"
+	],
 	"input": {
 		"mock_responses": [
 			{

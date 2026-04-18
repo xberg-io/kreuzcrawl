@@ -1,11 +1,10 @@
 {
 	"id": "crawl_external_links_ignored",
 	"description": "External links are discovered but not followed when stay_on_domain is true",
-	"tags": ["crawl", "domain"],
-	"skip": {
-		"languages": ["wasm", "c"],
-		"reason": "requires mock HTTP server"
-	},
+	"tags": [
+		"crawl",
+		"domain"
+	],
 	"input": {
 		"mock_responses": [
 			{
