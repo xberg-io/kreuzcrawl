@@ -1921,7 +1921,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl"
-version = "0.1.0-rc.7"
+version = "0.1.0-rc.8"
 dependencies = [
  "ahash",
  "astral-tl",
@@ -1962,14 +1962,14 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl-bindings-common"
-version = "0.1.0-rc.7"
+version = "0.1.0-rc.8"
 dependencies = [
  "kreuzcrawl",
 ]
 
 [[package]]
 name = "kreuzcrawl-cli"
-version = "0.1.0-rc.7"
+version = "0.1.0-rc.8"
 dependencies = [
  "clap",
  "kreuzcrawl",
@@ -1979,7 +1979,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl-e2e-generator"
-version = "0.1.0-rc.7"
+version = "0.1.0-rc.8"
 dependencies = [
  "anyhow",
  "camino",
@@ -1992,7 +1992,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl-e2e-rust"
-version = "0.1.0-rc.7"
+version = "0.1.0-rc.8"
 dependencies = [
  "kreuzcrawl",
  "serde_json",
@@ -2001,7 +2001,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl-ffi"
-version = "0.1.0-rc.7"
+version = "0.1.0-rc.8"
 dependencies = [
  "cbindgen",
  "kreuzcrawl",
@@ -2011,7 +2011,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl-node"
-version = "0.1.0-rc.7"
+version = "0.1.0-rc.8"
 dependencies = [
  "kreuzcrawl",
  "napi",
@@ -2023,7 +2023,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl-php"
-version = "0.1.0-rc.7"
+version = "0.1.0-rc.8"
 dependencies = [
  "ext-php-rs",
  "kreuzcrawl",
@@ -2034,7 +2034,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl-py"
-version = "0.1.0-rc.7"
+version = "0.1.0-rc.8"
 dependencies = [
  "kreuzcrawl",
  "pyo3",
@@ -2045,7 +2045,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl-wasm"
-version = "0.1.0-rc.7"
+version = "0.1.0-rc.8"
 dependencies = [
  "getrandom 0.3.4",
  "kreuzcrawl",
@@ -2056,7 +2056,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl_nif"
-version = "0.1.0-rc.7"
+version = "0.1.0-rc.8"
 dependencies = [
  "kreuzcrawl",
  "rustler",
@@ -2288,7 +2288,7 @@ dependencies = [
 
 [[package]]
 name = "mock-server"
-version = "0.1.0-rc.7"
+version = "0.1.0-rc.8"
 dependencies = [
  "axum",
  "clap",
@@ -3517,7 +3517,7 @@ checksum = "67b1b7a3b5fe4f1376887184045fcf45c69e92af734b7aaddc05fb777b6fbd03"
 
 [[package]]
 name = "snippet-runner"
-version = "0.1.0-rc.7"
+version = "0.1.0-rc.8"
 dependencies = [
  "clap",
  "rayon",

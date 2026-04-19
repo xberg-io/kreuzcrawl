@@ -1,7 +1,0 @@
-# Override .gitignore for npm publish — include compiled WASM artifacts.
-# npm respects .gitignore by default, which excludes pkg/ from publishing.
-# This file ensures wasm-pack output is included in the published package.
-src/
-Cargo.toml
-Cargo.lock
-target/

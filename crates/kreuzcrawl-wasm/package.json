@@ -1,6 +1,6 @@
 {
 	"name": "@kreuzberg/kreuzcrawl-wasm",
-	"version": "0.1.0-rc.7",
+	"version": "0.1.0-rc.8",
 	"private": false,
 	"description": "Kreuzcrawl WASM bindings for document intelligence",
 	"license": "Elastic-2.0",

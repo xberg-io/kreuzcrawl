@@ -6,7 +6,7 @@
 
     <groupId>dev.kreuzberg.kreuzcrawl</groupId>
     <artifactId>kreuzcrawl</artifactId>
-    <version>0.1.0-rc.7</version>
+    <version>0.1.0-rc.8</version>
     <packaging>jar</packaging>
 
     <name>kreuzcrawl</name>

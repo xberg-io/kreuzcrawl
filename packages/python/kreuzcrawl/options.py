@@ -873,6 +873,8 @@ class CitationResult:
 
 @dataclass
 class CitationReference:
+    """Citation reference."""
+
     index: int = 0
     url: str = ""
     text: str = ""

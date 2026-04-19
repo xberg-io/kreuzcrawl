@@ -1,7 +1,7 @@
 PATH
   remote: ../../packages/ruby
   specs:
-    kreuzcrawl (0.1.0.pre.rc.7)
+    kreuzcrawl (0.1.0.pre.rc.8)
       rb_sys (~> 0.9)
 
 GEM
@@ -73,7 +73,7 @@ CHECKSUMS
   ast (2.4.3)
   diff-lcs (1.6.2)
   json (2.19.3)
-  kreuzcrawl (0.1.0.pre.rc.7)
+  kreuzcrawl (0.1.0.pre.rc.8)
   language_server-protocol (3.17.0.5)
   lint_roller (1.1.0)
   parallel (2.0.1)

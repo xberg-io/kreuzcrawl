@@ -1,6 +1,6 @@
 [package]
 name = "kreuzcrawl-ffi"
-version = "0.1.0-rc.7"
+version = "0.1.0-rc.8"
 edition = "2021"
 license = "Elastic-2.0"
 description = "High-performance web crawling engine"

@@ -172,6 +172,6 @@ vendor/
 *.class
 bin/
 obj/
-pkg/
+# pkg/ removed — needed for WASM npm publish (wasm-pack outputs to pkg/)
 erl_crash.dump
 test_apps/elixir/_build/

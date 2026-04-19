@@ -567,7 +567,7 @@ version = "^0.1.0-rc.3"
 
 [e2e.registry.packages.rust]
 name = "kreuzcrawl"
-version = "0.1.0-rc.7"
+version = "0.1.0-rc.8"
 
 [e2e.registry.packages.go]
 module = "github.com/kreuzberg-dev/kreuzcrawl/packages/go"
@@ -575,11 +575,11 @@ version = "v0.1.0-rc.3"
 
 [e2e.registry.packages.java]
 name = "dev.kreuzberg.kreuzcrawl:kreuzcrawl"
-version = "0.1.0-rc.7"
+version = "0.1.0-rc.8"
 
 [e2e.registry.packages.csharp]
 name = "Kreuzcrawl"
-version = "0.1.0-rc.7"
+version = "0.1.0-rc.8"
 
 [e2e.registry.packages.php]
 name = "kreuzberg-dev/kreuzcrawl"
@@ -599,11 +599,11 @@ version = "^0.1.0-rc.3"
 
 [e2e.registry.packages.brew]
 name = "kreuzcrawl"
-version = "0.1.0-rc.7"
+version = "0.1.0-rc.8"
 
 [e2e.registry.packages.c]
 name = "kreuzcrawl-ffi"
-version = "0.1.0-rc.7"
+version = "0.1.0-rc.8"
 
 # ---------------------------------------------------------------------------
 # Version Sync
