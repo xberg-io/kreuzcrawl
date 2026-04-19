@@ -188,7 +188,7 @@ impl CrawlEngine {
 
         #[cfg(target_arch = "wasm32")]
         let (response, browser_used_for_fetch) = {
-            let client = build_client(&self.config)?;
+            let client = crate::http::build_client(&self.config)?;
             let resp =
                 crate::http::fetch_with_retry(url, &self.config, &std::collections::HashMap::new(), &client).await?;
             let headers = std::collections::HashMap::new();
