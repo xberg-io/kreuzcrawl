@@ -2595,6 +2595,8 @@ jobs:
       - name: Compile project
         working-directory: packages/elixir
         run: mix compile
+        env:
+          MIX_ENV: prod
 
       - name: Build documentation
         working-directory: packages/elixir

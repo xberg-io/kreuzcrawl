@@ -10,6 +10,7 @@ categories = ["text-processing"]
 
 [lib]
 crate-type = ["cdylib"]
+path = "../kreuzcrawl_nif/src/lib.rs"
 
 [dependencies]
 kreuzcrawl = { path = "../../../../crates/kreuzcrawl" }
