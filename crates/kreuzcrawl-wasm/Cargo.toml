@@ -19,6 +19,7 @@ crate-type = ["cdylib"]
 getrandom = { version = "0.4", features = ["wasm_js"] }
 # Also need to explicitly depend on 0.3.4 to enable wasm_js for transitive deps
 getrandom_compat = { package = "getrandom", version = "=0.3.4", features = ["wasm_js"] }
+js-sys = "0.3"
 kreuzcrawl = { path = "../kreuzcrawl", default-features = false }
 serde-wasm-bindgen = "0.6"
 wasm-bindgen = "0.2"

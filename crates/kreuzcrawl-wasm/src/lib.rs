@@ -12,6 +12,7 @@
 use std::sync::Arc;
 use wasm_bindgen::prelude::*;
 
+/// Metadata about an LLM extraction pass.
 #[derive(Clone, Default)]
 #[wasm_bindgen]
 pub struct WasmExtractionMeta {
@@ -92,6 +93,7 @@ impl WasmExtractionMeta {
     }
 }
 
+/// Proxy configuration for HTTP requests.
 #[derive(Clone, Default)]
 #[wasm_bindgen]
 pub struct WasmProxyConfig {
@@ -142,6 +144,7 @@ impl WasmProxyConfig {
     }
 }
 
+/// Browser fallback configuration.
 #[derive(Clone, Default)]
 #[wasm_bindgen]
 pub struct WasmBrowserConfig {
@@ -241,6 +244,7 @@ impl WasmBrowserConfig {
     }
 }
 
+/// Configuration for crawl, scrape, and map operations.
 #[derive(Clone, Default)]
 #[wasm_bindgen]
 pub struct WasmCrawlConfig {
@@ -704,6 +708,7 @@ impl WasmCrawlConfig {
         kreuzcrawl::CrawlConfig::default().into()
     }
 
+    /// Validate the configuration, returning an error if any values are invalid.
     #[allow(clippy::missing_errors_doc)]
     #[wasm_bindgen]
     pub fn validate(&self) -> Result<(), JsValue> {
@@ -714,6 +719,11 @@ impl WasmCrawlConfig {
     }
 }
 
+/// A downloaded non-HTML document (PDF, DOCX, image, code file, etc.).
+///
+/// When the crawler encounters non-HTML content and `download_documents` is
+/// enabled, it downloads the raw bytes and populates this struct instead of
+/// skipping the resource.
 #[derive(Clone, Default)]
 #[wasm_bindgen]
 pub struct WasmDownloadedDocument {
@@ -820,6 +830,7 @@ impl WasmDownloadedDocument {
     }
 }
 
+/// Result of executing a sequence of page interaction actions.
 #[derive(Clone, Default)]
 #[wasm_bindgen]
 pub struct WasmInteractionResult {
@@ -887,6 +898,7 @@ impl WasmInteractionResult {
     }
 }
 
+/// Result from a single page action execution.
 #[derive(Clone, Default)]
 #[wasm_bindgen]
 pub struct WasmActionResult {
@@ -967,6 +979,7 @@ impl WasmActionResult {
     }
 }
 
+/// The result of a single-page scrape operation.
 #[derive(Clone, Default)]
 #[wasm_bindgen]
 pub struct WasmScrapeResult {
@@ -1347,6 +1360,7 @@ impl WasmScrapeResult {
     }
 }
 
+/// The result of crawling a single page during a crawl operation.
 #[derive(Clone, Default)]
 #[wasm_bindgen]
 pub struct WasmCrawlPageResult {
@@ -1623,6 +1637,7 @@ impl WasmCrawlPageResult {
     }
 }
 
+/// The result of a multi-page crawl operation.
 #[derive(Clone, Default)]
 #[wasm_bindgen]
 pub struct WasmCrawlResult {
@@ -1728,12 +1743,14 @@ impl WasmCrawlResult {
         self.normalized_urls = value;
     }
 
+    /// Returns the count of unique normalized URLs encountered during crawling.
     #[wasm_bindgen(js_name = "uniqueNormalizedUrls")]
     pub fn unique_normalized_urls(&self) -> usize {
         kreuzcrawl::CrawlResult::from(self.clone()).unique_normalized_urls()
     }
 }
 
+/// A URL entry from a sitemap.
 #[derive(Clone, Default)]
 #[wasm_bindgen]
 pub struct WasmSitemapUrl {
@@ -1801,6 +1818,7 @@ impl WasmSitemapUrl {
     }
 }
 
+/// The result of a map operation, containing discovered URLs.
 #[derive(Clone, Default)]
 #[wasm_bindgen]
 pub struct WasmMapResult {
@@ -1827,6 +1845,7 @@ impl WasmMapResult {
     }
 }
 
+/// Rich markdown conversion result from HTML processing.
 #[derive(Clone, Default)]
 #[wasm_bindgen]
 pub struct WasmMarkdownResult {
@@ -1920,6 +1939,7 @@ impl WasmMarkdownResult {
     }
 }
 
+/// Cached page data for HTTP response caching.
 #[derive(Clone, Default)]
 #[wasm_bindgen]
 pub struct WasmCachedPage {
@@ -2026,6 +2046,7 @@ impl WasmCachedPage {
     }
 }
 
+/// Information about a link found on a page.
 #[derive(Clone, Default)]
 #[wasm_bindgen]
 pub struct WasmLinkInfo {
@@ -2106,6 +2127,7 @@ impl WasmLinkInfo {
     }
 }
 
+/// Information about an image found on a page.
 #[derive(Clone, Default)]
 #[wasm_bindgen]
 pub struct WasmImageInfo {
@@ -2186,6 +2208,7 @@ impl WasmImageInfo {
     }
 }
 
+/// Information about a feed link found on a page.
 #[derive(Clone, Default)]
 #[wasm_bindgen]
 pub struct WasmFeedInfo {
@@ -2236,6 +2259,7 @@ impl WasmFeedInfo {
     }
 }
 
+/// A JSON-LD structured data entry found on a page.
 #[derive(Clone, Default)]
 #[wasm_bindgen]
 pub struct WasmJsonLdEntry {
@@ -2286,6 +2310,7 @@ impl WasmJsonLdEntry {
     }
 }
 
+/// Information about an HTTP cookie received from a response.
 #[derive(Clone, Default)]
 #[wasm_bindgen]
 pub struct WasmCookieInfo {
@@ -2353,6 +2378,7 @@ impl WasmCookieInfo {
     }
 }
 
+/// A downloaded asset from a page.
 #[derive(Clone, Default)]
 #[wasm_bindgen]
 pub struct WasmDownloadedAsset {
@@ -2446,6 +2472,7 @@ impl WasmDownloadedAsset {
     }
 }
 
+/// Article metadata extracted from `article:*` Open Graph tags.
 #[derive(Clone, Default)]
 #[wasm_bindgen]
 pub struct WasmArticleMetadata {
@@ -2526,6 +2553,7 @@ impl WasmArticleMetadata {
     }
 }
 
+/// An hreflang alternate link entry.
 #[derive(Clone, Default)]
 #[wasm_bindgen]
 pub struct WasmHreflangEntry {
@@ -2564,6 +2592,7 @@ impl WasmHreflangEntry {
     }
 }
 
+/// Information about a favicon or icon link.
 #[derive(Clone, Default)]
 #[wasm_bindgen]
 pub struct WasmFaviconInfo {
@@ -2631,6 +2660,7 @@ impl WasmFaviconInfo {
     }
 }
 
+/// A heading element extracted from the page.
 #[derive(Clone, Default)]
 #[wasm_bindgen]
 pub struct WasmHeadingInfo {
@@ -2669,6 +2699,7 @@ impl WasmHeadingInfo {
     }
 }
 
+/// Response metadata extracted from HTTP headers.
 #[derive(Clone, Default)]
 #[wasm_bindgen]
 pub struct WasmResponseMeta {
@@ -2775,6 +2806,7 @@ impl WasmResponseMeta {
     }
 }
 
+/// Metadata extracted from an HTML page's `<meta>` tags and `<title>` element.
 #[derive(Clone, Default)]
 #[wasm_bindgen]
 pub struct WasmPageMetadata {
@@ -3350,6 +3382,7 @@ impl WasmPageMetadata {
     }
 }
 
+/// Result of citation conversion.
 #[derive(Clone, Default)]
 #[wasm_bindgen]
 pub struct WasmCitationResult {
@@ -3438,6 +3471,11 @@ impl WasmCitationReference {
     }
 }
 
+/// Opaque handle to a configured crawl engine.
+///
+/// Constructed via [`create_engine`] with an optional [`CrawlConfig`].
+/// All default trait implementations (BFS strategy, in-memory frontier,
+/// per-domain throttle, etc.) are used internally.
 #[derive(Clone)]
 #[wasm_bindgen]
 pub struct WasmCrawlEngineHandle {
@@ -3447,6 +3485,7 @@ pub struct WasmCrawlEngineHandle {
 #[wasm_bindgen]
 impl WasmCrawlEngineHandle {}
 
+/// Result from a single URL in a batch scrape operation.
 #[derive(Clone, Default)]
 #[wasm_bindgen]
 pub struct WasmBatchScrapeResult {
@@ -3497,6 +3536,7 @@ impl WasmBatchScrapeResult {
     }
 }
 
+/// Result from a single URL in a batch crawl operation.
 #[derive(Clone, Default)]
 #[wasm_bindgen]
 pub struct WasmBatchCrawlResult {
@@ -3547,6 +3587,7 @@ impl WasmBatchCrawlResult {
     }
 }
 
+/// When to use the headless browser fallback.
 #[wasm_bindgen]
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum WasmBrowserMode {
@@ -3562,6 +3603,7 @@ impl Default for WasmBrowserMode {
     }
 }
 
+/// Wait strategy for browser page rendering.
 #[wasm_bindgen]
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum WasmBrowserWait {
@@ -3577,6 +3619,7 @@ impl Default for WasmBrowserWait {
     }
 }
 
+/// Authentication configuration.
 #[wasm_bindgen]
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum WasmAuthConfig {
@@ -3592,6 +3635,7 @@ impl Default for WasmAuthConfig {
     }
 }
 
+/// The classification of a link.
 #[wasm_bindgen]
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum WasmLinkType {
@@ -3608,6 +3652,7 @@ impl Default for WasmLinkType {
     }
 }
 
+/// The source of an image reference.
 #[wasm_bindgen]
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum WasmImageSource {
@@ -3624,6 +3669,7 @@ impl Default for WasmImageSource {
     }
 }
 
+/// The type of a feed (RSS, Atom, or JSON Feed).
 #[wasm_bindgen]
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum WasmFeedType {
@@ -3639,6 +3685,7 @@ impl Default for WasmFeedType {
     }
 }
 
+/// The category of a downloaded asset.
 #[wasm_bindgen]
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum WasmAssetCategory {
@@ -3661,6 +3708,7 @@ impl Default for WasmAssetCategory {
     }
 }
 
+/// An event emitted during a streaming crawl operation.
 #[wasm_bindgen]
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum WasmCrawlEvent {
@@ -3676,6 +3724,10 @@ impl Default for WasmCrawlEvent {
     }
 }
 
+/// Create a new crawl engine with the given configuration.
+///
+/// If `config` is `None`, uses [`CrawlConfig::default()`].
+/// Returns an error if the configuration is invalid.
 #[allow(clippy::missing_errors_doc)]
 #[wasm_bindgen(js_name = "createEngine")]
 pub fn create_engine(config: Option<WasmCrawlConfig>) -> Result<WasmCrawlEngineHandle, JsValue> {
@@ -3686,6 +3738,7 @@ pub fn create_engine(config: Option<WasmCrawlConfig>) -> Result<WasmCrawlEngineH
     })
 }
 
+/// Scrape a single URL, returning extracted page data.
 #[allow(clippy::missing_errors_doc)]
 #[wasm_bindgen]
 pub async fn scrape(engine: WasmCrawlEngineHandle, url: String) -> Result<WasmScrapeResult, JsValue> {
@@ -3695,6 +3748,7 @@ pub async fn scrape(engine: WasmCrawlEngineHandle, url: String) -> Result<WasmSc
     Ok(WasmScrapeResult::from(result))
 }
 
+/// Crawl a website starting from `url`, following links up to the configured depth.
 #[allow(clippy::missing_errors_doc)]
 #[wasm_bindgen]
 pub async fn crawl(engine: WasmCrawlEngineHandle, url: String) -> Result<WasmCrawlResult, JsValue> {
@@ -3704,6 +3758,7 @@ pub async fn crawl(engine: WasmCrawlEngineHandle, url: String) -> Result<WasmCra
     Ok(WasmCrawlResult::from(result))
 }
 
+/// Discover all pages on a website by following links and sitemaps.
 #[allow(clippy::missing_errors_doc)]
 #[wasm_bindgen(js_name = "mapUrls")]
 pub async fn map_urls(engine: WasmCrawlEngineHandle, url: String) -> Result<WasmMapResult, JsValue> {
@@ -3713,12 +3768,14 @@ pub async fn map_urls(engine: WasmCrawlEngineHandle, url: String) -> Result<Wasm
     Ok(WasmMapResult::from(result))
 }
 
+/// Scrape multiple URLs concurrently.
 #[wasm_bindgen(js_name = "batchScrape")]
 pub async fn batch_scrape(engine: WasmCrawlEngineHandle, urls: Vec<String>) -> Vec<WasmBatchScrapeResult> {
     let result = kreuzcrawl::batch_scrape(&engine.inner, urls).await;
     result.into_iter().map(WasmBatchScrapeResult::from).collect::<Vec<_>>()
 }
 
+/// Crawl multiple seed URLs concurrently, each following links to configured depth.
 #[wasm_bindgen(js_name = "batchCrawl")]
 pub async fn batch_crawl(engine: WasmCrawlEngineHandle, urls: Vec<String>) -> Vec<WasmBatchCrawlResult> {
     let result = kreuzcrawl::batch_crawl(&engine.inner, urls).await;
@@ -4783,8 +4840,39 @@ impl From<kreuzcrawl::CrawlEvent> for WasmCrawlEvent {
     }
 }
 
-/// Convert a `kreuzcrawl::CrawlError` error to a `JsValue` string.
+/// Return the error code string for a `kreuzcrawl::CrawlError` variant.
+#[allow(dead_code)]
+fn crawl_error_error_code(e: &kreuzcrawl::CrawlError) -> &'static str {
+    #[allow(unreachable_patterns)]
+    match e {
+        kreuzcrawl::CrawlError::NotFound(..) => "not_found",
+        kreuzcrawl::CrawlError::Unauthorized(..) => "unauthorized",
+        kreuzcrawl::CrawlError::Forbidden(..) => "forbidden",
+        kreuzcrawl::CrawlError::WafBlocked(..) => "waf_blocked",
+        kreuzcrawl::CrawlError::Timeout(..) => "timeout",
+        kreuzcrawl::CrawlError::RateLimited(..) => "rate_limited",
+        kreuzcrawl::CrawlError::ServerError(..) => "server_error",
+        kreuzcrawl::CrawlError::BadGateway(..) => "bad_gateway",
+        kreuzcrawl::CrawlError::Gone(..) => "gone",
+        kreuzcrawl::CrawlError::Connection(..) => "connection",
+        kreuzcrawl::CrawlError::Dns(..) => "dns",
+        kreuzcrawl::CrawlError::Ssl(..) => "ssl",
+        kreuzcrawl::CrawlError::DataLoss(..) => "data_loss",
+        kreuzcrawl::CrawlError::BrowserError(..) => "browser_error",
+        kreuzcrawl::CrawlError::BrowserTimeout(..) => "browser_timeout",
+        kreuzcrawl::CrawlError::InvalidConfig(..) => "invalid_config",
+        kreuzcrawl::CrawlError::Other(..) => "other",
+        _ => "crawl_error",
+    }
+}
+
+/// Convert a `kreuzcrawl::CrawlError` error to a `JsValue` object with `code` and `message` fields.
 #[allow(dead_code)]
 fn crawl_error_to_js_value(e: kreuzcrawl::CrawlError) -> wasm_bindgen::JsValue {
-    wasm_bindgen::JsValue::from_str(&e.to_string())
+    let code = crawl_error_error_code(&e);
+    let message = e.to_string();
+    let obj = js_sys::Object::new();
+    js_sys::Reflect::set(&obj, &"code".into(), &code.into()).ok();
+    js_sys::Reflect::set(&obj, &"message".into(), &message.into()).ok();
+    obj.into()
 }

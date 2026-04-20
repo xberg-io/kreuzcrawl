@@ -2049,6 +2049,7 @@ version = "0.1.1"
 dependencies = [
  "getrandom 0.3.4",
  "getrandom 0.4.2",
+ "js-sys",
  "kreuzcrawl",
  "serde-wasm-bindgen",
  "wasm-bindgen",
