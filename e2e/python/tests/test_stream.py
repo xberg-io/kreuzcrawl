@@ -32,6 +32,42 @@ async def test_stream_depth_crawl() -> None:
 
 
 @pytest.mark.asyncio
+async def test_stream_error_event_mid_crawl() -> None:
+    """Stream emits error event when a page fails mid-crawl, but other pages succeed."""
+    engine_config = CrawlConfig(max_concurrent=1, max_depth=1, respect_robots_txt=False)
+    engine = create_engine(engine_config)
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/stream_error_event_mid_crawl"
+    _ = await scrape(engine=engine, url=url)
+    # skipped: field 'stream.has_page_event' not available on result type
+    # skipped: field 'stream.has_error_event' not available on result type
+    # skipped: field 'stream.has_complete_event' not available on result type
+
+
+@pytest.mark.asyncio
+async def test_stream_event_ordering() -> None:
+    """Stream ensures complete event arrives after all page events."""
+    engine_config = CrawlConfig(max_concurrent=1, max_depth=1, respect_robots_txt=False)
+    engine = create_engine(engine_config)
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/stream_event_ordering"
+    _ = await scrape(engine=engine, url=url)
+    # skipped: field 'stream.has_complete_event' not available on result type
+    # skipped: field 'stream.has_page_event' not available on result type
+    # skipped: field 'stream.event_count_min' not available on result type
+
+
+@pytest.mark.asyncio
+async def test_stream_large_crawl() -> None:
+    """Stream handles crawl of 5+ pages with multiple events."""
+    engine_config = CrawlConfig(max_depth=1, respect_robots_txt=False)
+    engine = create_engine(engine_config)
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/stream_large_crawl"
+    _ = await scrape(engine=engine, url=url)
+    # skipped: field 'stream.event_count_min' not available on result type
+    # skipped: field 'stream.has_page_event' not available on result type
+    # skipped: field 'stream.has_complete_event' not available on result type
+
+
+@pytest.mark.asyncio
 async def test_stream_with_error_event() -> None:
     """Stream emits page and complete events even when some pages fail."""
     engine_config = CrawlConfig(max_concurrent=1, max_depth=1)

@@ -1,0 +1,66 @@
+{
+	"id": "batch_crawl_with_config",
+	"description": "Batch crawl with max_depth=1 config verifying pages are discovered",
+	"tags": ["batch", "crawl"],
+	"input": {
+		"mock_responses": [
+			{
+				"path": "/seed1",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><body><h1>Seed 1</h1><a href=\"/seed1/page1\">Page 1</a><a href=\"/seed1/page2\">Page 2</a></body></html>"
+			},
+			{
+				"path": "/seed1/page1",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><body><h1>Seed 1 Page 1</h1><a href=\"/seed1/page1/deep\">Deep Link (should not follow)</a></body></html>"
+			},
+			{
+				"path": "/seed1/page2",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><body><h1>Seed 1 Page 2</h1></body></html>"
+			},
+			{
+				"path": "/seed2",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><body><h1>Seed 2</h1><a href=\"/seed2/page1\">Page 1</a></body></html>"
+			},
+			{
+				"path": "/seed2/page1",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><body><h1>Seed 2 Page 1</h1></body></html>"
+			}
+		],
+		"batch_urls": ["/seed1", "/seed2"],
+		"config": {
+			"max_depth": 1,
+			"respect_robots_txt": false
+		}
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "batch.completed_count",
+			"value": 2
+		},
+		{
+			"type": "equals",
+			"field": "batch.failed_count",
+			"value": 0
+		}
+	]
+}

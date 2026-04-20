@@ -1,0 +1,28 @@
+{
+	"id": "download_no_document",
+	"description": "HTML pages are not downloaded as documents even when download_documents is enabled",
+	"tags": ["download", "html", "skip"],
+	"input": {
+		"mock_responses": [
+			{
+				"path": "/page.html",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><body><h1>Sample Page</h1><p>This is a regular HTML page, not a document.</p></body></html>"
+			}
+		],
+		"config": {
+			"respect_robots_txt": false,
+			"download_documents": true
+		}
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "status_code",
+			"value": 200
+		}
+	]
+}

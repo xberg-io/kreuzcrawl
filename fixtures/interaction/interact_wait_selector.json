@@ -1,0 +1,49 @@
+{
+	"id": "interact_wait_selector",
+	"description": "Wait for a CSS selector that exists on the page",
+	"tags": ["interaction", "wait"],
+	"skip": {
+		"languages": ["wasm", "homebrew"],
+		"reason": "Requires browser feature"
+	},
+	"input": {
+		"mock_responses": [
+			{
+				"path": "/",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><head><title>Wait Test</title></head><body><div id=\"content\">Ready</div></body></html>"
+			}
+		],
+		"config": {
+			"browser": {
+				"mode": "always"
+			}
+		},
+		"actions": [
+			{
+				"type": "wait",
+				"selector": "#content"
+			}
+		]
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "interaction.action_results[0].success",
+			"value": true
+		},
+		{
+			"type": "equals",
+			"field": "interaction.action_results[0].action_type",
+			"value": "wait"
+		},
+		{
+			"type": "equals",
+			"field": "interaction.action_results[0].action_index",
+			"value": 0
+		}
+	]
+}

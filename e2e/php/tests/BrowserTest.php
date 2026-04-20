@@ -20,7 +20,7 @@ final class BrowserTest extends TestCase
         $engine_config->browser = ["mode" => "auto"];
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/browser_config_auto_no_feature';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(200, $result->status_code);
         // skipped: field 'browser.js_render_hint' not available on result type
         // skipped: field 'browser.browser_used' not available on result type
@@ -33,7 +33,7 @@ final class BrowserTest extends TestCase
         $engine_config->browser = ["mode" => "never"];
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/browser_config_never_mode';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(200, $result->status_code);
         // skipped: field 'browser.js_render_hint' not available on result type
         // skipped: field 'browser.browser_used' not available on result type
@@ -44,7 +44,7 @@ final class BrowserTest extends TestCase
     {
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/browser_detect_minimal_page';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(200, $result->status_code);
         // skipped: field 'browser.js_render_hint' not available on result type
         // skipped: field 'browser.browser_used' not available on result type
@@ -55,7 +55,7 @@ final class BrowserTest extends TestCase
     {
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/browser_detect_next_empty';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(200, $result->status_code);
         // skipped: field 'browser.js_render_hint' not available on result type
         // skipped: field 'browser.browser_used' not available on result type
@@ -66,7 +66,7 @@ final class BrowserTest extends TestCase
     {
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/browser_detect_next_rendered';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(200, $result->status_code);
         // skipped: field 'html_not_empty' not available on result type
         // skipped: field 'browser.js_render_hint' not available on result type
@@ -78,7 +78,7 @@ final class BrowserTest extends TestCase
     {
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/browser_detect_normal_page';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(200, $result->status_code);
         // skipped: field 'browser.js_render_hint' not available on result type
         // skipped: field 'browser.browser_used' not available on result type
@@ -89,7 +89,7 @@ final class BrowserTest extends TestCase
     {
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/browser_detect_nuxt_shell';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(200, $result->status_code);
         // skipped: field 'browser.js_render_hint' not available on result type
         // skipped: field 'browser.browser_used' not available on result type
@@ -100,7 +100,7 @@ final class BrowserTest extends TestCase
     {
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/browser_detect_react_shell';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(200, $result->status_code);
         // skipped: field 'html_not_empty' not available on result type
         // skipped: field 'browser.js_render_hint' not available on result type
@@ -112,9 +112,21 @@ final class BrowserTest extends TestCase
     {
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/browser_detect_vue_shell';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(200, $result->status_code);
         // skipped: field 'browser.js_render_hint' not available on result type
+        // skipped: field 'browser.browser_used' not available on result type
+    }
+
+    /** Browser extra_wait adds additional time after network_idle to ensure all async operations complete */
+    public function test_browser_extra_wait(): void
+    {
+        $engine_config = CrawlConfig::default();
+        $engine_config->browser = ["extra_wait" => 200, "mode" => "always", "wait" => "network_idle"];
+        $engine = Kreuzcrawl::createEngine($engine_config);
+        $url = getenv('MOCK_SERVER_URL') . '/fixtures/browser_extra_wait';
+        $this->expectNotToPerformAssertions();
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         // skipped: field 'browser.browser_used' not available on result type
     }
 
@@ -126,7 +138,7 @@ final class BrowserTest extends TestCase
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/browser_fallback_spa_render';
         $this->expectNotToPerformAssertions();
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         // skipped: field 'browser.js_render_hint' not available on result type
         // skipped: field 'browser.browser_used' not available on result type
     }
@@ -139,7 +151,7 @@ final class BrowserTest extends TestCase
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/browser_fallback_waf_blocked';
         $this->expectNotToPerformAssertions();
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         // skipped: field 'browser.browser_used' not available on result type
     }
 
@@ -151,7 +163,44 @@ final class BrowserTest extends TestCase
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/browser_mode_always';
         $this->expectNotToPerformAssertions();
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         // skipped: field 'browser.browser_used' not available on result type
+    }
+
+    /** Browser profile configuration persists and reuses browser state across crawl sessions */
+    public function test_browser_profile_basic(): void
+    {
+        $engine_config = CrawlConfig::default();
+        $engine_config->browser = ["mode" => "always"];
+        $engine_config->browser_profile = "test-profile";
+        $engine = Kreuzcrawl::createEngine($engine_config);
+        $url = getenv('MOCK_SERVER_URL') . '/fixtures/browser_profile_basic';
+        $result = Kreuzcrawl::scrape_async($engine, $url);
+        // skipped: field 'browser.browser_used' not available on result type
+        $this->assertEquals(200, $result->status_code);
+    }
+
+    /** Browser wait strategy 'fixed' waits for a specific duration after page navigation */
+    public function test_browser_wait_fixed(): void
+    {
+        $engine_config = CrawlConfig::default();
+        $engine_config->browser = ["extra_wait" => 100, "mode" => "always", "wait" => "fixed"];
+        $engine = Kreuzcrawl::createEngine($engine_config);
+        $url = getenv('MOCK_SERVER_URL') . '/fixtures/browser_wait_fixed';
+        $result = Kreuzcrawl::scrape_async($engine, $url);
+        // skipped: field 'browser.browser_used' not available on result type
+        $this->assertEquals(200, $result->status_code);
+    }
+
+    /** Browser wait strategy 'selector' waits for specific CSS selector before considering page loaded */
+    public function test_browser_wait_selector(): void
+    {
+        $engine_config = CrawlConfig::default();
+        $engine_config->browser = ["mode" => "always", "wait" => "selector", "wait_selector" => "#content"];
+        $engine = Kreuzcrawl::createEngine($engine_config);
+        $url = getenv('MOCK_SERVER_URL') . '/fixtures/browser_wait_selector';
+        $result = Kreuzcrawl::scrape_async($engine, $url);
+        // skipped: field 'browser.browser_used' not available on result type
+        $this->assertEquals(200, $result->status_code);
     }
 }

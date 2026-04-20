@@ -3,6 +3,7 @@
 
 use kreuzcrawl::create_engine;
 use kreuzcrawl::scrape;
+use kreuzcrawl::CrawlConfig;
 
 #[tokio::test]
 async fn test_cache_basic() {
@@ -14,5 +15,49 @@ async fn test_cache_basic() {
         "cache_basic"
     );
     let result = scrape(&engine, &url).await.expect("should succeed");
+    assert_eq!(result.status_code, 200, "equals assertion failed");
+}
+
+#[tokio::test]
+async fn test_cache_etag_conditional() {
+    // Etag header enables conditional requests for cached content
+    let engine_config: CrawlConfig = serde_json::from_str("{\"max_depth\":1}").expect("config should parse");
+    let engine = create_engine(Some(engine_config)).expect("handle creation should succeed");
+    let url = format!(
+        "{}/fixtures/{}",
+        std::env::var("MOCK_SERVER_URL").expect("MOCK_SERVER_URL not set"),
+        "cache_etag_conditional"
+    );
+    let result = scrape(&engine, &url).await.expect("should succeed");
+    // skipped: field 'pages.length' not available on result type
+    assert_eq!(result.status_code, 200, "equals assertion failed");
+}
+
+#[tokio::test]
+async fn test_cache_last_modified() {
+    // Last-Modified header enables conditional requests via If-Modified-Since
+    let engine_config: CrawlConfig = serde_json::from_str("{\"max_depth\":1}").expect("config should parse");
+    let engine = create_engine(Some(engine_config)).expect("handle creation should succeed");
+    let url = format!(
+        "{}/fixtures/{}",
+        std::env::var("MOCK_SERVER_URL").expect("MOCK_SERVER_URL not set"),
+        "cache_last_modified"
+    );
+    let _ = scrape(&engine, &url).await.expect("should succeed");
+    // skipped: field 'pages.length' not available on result type
+}
+
+#[tokio::test]
+async fn test_cache_miss_fresh_fetch() {
+    // Uncached URLs are fetched fresh without conditional headers
+    let engine_config: CrawlConfig = serde_json::from_str("{\"max_depth\":1}").expect("config should parse");
+    let engine = create_engine(Some(engine_config)).expect("handle creation should succeed");
+    let url = format!(
+        "{}/fixtures/{}",
+        std::env::var("MOCK_SERVER_URL").expect("MOCK_SERVER_URL not set"),
+        "cache_miss_fresh_fetch"
+    );
+    let result = scrape(&engine, &url).await.expect("should succeed");
+    // skipped: field 'pages.length' not available on result type
     assert_eq!(result.status_code, 200, "equals assertion failed");
 }

@@ -3,6 +3,14 @@ import { describe, it, expect } from "vitest";
 import { scrape, createEngine } from "@kreuzberg/kreuzcrawl";
 
 describe("rate_limit", () => {
+	it("rate_limit_adaptive_backoff: Exponential backoff retry succeeds after 429 Too Many Requests", async () => {
+		const engineConfig = { respectRobotsTxt: false, retryCodes: [429], retryCount: 2 };
+		const engine = createEngine(engineConfig);
+		const url = `${process.env.MOCK_SERVER_URL}/fixtures/rate_limit_adaptive_backoff`;
+		const result = await scrape(engine, url);
+		expect(result.statusCode).toBe(200);
+	});
+
 	it("rate_limit_basic_delay: Rate limiter adds delay between requests to the same domain", async () => {
 		const engineConfig = { maxDepth: 1 };
 		const engine = createEngine(engineConfig);
@@ -10,6 +18,24 @@ describe("rate_limit", () => {
 		await scrape(engine, url);
 		// skipped: field 'crawl.pages_crawled' not available on result type
 		// skipped: field 'rate_limit.min_duration_ms' not available on result type
+	});
+
+	it("rate_limit_per_domain: Per-domain rate limiting applies delay between requests to same domain", async () => {
+		const engineConfig = { maxConcurrent: 1, maxDepth: 1 };
+		const engine = createEngine(engineConfig);
+		const url = `${process.env.MOCK_SERVER_URL}/fixtures/rate_limit_per_domain`;
+		const result = await scrape(engine, url);
+		// skipped: field 'pages.length' not available on result type
+		expect(result.statusCode).toBe(200);
+	});
+
+	it("rate_limit_robots_crawl_delay: Respects Crawl-delay directive in robots.txt", async () => {
+		const engineConfig = { maxDepth: 1, respectRobotsTxt: true, userAgent: "TestBot" };
+		const engine = createEngine(engineConfig);
+		const url = `${process.env.MOCK_SERVER_URL}/fixtures/rate_limit_robots_crawl_delay`;
+		const result = await scrape(engine, url);
+		// skipped: field 'pages.length' not available on result type
+		expect(result.statusCode).toBe(200);
 	});
 
 	it("rate_limit_zero_no_delay: Rate limiter with zero delay does not slow crawling", async () => {

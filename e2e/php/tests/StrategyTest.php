@@ -13,6 +13,34 @@ use Kreuzcrawl\CrawlConfig;
 /** E2e tests for category: strategy. */
 final class StrategyTest extends TestCase
 {
+    /** Adaptive strategy stops early when encountering saturation (duplicate content) */
+    public function test_strategy_adaptive_saturation(): void
+    {
+        $engine_config = CrawlConfig::default();
+        $engine_config->max_concurrent = 1;
+        $engine_config->max_depth = 2;
+        $engine_config->respect_robots_txt = false;
+        $engine = Kreuzcrawl::createEngine($engine_config);
+        $url = getenv('MOCK_SERVER_URL') . '/fixtures/strategy_adaptive_saturation';
+        $this->expectNotToPerformAssertions();
+        $result = Kreuzcrawl::scrape_async($engine, $url);
+        // skipped: field 'crawl.pages_crawled' not available on result type
+    }
+
+    /** Adaptive strategy crawls more pages when content is diverse */
+    public function test_strategy_adaptive_window(): void
+    {
+        $engine_config = CrawlConfig::default();
+        $engine_config->max_concurrent = 1;
+        $engine_config->max_depth = 1;
+        $engine_config->respect_robots_txt = false;
+        $engine = Kreuzcrawl::createEngine($engine_config);
+        $url = getenv('MOCK_SERVER_URL') . '/fixtures/strategy_adaptive_window';
+        $this->expectNotToPerformAssertions();
+        $result = Kreuzcrawl::scrape_async($engine, $url);
+        // skipped: field 'crawl.pages_crawled' not available on result type
+    }
+
     /** BestFirst strategy always processes the seed URL first */
     public function test_strategy_best_first_seed(): void
     {
@@ -22,7 +50,7 @@ final class StrategyTest extends TestCase
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/strategy_best_first_seed';
         $this->expectNotToPerformAssertions();
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         // skipped: field 'crawl.pages_crawled' not available on result type
         // skipped: field 'strategy.first_page_url_contains' not available on result type
     }
@@ -36,7 +64,7 @@ final class StrategyTest extends TestCase
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/strategy_bfs_default_order';
         $this->expectNotToPerformAssertions();
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         // skipped: field 'crawl.pages_crawled' not available on result type
         // skipped: field 'strategy.crawl_order' not available on result type
     }
@@ -50,7 +78,7 @@ final class StrategyTest extends TestCase
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/strategy_dfs_depth_first';
         $this->expectNotToPerformAssertions();
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         // skipped: field 'crawl.pages_crawled' not available on result type
         // skipped: field 'strategy.crawl_order' not available on result type
     }

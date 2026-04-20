@@ -116,6 +116,16 @@ class BrowserTest {
     }
 
     @Test
+    void testBrowserExtraWait() throws Exception {
+        // Browser extra_wait adds additional time after network_idle to ensure all async operations complete
+        var engineConfig = MAPPER.readValue("{\"browser\":{\"extra_wait\":200,\"mode\":\"always\",\"wait\":\"network_idle\"}}", CrawlConfig.class);
+        var engine = Kreuzcrawl.createEngine(engineConfig);
+        String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/browser_extra_wait";
+        var result = Kreuzcrawl.scrape(engine, url);
+        // skipped: field 'browser.browser_used' not available on result type
+    }
+
+    @Test
     void testBrowserFallbackSpaRender() throws Exception {
         // Browser auto re-fetches SPA shell when JS rendering is detected
         var engineConfig = MAPPER.readValue("{\"browser\":{\"mode\":\"auto\"}}", CrawlConfig.class);
@@ -144,6 +154,39 @@ class BrowserTest {
         String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/browser_mode_always";
         var result = Kreuzcrawl.scrape(engine, url);
         // skipped: field 'browser.browser_used' not available on result type
+    }
+
+    @Test
+    void testBrowserProfileBasic() throws Exception {
+        // Browser profile configuration persists and reuses browser state across crawl sessions
+        var engineConfig = MAPPER.readValue("{\"browser\":{\"mode\":\"always\"},\"browser_profile\":\"test-profile\"}", CrawlConfig.class);
+        var engine = Kreuzcrawl.createEngine(engineConfig);
+        String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/browser_profile_basic";
+        var result = Kreuzcrawl.scrape(engine, url);
+        // skipped: field 'browser.browser_used' not available on result type
+        assertEquals(200, result.statusCode());
+    }
+
+    @Test
+    void testBrowserWaitFixed() throws Exception {
+        // Browser wait strategy 'fixed' waits for a specific duration after page navigation
+        var engineConfig = MAPPER.readValue("{\"browser\":{\"extra_wait\":100,\"mode\":\"always\",\"wait\":\"fixed\"}}", CrawlConfig.class);
+        var engine = Kreuzcrawl.createEngine(engineConfig);
+        String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/browser_wait_fixed";
+        var result = Kreuzcrawl.scrape(engine, url);
+        // skipped: field 'browser.browser_used' not available on result type
+        assertEquals(200, result.statusCode());
+    }
+
+    @Test
+    void testBrowserWaitSelector() throws Exception {
+        // Browser wait strategy 'selector' waits for specific CSS selector before considering page loaded
+        var engineConfig = MAPPER.readValue("{\"browser\":{\"mode\":\"always\",\"wait\":\"selector\",\"wait_selector\":\"#content\"}}", CrawlConfig.class);
+        var engine = Kreuzcrawl.createEngine(engineConfig);
+        String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/browser_wait_selector";
+        var result = Kreuzcrawl.scrape(engine, url);
+        // skipped: field 'browser.browser_used' not available on result type
+        assertEquals(200, result.statusCode());
     }
 
 }

@@ -20,7 +20,7 @@ final class ScrapeTest extends TestCase
         $engine_config->download_assets = true;
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/scrape_asset_dedup';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(200, $result->status_code);
         $this->assertEquals(2, count($result->assets));
         $this->assertNotEmpty($result->assets[0]->content_hash);
@@ -34,7 +34,7 @@ final class ScrapeTest extends TestCase
         $engine_config->max_asset_size = 150;
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/scrape_asset_max_size';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(200, $result->status_code);
         $this->assertEquals(2, count($result->assets));
     }
@@ -47,7 +47,7 @@ final class ScrapeTest extends TestCase
         $engine_config->download_assets = true;
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/scrape_asset_type_filter';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(200, $result->status_code);
         $this->assertEquals(1, count($result->assets));
         $this->assertStringContainsString("image", $result->assets[0]->asset_category);
@@ -61,7 +61,7 @@ final class ScrapeTest extends TestCase
         $engine_config->respect_robots_txt = false;
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/scrape_basic_html_page';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(200, $result->status_code);
         $this->assertEquals("text/html", $result->content_type);
         $this->assertNotEmpty($result->html);
@@ -79,7 +79,7 @@ final class ScrapeTest extends TestCase
     {
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/scrape_complex_links';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(200, $result->status_code);
         $this->assertGreaterThan(9, count($result->links));
         $this->assertNotEmpty($result->links[0]->url);
@@ -92,7 +92,7 @@ final class ScrapeTest extends TestCase
         $engine_config->download_assets = true;
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/scrape_download_assets';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(200, $result->status_code);
         $this->assertGreaterThan(2, count($result->assets));
     }
@@ -102,7 +102,7 @@ final class ScrapeTest extends TestCase
     {
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/scrape_dublin_core';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(200, $result->status_code);
         $this->assertNotEmpty($result->metadata->dc_title);
         $this->assertEquals("Effects of Climate Change on Marine Biodiversity", $result->metadata->dc_title);
@@ -114,7 +114,7 @@ final class ScrapeTest extends TestCase
     {
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/scrape_empty_page';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(200, $result->status_code);
         $this->assertGreaterThan(-1, count($result->links));
         $this->assertEquals(0, count($result->images));
@@ -125,7 +125,7 @@ final class ScrapeTest extends TestCase
     {
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/scrape_feed_discovery';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(200, $result->status_code);
         $this->assertGreaterThanOrEqual(3, count($result->feeds));
     }
@@ -135,7 +135,7 @@ final class ScrapeTest extends TestCase
     {
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/scrape_image_sources';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(200, $result->status_code);
         $this->assertGreaterThan(4, count($result->images));
         $this->assertEquals("https://example.com/images/og-hero.jpg", $result->metadata->og_image);
@@ -146,7 +146,7 @@ final class ScrapeTest extends TestCase
     {
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/scrape_js_heavy_spa';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertNotEmpty($result->html);
     }
 
@@ -155,7 +155,7 @@ final class ScrapeTest extends TestCase
     {
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/scrape_json_ld';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(200, $result->status_code);
         $this->assertNotEmpty($result->json_ld);
         $this->assertEquals("Recipe", $result->json_ld[0]->schema_type);
@@ -167,7 +167,7 @@ final class ScrapeTest extends TestCase
     {
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/scrape_malformed_html';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(200, $result->status_code);
         $this->assertNotEmpty($result->html);
         $this->assertStringContainsString("broken HTML", $result->metadata->description);
@@ -178,7 +178,7 @@ final class ScrapeTest extends TestCase
     {
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/scrape_og_metadata';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(200, $result->status_code);
         $this->assertNotEmpty($result->metadata->og_title);
         $this->assertEquals("Article Title", $result->metadata->og_title);
@@ -193,7 +193,7 @@ final class ScrapeTest extends TestCase
     {
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/scrape_twitter_card';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(200, $result->status_code);
         $this->assertNotEmpty($result->metadata->twitter_card);
         $this->assertEquals("summary_large_image", $result->metadata->twitter_card);

@@ -1,0 +1,55 @@
+{
+	"id": "stream_event_ordering",
+	"description": "Stream ensures complete event arrives after all page events",
+	"tags": ["stream", "ordering"],
+	"input": {
+		"mock_responses": [
+			{
+				"path": "/",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><body><a href=\"/page1\">Page 1</a><a href=\"/page2\">Page 2</a></body></html>"
+			},
+			{
+				"path": "/page1",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html"
+				},
+				"body_inline": "<html><body><h1>Page 1</h1><p>Content for page 1</p></body></html>"
+			},
+			{
+				"path": "/page2",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html"
+				},
+				"body_inline": "<html><body><h1>Page 2</h1><p>Content for page 2</p></body></html>"
+			}
+		],
+		"config": {
+			"max_depth": 1,
+			"max_concurrent": 1,
+			"respect_robots_txt": false
+		}
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "stream.has_complete_event",
+			"value": true
+		},
+		{
+			"type": "equals",
+			"field": "stream.has_page_event",
+			"value": true
+		},
+		{
+			"type": "greater_than_or_equal",
+			"field": "stream.event_count_min",
+			"value": 3
+		}
+	]
+}

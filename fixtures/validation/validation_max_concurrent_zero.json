@@ -1,0 +1,22 @@
+{
+	"id": "validation_max_concurrent_zero",
+	"description": "max_concurrent=0 is rejected as invalid config (minimum is 1)",
+	"tags": ["validation"],
+	"input": {
+		"mock_responses": [
+			{
+				"status_code": 200,
+				"body_inline": "<html></html>"
+			}
+		],
+		"config": {
+			"max_concurrent": 0
+		}
+	},
+	"assertions": [
+		{
+			"type": "error",
+			"value": "max_concurrent"
+		}
+	]
+}

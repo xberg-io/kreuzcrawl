@@ -13,6 +13,16 @@ class RateLimitTest {
 
     private static final ObjectMapper MAPPER = new ObjectMapper().registerModule(new Jdk8Module());
     @Test
+    void testRateLimitAdaptiveBackoff() throws Exception {
+        // Exponential backoff retry succeeds after 429 Too Many Requests
+        var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":false,\"retry_codes\":[429],\"retry_count\":2}", CrawlConfig.class);
+        var engine = Kreuzcrawl.createEngine(engineConfig);
+        String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/rate_limit_adaptive_backoff";
+        var result = Kreuzcrawl.scrape(engine, url);
+        assertEquals(200, result.statusCode());
+    }
+
+    @Test
     void testRateLimitBasicDelay() throws Exception {
         // Rate limiter adds delay between requests to the same domain
         var engineConfig = MAPPER.readValue("{\"max_depth\":1}", CrawlConfig.class);
@@ -21,6 +31,28 @@ class RateLimitTest {
         var result = Kreuzcrawl.scrape(engine, url);
         // skipped: field 'crawl.pages_crawled' not available on result type
         // skipped: field 'rate_limit.min_duration_ms' not available on result type
+    }
+
+    @Test
+    void testRateLimitPerDomain() throws Exception {
+        // Per-domain rate limiting applies delay between requests to same domain
+        var engineConfig = MAPPER.readValue("{\"max_concurrent\":1,\"max_depth\":1}", CrawlConfig.class);
+        var engine = Kreuzcrawl.createEngine(engineConfig);
+        String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/rate_limit_per_domain";
+        var result = Kreuzcrawl.scrape(engine, url);
+        // skipped: field 'pages.length' not available on result type
+        assertEquals(200, result.statusCode());
+    }
+
+    @Test
+    void testRateLimitRobotsCrawlDelay() throws Exception {
+        // Respects Crawl-delay directive in robots.txt
+        var engineConfig = MAPPER.readValue("{\"max_depth\":1,\"respect_robots_txt\":true,\"user_agent\":\"TestBot\"}", CrawlConfig.class);
+        var engine = Kreuzcrawl.createEngine(engineConfig);
+        String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/rate_limit_robots_crawl_delay";
+        var result = Kreuzcrawl.scrape(engine, url);
+        // skipped: field 'pages.length' not available on result type
+        assertEquals(200, result.statusCode());
     }
 
     @Test

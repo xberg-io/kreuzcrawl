@@ -88,6 +88,14 @@ describe("browser", () => {
 		// skipped: field 'browser.browser_used' not available on result type
 	});
 
+	it("browser_extra_wait: Browser extra_wait adds additional time after network_idle to ensure all async operations complete", async () => {
+		const engineConfig = { browser: { extraWait: 200, mode: "always", wait: "network_idle" } };
+		const engine = createEngine(engineConfig);
+		const url = `${process.env.MOCK_SERVER_URL}/fixtures/browser_extra_wait`;
+		await scrape(engine, url);
+		// skipped: field 'browser.browser_used' not available on result type
+	});
+
 	it("browser_fallback_spa_render: Browser auto re-fetches SPA shell when JS rendering is detected", async () => {
 		const engineConfig = { browser: { mode: "auto" } };
 		const engine = createEngine(engineConfig);
@@ -111,5 +119,32 @@ describe("browser", () => {
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/browser_mode_always`;
 		await scrape(engine, url);
 		// skipped: field 'browser.browser_used' not available on result type
+	});
+
+	it("browser_profile_basic: Browser profile configuration persists and reuses browser state across crawl sessions", async () => {
+		const engineConfig = { browser: { mode: "always" }, browserProfile: "test-profile" };
+		const engine = createEngine(engineConfig);
+		const url = `${process.env.MOCK_SERVER_URL}/fixtures/browser_profile_basic`;
+		const result = await scrape(engine, url);
+		// skipped: field 'browser.browser_used' not available on result type
+		expect(result.statusCode).toBe(200);
+	});
+
+	it("browser_wait_fixed: Browser wait strategy 'fixed' waits for a specific duration after page navigation", async () => {
+		const engineConfig = { browser: { extraWait: 100, mode: "always", wait: "fixed" } };
+		const engine = createEngine(engineConfig);
+		const url = `${process.env.MOCK_SERVER_URL}/fixtures/browser_wait_fixed`;
+		const result = await scrape(engine, url);
+		// skipped: field 'browser.browser_used' not available on result type
+		expect(result.statusCode).toBe(200);
+	});
+
+	it("browser_wait_selector: Browser wait strategy 'selector' waits for specific CSS selector before considering page loaded", async () => {
+		const engineConfig = { browser: { mode: "always", wait: "selector", waitSelector: "#content" } };
+		const engine = createEngine(engineConfig);
+		const url = `${process.env.MOCK_SERVER_URL}/fixtures/browser_wait_selector`;
+		const result = await scrape(engine, url);
+		// skipped: field 'browser.browser_used' not available on result type
+		expect(result.statusCode).toBe(200);
 	});
 });

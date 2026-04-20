@@ -1,0 +1,48 @@
+{
+	"id": "stealth_ua_rotation_round_robin",
+	"description": "User-agent rotation cycles through multiple agents across multiple requests",
+	"tags": ["stealth", "user-agent", "rotation"],
+	"input": {
+		"mock_responses": [
+			{
+				"path": "/",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html"
+				},
+				"body_inline": "<html><body><h1>Page 1</h1><a href=\"/page2\">Next</a></body></html>"
+			},
+			{
+				"path": "/page2",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html"
+				},
+				"body_inline": "<html><body><h1>Page 2</h1></body></html>"
+			},
+			{
+				"path": "/page3",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html"
+				},
+				"body_inline": "<html><body><h1>Page 3</h1></body></html>"
+			}
+		],
+		"config": {
+			"user_agents": [
+				"Mozilla/5.0 (Windows NT 10.0; Win64; x64) TestAgent-1",
+				"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15) TestAgent-2"
+			],
+			"max_depth": 1,
+			"max_pages": 3
+		}
+	},
+	"assertions": [
+		{
+			"type": "greater_than_or_equal",
+			"field": "pages.length",
+			"value": 2
+		}
+	]
+}

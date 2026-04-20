@@ -4,7 +4,7 @@ import { scrape, createEngine, WasmCrawlConfig } from "kreuzcrawl";
 
 describe("robots", () => {
 	it("robots_allow_all: Permissive robots.txt allows all paths", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.respectRobotsTxt = true;
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/robots_allow_all`;
@@ -13,7 +13,7 @@ describe("robots", () => {
 	});
 
 	it("robots_allow_override: Allow directive overrides Disallow for specific paths", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.respectRobotsTxt = true;
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/robots_allow_override`;
@@ -22,7 +22,7 @@ describe("robots", () => {
 	});
 
 	it("robots_comments_handling: Correctly parses robots.txt with inline and line comments", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.respectRobotsTxt = true;
 		engineConfig.userAgent = "kreuzcrawl";
 		const engine = createEngine(engineConfig);
@@ -32,7 +32,7 @@ describe("robots", () => {
 	});
 
 	it("robots_crawl_delay: Respects crawl-delay directive from robots.txt", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.respectRobotsTxt = true;
 		engineConfig.userAgent = "kreuzcrawl";
 		const engine = createEngine(engineConfig);
@@ -42,7 +42,7 @@ describe("robots", () => {
 	});
 
 	it("robots_disallow_path: Robots.txt disallows specific paths", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.respectRobotsTxt = true;
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/robots_disallow_path`;
@@ -51,7 +51,7 @@ describe("robots", () => {
 	});
 
 	it("robots_meta_nofollow: Detects nofollow meta robots tag and skips link extraction", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.respectRobotsTxt = true;
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/robots_meta_nofollow`;
@@ -60,7 +60,7 @@ describe("robots", () => {
 	});
 
 	it("robots_meta_noindex: Detects noindex meta robots tag in HTML page", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.respectRobotsTxt = true;
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/robots_meta_noindex`;
@@ -69,7 +69,7 @@ describe("robots", () => {
 	});
 
 	it("robots_missing_404: Missing robots.txt (404) allows all crawling", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.respectRobotsTxt = true;
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/robots_missing_404`;
@@ -78,7 +78,7 @@ describe("robots", () => {
 	});
 
 	it("robots_multiple_user_agents: Picks the most specific user-agent block from robots.txt", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.respectRobotsTxt = true;
 		engineConfig.userAgent = "SpecificBot";
 		const engine = createEngine(engineConfig);
@@ -88,7 +88,7 @@ describe("robots", () => {
 	});
 
 	it("robots_request_rate: Parses request-rate directive from robots.txt", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.respectRobotsTxt = true;
 		engineConfig.userAgent = "kreuzcrawl";
 		const engine = createEngine(engineConfig);
@@ -99,7 +99,7 @@ describe("robots", () => {
 	});
 
 	it("robots_sitemap_directive: Discovers sitemap URL from Sitemap directive in robots.txt", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.respectRobotsTxt = true;
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/robots_sitemap_directive`;
@@ -108,7 +108,7 @@ describe("robots", () => {
 	});
 
 	it("robots_user_agent_specific: Matches user-agent specific rules in robots.txt", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.respectRobotsTxt = true;
 		engineConfig.userAgent = "KreuzcrawlBot";
 		const engine = createEngine(engineConfig);
@@ -118,7 +118,7 @@ describe("robots", () => {
 	});
 
 	it("robots_wildcard_paths: Handles wildcard Disallow patterns in robots.txt", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.respectRobotsTxt = true;
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/robots_wildcard_paths`;
@@ -127,7 +127,7 @@ describe("robots", () => {
 	});
 
 	it("robots_x_robots_tag: Respects X-Robots-Tag HTTP header directives", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.respectRobotsTxt = true;
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/robots_x_robots_tag`;

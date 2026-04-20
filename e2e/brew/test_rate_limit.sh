@@ -3,12 +3,44 @@
 # E2e tests for category: rate_limit
 set -euo pipefail
 
+test_rate_limit_adaptive_backoff() {
+  # Exponential backoff retry succeeds after 429 Too Many Requests
+  local output
+  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/rate_limit_adaptive_backoff" --format json)
+
+  local val_status_code
+  val_status_code=$(echo "$output" | jq -r '.status_code')
+  assert_equals "$val_status_code" '200' 'status_code'
+}
+
 test_rate_limit_basic_delay() {
   # Rate limiter adds delay between requests to the same domain
   kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/rate_limit_basic_delay" --format json >/dev/null
 
   # skipped: field 'crawl.pages_crawled' not available on result type
   # skipped: field 'rate_limit.min_duration_ms' not available on result type
+}
+
+test_rate_limit_per_domain() {
+  # Per-domain rate limiting applies delay between requests to same domain
+  local output
+  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/rate_limit_per_domain" --format json)
+
+  # skipped: field 'pages.length' not available on result type
+  local val_status_code
+  val_status_code=$(echo "$output" | jq -r '.status_code')
+  assert_equals "$val_status_code" '200' 'status_code'
+}
+
+test_rate_limit_robots_crawl_delay() {
+  # Respects Crawl-delay directive in robots.txt
+  local output
+  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/rate_limit_robots_crawl_delay" --format json)
+
+  # skipped: field 'pages.length' not available on result type
+  local val_status_code
+  val_status_code=$(echo "$output" | jq -r '.status_code')
+  assert_equals "$val_status_code" '200' 'status_code'
 }
 
 test_rate_limit_zero_no_delay() {
@@ -19,6 +51,9 @@ test_rate_limit_zero_no_delay() {
 }
 
 run_tests_rate_limit() {
+  run_test test_rate_limit_adaptive_backoff
   run_test test_rate_limit_basic_delay
+  run_test test_rate_limit_per_domain
+  run_test test_rate_limit_robots_crawl_delay
   run_test test_rate_limit_zero_no_delay
 }

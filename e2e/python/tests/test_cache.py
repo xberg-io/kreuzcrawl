@@ -4,7 +4,7 @@
 import os
 
 import pytest
-from kreuzcrawl import create_engine, scrape
+from kreuzcrawl import CrawlConfig, create_engine, scrape
 
 
 @pytest.mark.asyncio
@@ -13,4 +13,36 @@ async def test_cache_basic() -> None:
     engine = create_engine(None)
     url = os.environ["MOCK_SERVER_URL"] + "/fixtures/cache_basic"
     result = await scrape(engine=engine, url=url)
+    assert result.status_code == 200
+
+
+@pytest.mark.asyncio
+async def test_cache_etag_conditional() -> None:
+    """Etag header enables conditional requests for cached content."""
+    engine_config = CrawlConfig(max_depth=1)
+    engine = create_engine(engine_config)
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/cache_etag_conditional"
+    result = await scrape(engine=engine, url=url)
+    # skipped: field 'pages.length' not available on result type
+    assert result.status_code == 200
+
+
+@pytest.mark.asyncio
+async def test_cache_last_modified() -> None:
+    """Last-Modified header enables conditional requests via If-Modified-Since."""
+    engine_config = CrawlConfig(max_depth=1)
+    engine = create_engine(engine_config)
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/cache_last_modified"
+    _ = await scrape(engine=engine, url=url)
+    # skipped: field 'pages.length' not available on result type
+
+
+@pytest.mark.asyncio
+async def test_cache_miss_fresh_fetch() -> None:
+    """Uncached URLs are fetched fresh without conditional headers."""
+    engine_config = CrawlConfig(max_depth=1)
+    engine = create_engine(engine_config)
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/cache_miss_fresh_fetch"
+    result = await scrape(engine=engine, url=url)
+    # skipped: field 'pages.length' not available on result type
     assert result.status_code == 200

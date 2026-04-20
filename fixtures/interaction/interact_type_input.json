@@ -1,0 +1,50 @@
+{
+	"id": "interact_type_input",
+	"description": "Type text into an input field and verify success",
+	"tags": ["interaction", "type"],
+	"skip": {
+		"languages": ["wasm", "homebrew"],
+		"reason": "Requires browser feature"
+	},
+	"input": {
+		"mock_responses": [
+			{
+				"path": "/",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><head><title>Type Test</title></head><body><input type=\"text\" id=\"username\" placeholder=\"Enter username\"></body></html>"
+			}
+		],
+		"config": {
+			"browser": {
+				"mode": "always"
+			}
+		},
+		"actions": [
+			{
+				"type": "type",
+				"selector": "#username",
+				"text": "john_doe"
+			}
+		]
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "interaction.action_results[0].success",
+			"value": true
+		},
+		{
+			"type": "equals",
+			"field": "interaction.action_results[0].action_type",
+			"value": "type"
+		},
+		{
+			"type": "equals",
+			"field": "interaction.action_results[0].action_index",
+			"value": 0
+		}
+	]
+}

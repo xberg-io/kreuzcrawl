@@ -3,6 +3,23 @@ import { describe, it, expect } from "vitest";
 import { scrape, createEngine } from "@kreuzberg/kreuzcrawl";
 
 describe("validation", () => {
+	it("validation_empty_batch_urls: batch operation with empty batch_urls array is rejected", async () => {
+		await expect(async () => {
+			const engine = createEngine(null);
+			const url = `${process.env.MOCK_SERVER_URL}/fixtures/validation_empty_batch_urls`;
+			await scrape(engine, url);
+		}).rejects.toThrow();
+	});
+
+	it("validation_invalid_auth_config: auth object with no recognized variant (empty object) is rejected", async () => {
+		await expect(async () => {
+			const engineConfig = { auth: {} };
+			const engine = createEngine(engineConfig);
+			const url = `${process.env.MOCK_SERVER_URL}/fixtures/validation_invalid_auth_config`;
+			await scrape(engine, url);
+		}).rejects.toThrow();
+	});
+
 	it("validation_invalid_exclude_regex: Invalid regex in exclude_paths is rejected", async () => {
 		await expect(async () => {
 			const engineConfig = { excludePaths: ["(unclosed"] };
@@ -21,11 +38,38 @@ describe("validation", () => {
 		}).rejects.toThrow();
 	});
 
+	it("validation_invalid_proxy_url: proxy with invalid URL like 'not-a-url' is rejected", async () => {
+		await expect(async () => {
+			const engineConfig = { proxy: { url: "not-a-url" } };
+			const engine = createEngine(engineConfig);
+			const url = `${process.env.MOCK_SERVER_URL}/fixtures/validation_invalid_proxy_url`;
+			await scrape(engine, url);
+		}).rejects.toThrow();
+	});
+
 	it("validation_invalid_retry_code: Retry code outside 100-599 is rejected", async () => {
 		await expect(async () => {
 			const engineConfig = { retryCodes: [999] };
 			const engine = createEngine(engineConfig);
 			const url = `${process.env.MOCK_SERVER_URL}/fixtures/validation_invalid_retry_code`;
+			await scrape(engine, url);
+		}).rejects.toThrow();
+	});
+
+	it("validation_max_concurrent_zero: max_concurrent=0 is rejected as invalid config (minimum is 1)", async () => {
+		await expect(async () => {
+			const engineConfig = { maxConcurrent: 0 };
+			const engine = createEngine(engineConfig);
+			const url = `${process.env.MOCK_SERVER_URL}/fixtures/validation_max_concurrent_zero`;
+			await scrape(engine, url);
+		}).rejects.toThrow();
+	});
+
+	it("validation_max_depth_too_high: max_depth=200 exceeds limit of 100", async () => {
+		await expect(async () => {
+			const engineConfig = { maxDepth: 200 };
+			const engine = createEngine(engineConfig);
+			const url = `${process.env.MOCK_SERVER_URL}/fixtures/validation_max_depth_too_high`;
 			await scrape(engine, url);
 		}).rejects.toThrow();
 	});
@@ -44,6 +88,15 @@ describe("validation", () => {
 			const engineConfig = { maxRedirects: 200 };
 			const engine = createEngine(engineConfig);
 			const url = `${process.env.MOCK_SERVER_URL}/fixtures/validation_max_redirects_too_high`;
+			await scrape(engine, url);
+		}).rejects.toThrow();
+	});
+
+	it("validation_negative_body_size: max_body_size set to -1 is rejected as invalid config", async () => {
+		await expect(async () => {
+			const engineConfig = { maxBodySize: 0 };
+			const engine = createEngine(engineConfig);
+			const url = `${process.env.MOCK_SERVER_URL}/fixtures/validation_negative_body_size`;
 			await scrape(engine, url);
 		}).rejects.toThrow();
 	});

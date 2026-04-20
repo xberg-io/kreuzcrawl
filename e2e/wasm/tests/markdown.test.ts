@@ -15,7 +15,7 @@ describe("markdown", () => {
 	});
 
 	it("markdown_crawl_all_pages: All crawled pages have markdown field populated", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.maxDepth = 1;
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/markdown_crawl_all_pages`;

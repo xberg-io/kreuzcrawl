@@ -17,7 +17,7 @@ final class LinksTest extends TestCase
     {
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/links_anchor_fragment';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertStringContainsString("anchor", $result->links[0]->link_type);
     }
 
@@ -26,7 +26,7 @@ final class LinksTest extends TestCase
     {
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/links_base_tag';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertGreaterThan(2, count($result->links));
         $this->assertStringContainsString("example.com", $result->links[0]->url);
     }
@@ -36,7 +36,7 @@ final class LinksTest extends TestCase
     {
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/links_document_types';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertStringContainsString("document", $result->links[0]->link_type);
     }
 
@@ -45,7 +45,7 @@ final class LinksTest extends TestCase
     {
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/links_empty_href';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertGreaterThan(0, count($result->links));
         $this->assertStringContainsString("/valid", $result->links[0]->url);
     }
@@ -55,7 +55,7 @@ final class LinksTest extends TestCase
     {
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/links_internal_external_classification';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertGreaterThan(4, count($result->links));
         $this->assertNotEmpty($result->links[0]->url);
     }
@@ -65,7 +65,7 @@ final class LinksTest extends TestCase
     {
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/links_mailto_javascript_skip';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertGreaterThan(0, count($result->links));
         $this->assertStringNotContainsString("mailto:", $result->links[0]->url);
     }
@@ -75,7 +75,7 @@ final class LinksTest extends TestCase
     {
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/links_protocol_relative';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertGreaterThan(1, count($result->links));
         $this->assertStringContainsString("//", $result->links[0]->url);
     }
@@ -85,7 +85,7 @@ final class LinksTest extends TestCase
     {
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/links_rel_attributes';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertGreaterThan(0, count($result->links));
     }
 
@@ -94,7 +94,7 @@ final class LinksTest extends TestCase
     {
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/links_relative_parent';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertGreaterThan(3, count($result->links));
     }
 }

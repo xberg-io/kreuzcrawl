@@ -3,6 +3,61 @@
 defmodule E2e.BatchTest do
   use ExUnit.Case, async: true
 
+  describe "batch_crawl_basic" do
+    test "Batch crawl of 2 seed URLs with links to discover" do
+      engine_config = "{\"max_depth\":1,\"respect_robots_txt\":false}"
+      {:ok, engine} = Kreuzcrawl.create_engine(engine_config)
+      url = System.get_env("MOCK_SERVER_URL") <> "/fixtures/batch_crawl_basic"
+      {:ok, result} = Kreuzcrawl.scrape_async(engine, url)
+      # skipped: field 'batch.completed_count' not available on result type
+      # skipped: field 'batch.failed_count' not available on result type
+      # skipped: field 'batch.total_count' not available on result type
+    end
+  end
+
+  describe "batch_crawl_partial_failure" do
+    test "Batch crawl where one seed URL returns 404 error" do
+      engine_config = "{\"max_depth\":1,\"respect_robots_txt\":false}"
+      {:ok, engine} = Kreuzcrawl.create_engine(engine_config)
+      url = System.get_env("MOCK_SERVER_URL") <> "/fixtures/batch_crawl_partial_failure"
+      {:ok, result} = Kreuzcrawl.scrape_async(engine, url)
+      # skipped: field 'batch.completed_count' not available on result type
+      # skipped: field 'batch.failed_count' not available on result type
+      # skipped: field 'batch.total_count' not available on result type
+    end
+  end
+
+  describe "batch_crawl_with_config" do
+    test "Batch crawl with max_depth=1 config verifying pages are discovered" do
+      engine_config = "{\"max_depth\":1,\"respect_robots_txt\":false}"
+      {:ok, engine} = Kreuzcrawl.create_engine(engine_config)
+      url = System.get_env("MOCK_SERVER_URL") <> "/fixtures/batch_crawl_with_config"
+      {:ok, result} = Kreuzcrawl.scrape_async(engine, url)
+      # skipped: field 'batch.completed_count' not available on result type
+      # skipped: field 'batch.failed_count' not available on result type
+    end
+  end
+
+  describe "batch_scrape_empty_urls_error" do
+    test "Batch scrape with empty batch_urls array returns error" do
+      {:ok, engine} = Kreuzcrawl.create_engine(nil)
+      url = System.get_env("MOCK_SERVER_URL") <> "/fixtures/batch_scrape_empty_urls_error"
+      assert {:error, _} = Kreuzcrawl.scrape_async(engine, url)
+    end
+  end
+
+  describe "batch_scrape_with_config" do
+    test "Batch scrape with main_content_only=true configuration" do
+      engine_config = "{\"main_content_only\":true}"
+      {:ok, engine} = Kreuzcrawl.create_engine(engine_config)
+      url = System.get_env("MOCK_SERVER_URL") <> "/fixtures/batch_scrape_with_config"
+      {:ok, result} = Kreuzcrawl.scrape_async(engine, url)
+      # skipped: field 'batch.completed_count' not available on result type
+      # skipped: field 'batch.failed_count' not available on result type
+      # skipped: field 'batch.total_count' not available on result type
+    end
+  end
+
   describe "scrape_batch_basic" do
     test "Batch scrape of multiple URLs all succeeding" do
       {:ok, engine} = Kreuzcrawl.create_engine(nil)

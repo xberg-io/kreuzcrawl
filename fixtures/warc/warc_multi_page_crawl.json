@@ -1,0 +1,54 @@
+{
+	"id": "warc_multi_page_crawl",
+	"description": "Crawl multiple pages with depth=1 and WARC output enabled",
+	"tags": ["warc", "output", "crawl", "multi-page"],
+	"skip": {
+		"languages": ["wasm", "homebrew"],
+		"reason": "WARC output requires filesystem access"
+	},
+	"input": {
+		"mock_responses": [
+			{
+				"path": "/",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><body><h1>Root</h1><a href=\"/page1\">Page 1</a><a href=\"/page2\">Page 2</a></body></html>"
+			},
+			{
+				"path": "/page1",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><body><h1>Page 1</h1><p>First linked page</p><a href=\"/page1/deep\">Should not follow</a></body></html>"
+			},
+			{
+				"path": "/page2",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><body><h1>Page 2</h1><p>Second linked page</p></body></html>"
+			}
+		],
+		"config": {
+			"warc_output": "/tmp/kreuzcrawl_crawl.warc",
+			"max_depth": 1,
+			"respect_robots_txt": false
+		}
+	},
+	"assertions": [
+		{
+			"type": "greater_than_or_equal",
+			"field": "pages.length",
+			"value": 2
+		},
+		{
+			"type": "equals",
+			"field": "stayed_on_domain",
+			"value": true
+		}
+	]
+}

@@ -1,0 +1,46 @@
+{
+	"id": "batch_scrape_with_config",
+	"description": "Batch scrape with main_content_only=true configuration",
+	"tags": ["batch", "scrape"],
+	"input": {
+		"mock_responses": [
+			{
+				"path": "/article1",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><body><header>Header</header><main><h1>Article 1</h1><p>Content 1</p></main><aside>Sidebar</aside><footer>Footer</footer></body></html>"
+			},
+			{
+				"path": "/article2",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><body><header>Header</header><main><h1>Article 2</h1><p>Content 2</p></main><aside>Sidebar</aside><footer>Footer</footer></body></html>"
+			}
+		],
+		"batch_urls": ["/article1", "/article2"],
+		"config": {
+			"main_content_only": true
+		}
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "batch.completed_count",
+			"value": 2
+		},
+		{
+			"type": "equals",
+			"field": "batch.failed_count",
+			"value": 0
+		},
+		{
+			"type": "equals",
+			"field": "batch.total_count",
+			"value": 2
+		}
+	]
+}

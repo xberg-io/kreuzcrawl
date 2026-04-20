@@ -1,0 +1,22 @@
+{
+	"id": "validation_negative_body_size",
+	"description": "max_body_size set to -1 is rejected as invalid config",
+	"tags": ["validation"],
+	"input": {
+		"mock_responses": [
+			{
+				"status_code": 200,
+				"body_inline": "<html></html>"
+			}
+		],
+		"config": {
+			"max_body_size": 0
+		}
+	},
+	"assertions": [
+		{
+			"type": "error",
+			"value": "body_size"
+		}
+	]
+}

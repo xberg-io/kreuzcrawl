@@ -1,0 +1,24 @@
+{
+	"id": "validation_invalid_proxy_url",
+	"description": "proxy with invalid URL like 'not-a-url' is rejected",
+	"tags": ["validation"],
+	"input": {
+		"mock_responses": [
+			{
+				"status_code": 200,
+				"body_inline": "<html></html>"
+			}
+		],
+		"config": {
+			"proxy": {
+				"url": "not-a-url"
+			}
+		}
+	},
+	"assertions": [
+		{
+			"type": "error",
+			"value": "proxy"
+		}
+	]
+}

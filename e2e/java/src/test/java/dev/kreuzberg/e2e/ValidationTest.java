@@ -13,6 +13,23 @@ class ValidationTest {
 
     private static final ObjectMapper MAPPER = new ObjectMapper().registerModule(new Jdk8Module());
     @Test
+    void testValidationEmptyBatchUrls() throws Exception {
+        // batch operation with empty batch_urls array is rejected
+        var engine = Kreuzcrawl.createEngine(null);
+        String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/validation_empty_batch_urls";
+        assertThrows(Exception.class, () -> Kreuzcrawl.scrape(engine, url));
+    }
+
+    @Test
+    void testValidationInvalidAuthConfig() throws Exception {
+        // auth object with no recognized variant (empty object) is rejected
+        var engineConfig = MAPPER.readValue("{\"auth\":{}}", CrawlConfig.class);
+        var engine = Kreuzcrawl.createEngine(engineConfig);
+        String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/validation_invalid_auth_config";
+        assertThrows(Exception.class, () -> Kreuzcrawl.scrape(engine, url));
+    }
+
+    @Test
     void testValidationInvalidExcludeRegex() throws Exception {
         // Invalid regex in exclude_paths is rejected
         var engineConfig = MAPPER.readValue("{\"exclude_paths\":[\"(unclosed\"]}", CrawlConfig.class);
@@ -31,11 +48,38 @@ class ValidationTest {
     }
 
     @Test
+    void testValidationInvalidProxyUrl() throws Exception {
+        // proxy with invalid URL like 'not-a-url' is rejected
+        var engineConfig = MAPPER.readValue("{\"proxy\":{\"url\":\"not-a-url\"}}", CrawlConfig.class);
+        var engine = Kreuzcrawl.createEngine(engineConfig);
+        String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/validation_invalid_proxy_url";
+        assertThrows(Exception.class, () -> Kreuzcrawl.scrape(engine, url));
+    }
+
+    @Test
     void testValidationInvalidRetryCode() throws Exception {
         // Retry code outside 100-599 is rejected
         var engineConfig = MAPPER.readValue("{\"retry_codes\":[999]}", CrawlConfig.class);
         var engine = Kreuzcrawl.createEngine(engineConfig);
         String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/validation_invalid_retry_code";
+        assertThrows(Exception.class, () -> Kreuzcrawl.scrape(engine, url));
+    }
+
+    @Test
+    void testValidationMaxConcurrentZero() throws Exception {
+        // max_concurrent=0 is rejected as invalid config (minimum is 1)
+        var engineConfig = MAPPER.readValue("{\"max_concurrent\":0}", CrawlConfig.class);
+        var engine = Kreuzcrawl.createEngine(engineConfig);
+        String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/validation_max_concurrent_zero";
+        assertThrows(Exception.class, () -> Kreuzcrawl.scrape(engine, url));
+    }
+
+    @Test
+    void testValidationMaxDepthTooHigh() throws Exception {
+        // max_depth=200 exceeds limit of 100
+        var engineConfig = MAPPER.readValue("{\"max_depth\":200}", CrawlConfig.class);
+        var engine = Kreuzcrawl.createEngine(engineConfig);
+        String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/validation_max_depth_too_high";
         assertThrows(Exception.class, () -> Kreuzcrawl.scrape(engine, url));
     }
 
@@ -54,6 +98,15 @@ class ValidationTest {
         var engineConfig = MAPPER.readValue("{\"max_redirects\":200}", CrawlConfig.class);
         var engine = Kreuzcrawl.createEngine(engineConfig);
         String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/validation_max_redirects_too_high";
+        assertThrows(Exception.class, () -> Kreuzcrawl.scrape(engine, url));
+    }
+
+    @Test
+    void testValidationNegativeBodySize() throws Exception {
+        // max_body_size set to -1 is rejected as invalid config
+        var engineConfig = MAPPER.readValue("{\"max_body_size\":0}", CrawlConfig.class);
+        var engine = Kreuzcrawl.createEngine(engineConfig);
+        String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/validation_negative_body_size";
         assertThrows(Exception.class, () -> Kreuzcrawl.scrape(engine, url));
     }
 

@@ -19,7 +19,7 @@ final class SitemapTest extends TestCase
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/sitemap_basic';
         $this->expectNotToPerformAssertions();
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         // skipped: field 'urls.length' not available on result type
         // skipped: field 'has_lastmod' not available on result type
     }
@@ -32,7 +32,7 @@ final class SitemapTest extends TestCase
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/sitemap_compressed_gzip';
         $this->expectNotToPerformAssertions();
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         // skipped: field 'urls.length' not available on result type
     }
 
@@ -42,7 +42,7 @@ final class SitemapTest extends TestCase
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/sitemap_empty';
         $this->expectNotToPerformAssertions();
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         // skipped: field 'urls.length' not available on result type
     }
 
@@ -54,7 +54,7 @@ final class SitemapTest extends TestCase
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/sitemap_from_robots_txt';
         $this->expectNotToPerformAssertions();
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         // skipped: field 'urls.length' not available on result type
     }
 
@@ -64,7 +64,7 @@ final class SitemapTest extends TestCase
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/sitemap_index';
         $this->expectNotToPerformAssertions();
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         // skipped: field 'urls.length' not available on result type
     }
 
@@ -76,7 +76,7 @@ final class SitemapTest extends TestCase
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/sitemap_lastmod_filter';
         $this->expectNotToPerformAssertions();
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         // skipped: field 'urls.length' not available on result type
         // skipped: field 'has_lastmod' not available on result type
     }
@@ -89,7 +89,7 @@ final class SitemapTest extends TestCase
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/sitemap_only_mode';
         $this->expectNotToPerformAssertions();
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         // skipped: field 'urls.length' not available on result type
     }
 
@@ -101,7 +101,7 @@ final class SitemapTest extends TestCase
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/sitemap_xhtml_links';
         $this->expectNotToPerformAssertions();
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         // skipped: field 'urls.length' not available on result type
         // skipped: field 'has_lastmod' not available on result type
     }

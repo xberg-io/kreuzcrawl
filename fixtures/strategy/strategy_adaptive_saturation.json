@@ -1,0 +1,62 @@
+{
+	"id": "strategy_adaptive_saturation",
+	"description": "Adaptive strategy stops early when encountering saturation (duplicate content)",
+	"tags": ["strategy", "adaptive", "saturation"],
+	"input": {
+		"mock_responses": [
+			{
+				"path": "/",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><body><h1>Root Page</h1><a href=\"/dup1\">Duplicate 1</a><a href=\"/dup2\">Duplicate 2</a></body></html>"
+			},
+			{
+				"path": "/dup1",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html"
+				},
+				"body_inline": "<html><body><h1>Duplicate Content</h1><p>This is the same content repeated</p><a href=\"/dup3\">More duplicates</a></body></html>"
+			},
+			{
+				"path": "/dup2",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html"
+				},
+				"body_inline": "<html><body><h1>Duplicate Content</h1><p>This is the same content repeated</p><a href=\"/dup4\">More duplicates</a></body></html>"
+			},
+			{
+				"path": "/dup3",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html"
+				},
+				"body_inline": "<html><body><h1>Duplicate Content</h1><p>This is the same content repeated</p></body></html>"
+			},
+			{
+				"path": "/dup4",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html"
+				},
+				"body_inline": "<html><body><h1>Duplicate Content</h1><p>This is the same content repeated</p></body></html>"
+			}
+		],
+		"crawl_strategy": "best_first",
+		"config": {
+			"max_depth": 2,
+			"max_concurrent": 1,
+			"respect_robots_txt": false
+		}
+	},
+	"assertions": [
+		{
+			"type": "greater_than_or_equal",
+			"field": "crawl.pages_crawled",
+			"value": 1
+		}
+	]
+}

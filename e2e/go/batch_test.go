@@ -4,11 +4,104 @@
 package e2e_test
 
 import (
+	"encoding/json"
 	"os"
 	"testing"
 
 	pkg "github.com/kreuzberg-dev/kreuzcrawl/packages/go"
 )
+
+func Test_BatchCrawlBasic(t *testing.T) {
+	// Batch crawl of 2 seed URLs with links to discover
+	var engineConfig pkg.CrawlConfig
+	if err := json.Unmarshal([]byte(`{"max_depth":1,"respect_robots_txt":false}`), &engineConfig); err != nil {
+		t.Fatalf("config parse failed: %v", err)
+	}
+	engine, createErr := pkg.CreateEngine(&engineConfig)
+	if createErr != nil {
+		t.Fatalf("create handle failed: %v", createErr)
+	}
+	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/batch_crawl_basic"
+	_, err := pkg.Scrape(engine, url)
+	if err != nil {
+		t.Fatalf("call failed: %v", err)
+	}
+	// skipped: field 'batch.completed_count' not available on result type
+	// skipped: field 'batch.failed_count' not available on result type
+	// skipped: field 'batch.total_count' not available on result type
+}
+
+func Test_BatchCrawlPartialFailure(t *testing.T) {
+	// Batch crawl where one seed URL returns 404 error
+	var engineConfig pkg.CrawlConfig
+	if err := json.Unmarshal([]byte(`{"max_depth":1,"respect_robots_txt":false}`), &engineConfig); err != nil {
+		t.Fatalf("config parse failed: %v", err)
+	}
+	engine, createErr := pkg.CreateEngine(&engineConfig)
+	if createErr != nil {
+		t.Fatalf("create handle failed: %v", createErr)
+	}
+	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/batch_crawl_partial_failure"
+	_, err := pkg.Scrape(engine, url)
+	if err != nil {
+		t.Fatalf("call failed: %v", err)
+	}
+	// skipped: field 'batch.completed_count' not available on result type
+	// skipped: field 'batch.failed_count' not available on result type
+	// skipped: field 'batch.total_count' not available on result type
+}
+
+func Test_BatchCrawlWithConfig(t *testing.T) {
+	// Batch crawl with max_depth=1 config verifying pages are discovered
+	var engineConfig pkg.CrawlConfig
+	if err := json.Unmarshal([]byte(`{"max_depth":1,"respect_robots_txt":false}`), &engineConfig); err != nil {
+		t.Fatalf("config parse failed: %v", err)
+	}
+	engine, createErr := pkg.CreateEngine(&engineConfig)
+	if createErr != nil {
+		t.Fatalf("create handle failed: %v", createErr)
+	}
+	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/batch_crawl_with_config"
+	_, err := pkg.Scrape(engine, url)
+	if err != nil {
+		t.Fatalf("call failed: %v", err)
+	}
+	// skipped: field 'batch.completed_count' not available on result type
+	// skipped: field 'batch.failed_count' not available on result type
+}
+
+func Test_BatchScrapeEmptyUrlsError(t *testing.T) {
+	// Batch scrape with empty batch_urls array returns error
+	engine, createErr := pkg.CreateEngine(nil)
+	if createErr != nil {
+		t.Fatalf("create handle failed: %v", createErr)
+	}
+	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/batch_scrape_empty_urls_error"
+	_, err := pkg.Scrape(engine, url)
+	if err == nil {
+		t.Errorf("expected an error, but call succeeded")
+	}
+}
+
+func Test_BatchScrapeWithConfig(t *testing.T) {
+	// Batch scrape with main_content_only=true configuration
+	var engineConfig pkg.CrawlConfig
+	if err := json.Unmarshal([]byte(`{"main_content_only":true}`), &engineConfig); err != nil {
+		t.Fatalf("config parse failed: %v", err)
+	}
+	engine, createErr := pkg.CreateEngine(&engineConfig)
+	if createErr != nil {
+		t.Fatalf("create handle failed: %v", createErr)
+	}
+	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/batch_scrape_with_config"
+	_, err := pkg.Scrape(engine, url)
+	if err != nil {
+		t.Fatalf("call failed: %v", err)
+	}
+	// skipped: field 'batch.completed_count' not available on result type
+	// skipped: field 'batch.failed_count' not available on result type
+	// skipped: field 'batch.total_count' not available on result type
+}
 
 func Test_ScrapeBatchBasic(t *testing.T) {
 	// Batch scrape of multiple URLs all succeeding

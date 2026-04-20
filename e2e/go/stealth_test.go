@@ -30,3 +30,42 @@ func Test_StealthUaRotationConfig(t *testing.T) {
 		t.Errorf("equals mismatch: got %v", result.StatusCode)
 	}
 }
+
+func Test_StealthUaRotationRoundRobin(t *testing.T) {
+	// User-agent rotation cycles through multiple agents across multiple requests
+	var engineConfig pkg.CrawlConfig
+	if err := json.Unmarshal([]byte(`{"max_depth":1,"max_pages":3,"user_agents":["Mozilla/5.0 (Windows NT 10.0; Win64; x64) TestAgent-1","Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15) TestAgent-2"]}`), &engineConfig); err != nil {
+		t.Fatalf("config parse failed: %v", err)
+	}
+	engine, createErr := pkg.CreateEngine(&engineConfig)
+	if createErr != nil {
+		t.Fatalf("create handle failed: %v", createErr)
+	}
+	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/stealth_ua_rotation_round_robin"
+	_, err := pkg.Scrape(engine, url)
+	if err != nil {
+		t.Fatalf("call failed: %v", err)
+	}
+	// skipped: field 'pages.length' not available on result type
+}
+
+func Test_StealthUaRotationSingleDomain(t *testing.T) {
+	// Custom user-agent string is applied for single domain crawl
+	var engineConfig pkg.CrawlConfig
+	if err := json.Unmarshal([]byte(`{"max_depth":0,"stay_on_domain":true,"user_agents":["Mozilla/5.0 TestBot/1.0 (+http://example.com/bot)"]}`), &engineConfig); err != nil {
+		t.Fatalf("config parse failed: %v", err)
+	}
+	engine, createErr := pkg.CreateEngine(&engineConfig)
+	if createErr != nil {
+		t.Fatalf("create handle failed: %v", createErr)
+	}
+	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/stealth_ua_rotation_single_domain"
+	result, err := pkg.Scrape(engine, url)
+	if err != nil {
+		t.Fatalf("call failed: %v", err)
+	}
+	if result.StatusCode != 200 {
+		t.Errorf("equals mismatch: got %v", result.StatusCode)
+	}
+	// skipped: field 'pages.length' not available on result type
+}

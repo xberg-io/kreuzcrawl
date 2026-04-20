@@ -11,4 +11,31 @@ RSpec.describe 'cache' do
     result = Kreuzcrawl.scrape(engine, url)
     expect(result.status_code).to eq(200)
   end
+
+  it 'cache_etag_conditional: Etag header enables conditional requests for cached content' do
+    engine_config = { 'max_depth' => 1 }
+    engine = Kreuzcrawl.create_engine(engine_config.to_json)
+    url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/cache_etag_conditional"
+    result = Kreuzcrawl.scrape(engine, url)
+    # skipped: field 'pages.length' not available on result type
+    expect(result.status_code).to eq(200)
+  end
+
+  it 'cache_last_modified: Last-Modified header enables conditional requests via If-Modified-Since' do
+    engine_config = { 'max_depth' => 1 }
+    engine = Kreuzcrawl.create_engine(engine_config.to_json)
+    url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/cache_last_modified"
+    result = Kreuzcrawl.scrape(engine, url)
+    # skipped: field 'pages.length' not available on result type
+    expect(result).not_to be_nil
+  end
+
+  it 'cache_miss_fresh_fetch: Uncached URLs are fetched fresh without conditional headers' do
+    engine_config = { 'max_depth' => 1 }
+    engine = Kreuzcrawl.create_engine(engine_config.to_json)
+    url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/cache_miss_fresh_fetch"
+    result = Kreuzcrawl.scrape(engine, url)
+    # skipped: field 'pages.length' not available on result type
+    expect(result.status_code).to eq(200)
+  end
 end

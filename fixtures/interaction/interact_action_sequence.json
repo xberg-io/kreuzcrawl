@@ -1,0 +1,88 @@
+{
+	"id": "interact_action_sequence",
+	"description": "Execute a sequence of multiple actions (click, type, click) and verify all succeed with correct indices",
+	"tags": ["interaction", "sequence"],
+	"skip": {
+		"languages": ["wasm", "homebrew"],
+		"reason": "Requires browser feature"
+	},
+	"input": {
+		"mock_responses": [
+			{
+				"path": "/",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><head><title>Sequence Test</title></head><body><button id=\"open\">Open Form</button><input type=\"text\" id=\"field\" style=\"display:none\"><button id=\"submit\" style=\"display:none\">Submit</button></body></html>"
+			}
+		],
+		"config": {
+			"browser": {
+				"mode": "always"
+			}
+		},
+		"actions": [
+			{
+				"type": "click",
+				"selector": "#open"
+			},
+			{
+				"type": "type",
+				"selector": "#field",
+				"text": "test_data"
+			},
+			{
+				"type": "click",
+				"selector": "#submit"
+			}
+		]
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "interaction.action_results[0].action_index",
+			"value": 0
+		},
+		{
+			"type": "equals",
+			"field": "interaction.action_results[0].action_type",
+			"value": "click"
+		},
+		{
+			"type": "equals",
+			"field": "interaction.action_results[0].success",
+			"value": true
+		},
+		{
+			"type": "equals",
+			"field": "interaction.action_results[1].action_index",
+			"value": 1
+		},
+		{
+			"type": "equals",
+			"field": "interaction.action_results[1].action_type",
+			"value": "type"
+		},
+		{
+			"type": "equals",
+			"field": "interaction.action_results[1].success",
+			"value": true
+		},
+		{
+			"type": "equals",
+			"field": "interaction.action_results[2].action_index",
+			"value": 2
+		},
+		{
+			"type": "equals",
+			"field": "interaction.action_results[2].action_type",
+			"value": "click"
+		},
+		{
+			"type": "equals",
+			"field": "interaction.action_results[2].success",
+			"value": true
+		}
+	]
+}

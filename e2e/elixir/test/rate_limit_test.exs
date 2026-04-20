@@ -3,6 +3,16 @@
 defmodule E2e.RateLimitTest do
   use ExUnit.Case, async: true
 
+  describe "rate_limit_adaptive_backoff" do
+    test "Exponential backoff retry succeeds after 429 Too Many Requests" do
+      engine_config = "{\"respect_robots_txt\":false,\"retry_codes\":[429],\"retry_count\":2}"
+      {:ok, engine} = Kreuzcrawl.create_engine(engine_config)
+      url = System.get_env("MOCK_SERVER_URL") <> "/fixtures/rate_limit_adaptive_backoff"
+      {:ok, result} = Kreuzcrawl.scrape_async(engine, url)
+      assert result.status_code == 200
+    end
+  end
+
   describe "rate_limit_basic_delay" do
     test "Rate limiter adds delay between requests to the same domain" do
       engine_config = "{\"max_depth\":1}"
@@ -11,6 +21,28 @@ defmodule E2e.RateLimitTest do
       {:ok, result} = Kreuzcrawl.scrape_async(engine, url)
       # skipped: field 'crawl.pages_crawled' not available on result type
       # skipped: field 'rate_limit.min_duration_ms' not available on result type
+    end
+  end
+
+  describe "rate_limit_per_domain" do
+    test "Per-domain rate limiting applies delay between requests to same domain" do
+      engine_config = "{\"max_concurrent\":1,\"max_depth\":1}"
+      {:ok, engine} = Kreuzcrawl.create_engine(engine_config)
+      url = System.get_env("MOCK_SERVER_URL") <> "/fixtures/rate_limit_per_domain"
+      {:ok, result} = Kreuzcrawl.scrape_async(engine, url)
+      # skipped: field 'pages.length' not available on result type
+      assert result.status_code == 200
+    end
+  end
+
+  describe "rate_limit_robots_crawl_delay" do
+    test "Respects Crawl-delay directive in robots.txt" do
+      engine_config = "{\"max_depth\":1,\"respect_robots_txt\":true,\"user_agent\":\"TestBot\"}"
+      {:ok, engine} = Kreuzcrawl.create_engine(engine_config)
+      url = System.get_env("MOCK_SERVER_URL") <> "/fixtures/rate_limit_robots_crawl_delay"
+      {:ok, result} = Kreuzcrawl.scrape_async(engine, url)
+      # skipped: field 'pages.length' not available on result type
+      assert result.status_code == 200
     end
   end
 

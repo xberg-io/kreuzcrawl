@@ -3,6 +3,53 @@ import { describe, it, expect } from "vitest";
 import { scrape, createEngine } from "@kreuzberg/kreuzcrawl";
 
 describe("batch", () => {
+	it("batch_crawl_basic: Batch crawl of 2 seed URLs with links to discover", async () => {
+		const engineConfig = { maxDepth: 1, respectRobotsTxt: false };
+		const engine = createEngine(engineConfig);
+		const url = `${process.env.MOCK_SERVER_URL}/fixtures/batch_crawl_basic`;
+		await scrape(engine, url);
+		// skipped: field 'batch.completed_count' not available on result type
+		// skipped: field 'batch.failed_count' not available on result type
+		// skipped: field 'batch.total_count' not available on result type
+	});
+
+	it("batch_crawl_partial_failure: Batch crawl where one seed URL returns 404 error", async () => {
+		const engineConfig = { maxDepth: 1, respectRobotsTxt: false };
+		const engine = createEngine(engineConfig);
+		const url = `${process.env.MOCK_SERVER_URL}/fixtures/batch_crawl_partial_failure`;
+		await scrape(engine, url);
+		// skipped: field 'batch.completed_count' not available on result type
+		// skipped: field 'batch.failed_count' not available on result type
+		// skipped: field 'batch.total_count' not available on result type
+	});
+
+	it("batch_crawl_with_config: Batch crawl with max_depth=1 config verifying pages are discovered", async () => {
+		const engineConfig = { maxDepth: 1, respectRobotsTxt: false };
+		const engine = createEngine(engineConfig);
+		const url = `${process.env.MOCK_SERVER_URL}/fixtures/batch_crawl_with_config`;
+		await scrape(engine, url);
+		// skipped: field 'batch.completed_count' not available on result type
+		// skipped: field 'batch.failed_count' not available on result type
+	});
+
+	it("batch_scrape_empty_urls_error: Batch scrape with empty batch_urls array returns error", async () => {
+		await expect(async () => {
+			const engine = createEngine(null);
+			const url = `${process.env.MOCK_SERVER_URL}/fixtures/batch_scrape_empty_urls_error`;
+			await scrape(engine, url);
+		}).rejects.toThrow();
+	});
+
+	it("batch_scrape_with_config: Batch scrape with main_content_only=true configuration", async () => {
+		const engineConfig = { mainContentOnly: true };
+		const engine = createEngine(engineConfig);
+		const url = `${process.env.MOCK_SERVER_URL}/fixtures/batch_scrape_with_config`;
+		await scrape(engine, url);
+		// skipped: field 'batch.completed_count' not available on result type
+		// skipped: field 'batch.failed_count' not available on result type
+		// skipped: field 'batch.total_count' not available on result type
+	});
+
 	it("scrape_batch_basic: Batch scrape of multiple URLs all succeeding", async () => {
 		const engine = createEngine(null);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/scrape_batch_basic`;

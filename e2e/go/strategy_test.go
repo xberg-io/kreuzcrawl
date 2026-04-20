@@ -11,6 +11,42 @@ import (
 	pkg "github.com/kreuzberg-dev/kreuzcrawl/packages/go"
 )
 
+func Test_StrategyAdaptiveSaturation(t *testing.T) {
+	// Adaptive strategy stops early when encountering saturation (duplicate content)
+	var engineConfig pkg.CrawlConfig
+	if err := json.Unmarshal([]byte(`{"max_concurrent":1,"max_depth":2,"respect_robots_txt":false}`), &engineConfig); err != nil {
+		t.Fatalf("config parse failed: %v", err)
+	}
+	engine, createErr := pkg.CreateEngine(&engineConfig)
+	if createErr != nil {
+		t.Fatalf("create handle failed: %v", createErr)
+	}
+	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/strategy_adaptive_saturation"
+	_, err := pkg.Scrape(engine, url)
+	if err != nil {
+		t.Fatalf("call failed: %v", err)
+	}
+	// skipped: field 'crawl.pages_crawled' not available on result type
+}
+
+func Test_StrategyAdaptiveWindow(t *testing.T) {
+	// Adaptive strategy crawls more pages when content is diverse
+	var engineConfig pkg.CrawlConfig
+	if err := json.Unmarshal([]byte(`{"max_concurrent":1,"max_depth":1,"respect_robots_txt":false}`), &engineConfig); err != nil {
+		t.Fatalf("config parse failed: %v", err)
+	}
+	engine, createErr := pkg.CreateEngine(&engineConfig)
+	if createErr != nil {
+		t.Fatalf("create handle failed: %v", createErr)
+	}
+	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/strategy_adaptive_window"
+	_, err := pkg.Scrape(engine, url)
+	if err != nil {
+		t.Fatalf("call failed: %v", err)
+	}
+	// skipped: field 'crawl.pages_crawled' not available on result type
+}
+
 func Test_StrategyBestFirstSeed(t *testing.T) {
 	// BestFirst strategy always processes the seed URL first
 	var engineConfig pkg.CrawlConfig

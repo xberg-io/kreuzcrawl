@@ -4,7 +4,7 @@ import { scrape, createEngine, WasmCrawlConfig } from "kreuzcrawl";
 
 describe("cookies", () => {
 	it("cookies_per_domain: Isolates cookies per domain during crawl", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.cookiesEnabled = true;
 		engineConfig.maxDepth = 1;
 		engineConfig.respectRobotsTxt = false;
@@ -16,7 +16,7 @@ describe("cookies", () => {
 	});
 
 	it("cookies_persistence: Maintains cookies across multiple crawl requests", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.cookiesEnabled = true;
 		engineConfig.maxDepth = 1;
 		engineConfig.respectRobotsTxt = false;
@@ -27,7 +27,7 @@ describe("cookies", () => {
 	});
 
 	it("cookies_set_cookie_response: Respects Set-Cookie header from server responses", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.cookiesEnabled = true;
 		engineConfig.maxDepth = 1;
 		engineConfig.respectRobotsTxt = false;

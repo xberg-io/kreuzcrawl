@@ -8,6 +8,16 @@ from kreuzcrawl import CrawlConfig, create_engine, scrape
 
 
 @pytest.mark.asyncio
+async def test_rate_limit_adaptive_backoff() -> None:
+    """Exponential backoff retry succeeds after 429 Too Many Requests."""
+    engine_config = CrawlConfig(respect_robots_txt=False, retry_codes=[429], retry_count=2)
+    engine = create_engine(engine_config)
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/rate_limit_adaptive_backoff"
+    result = await scrape(engine=engine, url=url)
+    assert result.status_code == 200
+
+
+@pytest.mark.asyncio
 async def test_rate_limit_basic_delay() -> None:
     """Rate limiter adds delay between requests to the same domain."""
     engine_config = CrawlConfig(max_depth=1)
@@ -16,6 +26,28 @@ async def test_rate_limit_basic_delay() -> None:
     _ = await scrape(engine=engine, url=url)
     # skipped: field 'crawl.pages_crawled' not available on result type
     # skipped: field 'rate_limit.min_duration_ms' not available on result type
+
+
+@pytest.mark.asyncio
+async def test_rate_limit_per_domain() -> None:
+    """Per-domain rate limiting applies delay between requests to same domain."""
+    engine_config = CrawlConfig(max_concurrent=1, max_depth=1)
+    engine = create_engine(engine_config)
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/rate_limit_per_domain"
+    result = await scrape(engine=engine, url=url)
+    # skipped: field 'pages.length' not available on result type
+    assert result.status_code == 200
+
+
+@pytest.mark.asyncio
+async def test_rate_limit_robots_crawl_delay() -> None:
+    """Respects Crawl-delay directive in robots.txt."""
+    engine_config = CrawlConfig(max_depth=1, respect_robots_txt=True, user_agent="TestBot")
+    engine = create_engine(engine_config)
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/rate_limit_robots_crawl_delay"
+    result = await scrape(engine=engine, url=url)
+    # skipped: field 'pages.length' not available on result type
+    assert result.status_code == 200
 
 
 @pytest.mark.asyncio

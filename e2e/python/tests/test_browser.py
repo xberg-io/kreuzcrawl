@@ -111,6 +111,16 @@ async def test_browser_detect_vue_shell() -> None:
 
 
 @pytest.mark.asyncio
+async def test_browser_extra_wait() -> None:
+    """Browser extra_wait adds additional time after network_idle to ensure all async operations complete."""
+    engine_config = CrawlConfig(browser=BrowserConfig(extra_wait=200, mode="always", wait="network_idle"))
+    engine = create_engine(engine_config)
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/browser_extra_wait"
+    _ = await scrape(engine=engine, url=url)
+    # skipped: field 'browser.browser_used' not available on result type
+
+
+@pytest.mark.asyncio
 async def test_browser_fallback_spa_render() -> None:
     """Browser auto re-fetches SPA shell when JS rendering is detected."""
     engine_config = CrawlConfig(browser=BrowserConfig(mode="auto"))
@@ -139,3 +149,36 @@ async def test_browser_mode_always() -> None:
     url = os.environ["MOCK_SERVER_URL"] + "/fixtures/browser_mode_always"
     _ = await scrape(engine=engine, url=url)
     # skipped: field 'browser.browser_used' not available on result type
+
+
+@pytest.mark.asyncio
+async def test_browser_profile_basic() -> None:
+    """Browser profile configuration persists and reuses browser state across crawl sessions."""
+    engine_config = CrawlConfig(browser=BrowserConfig(mode="always"), browser_profile="test-profile")
+    engine = create_engine(engine_config)
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/browser_profile_basic"
+    result = await scrape(engine=engine, url=url)
+    # skipped: field 'browser.browser_used' not available on result type
+    assert result.status_code == 200
+
+
+@pytest.mark.asyncio
+async def test_browser_wait_fixed() -> None:
+    """Browser wait strategy 'fixed' waits for a specific duration after page navigation."""
+    engine_config = CrawlConfig(browser=BrowserConfig(extra_wait=100, mode="always", wait="fixed"))
+    engine = create_engine(engine_config)
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/browser_wait_fixed"
+    result = await scrape(engine=engine, url=url)
+    # skipped: field 'browser.browser_used' not available on result type
+    assert result.status_code == 200
+
+
+@pytest.mark.asyncio
+async def test_browser_wait_selector() -> None:
+    """Browser wait strategy 'selector' waits for specific CSS selector before considering page loaded."""
+    engine_config = CrawlConfig(browser=BrowserConfig(mode="always", wait="selector", wait_selector="#content"))
+    engine = create_engine(engine_config)
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/browser_wait_selector"
+    result = await scrape(engine=engine, url=url)
+    # skipped: field 'browser.browser_used' not available on result type
+    assert result.status_code == 200

@@ -1,0 +1,42 @@
+{
+	"id": "cache_etag_conditional",
+	"description": "Etag header enables conditional requests for cached content",
+	"tags": ["cache", "etag", "conditional"],
+	"input": {
+		"mock_responses": [
+			{
+				"path": "/",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html",
+					"etag": "\"abc123\""
+				},
+				"body_inline": "<html><body><h1>Home</h1><a href=\"/target\">Target</a></body></html>"
+			},
+			{
+				"path": "/target",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html",
+					"etag": "\"xyz789\""
+				},
+				"body_inline": "<html><body><h1>Target Page</h1></body></html>"
+			}
+		],
+		"config": {
+			"max_depth": 1
+		}
+	},
+	"assertions": [
+		{
+			"type": "greater_than_or_equal",
+			"field": "pages.length",
+			"value": 1
+		},
+		{
+			"type": "equals",
+			"field": "status_code",
+			"value": 200
+		}
+	]
+}

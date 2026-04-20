@@ -1,0 +1,21 @@
+{
+	"id": "validation_empty_batch_urls",
+	"description": "batch operation with empty batch_urls array is rejected",
+	"tags": ["validation"],
+	"input": {
+		"batch_urls": [],
+		"mock_responses": [
+			{
+				"status_code": 200,
+				"body_inline": "<html></html>"
+			}
+		],
+		"config": {}
+	},
+	"assertions": [
+		{
+			"type": "error",
+			"value": "urls"
+		}
+	]
+}

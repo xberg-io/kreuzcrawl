@@ -13,6 +13,17 @@ public class RateLimitTests
     private static readonly JsonSerializerOptions ConfigOptions = new() { Converters = { new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower) }, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault };
 
     [Fact]
+    public async Task Test_RateLimitAdaptiveBackoff()
+    {
+        // Exponential backoff retry succeeds after 429 Too Many Requests
+        var engineConfig = JsonSerializer.Deserialize<CrawlConfig>("{\"respect_robots_txt\":false,\"retry_codes\":[429],\"retry_count\":2}", ConfigOptions)!;
+        var engine = KreuzcrawlLib.CreateEngine(engineConfig);
+        var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/rate_limit_adaptive_backoff";
+        var result = await KreuzcrawlLib.Scrape(engine, url);
+        Assert.Equal(200, result.StatusCode);
+    }
+
+    [Fact]
     public async Task Test_RateLimitBasicDelay()
     {
         // Rate limiter adds delay between requests to the same domain
@@ -22,6 +33,30 @@ public class RateLimitTests
         var result = await KreuzcrawlLib.Scrape(engine, url);
         // skipped: field 'crawl.pages_crawled' not available on result type
         // skipped: field 'rate_limit.min_duration_ms' not available on result type
+    }
+
+    [Fact]
+    public async Task Test_RateLimitPerDomain()
+    {
+        // Per-domain rate limiting applies delay between requests to same domain
+        var engineConfig = JsonSerializer.Deserialize<CrawlConfig>("{\"max_concurrent\":1,\"max_depth\":1}", ConfigOptions)!;
+        var engine = KreuzcrawlLib.CreateEngine(engineConfig);
+        var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/rate_limit_per_domain";
+        var result = await KreuzcrawlLib.Scrape(engine, url);
+        // skipped: field 'pages.length' not available on result type
+        Assert.Equal(200, result.StatusCode);
+    }
+
+    [Fact]
+    public async Task Test_RateLimitRobotsCrawlDelay()
+    {
+        // Respects Crawl-delay directive in robots.txt
+        var engineConfig = JsonSerializer.Deserialize<CrawlConfig>("{\"max_depth\":1,\"respect_robots_txt\":true,\"user_agent\":\"TestBot\"}", ConfigOptions)!;
+        var engine = KreuzcrawlLib.CreateEngine(engineConfig);
+        var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/rate_limit_robots_crawl_delay";
+        var result = await KreuzcrawlLib.Scrape(engine, url);
+        // skipped: field 'pages.length' not available on result type
+        Assert.Equal(200, result.StatusCode);
     }
 
     [Fact]

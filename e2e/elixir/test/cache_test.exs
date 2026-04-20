@@ -11,4 +11,36 @@ defmodule E2e.CacheTest do
       assert result.status_code == 200
     end
   end
+
+  describe "cache_etag_conditional" do
+    test "Etag header enables conditional requests for cached content" do
+      engine_config = "{\"max_depth\":1}"
+      {:ok, engine} = Kreuzcrawl.create_engine(engine_config)
+      url = System.get_env("MOCK_SERVER_URL") <> "/fixtures/cache_etag_conditional"
+      {:ok, result} = Kreuzcrawl.scrape_async(engine, url)
+      # skipped: field 'pages.length' not available on result type
+      assert result.status_code == 200
+    end
+  end
+
+  describe "cache_last_modified" do
+    test "Last-Modified header enables conditional requests via If-Modified-Since" do
+      engine_config = "{\"max_depth\":1}"
+      {:ok, engine} = Kreuzcrawl.create_engine(engine_config)
+      url = System.get_env("MOCK_SERVER_URL") <> "/fixtures/cache_last_modified"
+      {:ok, result} = Kreuzcrawl.scrape_async(engine, url)
+      # skipped: field 'pages.length' not available on result type
+    end
+  end
+
+  describe "cache_miss_fresh_fetch" do
+    test "Uncached URLs are fetched fresh without conditional headers" do
+      engine_config = "{\"max_depth\":1}"
+      {:ok, engine} = Kreuzcrawl.create_engine(engine_config)
+      url = System.get_env("MOCK_SERVER_URL") <> "/fixtures/cache_miss_fresh_fetch"
+      {:ok, result} = Kreuzcrawl.scrape_async(engine, url)
+      # skipped: field 'pages.length' not available on result type
+      assert result.status_code == 200
+    end
+  end
 end

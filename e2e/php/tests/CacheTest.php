@@ -8,6 +8,7 @@ namespace Kreuzberg\E2e;
 
 use PHPUnit\Framework\TestCase;
 use Kreuzcrawl\Kreuzcrawl;
+use Kreuzcrawl\CrawlConfig;
 
 /** E2e tests for category: cache. */
 final class CacheTest extends TestCase
@@ -17,7 +18,43 @@ final class CacheTest extends TestCase
     {
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/cache_basic';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
+        $this->assertEquals(200, $result->status_code);
+    }
+
+    /** Etag header enables conditional requests for cached content */
+    public function test_cache_etag_conditional(): void
+    {
+        $engine_config = CrawlConfig::default();
+        $engine_config->max_depth = 1;
+        $engine = Kreuzcrawl::createEngine($engine_config);
+        $url = getenv('MOCK_SERVER_URL') . '/fixtures/cache_etag_conditional';
+        $result = Kreuzcrawl::scrape_async($engine, $url);
+        // skipped: field 'pages.length' not available on result type
+        $this->assertEquals(200, $result->status_code);
+    }
+
+    /** Last-Modified header enables conditional requests via If-Modified-Since */
+    public function test_cache_last_modified(): void
+    {
+        $engine_config = CrawlConfig::default();
+        $engine_config->max_depth = 1;
+        $engine = Kreuzcrawl::createEngine($engine_config);
+        $url = getenv('MOCK_SERVER_URL') . '/fixtures/cache_last_modified';
+        $this->expectNotToPerformAssertions();
+        $result = Kreuzcrawl::scrape_async($engine, $url);
+        // skipped: field 'pages.length' not available on result type
+    }
+
+    /** Uncached URLs are fetched fresh without conditional headers */
+    public function test_cache_miss_fresh_fetch(): void
+    {
+        $engine_config = CrawlConfig::default();
+        $engine_config->max_depth = 1;
+        $engine = Kreuzcrawl::createEngine($engine_config);
+        $url = getenv('MOCK_SERVER_URL') . '/fixtures/cache_miss_fresh_fetch';
+        $result = Kreuzcrawl::scrape_async($engine, $url);
+        // skipped: field 'pages.length' not available on result type
         $this->assertEquals(200, $result->status_code);
     }
 }

@@ -1,0 +1,22 @@
+{
+	"id": "validation_max_depth_too_high",
+	"description": "max_depth=200 exceeds limit of 100",
+	"tags": ["validation"],
+	"input": {
+		"mock_responses": [
+			{
+				"status_code": 200,
+				"body_inline": "<html></html>"
+			}
+		],
+		"config": {
+			"max_depth": 200
+		}
+	},
+	"assertions": [
+		{
+			"type": "error",
+			"value": "max_depth"
+		}
+	]
+}

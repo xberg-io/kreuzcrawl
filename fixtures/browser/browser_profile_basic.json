@@ -1,0 +1,38 @@
+{
+	"id": "browser_profile_basic",
+	"description": "Browser profile configuration persists and reuses browser state across crawl sessions",
+	"tags": ["browser", "profile"],
+	"skip": {
+		"languages": ["wasm", "homebrew"],
+		"reason": "Requires browser feature"
+	},
+	"input": {
+		"mock_responses": [
+			{
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<!DOCTYPE html><html><head><title>Browser Profile Test</title></head><body><div><h1>Profile Page</h1><p>This page is loaded with a persistent browser profile.</p></div></body></html>"
+			}
+		],
+		"config": {
+			"browser": {
+				"mode": "always"
+			},
+			"browser_profile": "test-profile"
+		}
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "browser.browser_used",
+			"value": true
+		},
+		{
+			"type": "equals",
+			"field": "status_code",
+			"value": 200
+		}
+	]
+}

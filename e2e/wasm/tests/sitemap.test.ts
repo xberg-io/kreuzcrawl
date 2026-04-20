@@ -12,7 +12,7 @@ describe("sitemap", () => {
 	});
 
 	it("sitemap_compressed_gzip: Parses a gzip-compressed sitemap file", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.respectRobotsTxt = false;
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/sitemap_compressed_gzip`;
@@ -28,7 +28,7 @@ describe("sitemap", () => {
 	});
 
 	it("sitemap_from_robots_txt: Discovers sitemap via robots.txt Sitemap directive", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.respectRobotsTxt = true;
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/sitemap_from_robots_txt`;
@@ -44,7 +44,7 @@ describe("sitemap", () => {
 	});
 
 	it("sitemap_lastmod_filter: Filters sitemap URLs by lastmod date", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.respectRobotsTxt = false;
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/sitemap_lastmod_filter`;
@@ -54,7 +54,7 @@ describe("sitemap", () => {
 	});
 
 	it("sitemap_only_mode: Uses sitemap URLs exclusively without following page links", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.respectRobotsTxt = false;
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/sitemap_only_mode`;
@@ -63,7 +63,7 @@ describe("sitemap", () => {
 	});
 
 	it("sitemap_xhtml_links: Parses sitemap with XHTML namespace alternate links", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.respectRobotsTxt = false;
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/sitemap_xhtml_links`;

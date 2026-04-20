@@ -1,0 +1,37 @@
+{
+	"id": "warc_basic_output",
+	"description": "Scrape single page with WARC output enabled writes to file",
+	"tags": ["warc", "output", "basic"],
+	"skip": {
+		"languages": ["wasm", "homebrew"],
+		"reason": "WARC output requires filesystem access"
+	},
+	"input": {
+		"mock_responses": [
+			{
+				"path": "/",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><body><h1>Test Page</h1><p>This page will be archived in WARC format.</p></body></html>"
+			}
+		],
+		"config": {
+			"warc_output": "/tmp/kreuzcrawl_test.warc",
+			"respect_robots_txt": false
+		}
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "status_code",
+			"value": 200
+		},
+		{
+			"type": "equals",
+			"field": "pages.length",
+			"value": 1
+		}
+	]
+}

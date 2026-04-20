@@ -1,0 +1,22 @@
+{
+	"id": "validation_invalid_auth_config",
+	"description": "auth object with no recognized variant (empty object) is rejected",
+	"tags": ["validation"],
+	"input": {
+		"mock_responses": [
+			{
+				"status_code": 200,
+				"body_inline": "<html></html>"
+			}
+		],
+		"config": {
+			"auth": {}
+		}
+	},
+	"assertions": [
+		{
+			"type": "error",
+			"value": "auth"
+		}
+	]
+}

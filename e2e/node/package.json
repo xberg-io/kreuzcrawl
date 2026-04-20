@@ -7,7 +7,7 @@
 		"test": "vitest run"
 	},
 	"devDependencies": {
-		"@kreuzberg/kreuzcrawl": "file:../../crates/kreuzcrawl-node",
+		"@kreuzberg/kreuzcrawl": "workspace:*",
 		"vitest": "^3.0.0"
 	}
 }

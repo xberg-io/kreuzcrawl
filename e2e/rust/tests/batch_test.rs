@@ -3,6 +3,90 @@
 
 use kreuzcrawl::create_engine;
 use kreuzcrawl::scrape;
+use kreuzcrawl::CrawlConfig;
+
+#[tokio::test]
+async fn test_batch_crawl_basic() {
+    // Batch crawl of 2 seed URLs with links to discover
+    let engine_config: CrawlConfig =
+        serde_json::from_str("{\"max_depth\":1,\"respect_robots_txt\":false}").expect("config should parse");
+    let engine = create_engine(Some(engine_config)).expect("handle creation should succeed");
+    let url = format!(
+        "{}/fixtures/{}",
+        std::env::var("MOCK_SERVER_URL").expect("MOCK_SERVER_URL not set"),
+        "batch_crawl_basic"
+    );
+    let _ = scrape(&engine, &url).await.expect("should succeed");
+    // skipped: field 'batch.completed_count' not available on result type
+    // skipped: field 'batch.failed_count' not available on result type
+    // skipped: field 'batch.total_count' not available on result type
+}
+
+#[tokio::test]
+async fn test_batch_crawl_partial_failure() {
+    // Batch crawl where one seed URL returns 404 error
+    let engine_config: CrawlConfig =
+        serde_json::from_str("{\"max_depth\":1,\"respect_robots_txt\":false}").expect("config should parse");
+    let engine = create_engine(Some(engine_config)).expect("handle creation should succeed");
+    let url = format!(
+        "{}/fixtures/{}",
+        std::env::var("MOCK_SERVER_URL").expect("MOCK_SERVER_URL not set"),
+        "batch_crawl_partial_failure"
+    );
+    let _ = scrape(&engine, &url).await.expect("should succeed");
+    // skipped: field 'batch.completed_count' not available on result type
+    // skipped: field 'batch.failed_count' not available on result type
+    // skipped: field 'batch.total_count' not available on result type
+}
+
+#[tokio::test]
+async fn test_batch_crawl_with_config() {
+    // Batch crawl with max_depth=1 config verifying pages are discovered
+    let engine_config: CrawlConfig =
+        serde_json::from_str("{\"max_depth\":1,\"respect_robots_txt\":false}").expect("config should parse");
+    let engine = create_engine(Some(engine_config)).expect("handle creation should succeed");
+    let url = format!(
+        "{}/fixtures/{}",
+        std::env::var("MOCK_SERVER_URL").expect("MOCK_SERVER_URL not set"),
+        "batch_crawl_with_config"
+    );
+    let _ = scrape(&engine, &url).await.expect("should succeed");
+    // skipped: field 'batch.completed_count' not available on result type
+    // skipped: field 'batch.failed_count' not available on result type
+}
+
+#[tokio::test]
+async fn test_batch_scrape_empty_urls_error() {
+    // Batch scrape with empty batch_urls array returns error
+    let engine = create_engine(None).expect("handle creation should succeed");
+    let url = format!(
+        "{}/fixtures/{}",
+        std::env::var("MOCK_SERVER_URL").expect("MOCK_SERVER_URL not set"),
+        "batch_scrape_empty_urls_error"
+    );
+    let result = scrape(&engine, &url).await;
+    assert!(result.is_err(), "expected call to fail");
+    assert!(
+        result.as_ref().unwrap_err().to_string().contains("urls"),
+        "error message mismatch"
+    );
+}
+
+#[tokio::test]
+async fn test_batch_scrape_with_config() {
+    // Batch scrape with main_content_only=true configuration
+    let engine_config: CrawlConfig = serde_json::from_str("{\"main_content_only\":true}").expect("config should parse");
+    let engine = create_engine(Some(engine_config)).expect("handle creation should succeed");
+    let url = format!(
+        "{}/fixtures/{}",
+        std::env::var("MOCK_SERVER_URL").expect("MOCK_SERVER_URL not set"),
+        "batch_scrape_with_config"
+    );
+    let _ = scrape(&engine, &url).await.expect("should succeed");
+    // skipped: field 'batch.completed_count' not available on result type
+    // skipped: field 'batch.failed_count' not available on result type
+    // skipped: field 'batch.total_count' not available on result type
+}
 
 #[tokio::test]
 async fn test_scrape_batch_basic() {

@@ -1,0 +1,63 @@
+{
+	"id": "batch_crawl_basic",
+	"description": "Batch crawl of 2 seed URLs with links to discover",
+	"tags": ["batch", "crawl"],
+	"input": {
+		"mock_responses": [
+			{
+				"path": "/seed1",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><body><h1>Seed 1</h1><a href=\"/seed1/child\">Child 1</a></body></html>"
+			},
+			{
+				"path": "/seed1/child",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><body><h1>Child 1</h1></body></html>"
+			},
+			{
+				"path": "/seed2",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><body><h1>Seed 2</h1><a href=\"/seed2/child\">Child 2</a></body></html>"
+			},
+			{
+				"path": "/seed2/child",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><body><h1>Child 2</h1></body></html>"
+			}
+		],
+		"batch_urls": ["/seed1", "/seed2"],
+		"config": {
+			"max_depth": 1,
+			"respect_robots_txt": false
+		}
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "batch.completed_count",
+			"value": 2
+		},
+		{
+			"type": "equals",
+			"field": "batch.failed_count",
+			"value": 0
+		},
+		{
+			"type": "equals",
+			"field": "batch.total_count",
+			"value": 2
+		}
+	]
+}

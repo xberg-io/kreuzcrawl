@@ -1,0 +1,49 @@
+{
+	"id": "interact_execute_js",
+	"description": "Execute JavaScript that returns document.title and verify success with data",
+	"tags": ["interaction", "javascript"],
+	"skip": {
+		"languages": ["wasm", "homebrew"],
+		"reason": "Requires browser feature"
+	},
+	"input": {
+		"mock_responses": [
+			{
+				"path": "/",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><head><title>JS Test Page</title></head><body><h1>Execute JS Test</h1></body></html>"
+			}
+		],
+		"config": {
+			"browser": {
+				"mode": "always"
+			}
+		},
+		"actions": [
+			{
+				"type": "executeJs",
+				"script": "return document.title"
+			}
+		]
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "interaction.action_results[0].success",
+			"value": true
+		},
+		{
+			"type": "equals",
+			"field": "interaction.action_results[0].action_type",
+			"value": "executeJs"
+		},
+		{
+			"type": "contains",
+			"field": "interaction.action_results[0].data",
+			"value": "JS Test Page"
+		}
+	]
+}

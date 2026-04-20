@@ -104,6 +104,8 @@ source "$SCRIPT_DIR/test_content.sh"
 source "$SCRIPT_DIR/test_cookies.sh"
 # shellcheck source=test_crawl.sh
 source "$SCRIPT_DIR/test_crawl.sh"
+# shellcheck source=test_download.sh
+source "$SCRIPT_DIR/test_download.sh"
 # shellcheck source=test_encoding.sh
 source "$SCRIPT_DIR/test_encoding.sh"
 # shellcheck source=test_engine.sh
@@ -112,6 +114,8 @@ source "$SCRIPT_DIR/test_engine.sh"
 source "$SCRIPT_DIR/test_error.sh"
 # shellcheck source=test_filter.sh
 source "$SCRIPT_DIR/test_filter.sh"
+# shellcheck source=test_interaction.sh
+source "$SCRIPT_DIR/test_interaction.sh"
 # shellcheck source=test_links.sh
 source "$SCRIPT_DIR/test_links.sh"
 # shellcheck source=test_map.sh
@@ -122,6 +126,8 @@ source "$SCRIPT_DIR/test_markdown.sh"
 source "$SCRIPT_DIR/test_metadata.sh"
 # shellcheck source=test_middleware.sh
 source "$SCRIPT_DIR/test_middleware.sh"
+# shellcheck source=test_proxy.sh
+source "$SCRIPT_DIR/test_proxy.sh"
 # shellcheck source=test_rate_limit.sh
 source "$SCRIPT_DIR/test_rate_limit.sh"
 # shellcheck source=test_redirect.sh
@@ -140,6 +146,8 @@ source "$SCRIPT_DIR/test_strategy.sh"
 source "$SCRIPT_DIR/test_stream.sh"
 # shellcheck source=test_validation.sh
 source "$SCRIPT_DIR/test_validation.sh"
+# shellcheck source=test_warc.sh
+source "$SCRIPT_DIR/test_warc.sh"
 
 run_test() {
   local name="$1"
@@ -169,6 +177,8 @@ run_tests_content
 run_tests_cookies
 # Category: crawl
 run_tests_crawl
+# Category: download
+run_tests_download
 # Category: encoding
 run_tests_encoding
 # Category: engine
@@ -177,6 +187,8 @@ run_tests_engine
 run_tests_error
 # Category: filter
 run_tests_filter
+# Category: interaction
+run_tests_interaction
 # Category: links
 run_tests_links
 # Category: map
@@ -187,6 +199,8 @@ run_tests_markdown
 run_tests_metadata
 # Category: middleware
 run_tests_middleware
+# Category: proxy
+run_tests_proxy
 # Category: rate_limit
 run_tests_rate_limit
 # Category: redirect
@@ -205,6 +219,8 @@ run_tests_strategy
 run_tests_stream
 # Category: validation
 run_tests_validation
+# Category: warc
+run_tests_warc
 
 echo ""
 echo "Results: $PASS passed, $FAIL failed"

@@ -3,6 +3,22 @@
 # E2e tests for category: validation
 set -euo pipefail
 
+test_validation_empty_batch_urls() {
+  # batch operation with empty batch_urls array is rejected
+  if kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/validation_empty_batch_urls" --format json >/dev/null 2>&1; then
+    echo 'FAIL [error]: expected command to fail but it succeeded' >&2
+    return 1
+  fi
+}
+
+test_validation_invalid_auth_config() {
+  # auth object with no recognized variant (empty object) is rejected
+  if kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/validation_invalid_auth_config" --format json >/dev/null 2>&1; then
+    echo 'FAIL [error]: expected command to fail but it succeeded' >&2
+    return 1
+  fi
+}
+
 test_validation_invalid_exclude_regex() {
   # Invalid regex in exclude_paths is rejected
   if kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/validation_invalid_exclude_regex" --format json >/dev/null 2>&1; then
@@ -19,9 +35,33 @@ test_validation_invalid_include_regex() {
   fi
 }
 
+test_validation_invalid_proxy_url() {
+  # proxy with invalid URL like 'not-a-url' is rejected
+  if kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/validation_invalid_proxy_url" --format json >/dev/null 2>&1; then
+    echo 'FAIL [error]: expected command to fail but it succeeded' >&2
+    return 1
+  fi
+}
+
 test_validation_invalid_retry_code() {
   # Retry code outside 100-599 is rejected
   if kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/validation_invalid_retry_code" --format json >/dev/null 2>&1; then
+    echo 'FAIL [error]: expected command to fail but it succeeded' >&2
+    return 1
+  fi
+}
+
+test_validation_max_concurrent_zero() {
+  # max_concurrent=0 is rejected as invalid config (minimum is 1)
+  if kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/validation_max_concurrent_zero" --format json >/dev/null 2>&1; then
+    echo 'FAIL [error]: expected command to fail but it succeeded' >&2
+    return 1
+  fi
+}
+
+test_validation_max_depth_too_high() {
+  # max_depth=200 exceeds limit of 100
+  if kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/validation_max_depth_too_high" --format json >/dev/null 2>&1; then
     echo 'FAIL [error]: expected command to fail but it succeeded' >&2
     return 1
   fi
@@ -43,6 +83,14 @@ test_validation_max_redirects_too_high() {
   fi
 }
 
+test_validation_negative_body_size() {
+  # max_body_size set to -1 is rejected as invalid config
+  if kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/validation_negative_body_size" --format json >/dev/null 2>&1; then
+    echo 'FAIL [error]: expected command to fail but it succeeded' >&2
+    return 1
+  fi
+}
+
 test_validation_timeout_zero() {
   # Zero request timeout is rejected as invalid config
   if kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/validation_timeout_zero" --format json >/dev/null 2>&1; then
@@ -52,10 +100,16 @@ test_validation_timeout_zero() {
 }
 
 run_tests_validation() {
+  run_test test_validation_empty_batch_urls
+  run_test test_validation_invalid_auth_config
   run_test test_validation_invalid_exclude_regex
   run_test test_validation_invalid_include_regex
+  run_test test_validation_invalid_proxy_url
   run_test test_validation_invalid_retry_code
+  run_test test_validation_max_concurrent_zero
+  run_test test_validation_max_depth_too_high
   run_test test_validation_max_pages_zero
   run_test test_validation_max_redirects_too_high
+  run_test test_validation_negative_body_size
   run_test test_validation_timeout_zero
 }

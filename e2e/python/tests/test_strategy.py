@@ -8,6 +8,26 @@ from kreuzcrawl import CrawlConfig, create_engine, scrape
 
 
 @pytest.mark.asyncio
+async def test_strategy_adaptive_saturation() -> None:
+    """Adaptive strategy stops early when encountering saturation (duplicate content)."""
+    engine_config = CrawlConfig(max_concurrent=1, max_depth=2, respect_robots_txt=False)
+    engine = create_engine(engine_config)
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/strategy_adaptive_saturation"
+    _ = await scrape(engine=engine, url=url)
+    # skipped: field 'crawl.pages_crawled' not available on result type
+
+
+@pytest.mark.asyncio
+async def test_strategy_adaptive_window() -> None:
+    """Adaptive strategy crawls more pages when content is diverse."""
+    engine_config = CrawlConfig(max_concurrent=1, max_depth=1, respect_robots_txt=False)
+    engine = create_engine(engine_config)
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/strategy_adaptive_window"
+    _ = await scrape(engine=engine, url=url)
+    # skipped: field 'crawl.pages_crawled' not available on result type
+
+
+@pytest.mark.asyncio
 async def test_strategy_best_first_seed() -> None:
     """BestFirst strategy always processes the seed URL first."""
     engine_config = CrawlConfig(max_concurrent=1, max_depth=1)

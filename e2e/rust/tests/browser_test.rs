@@ -147,6 +147,22 @@ async fn test_browser_detect_vue_shell() {
 }
 
 #[tokio::test]
+async fn test_browser_extra_wait() {
+    // Browser extra_wait adds additional time after network_idle to ensure all async operations complete
+    let engine_config: CrawlConfig =
+        serde_json::from_str("{\"browser\":{\"extra_wait\":200,\"mode\":\"always\",\"wait\":\"network_idle\"}}")
+            .expect("config should parse");
+    let engine = create_engine(Some(engine_config)).expect("handle creation should succeed");
+    let url = format!(
+        "{}/fixtures/{}",
+        std::env::var("MOCK_SERVER_URL").expect("MOCK_SERVER_URL not set"),
+        "browser_extra_wait"
+    );
+    let _ = scrape(&engine, &url).await.expect("should succeed");
+    // skipped: field 'browser.browser_used' not available on result type
+}
+
+#[tokio::test]
 async fn test_browser_fallback_spa_render() {
     // Browser auto re-fetches SPA shell when JS rendering is detected
     let engine_config: CrawlConfig =
@@ -190,4 +206,56 @@ async fn test_browser_mode_always() {
     );
     let _ = scrape(&engine, &url).await.expect("should succeed");
     // skipped: field 'browser.browser_used' not available on result type
+}
+
+#[tokio::test]
+async fn test_browser_profile_basic() {
+    // Browser profile configuration persists and reuses browser state across crawl sessions
+    let engine_config: CrawlConfig =
+        serde_json::from_str("{\"browser\":{\"mode\":\"always\"},\"browser_profile\":\"test-profile\"}")
+            .expect("config should parse");
+    let engine = create_engine(Some(engine_config)).expect("handle creation should succeed");
+    let url = format!(
+        "{}/fixtures/{}",
+        std::env::var("MOCK_SERVER_URL").expect("MOCK_SERVER_URL not set"),
+        "browser_profile_basic"
+    );
+    let result = scrape(&engine, &url).await.expect("should succeed");
+    // skipped: field 'browser.browser_used' not available on result type
+    assert_eq!(result.status_code, 200, "equals assertion failed");
+}
+
+#[tokio::test]
+async fn test_browser_wait_fixed() {
+    // Browser wait strategy 'fixed' waits for a specific duration after page navigation
+    let engine_config: CrawlConfig =
+        serde_json::from_str("{\"browser\":{\"extra_wait\":100,\"mode\":\"always\",\"wait\":\"fixed\"}}")
+            .expect("config should parse");
+    let engine = create_engine(Some(engine_config)).expect("handle creation should succeed");
+    let url = format!(
+        "{}/fixtures/{}",
+        std::env::var("MOCK_SERVER_URL").expect("MOCK_SERVER_URL not set"),
+        "browser_wait_fixed"
+    );
+    let result = scrape(&engine, &url).await.expect("should succeed");
+    // skipped: field 'browser.browser_used' not available on result type
+    assert_eq!(result.status_code, 200, "equals assertion failed");
+}
+
+#[tokio::test]
+async fn test_browser_wait_selector() {
+    // Browser wait strategy 'selector' waits for specific CSS selector before considering page loaded
+    let engine_config: CrawlConfig = serde_json::from_str(
+        "{\"browser\":{\"mode\":\"always\",\"wait\":\"selector\",\"wait_selector\":\"#content\"}}",
+    )
+    .expect("config should parse");
+    let engine = create_engine(Some(engine_config)).expect("handle creation should succeed");
+    let url = format!(
+        "{}/fixtures/{}",
+        std::env::var("MOCK_SERVER_URL").expect("MOCK_SERVER_URL not set"),
+        "browser_wait_selector"
+    );
+    let result = scrape(&engine, &url).await.expect("should succeed");
+    // skipped: field 'browser.browser_used' not available on result type
+    assert_eq!(result.status_code, 200, "equals assertion failed");
 }

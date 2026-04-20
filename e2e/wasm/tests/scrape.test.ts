@@ -4,7 +4,7 @@ import { scrape, createEngine, WasmCrawlConfig } from "kreuzcrawl";
 
 describe("scrape", () => {
 	it("scrape_asset_dedup: Same asset linked twice results in one download with one unique hash", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.downloadAssets = true;
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/scrape_asset_dedup`;
@@ -15,7 +15,7 @@ describe("scrape", () => {
 	});
 
 	it("scrape_asset_max_size: Skips assets exceeding max_asset_size limit", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.downloadAssets = true;
 		engineConfig.maxAssetSize = 150;
 		const engine = createEngine(engineConfig);
@@ -26,7 +26,7 @@ describe("scrape", () => {
 	});
 
 	it("scrape_asset_type_filter: Only downloads image assets when asset_types filter is set", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.assetTypes = ["image"];
 		engineConfig.downloadAssets = true;
 		const engine = createEngine(engineConfig);
@@ -38,7 +38,7 @@ describe("scrape", () => {
 	});
 
 	it("scrape_basic_html_page: Scrapes a simple HTML page and extracts title, description, and links", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.maxDepth = 0;
 		engineConfig.respectRobotsTxt = false;
 		const engine = createEngine(engineConfig);
@@ -66,7 +66,7 @@ describe("scrape", () => {
 	});
 
 	it("scrape_download_assets: Downloads CSS, JS, and image assets from page", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.downloadAssets = true;
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/scrape_download_assets`;

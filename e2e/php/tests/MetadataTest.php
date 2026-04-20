@@ -17,7 +17,7 @@ final class MetadataTest extends TestCase
     {
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/metadata_article_times';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(200, $result->status_code);
         // skipped: field 'article.published_time' not available on result type
         // skipped: field 'article.modified_time' not available on result type
@@ -31,7 +31,7 @@ final class MetadataTest extends TestCase
     {
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/metadata_favicons';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(200, $result->status_code);
         // skipped: field 'favicons.length' not available on result type
         // skipped: field 'favicons[].apple_touch' not available on result type
@@ -42,7 +42,7 @@ final class MetadataTest extends TestCase
     {
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/metadata_headings';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(200, $result->status_code);
         // skipped: field 'headings.h1.length' not available on result type
         // skipped: field 'headings.h1[0].text' not available on result type
@@ -54,7 +54,7 @@ final class MetadataTest extends TestCase
     {
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/metadata_hreflang';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(200, $result->status_code);
         // skipped: field 'hreflang.length' not available on result type
         // skipped: field 'hreflang[].lang' not available on result type
@@ -65,7 +65,7 @@ final class MetadataTest extends TestCase
     {
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/metadata_keywords_author';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(200, $result->status_code);
         $this->assertEquals("Comprehensive Metadata Test Page", $result->metadata->title);
         $this->assertNotEmpty($result->metadata->canonical_url);
@@ -85,7 +85,7 @@ final class MetadataTest extends TestCase
     {
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/metadata_og_video_audio';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(200, $result->status_code);
         $this->assertEquals("https://example.com/video.mp4", $result->metadata->og_video);
         $this->assertEquals("https://example.com/audio.mp3", $result->metadata->og_audio);
@@ -97,7 +97,7 @@ final class MetadataTest extends TestCase
     {
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/metadata_response_headers';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(200, $result->status_code);
         // skipped: field 'response_headers.etag' not available on result type
         // skipped: field 'response_headers.last_modified' not available on result type
@@ -110,7 +110,7 @@ final class MetadataTest extends TestCase
     {
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/metadata_word_count';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(200, $result->status_code);
         // skipped: field 'computed.word_count' not available on result type
         // skipped: field 'computed.word_count' not available on result type

@@ -4,7 +4,28 @@
 import os
 
 import pytest
-from kreuzcrawl import CrawlConfig, create_engine, scrape
+from kreuzcrawl import AuthConfig, CrawlConfig, ProxyConfig, create_engine, scrape
+
+
+@pytest.mark.asyncio
+async def test_validation_empty_batch_urls() -> None:
+    """batch operation with empty batch_urls array is rejected."""
+    engine = create_engine(None)
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/validation_empty_batch_urls"
+    with pytest.raises(Exception) as exc_info:
+        await scrape(engine=engine, url=url)
+    assert "urls" in str(exc_info.value)
+
+
+@pytest.mark.asyncio
+async def test_validation_invalid_auth_config() -> None:
+    """auth object with no recognized variant (empty object) is rejected."""
+    engine_config = CrawlConfig(auth=AuthConfig())
+    engine = create_engine(engine_config)
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/validation_invalid_auth_config"
+    with pytest.raises(Exception) as exc_info:
+        await scrape(engine=engine, url=url)
+    assert "auth" in str(exc_info.value)
 
 
 @pytest.mark.asyncio
@@ -30,6 +51,17 @@ async def test_validation_invalid_include_regex() -> None:
 
 
 @pytest.mark.asyncio
+async def test_validation_invalid_proxy_url() -> None:
+    """proxy with invalid URL like 'not-a-url' is rejected."""
+    engine_config = CrawlConfig(proxy=ProxyConfig(url="not-a-url"))
+    engine = create_engine(engine_config)
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/validation_invalid_proxy_url"
+    with pytest.raises(Exception) as exc_info:
+        await scrape(engine=engine, url=url)
+    assert "proxy" in str(exc_info.value)
+
+
+@pytest.mark.asyncio
 async def test_validation_invalid_retry_code() -> None:
     """Retry code outside 100-599 is rejected."""
     engine_config = CrawlConfig(retry_codes=[999])
@@ -38,6 +70,28 @@ async def test_validation_invalid_retry_code() -> None:
     with pytest.raises(Exception) as exc_info:
         await scrape(engine=engine, url=url)
     assert "retry code" in str(exc_info.value)
+
+
+@pytest.mark.asyncio
+async def test_validation_max_concurrent_zero() -> None:
+    """max_concurrent=0 is rejected as invalid config (minimum is 1)."""
+    engine_config = CrawlConfig(max_concurrent=0)
+    engine = create_engine(engine_config)
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/validation_max_concurrent_zero"
+    with pytest.raises(Exception) as exc_info:
+        await scrape(engine=engine, url=url)
+    assert "max_concurrent" in str(exc_info.value)
+
+
+@pytest.mark.asyncio
+async def test_validation_max_depth_too_high() -> None:
+    """max_depth=200 exceeds limit of 100."""
+    engine_config = CrawlConfig(max_depth=200)
+    engine = create_engine(engine_config)
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/validation_max_depth_too_high"
+    with pytest.raises(Exception) as exc_info:
+        await scrape(engine=engine, url=url)
+    assert "max_depth" in str(exc_info.value)
 
 
 @pytest.mark.asyncio
@@ -60,6 +114,17 @@ async def test_validation_max_redirects_too_high() -> None:
     with pytest.raises(Exception) as exc_info:
         await scrape(engine=engine, url=url)
     assert "max_redirects" in str(exc_info.value)
+
+
+@pytest.mark.asyncio
+async def test_validation_negative_body_size() -> None:
+    """max_body_size set to -1 is rejected as invalid config."""
+    engine_config = CrawlConfig(max_body_size=0)
+    engine = create_engine(engine_config)
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/validation_negative_body_size"
+    with pytest.raises(Exception) as exc_info:
+        await scrape(engine=engine, url=url)
+    assert "body_size" in str(exc_info.value)
 
 
 @pytest.mark.asyncio

@@ -4,7 +4,7 @@ import { scrape, createEngine, WasmCrawlConfig } from "kreuzcrawl";
 
 describe("filter", () => {
 	it("filter_bm25_crawl_integration: BM25 filter works during multi-page crawl, keeping relevant pages", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.maxConcurrent = 1;
 		engineConfig.maxDepth = 1;
 		const engine = createEngine(engineConfig);
@@ -14,7 +14,7 @@ describe("filter", () => {
 	});
 
 	it("filter_bm25_empty_query: BM25 filter with empty query passes all pages through", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.maxDepth = 1;
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/filter_bm25_empty_query`;
@@ -23,7 +23,7 @@ describe("filter", () => {
 	});
 
 	it("filter_bm25_high_threshold: BM25 filter with very high threshold filters out all pages", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.maxDepth = 1;
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/filter_bm25_high_threshold`;
@@ -32,7 +32,7 @@ describe("filter", () => {
 	});
 
 	it("filter_bm25_relevant_pages: BM25 filter keeps only pages relevant to the query", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.maxDepth = 1;
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/filter_bm25_relevant_pages`;
@@ -41,7 +41,7 @@ describe("filter", () => {
 	});
 
 	it("filter_bm25_threshold_zero: BM25 filter with zero threshold passes all pages", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.maxDepth = 1;
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/filter_bm25_threshold_zero`;
@@ -50,7 +50,7 @@ describe("filter", () => {
 	});
 
 	it("filter_noop_crawl_all_kept: NoopFilter keeps all pages during a multi-page crawl", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.maxConcurrent = 1;
 		engineConfig.maxDepth = 1;
 		const engine = createEngine(engineConfig);
@@ -60,7 +60,7 @@ describe("filter", () => {
 	});
 
 	it("filter_noop_passes_all: No content filter passes all crawled pages through", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.maxDepth = 1;
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/filter_noop_passes_all`;

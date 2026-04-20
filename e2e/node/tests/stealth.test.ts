@@ -10,4 +10,32 @@ describe("stealth", () => {
 		const result = await scrape(engine, url);
 		expect(result.statusCode).toBe(200);
 	});
+
+	it("stealth_ua_rotation_round_robin: User-agent rotation cycles through multiple agents across multiple requests", async () => {
+		const engineConfig = {
+			maxDepth: 1,
+			maxPages: 3,
+			userAgents: [
+				"Mozilla/5.0 (Windows NT 10.0; Win64; x64) TestAgent-1",
+				"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15) TestAgent-2",
+			],
+		};
+		const engine = createEngine(engineConfig);
+		const url = `${process.env.MOCK_SERVER_URL}/fixtures/stealth_ua_rotation_round_robin`;
+		await scrape(engine, url);
+		// skipped: field 'pages.length' not available on result type
+	});
+
+	it("stealth_ua_rotation_single_domain: Custom user-agent string is applied for single domain crawl", async () => {
+		const engineConfig = {
+			maxDepth: 0,
+			stayOnDomain: true,
+			userAgents: ["Mozilla/5.0 TestBot/1.0 (+http://example.com/bot)"],
+		};
+		const engine = createEngine(engineConfig);
+		const url = `${process.env.MOCK_SERVER_URL}/fixtures/stealth_ua_rotation_single_domain`;
+		const result = await scrape(engine, url);
+		expect(result.statusCode).toBe(200);
+		// skipped: field 'pages.length' not available on result type
+	});
 });

@@ -125,6 +125,17 @@ public class BrowserTests
     }
 
     [Fact]
+    public async Task Test_BrowserExtraWait()
+    {
+        // Browser extra_wait adds additional time after network_idle to ensure all async operations complete
+        var engineConfig = JsonSerializer.Deserialize<CrawlConfig>("{\"browser\":{\"extra_wait\":200,\"mode\":\"always\",\"wait\":\"network_idle\"}}", ConfigOptions)!;
+        var engine = KreuzcrawlLib.CreateEngine(engineConfig);
+        var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/browser_extra_wait";
+        var result = await KreuzcrawlLib.Scrape(engine, url);
+        // skipped: field 'browser.browser_used' not available on result type
+    }
+
+    [Fact]
     public async Task Test_BrowserFallbackSpaRender()
     {
         // Browser auto re-fetches SPA shell when JS rendering is detected
@@ -156,5 +167,41 @@ public class BrowserTests
         var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/browser_mode_always";
         var result = await KreuzcrawlLib.Scrape(engine, url);
         // skipped: field 'browser.browser_used' not available on result type
+    }
+
+    [Fact]
+    public async Task Test_BrowserProfileBasic()
+    {
+        // Browser profile configuration persists and reuses browser state across crawl sessions
+        var engineConfig = JsonSerializer.Deserialize<CrawlConfig>("{\"browser\":{\"mode\":\"always\"},\"browser_profile\":\"test-profile\"}", ConfigOptions)!;
+        var engine = KreuzcrawlLib.CreateEngine(engineConfig);
+        var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/browser_profile_basic";
+        var result = await KreuzcrawlLib.Scrape(engine, url);
+        // skipped: field 'browser.browser_used' not available on result type
+        Assert.Equal(200, result.StatusCode);
+    }
+
+    [Fact]
+    public async Task Test_BrowserWaitFixed()
+    {
+        // Browser wait strategy 'fixed' waits for a specific duration after page navigation
+        var engineConfig = JsonSerializer.Deserialize<CrawlConfig>("{\"browser\":{\"extra_wait\":100,\"mode\":\"always\",\"wait\":\"fixed\"}}", ConfigOptions)!;
+        var engine = KreuzcrawlLib.CreateEngine(engineConfig);
+        var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/browser_wait_fixed";
+        var result = await KreuzcrawlLib.Scrape(engine, url);
+        // skipped: field 'browser.browser_used' not available on result type
+        Assert.Equal(200, result.StatusCode);
+    }
+
+    [Fact]
+    public async Task Test_BrowserWaitSelector()
+    {
+        // Browser wait strategy 'selector' waits for specific CSS selector before considering page loaded
+        var engineConfig = JsonSerializer.Deserialize<CrawlConfig>("{\"browser\":{\"mode\":\"always\",\"wait\":\"selector\",\"wait_selector\":\"#content\"}}", ConfigOptions)!;
+        var engine = KreuzcrawlLib.CreateEngine(engineConfig);
+        var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/browser_wait_selector";
+        var result = await KreuzcrawlLib.Scrape(engine, url);
+        // skipped: field 'browser.browser_used' not available on result type
+        Assert.Equal(200, result.StatusCode);
     }
 }

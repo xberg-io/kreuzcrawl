@@ -8,17 +8,85 @@ namespace Kreuzberg\E2e;
 
 use PHPUnit\Framework\TestCase;
 use Kreuzcrawl\Kreuzcrawl;
+use Kreuzcrawl\CrawlConfig;
 
 /** E2e tests for category: batch. */
 final class BatchTest extends TestCase
 {
+    /** Batch crawl of 2 seed URLs with links to discover */
+    public function test_batch_crawl_basic(): void
+    {
+        $engine_config = CrawlConfig::default();
+        $engine_config->max_depth = 1;
+        $engine_config->respect_robots_txt = false;
+        $engine = Kreuzcrawl::createEngine($engine_config);
+        $url = getenv('MOCK_SERVER_URL') . '/fixtures/batch_crawl_basic';
+        $this->expectNotToPerformAssertions();
+        $result = Kreuzcrawl::scrape_async($engine, $url);
+        // skipped: field 'batch.completed_count' not available on result type
+        // skipped: field 'batch.failed_count' not available on result type
+        // skipped: field 'batch.total_count' not available on result type
+    }
+
+    /** Batch crawl where one seed URL returns 404 error */
+    public function test_batch_crawl_partial_failure(): void
+    {
+        $engine_config = CrawlConfig::default();
+        $engine_config->max_depth = 1;
+        $engine_config->respect_robots_txt = false;
+        $engine = Kreuzcrawl::createEngine($engine_config);
+        $url = getenv('MOCK_SERVER_URL') . '/fixtures/batch_crawl_partial_failure';
+        $this->expectNotToPerformAssertions();
+        $result = Kreuzcrawl::scrape_async($engine, $url);
+        // skipped: field 'batch.completed_count' not available on result type
+        // skipped: field 'batch.failed_count' not available on result type
+        // skipped: field 'batch.total_count' not available on result type
+    }
+
+    /** Batch crawl with max_depth=1 config verifying pages are discovered */
+    public function test_batch_crawl_with_config(): void
+    {
+        $engine_config = CrawlConfig::default();
+        $engine_config->max_depth = 1;
+        $engine_config->respect_robots_txt = false;
+        $engine = Kreuzcrawl::createEngine($engine_config);
+        $url = getenv('MOCK_SERVER_URL') . '/fixtures/batch_crawl_with_config';
+        $this->expectNotToPerformAssertions();
+        $result = Kreuzcrawl::scrape_async($engine, $url);
+        // skipped: field 'batch.completed_count' not available on result type
+        // skipped: field 'batch.failed_count' not available on result type
+    }
+
+    /** Batch scrape with empty batch_urls array returns error */
+    public function test_batch_scrape_empty_urls_error(): void
+    {
+        $engine = Kreuzcrawl::createEngine(null);
+        $url = getenv('MOCK_SERVER_URL') . '/fixtures/batch_scrape_empty_urls_error';
+        $this->expectException(\Exception::class);
+        Kreuzcrawl::scrape_async($engine, $url);
+    }
+
+    /** Batch scrape with main_content_only=true configuration */
+    public function test_batch_scrape_with_config(): void
+    {
+        $engine_config = CrawlConfig::default();
+        $engine_config->main_content_only = true;
+        $engine = Kreuzcrawl::createEngine($engine_config);
+        $url = getenv('MOCK_SERVER_URL') . '/fixtures/batch_scrape_with_config';
+        $this->expectNotToPerformAssertions();
+        $result = Kreuzcrawl::scrape_async($engine, $url);
+        // skipped: field 'batch.completed_count' not available on result type
+        // skipped: field 'batch.failed_count' not available on result type
+        // skipped: field 'batch.total_count' not available on result type
+    }
+
     /** Batch scrape of multiple URLs all succeeding */
     public function test_scrape_batch_basic(): void
     {
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/scrape_batch_basic';
         $this->expectNotToPerformAssertions();
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         // skipped: field 'batch.completed_count' not available on result type
         // skipped: field 'batch.failed_count' not available on result type
         // skipped: field 'batch.total_count' not available on result type
@@ -30,7 +98,7 @@ final class BatchTest extends TestCase
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/scrape_batch_partial_failure';
         $this->expectNotToPerformAssertions();
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         // skipped: field 'batch.completed_count' not available on result type
         // skipped: field 'batch.failed_count' not available on result type
         // skipped: field 'batch.total_count' not available on result type
@@ -42,7 +110,7 @@ final class BatchTest extends TestCase
         $engine = Kreuzcrawl::createEngine(null);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/scrape_batch_progress';
         $this->expectNotToPerformAssertions();
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         // skipped: field 'batch.total_count' not available on result type
         // skipped: field 'batch.results' not available on result type
     }

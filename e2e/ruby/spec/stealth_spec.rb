@@ -12,4 +12,22 @@ RSpec.describe 'stealth' do
     result = Kreuzcrawl.scrape(engine, url)
     expect(result.status_code).to eq(200)
   end
+
+  it 'stealth_ua_rotation_round_robin: User-agent rotation cycles through multiple agents across multiple requests' do
+    engine_config = { 'max_depth' => 1, 'max_pages' => 3, 'user_agents' => ['Mozilla/5.0 (Windows NT 10.0; Win64; x64) TestAgent-1', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15) TestAgent-2'] }
+    engine = Kreuzcrawl.create_engine(engine_config.to_json)
+    url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/stealth_ua_rotation_round_robin"
+    result = Kreuzcrawl.scrape(engine, url)
+    # skipped: field 'pages.length' not available on result type
+    expect(result).not_to be_nil
+  end
+
+  it 'stealth_ua_rotation_single_domain: Custom user-agent string is applied for single domain crawl' do
+    engine_config = { 'max_depth' => 0, 'stay_on_domain' => true, 'user_agents' => ['Mozilla/5.0 TestBot/1.0 (+http://example.com/bot)'] }
+    engine = Kreuzcrawl.create_engine(engine_config.to_json)
+    url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/stealth_ua_rotation_single_domain"
+    result = Kreuzcrawl.scrape(engine, url)
+    expect(result.status_code).to eq(200)
+    # skipped: field 'pages.length' not available on result type
+  end
 end

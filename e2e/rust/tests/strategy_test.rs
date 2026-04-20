@@ -6,6 +6,38 @@ use kreuzcrawl::scrape;
 use kreuzcrawl::CrawlConfig;
 
 #[tokio::test]
+async fn test_strategy_adaptive_saturation() {
+    // Adaptive strategy stops early when encountering saturation (duplicate content)
+    let engine_config: CrawlConfig =
+        serde_json::from_str("{\"max_concurrent\":1,\"max_depth\":2,\"respect_robots_txt\":false}")
+            .expect("config should parse");
+    let engine = create_engine(Some(engine_config)).expect("handle creation should succeed");
+    let url = format!(
+        "{}/fixtures/{}",
+        std::env::var("MOCK_SERVER_URL").expect("MOCK_SERVER_URL not set"),
+        "strategy_adaptive_saturation"
+    );
+    let _ = scrape(&engine, &url).await.expect("should succeed");
+    // skipped: field 'crawl.pages_crawled' not available on result type
+}
+
+#[tokio::test]
+async fn test_strategy_adaptive_window() {
+    // Adaptive strategy crawls more pages when content is diverse
+    let engine_config: CrawlConfig =
+        serde_json::from_str("{\"max_concurrent\":1,\"max_depth\":1,\"respect_robots_txt\":false}")
+            .expect("config should parse");
+    let engine = create_engine(Some(engine_config)).expect("handle creation should succeed");
+    let url = format!(
+        "{}/fixtures/{}",
+        std::env::var("MOCK_SERVER_URL").expect("MOCK_SERVER_URL not set"),
+        "strategy_adaptive_window"
+    );
+    let _ = scrape(&engine, &url).await.expect("should succeed");
+    // skipped: field 'crawl.pages_crawled' not available on result type
+}
+
+#[tokio::test]
 async fn test_strategy_best_first_seed() {
     // BestFirst strategy always processes the seed URL first
     let engine_config: CrawlConfig =

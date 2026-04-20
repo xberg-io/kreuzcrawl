@@ -90,6 +90,15 @@ RSpec.describe 'browser' do
     # skipped: field 'browser.browser_used' not available on result type
   end
 
+  it 'browser_extra_wait: Browser extra_wait adds additional time after network_idle to ensure all async operations complete' do
+    engine_config = { 'browser' => { 'extra_wait' => 200, 'mode' => 'always', 'wait' => 'network_idle' } }
+    engine = Kreuzcrawl.create_engine(engine_config.to_json)
+    url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/browser_extra_wait"
+    result = Kreuzcrawl.scrape(engine, url)
+    # skipped: field 'browser.browser_used' not available on result type
+    expect(result).not_to be_nil
+  end
+
   it 'browser_fallback_spa_render: Browser auto re-fetches SPA shell when JS rendering is detected' do
     engine_config = { 'browser' => { 'mode' => 'auto' } }
     engine = Kreuzcrawl.create_engine(engine_config.to_json)
@@ -116,5 +125,32 @@ RSpec.describe 'browser' do
     result = Kreuzcrawl.scrape(engine, url)
     # skipped: field 'browser.browser_used' not available on result type
     expect(result).not_to be_nil
+  end
+
+  it 'browser_profile_basic: Browser profile configuration persists and reuses browser state across crawl sessions' do
+    engine_config = { 'browser' => { 'mode' => 'always' }, 'browser_profile' => 'test-profile' }
+    engine = Kreuzcrawl.create_engine(engine_config.to_json)
+    url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/browser_profile_basic"
+    result = Kreuzcrawl.scrape(engine, url)
+    # skipped: field 'browser.browser_used' not available on result type
+    expect(result.status_code).to eq(200)
+  end
+
+  it 'browser_wait_fixed: Browser wait strategy \'fixed\' waits for a specific duration after page navigation' do
+    engine_config = { 'browser' => { 'extra_wait' => 100, 'mode' => 'always', 'wait' => 'fixed' } }
+    engine = Kreuzcrawl.create_engine(engine_config.to_json)
+    url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/browser_wait_fixed"
+    result = Kreuzcrawl.scrape(engine, url)
+    # skipped: field 'browser.browser_used' not available on result type
+    expect(result.status_code).to eq(200)
+  end
+
+  it 'browser_wait_selector: Browser wait strategy \'selector\' waits for specific CSS selector before considering page loaded' do
+    engine_config = { 'browser' => { 'mode' => 'always', 'wait' => 'selector', 'wait_selector' => '#content' } }
+    engine = Kreuzcrawl.create_engine(engine_config.to_json)
+    url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/browser_wait_selector"
+    result = Kreuzcrawl.scrape(engine, url)
+    # skipped: field 'browser.browser_used' not available on result type
+    expect(result.status_code).to eq(200)
   end
 end

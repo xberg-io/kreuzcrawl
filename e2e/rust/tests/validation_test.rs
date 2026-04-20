@@ -6,6 +6,41 @@ use kreuzcrawl::scrape;
 use kreuzcrawl::CrawlConfig;
 
 #[tokio::test]
+async fn test_validation_empty_batch_urls() {
+    // batch operation with empty batch_urls array is rejected
+    let engine = create_engine(None).expect("handle creation should succeed");
+    let url = format!(
+        "{}/fixtures/{}",
+        std::env::var("MOCK_SERVER_URL").expect("MOCK_SERVER_URL not set"),
+        "validation_empty_batch_urls"
+    );
+    let result = scrape(&engine, &url).await;
+    assert!(result.is_err(), "expected call to fail");
+    assert!(
+        result.as_ref().unwrap_err().to_string().contains("urls"),
+        "error message mismatch"
+    );
+}
+
+#[tokio::test]
+async fn test_validation_invalid_auth_config() {
+    // auth object with no recognized variant (empty object) is rejected
+    let engine_config: CrawlConfig = serde_json::from_str("{\"auth\":{}}").expect("config should parse");
+    let engine = create_engine(Some(engine_config)).expect("handle creation should succeed");
+    let url = format!(
+        "{}/fixtures/{}",
+        std::env::var("MOCK_SERVER_URL").expect("MOCK_SERVER_URL not set"),
+        "validation_invalid_auth_config"
+    );
+    let result = scrape(&engine, &url).await;
+    assert!(result.is_err(), "expected call to fail");
+    assert!(
+        result.as_ref().unwrap_err().to_string().contains("auth"),
+        "error message mismatch"
+    );
+}
+
+#[tokio::test]
 async fn test_validation_invalid_exclude_regex() {
     // Invalid regex in exclude_paths is rejected
     let engine_config: CrawlConfig =
@@ -44,6 +79,25 @@ async fn test_validation_invalid_include_regex() {
 }
 
 #[tokio::test]
+async fn test_validation_invalid_proxy_url() {
+    // proxy with invalid URL like 'not-a-url' is rejected
+    let engine_config: CrawlConfig =
+        serde_json::from_str("{\"proxy\":{\"url\":\"not-a-url\"}}").expect("config should parse");
+    let engine = create_engine(Some(engine_config)).expect("handle creation should succeed");
+    let url = format!(
+        "{}/fixtures/{}",
+        std::env::var("MOCK_SERVER_URL").expect("MOCK_SERVER_URL not set"),
+        "validation_invalid_proxy_url"
+    );
+    let result = scrape(&engine, &url).await;
+    assert!(result.is_err(), "expected call to fail");
+    assert!(
+        result.as_ref().unwrap_err().to_string().contains("proxy"),
+        "error message mismatch"
+    );
+}
+
+#[tokio::test]
 async fn test_validation_invalid_retry_code() {
     // Retry code outside 100-599 is rejected
     let engine_config: CrawlConfig = serde_json::from_str("{\"retry_codes\":[999]}").expect("config should parse");
@@ -57,6 +111,42 @@ async fn test_validation_invalid_retry_code() {
     assert!(result.is_err(), "expected call to fail");
     assert!(
         result.as_ref().unwrap_err().to_string().contains("retry code"),
+        "error message mismatch"
+    );
+}
+
+#[tokio::test]
+async fn test_validation_max_concurrent_zero() {
+    // max_concurrent=0 is rejected as invalid config (minimum is 1)
+    let engine_config: CrawlConfig = serde_json::from_str("{\"max_concurrent\":0}").expect("config should parse");
+    let engine = create_engine(Some(engine_config)).expect("handle creation should succeed");
+    let url = format!(
+        "{}/fixtures/{}",
+        std::env::var("MOCK_SERVER_URL").expect("MOCK_SERVER_URL not set"),
+        "validation_max_concurrent_zero"
+    );
+    let result = scrape(&engine, &url).await;
+    assert!(result.is_err(), "expected call to fail");
+    assert!(
+        result.as_ref().unwrap_err().to_string().contains("max_concurrent"),
+        "error message mismatch"
+    );
+}
+
+#[tokio::test]
+async fn test_validation_max_depth_too_high() {
+    // max_depth=200 exceeds limit of 100
+    let engine_config: CrawlConfig = serde_json::from_str("{\"max_depth\":200}").expect("config should parse");
+    let engine = create_engine(Some(engine_config)).expect("handle creation should succeed");
+    let url = format!(
+        "{}/fixtures/{}",
+        std::env::var("MOCK_SERVER_URL").expect("MOCK_SERVER_URL not set"),
+        "validation_max_depth_too_high"
+    );
+    let result = scrape(&engine, &url).await;
+    assert!(result.is_err(), "expected call to fail");
+    assert!(
+        result.as_ref().unwrap_err().to_string().contains("max_depth"),
         "error message mismatch"
     );
 }
@@ -93,6 +183,24 @@ async fn test_validation_max_redirects_too_high() {
     assert!(result.is_err(), "expected call to fail");
     assert!(
         result.as_ref().unwrap_err().to_string().contains("max_redirects"),
+        "error message mismatch"
+    );
+}
+
+#[tokio::test]
+async fn test_validation_negative_body_size() {
+    // max_body_size set to -1 is rejected as invalid config
+    let engine_config: CrawlConfig = serde_json::from_str("{\"max_body_size\":0}").expect("config should parse");
+    let engine = create_engine(Some(engine_config)).expect("handle creation should succeed");
+    let url = format!(
+        "{}/fixtures/{}",
+        std::env::var("MOCK_SERVER_URL").expect("MOCK_SERVER_URL not set"),
+        "validation_negative_body_size"
+    );
+    let result = scrape(&engine, &url).await;
+    assert!(result.is_err(), "expected call to fail");
+    assert!(
+        result.as_ref().unwrap_err().to_string().contains("body_size"),
         "error message mismatch"
     );
 }

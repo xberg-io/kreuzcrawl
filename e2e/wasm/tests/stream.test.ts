@@ -4,7 +4,7 @@ import { scrape, createEngine, WasmCrawlConfig } from "kreuzcrawl";
 
 describe("stream", () => {
 	it("crawl_stream_events: Crawl stream produces page and complete events", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.maxDepth = 1;
 		engineConfig.respectRobotsTxt = false;
 		const engine = createEngine(engineConfig);
@@ -16,7 +16,7 @@ describe("stream", () => {
 	});
 
 	it("stream_depth_crawl: Stream produces events for multi-depth crawl with link following", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.maxConcurrent = 1;
 		engineConfig.maxDepth = 2;
 		const engine = createEngine(engineConfig);
@@ -27,8 +27,46 @@ describe("stream", () => {
 		// skipped: field 'stream.has_complete_event' not available on result type
 	});
 
+	it("stream_error_event_mid_crawl: Stream emits error event when a page fails mid-crawl, but other pages succeed", async () => {
+		const engineConfig = new WasmCrawlConfig();
+		engineConfig.maxConcurrent = 1;
+		engineConfig.maxDepth = 1;
+		engineConfig.respectRobotsTxt = false;
+		const engine = createEngine(engineConfig);
+		const url = `${process.env.MOCK_SERVER_URL}/fixtures/stream_error_event_mid_crawl`;
+		const result = await scrape(engine, url);
+		// skipped: field 'stream.has_page_event' not available on result type
+		// skipped: field 'stream.has_error_event' not available on result type
+		// skipped: field 'stream.has_complete_event' not available on result type
+	});
+
+	it("stream_event_ordering: Stream ensures complete event arrives after all page events", async () => {
+		const engineConfig = new WasmCrawlConfig();
+		engineConfig.maxConcurrent = 1;
+		engineConfig.maxDepth = 1;
+		engineConfig.respectRobotsTxt = false;
+		const engine = createEngine(engineConfig);
+		const url = `${process.env.MOCK_SERVER_URL}/fixtures/stream_event_ordering`;
+		const result = await scrape(engine, url);
+		// skipped: field 'stream.has_complete_event' not available on result type
+		// skipped: field 'stream.has_page_event' not available on result type
+		// skipped: field 'stream.event_count_min' not available on result type
+	});
+
+	it("stream_large_crawl: Stream handles crawl of 5+ pages with multiple events", async () => {
+		const engineConfig = new WasmCrawlConfig();
+		engineConfig.maxDepth = 1;
+		engineConfig.respectRobotsTxt = false;
+		const engine = createEngine(engineConfig);
+		const url = `${process.env.MOCK_SERVER_URL}/fixtures/stream_large_crawl`;
+		const result = await scrape(engine, url);
+		// skipped: field 'stream.event_count_min' not available on result type
+		// skipped: field 'stream.has_page_event' not available on result type
+		// skipped: field 'stream.has_complete_event' not available on result type
+	});
+
 	it("stream_with_error_event: Stream emits page and complete events even when some pages fail", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.maxConcurrent = 1;
 		engineConfig.maxDepth = 1;
 		const engine = createEngine(engineConfig);

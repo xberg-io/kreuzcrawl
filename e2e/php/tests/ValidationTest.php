@@ -13,6 +13,26 @@ use Kreuzcrawl\CrawlConfig;
 /** E2e tests for category: validation. */
 final class ValidationTest extends TestCase
 {
+    /** batch operation with empty batch_urls array is rejected */
+    public function test_validation_empty_batch_urls(): void
+    {
+        $engine = Kreuzcrawl::createEngine(null);
+        $url = getenv('MOCK_SERVER_URL') . '/fixtures/validation_empty_batch_urls';
+        $this->expectException(\Exception::class);
+        Kreuzcrawl::scrape_async($engine, $url);
+    }
+
+    /** auth object with no recognized variant (empty object) is rejected */
+    public function test_validation_invalid_auth_config(): void
+    {
+        $engine_config = CrawlConfig::default();
+        $engine_config->auth = [];
+        $engine = Kreuzcrawl::createEngine($engine_config);
+        $url = getenv('MOCK_SERVER_URL') . '/fixtures/validation_invalid_auth_config';
+        $this->expectException(\Exception::class);
+        Kreuzcrawl::scrape_async($engine, $url);
+    }
+
     /** Invalid regex in exclude_paths is rejected */
     public function test_validation_invalid_exclude_regex(): void
     {
@@ -21,7 +41,7 @@ final class ValidationTest extends TestCase
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/validation_invalid_exclude_regex';
         $this->expectException(\Exception::class);
-        Kreuzcrawl::scrape($engine, $url);
+        Kreuzcrawl::scrape_async($engine, $url);
     }
 
     /** Invalid regex in include_paths is rejected */
@@ -32,7 +52,18 @@ final class ValidationTest extends TestCase
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/validation_invalid_include_regex';
         $this->expectException(\Exception::class);
-        Kreuzcrawl::scrape($engine, $url);
+        Kreuzcrawl::scrape_async($engine, $url);
+    }
+
+    /** proxy with invalid URL like 'not-a-url' is rejected */
+    public function test_validation_invalid_proxy_url(): void
+    {
+        $engine_config = CrawlConfig::default();
+        $engine_config->proxy = ["url" => "not-a-url"];
+        $engine = Kreuzcrawl::createEngine($engine_config);
+        $url = getenv('MOCK_SERVER_URL') . '/fixtures/validation_invalid_proxy_url';
+        $this->expectException(\Exception::class);
+        Kreuzcrawl::scrape_async($engine, $url);
     }
 
     /** Retry code outside 100-599 is rejected */
@@ -43,7 +74,29 @@ final class ValidationTest extends TestCase
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/validation_invalid_retry_code';
         $this->expectException(\Exception::class);
-        Kreuzcrawl::scrape($engine, $url);
+        Kreuzcrawl::scrape_async($engine, $url);
+    }
+
+    /** max_concurrent=0 is rejected as invalid config (minimum is 1) */
+    public function test_validation_max_concurrent_zero(): void
+    {
+        $engine_config = CrawlConfig::default();
+        $engine_config->max_concurrent = 0;
+        $engine = Kreuzcrawl::createEngine($engine_config);
+        $url = getenv('MOCK_SERVER_URL') . '/fixtures/validation_max_concurrent_zero';
+        $this->expectException(\Exception::class);
+        Kreuzcrawl::scrape_async($engine, $url);
+    }
+
+    /** max_depth=200 exceeds limit of 100 */
+    public function test_validation_max_depth_too_high(): void
+    {
+        $engine_config = CrawlConfig::default();
+        $engine_config->max_depth = 200;
+        $engine = Kreuzcrawl::createEngine($engine_config);
+        $url = getenv('MOCK_SERVER_URL') . '/fixtures/validation_max_depth_too_high';
+        $this->expectException(\Exception::class);
+        Kreuzcrawl::scrape_async($engine, $url);
     }
 
     /** max_pages=0 is rejected as invalid config */
@@ -54,7 +107,7 @@ final class ValidationTest extends TestCase
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/validation_max_pages_zero';
         $this->expectException(\Exception::class);
-        Kreuzcrawl::scrape($engine, $url);
+        Kreuzcrawl::scrape_async($engine, $url);
     }
 
     /** max_redirects > 100 is rejected as invalid config */
@@ -65,7 +118,18 @@ final class ValidationTest extends TestCase
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/validation_max_redirects_too_high';
         $this->expectException(\Exception::class);
-        Kreuzcrawl::scrape($engine, $url);
+        Kreuzcrawl::scrape_async($engine, $url);
+    }
+
+    /** max_body_size set to -1 is rejected as invalid config */
+    public function test_validation_negative_body_size(): void
+    {
+        $engine_config = CrawlConfig::default();
+        $engine_config->max_body_size = 0;
+        $engine = Kreuzcrawl::createEngine($engine_config);
+        $url = getenv('MOCK_SERVER_URL') . '/fixtures/validation_negative_body_size';
+        $this->expectException(\Exception::class);
+        Kreuzcrawl::scrape_async($engine, $url);
     }
 
     /** Zero request timeout is rejected as invalid config */
@@ -76,6 +140,6 @@ final class ValidationTest extends TestCase
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/validation_timeout_zero';
         $this->expectException(\Exception::class);
-        Kreuzcrawl::scrape($engine, $url);
+        Kreuzcrawl::scrape_async($engine, $url);
     }
 }

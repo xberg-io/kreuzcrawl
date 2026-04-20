@@ -11,6 +11,26 @@ import (
 	pkg "github.com/kreuzberg-dev/kreuzcrawl/packages/go"
 )
 
+func Test_RateLimitAdaptiveBackoff(t *testing.T) {
+	// Exponential backoff retry succeeds after 429 Too Many Requests
+	var engineConfig pkg.CrawlConfig
+	if err := json.Unmarshal([]byte(`{"respect_robots_txt":false,"retry_codes":[429],"retry_count":2}`), &engineConfig); err != nil {
+		t.Fatalf("config parse failed: %v", err)
+	}
+	engine, createErr := pkg.CreateEngine(&engineConfig)
+	if createErr != nil {
+		t.Fatalf("create handle failed: %v", createErr)
+	}
+	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/rate_limit_adaptive_backoff"
+	result, err := pkg.Scrape(engine, url)
+	if err != nil {
+		t.Fatalf("call failed: %v", err)
+	}
+	if result.StatusCode != 200 {
+		t.Errorf("equals mismatch: got %v", result.StatusCode)
+	}
+}
+
 func Test_RateLimitBasicDelay(t *testing.T) {
 	// Rate limiter adds delay between requests to the same domain
 	var engineConfig pkg.CrawlConfig
@@ -28,6 +48,48 @@ func Test_RateLimitBasicDelay(t *testing.T) {
 	}
 	// skipped: field 'crawl.pages_crawled' not available on result type
 	// skipped: field 'rate_limit.min_duration_ms' not available on result type
+}
+
+func Test_RateLimitPerDomain(t *testing.T) {
+	// Per-domain rate limiting applies delay between requests to same domain
+	var engineConfig pkg.CrawlConfig
+	if err := json.Unmarshal([]byte(`{"max_concurrent":1,"max_depth":1}`), &engineConfig); err != nil {
+		t.Fatalf("config parse failed: %v", err)
+	}
+	engine, createErr := pkg.CreateEngine(&engineConfig)
+	if createErr != nil {
+		t.Fatalf("create handle failed: %v", createErr)
+	}
+	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/rate_limit_per_domain"
+	result, err := pkg.Scrape(engine, url)
+	if err != nil {
+		t.Fatalf("call failed: %v", err)
+	}
+	// skipped: field 'pages.length' not available on result type
+	if result.StatusCode != 200 {
+		t.Errorf("equals mismatch: got %v", result.StatusCode)
+	}
+}
+
+func Test_RateLimitRobotsCrawlDelay(t *testing.T) {
+	// Respects Crawl-delay directive in robots.txt
+	var engineConfig pkg.CrawlConfig
+	if err := json.Unmarshal([]byte(`{"max_depth":1,"respect_robots_txt":true,"user_agent":"TestBot"}`), &engineConfig); err != nil {
+		t.Fatalf("config parse failed: %v", err)
+	}
+	engine, createErr := pkg.CreateEngine(&engineConfig)
+	if createErr != nil {
+		t.Fatalf("create handle failed: %v", createErr)
+	}
+	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/rate_limit_robots_crawl_delay"
+	result, err := pkg.Scrape(engine, url)
+	if err != nil {
+		t.Fatalf("call failed: %v", err)
+	}
+	// skipped: field 'pages.length' not available on result type
+	if result.StatusCode != 200 {
+		t.Errorf("equals mismatch: got %v", result.StatusCode)
+	}
 }
 
 func Test_RateLimitZeroNoDelay(t *testing.T) {

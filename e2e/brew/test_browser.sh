@@ -113,6 +113,13 @@ test_browser_detect_vue_shell() {
   # skipped: field 'browser.browser_used' not available on result type
 }
 
+test_browser_extra_wait() {
+  # Browser extra_wait adds additional time after network_idle to ensure all async operations complete
+  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/browser_extra_wait" --format json >/dev/null
+
+  # skipped: field 'browser.browser_used' not available on result type
+}
+
 test_browser_fallback_spa_render() {
   # Browser auto re-fetches SPA shell when JS rendering is detected
   kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/browser_fallback_spa_render" --format json >/dev/null
@@ -135,6 +142,39 @@ test_browser_mode_always() {
   # skipped: field 'browser.browser_used' not available on result type
 }
 
+test_browser_profile_basic() {
+  # Browser profile configuration persists and reuses browser state across crawl sessions
+  local output
+  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/browser_profile_basic" --format json)
+
+  # skipped: field 'browser.browser_used' not available on result type
+  local val_status_code
+  val_status_code=$(echo "$output" | jq -r '.status_code')
+  assert_equals "$val_status_code" '200' 'status_code'
+}
+
+test_browser_wait_fixed() {
+  # Browser wait strategy 'fixed' waits for a specific duration after page navigation
+  local output
+  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/browser_wait_fixed" --format json)
+
+  # skipped: field 'browser.browser_used' not available on result type
+  local val_status_code
+  val_status_code=$(echo "$output" | jq -r '.status_code')
+  assert_equals "$val_status_code" '200' 'status_code'
+}
+
+test_browser_wait_selector() {
+  # Browser wait strategy 'selector' waits for specific CSS selector before considering page loaded
+  local output
+  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/browser_wait_selector" --format json)
+
+  # skipped: field 'browser.browser_used' not available on result type
+  local val_status_code
+  val_status_code=$(echo "$output" | jq -r '.status_code')
+  assert_equals "$val_status_code" '200' 'status_code'
+}
+
 run_tests_browser() {
   run_test test_browser_config_auto_no_feature
   run_test test_browser_config_never_mode
@@ -145,7 +185,11 @@ run_tests_browser() {
   run_test test_browser_detect_nuxt_shell
   run_test test_browser_detect_react_shell
   run_test test_browser_detect_vue_shell
+  run_test test_browser_extra_wait
   run_test test_browser_fallback_spa_render
   run_test test_browser_fallback_waf_blocked
   run_test test_browser_mode_always
+  run_test test_browser_profile_basic
+  run_test test_browser_wait_fixed
+  run_test test_browser_wait_selector
 }

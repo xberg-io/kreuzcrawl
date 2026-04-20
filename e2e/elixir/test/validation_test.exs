@@ -3,6 +3,23 @@
 defmodule E2e.ValidationTest do
   use ExUnit.Case, async: true
 
+  describe "validation_empty_batch_urls" do
+    test "batch operation with empty batch_urls array is rejected" do
+      {:ok, engine} = Kreuzcrawl.create_engine(nil)
+      url = System.get_env("MOCK_SERVER_URL") <> "/fixtures/validation_empty_batch_urls"
+      assert {:error, _} = Kreuzcrawl.scrape_async(engine, url)
+    end
+  end
+
+  describe "validation_invalid_auth_config" do
+    test "auth object with no recognized variant (empty object) is rejected" do
+      engine_config = "{\"auth\":{}}"
+      {:ok, engine} = Kreuzcrawl.create_engine(engine_config)
+      url = System.get_env("MOCK_SERVER_URL") <> "/fixtures/validation_invalid_auth_config"
+      assert {:error, _} = Kreuzcrawl.scrape_async(engine, url)
+    end
+  end
+
   describe "validation_invalid_exclude_regex" do
     test "Invalid regex in exclude_paths is rejected" do
       engine_config = "{\"exclude_paths\":[\"(unclosed\"]}"
@@ -21,11 +38,38 @@ defmodule E2e.ValidationTest do
     end
   end
 
+  describe "validation_invalid_proxy_url" do
+    test "proxy with invalid URL like 'not-a-url' is rejected" do
+      engine_config = "{\"proxy\":{\"url\":\"not-a-url\"}}"
+      {:ok, engine} = Kreuzcrawl.create_engine(engine_config)
+      url = System.get_env("MOCK_SERVER_URL") <> "/fixtures/validation_invalid_proxy_url"
+      assert {:error, _} = Kreuzcrawl.scrape_async(engine, url)
+    end
+  end
+
   describe "validation_invalid_retry_code" do
     test "Retry code outside 100-599 is rejected" do
       engine_config = "{\"retry_codes\":[999]}"
       {:ok, engine} = Kreuzcrawl.create_engine(engine_config)
       url = System.get_env("MOCK_SERVER_URL") <> "/fixtures/validation_invalid_retry_code"
+      assert {:error, _} = Kreuzcrawl.scrape_async(engine, url)
+    end
+  end
+
+  describe "validation_max_concurrent_zero" do
+    test "max_concurrent=0 is rejected as invalid config (minimum is 1)" do
+      engine_config = "{\"max_concurrent\":0}"
+      {:ok, engine} = Kreuzcrawl.create_engine(engine_config)
+      url = System.get_env("MOCK_SERVER_URL") <> "/fixtures/validation_max_concurrent_zero"
+      assert {:error, _} = Kreuzcrawl.scrape_async(engine, url)
+    end
+  end
+
+  describe "validation_max_depth_too_high" do
+    test "max_depth=200 exceeds limit of 100" do
+      engine_config = "{\"max_depth\":200}"
+      {:ok, engine} = Kreuzcrawl.create_engine(engine_config)
+      url = System.get_env("MOCK_SERVER_URL") <> "/fixtures/validation_max_depth_too_high"
       assert {:error, _} = Kreuzcrawl.scrape_async(engine, url)
     end
   end
@@ -44,6 +88,15 @@ defmodule E2e.ValidationTest do
       engine_config = "{\"max_redirects\":200}"
       {:ok, engine} = Kreuzcrawl.create_engine(engine_config)
       url = System.get_env("MOCK_SERVER_URL") <> "/fixtures/validation_max_redirects_too_high"
+      assert {:error, _} = Kreuzcrawl.scrape_async(engine, url)
+    end
+  end
+
+  describe "validation_negative_body_size" do
+    test "max_body_size set to -1 is rejected as invalid config" do
+      engine_config = "{\"max_body_size\":0}"
+      {:ok, engine} = Kreuzcrawl.create_engine(engine_config)
+      url = System.get_env("MOCK_SERVER_URL") <> "/fixtures/validation_negative_body_size"
       assert {:error, _} = Kreuzcrawl.scrape_async(engine, url)
     end
   end

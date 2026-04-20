@@ -9,4 +9,30 @@ describe("cache", () => {
 		const result = await scrape(engine, url);
 		expect(result.statusCode).toBe(200);
 	});
+
+	it("cache_etag_conditional: Etag header enables conditional requests for cached content", async () => {
+		const engineConfig = { maxDepth: 1 };
+		const engine = createEngine(engineConfig);
+		const url = `${process.env.MOCK_SERVER_URL}/fixtures/cache_etag_conditional`;
+		const result = await scrape(engine, url);
+		// skipped: field 'pages.length' not available on result type
+		expect(result.statusCode).toBe(200);
+	});
+
+	it("cache_last_modified: Last-Modified header enables conditional requests via If-Modified-Since", async () => {
+		const engineConfig = { maxDepth: 1 };
+		const engine = createEngine(engineConfig);
+		const url = `${process.env.MOCK_SERVER_URL}/fixtures/cache_last_modified`;
+		await scrape(engine, url);
+		// skipped: field 'pages.length' not available on result type
+	});
+
+	it("cache_miss_fresh_fetch: Uncached URLs are fetched fresh without conditional headers", async () => {
+		const engineConfig = { maxDepth: 1 };
+		const engine = createEngine(engineConfig);
+		const url = `${process.env.MOCK_SERVER_URL}/fixtures/cache_miss_fresh_fetch`;
+		const result = await scrape(engine, url);
+		// skipped: field 'pages.length' not available on result type
+		expect(result.statusCode).toBe(200);
+	});
 });

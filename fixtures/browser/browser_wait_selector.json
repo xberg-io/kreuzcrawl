@@ -1,0 +1,39 @@
+{
+	"id": "browser_wait_selector",
+	"description": "Browser wait strategy 'selector' waits for specific CSS selector before considering page loaded",
+	"tags": ["browser", "wait", "selector"],
+	"skip": {
+		"languages": ["wasm", "homebrew"],
+		"reason": "Requires browser feature"
+	},
+	"input": {
+		"mock_responses": [
+			{
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<!DOCTYPE html><html><head><title>Wait Selector Test</title></head><body><div id=\"content\"><h1>Dynamic Content Loaded</h1><p>This content appears after JavaScript execution.</p></div></body></html>"
+			}
+		],
+		"config": {
+			"browser": {
+				"mode": "always",
+				"wait": "selector",
+				"wait_selector": "#content"
+			}
+		}
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "browser.browser_used",
+			"value": true
+		},
+		{
+			"type": "equals",
+			"field": "status_code",
+			"value": 200
+		}
+	]
+}

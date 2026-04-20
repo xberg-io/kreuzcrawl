@@ -13,6 +13,66 @@ public class BatchTests
     private static readonly JsonSerializerOptions ConfigOptions = new() { Converters = { new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower) }, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault };
 
     [Fact]
+    public async Task Test_BatchCrawlBasic()
+    {
+        // Batch crawl of 2 seed URLs with links to discover
+        var engineConfig = JsonSerializer.Deserialize<CrawlConfig>("{\"max_depth\":1,\"respect_robots_txt\":false}", ConfigOptions)!;
+        var engine = KreuzcrawlLib.CreateEngine(engineConfig);
+        var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/batch_crawl_basic";
+        var result = await KreuzcrawlLib.Scrape(engine, url);
+        // skipped: field 'batch.completed_count' not available on result type
+        // skipped: field 'batch.failed_count' not available on result type
+        // skipped: field 'batch.total_count' not available on result type
+    }
+
+    [Fact]
+    public async Task Test_BatchCrawlPartialFailure()
+    {
+        // Batch crawl where one seed URL returns 404 error
+        var engineConfig = JsonSerializer.Deserialize<CrawlConfig>("{\"max_depth\":1,\"respect_robots_txt\":false}", ConfigOptions)!;
+        var engine = KreuzcrawlLib.CreateEngine(engineConfig);
+        var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/batch_crawl_partial_failure";
+        var result = await KreuzcrawlLib.Scrape(engine, url);
+        // skipped: field 'batch.completed_count' not available on result type
+        // skipped: field 'batch.failed_count' not available on result type
+        // skipped: field 'batch.total_count' not available on result type
+    }
+
+    [Fact]
+    public async Task Test_BatchCrawlWithConfig()
+    {
+        // Batch crawl with max_depth=1 config verifying pages are discovered
+        var engineConfig = JsonSerializer.Deserialize<CrawlConfig>("{\"max_depth\":1,\"respect_robots_txt\":false}", ConfigOptions)!;
+        var engine = KreuzcrawlLib.CreateEngine(engineConfig);
+        var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/batch_crawl_with_config";
+        var result = await KreuzcrawlLib.Scrape(engine, url);
+        // skipped: field 'batch.completed_count' not available on result type
+        // skipped: field 'batch.failed_count' not available on result type
+    }
+
+    [Fact]
+    public async Task Test_BatchScrapeEmptyUrlsError()
+    {
+        // Batch scrape with empty batch_urls array returns error
+        var engine = KreuzcrawlLib.CreateEngine(null);
+        var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/batch_scrape_empty_urls_error";
+        await Assert.ThrowsAsync<KreuzcrawlException>(() => KreuzcrawlLib.Scrape(engine, url));
+    }
+
+    [Fact]
+    public async Task Test_BatchScrapeWithConfig()
+    {
+        // Batch scrape with main_content_only=true configuration
+        var engineConfig = JsonSerializer.Deserialize<CrawlConfig>("{\"main_content_only\":true}", ConfigOptions)!;
+        var engine = KreuzcrawlLib.CreateEngine(engineConfig);
+        var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/batch_scrape_with_config";
+        var result = await KreuzcrawlLib.Scrape(engine, url);
+        // skipped: field 'batch.completed_count' not available on result type
+        // skipped: field 'batch.failed_count' not available on result type
+        // skipped: field 'batch.total_count' not available on result type
+    }
+
+    [Fact]
     public async Task Test_ScrapeBatchBasic()
     {
         // Batch scrape of multiple URLs all succeeding

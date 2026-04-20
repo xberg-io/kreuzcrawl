@@ -4,7 +4,7 @@ import { scrape, createEngine, WasmCrawlConfig } from "kreuzcrawl";
 
 describe("middleware", () => {
 	it("middleware_engine_crawl_with_defaults: Engine crawl with default middleware chain produces correct multi-page results", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.maxDepth = 1;
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/middleware_engine_crawl_with_defaults`;

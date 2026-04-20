@@ -11,6 +11,36 @@ import (
 	pkg "github.com/kreuzberg-dev/kreuzcrawl/packages/go"
 )
 
+func Test_ValidationEmptyBatchUrls(t *testing.T) {
+	// batch operation with empty batch_urls array is rejected
+	engine, createErr := pkg.CreateEngine(nil)
+	if createErr != nil {
+		t.Fatalf("create handle failed: %v", createErr)
+	}
+	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/validation_empty_batch_urls"
+	_, err := pkg.Scrape(engine, url)
+	if err == nil {
+		t.Errorf("expected an error, but call succeeded")
+	}
+}
+
+func Test_ValidationInvalidAuthConfig(t *testing.T) {
+	// auth object with no recognized variant (empty object) is rejected
+	var engineConfig pkg.CrawlConfig
+	if err := json.Unmarshal([]byte(`{"auth":{}}`), &engineConfig); err != nil {
+		t.Fatalf("config parse failed: %v", err)
+	}
+	engine, createErr := pkg.CreateEngine(&engineConfig)
+	if createErr != nil {
+		t.Fatalf("create handle failed: %v", createErr)
+	}
+	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/validation_invalid_auth_config"
+	_, err := pkg.Scrape(engine, url)
+	if err == nil {
+		t.Errorf("expected an error, but call succeeded")
+	}
+}
+
 func Test_ValidationInvalidExcludeRegex(t *testing.T) {
 	// Invalid regex in exclude_paths is rejected
 	var engineConfig pkg.CrawlConfig
@@ -45,6 +75,23 @@ func Test_ValidationInvalidIncludeRegex(t *testing.T) {
 	}
 }
 
+func Test_ValidationInvalidProxyUrl(t *testing.T) {
+	// proxy with invalid URL like 'not-a-url' is rejected
+	var engineConfig pkg.CrawlConfig
+	if err := json.Unmarshal([]byte(`{"proxy":{"url":"not-a-url"}}`), &engineConfig); err != nil {
+		t.Fatalf("config parse failed: %v", err)
+	}
+	engine, createErr := pkg.CreateEngine(&engineConfig)
+	if createErr != nil {
+		t.Fatalf("create handle failed: %v", createErr)
+	}
+	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/validation_invalid_proxy_url"
+	_, err := pkg.Scrape(engine, url)
+	if err == nil {
+		t.Errorf("expected an error, but call succeeded")
+	}
+}
+
 func Test_ValidationInvalidRetryCode(t *testing.T) {
 	// Retry code outside 100-599 is rejected
 	var engineConfig pkg.CrawlConfig
@@ -56,6 +103,40 @@ func Test_ValidationInvalidRetryCode(t *testing.T) {
 		t.Fatalf("create handle failed: %v", createErr)
 	}
 	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/validation_invalid_retry_code"
+	_, err := pkg.Scrape(engine, url)
+	if err == nil {
+		t.Errorf("expected an error, but call succeeded")
+	}
+}
+
+func Test_ValidationMaxConcurrentZero(t *testing.T) {
+	// max_concurrent=0 is rejected as invalid config (minimum is 1)
+	var engineConfig pkg.CrawlConfig
+	if err := json.Unmarshal([]byte(`{"max_concurrent":0}`), &engineConfig); err != nil {
+		t.Fatalf("config parse failed: %v", err)
+	}
+	engine, createErr := pkg.CreateEngine(&engineConfig)
+	if createErr != nil {
+		t.Fatalf("create handle failed: %v", createErr)
+	}
+	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/validation_max_concurrent_zero"
+	_, err := pkg.Scrape(engine, url)
+	if err == nil {
+		t.Errorf("expected an error, but call succeeded")
+	}
+}
+
+func Test_ValidationMaxDepthTooHigh(t *testing.T) {
+	// max_depth=200 exceeds limit of 100
+	var engineConfig pkg.CrawlConfig
+	if err := json.Unmarshal([]byte(`{"max_depth":200}`), &engineConfig); err != nil {
+		t.Fatalf("config parse failed: %v", err)
+	}
+	engine, createErr := pkg.CreateEngine(&engineConfig)
+	if createErr != nil {
+		t.Fatalf("create handle failed: %v", createErr)
+	}
+	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/validation_max_depth_too_high"
 	_, err := pkg.Scrape(engine, url)
 	if err == nil {
 		t.Errorf("expected an error, but call succeeded")
@@ -90,6 +171,23 @@ func Test_ValidationMaxRedirectsTooHigh(t *testing.T) {
 		t.Fatalf("create handle failed: %v", createErr)
 	}
 	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/validation_max_redirects_too_high"
+	_, err := pkg.Scrape(engine, url)
+	if err == nil {
+		t.Errorf("expected an error, but call succeeded")
+	}
+}
+
+func Test_ValidationNegativeBodySize(t *testing.T) {
+	// max_body_size set to -1 is rejected as invalid config
+	var engineConfig pkg.CrawlConfig
+	if err := json.Unmarshal([]byte(`{"max_body_size":0}`), &engineConfig); err != nil {
+		t.Fatalf("config parse failed: %v", err)
+	}
+	engine, createErr := pkg.CreateEngine(&engineConfig)
+	if createErr != nil {
+		t.Fatalf("create handle failed: %v", createErr)
+	}
+	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/validation_negative_body_size"
 	_, err := pkg.Scrape(engine, url)
 	if err == nil {
 		t.Errorf("expected an error, but call succeeded")

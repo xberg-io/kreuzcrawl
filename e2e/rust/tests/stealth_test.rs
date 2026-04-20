@@ -20,3 +20,32 @@ async fn test_stealth_ua_rotation_config() {
     let result = scrape(&engine, &url).await.expect("should succeed");
     assert_eq!(result.status_code, 200, "equals assertion failed");
 }
+
+#[tokio::test]
+async fn test_stealth_ua_rotation_round_robin() {
+    // User-agent rotation cycles through multiple agents across multiple requests
+    let engine_config: CrawlConfig = serde_json::from_str("{\"max_depth\":1,\"max_pages\":3,\"user_agents\":[\"Mozilla/5.0 (Windows NT 10.0; Win64; x64) TestAgent-1\",\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15) TestAgent-2\"]}").expect("config should parse");
+    let engine = create_engine(Some(engine_config)).expect("handle creation should succeed");
+    let url = format!(
+        "{}/fixtures/{}",
+        std::env::var("MOCK_SERVER_URL").expect("MOCK_SERVER_URL not set"),
+        "stealth_ua_rotation_round_robin"
+    );
+    let _ = scrape(&engine, &url).await.expect("should succeed");
+    // skipped: field 'pages.length' not available on result type
+}
+
+#[tokio::test]
+async fn test_stealth_ua_rotation_single_domain() {
+    // Custom user-agent string is applied for single domain crawl
+    let engine_config: CrawlConfig = serde_json::from_str("{\"max_depth\":0,\"stay_on_domain\":true,\"user_agents\":[\"Mozilla/5.0 TestBot/1.0 (+http://example.com/bot)\"]}").expect("config should parse");
+    let engine = create_engine(Some(engine_config)).expect("handle creation should succeed");
+    let url = format!(
+        "{}/fixtures/{}",
+        std::env::var("MOCK_SERVER_URL").expect("MOCK_SERVER_URL not set"),
+        "stealth_ua_rotation_single_domain"
+    );
+    let result = scrape(&engine, &url).await.expect("should succeed");
+    assert_eq!(result.status_code, 200, "equals assertion failed");
+    // skipped: field 'pages.length' not available on result type
+}

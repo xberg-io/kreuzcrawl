@@ -1,0 +1,39 @@
+{
+	"id": "browser_wait_fixed",
+	"description": "Browser wait strategy 'fixed' waits for a specific duration after page navigation",
+	"tags": ["browser", "wait", "fixed"],
+	"skip": {
+		"languages": ["wasm", "homebrew"],
+		"reason": "Requires browser feature"
+	},
+	"input": {
+		"mock_responses": [
+			{
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<!DOCTYPE html><html><head><title>Fixed Wait Test</title></head><body><div><h1>Page Loaded</h1><p>This page loads with a fixed wait period.</p></div></body></html>"
+			}
+		],
+		"config": {
+			"browser": {
+				"mode": "always",
+				"wait": "fixed",
+				"extra_wait": 100
+			}
+		}
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "browser.browser_used",
+			"value": true
+		},
+		{
+			"type": "equals",
+			"field": "status_code",
+			"value": 200
+		}
+	]
+}

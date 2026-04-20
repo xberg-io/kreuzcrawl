@@ -21,4 +21,39 @@ public class CacheTests
         var result = await KreuzcrawlLib.Scrape(engine, url);
         Assert.Equal(200, result.StatusCode);
     }
+
+    [Fact]
+    public async Task Test_CacheEtagConditional()
+    {
+        // Etag header enables conditional requests for cached content
+        var engineConfig = JsonSerializer.Deserialize<CrawlConfig>("{\"max_depth\":1}", ConfigOptions)!;
+        var engine = KreuzcrawlLib.CreateEngine(engineConfig);
+        var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/cache_etag_conditional";
+        var result = await KreuzcrawlLib.Scrape(engine, url);
+        // skipped: field 'pages.length' not available on result type
+        Assert.Equal(200, result.StatusCode);
+    }
+
+    [Fact]
+    public async Task Test_CacheLastModified()
+    {
+        // Last-Modified header enables conditional requests via If-Modified-Since
+        var engineConfig = JsonSerializer.Deserialize<CrawlConfig>("{\"max_depth\":1}", ConfigOptions)!;
+        var engine = KreuzcrawlLib.CreateEngine(engineConfig);
+        var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/cache_last_modified";
+        var result = await KreuzcrawlLib.Scrape(engine, url);
+        // skipped: field 'pages.length' not available on result type
+    }
+
+    [Fact]
+    public async Task Test_CacheMissFreshFetch()
+    {
+        // Uncached URLs are fetched fresh without conditional headers
+        var engineConfig = JsonSerializer.Deserialize<CrawlConfig>("{\"max_depth\":1}", ConfigOptions)!;
+        var engine = KreuzcrawlLib.CreateEngine(engineConfig);
+        var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/cache_miss_fresh_fetch";
+        var result = await KreuzcrawlLib.Scrape(engine, url);
+        // skipped: field 'pages.length' not available on result type
+        Assert.Equal(200, result.StatusCode);
+    }
 }

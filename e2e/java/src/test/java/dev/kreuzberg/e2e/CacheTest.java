@@ -4,15 +4,52 @@ package dev.kreuzberg.e2e;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import dev.kreuzberg.kreuzcrawl.Kreuzcrawl;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import dev.kreuzberg.kreuzcrawl.CrawlConfig;
 
 /** E2e tests for category: cache. */
 class CacheTest {
+
+    private static final ObjectMapper MAPPER = new ObjectMapper().registerModule(new Jdk8Module());
     @Test
     void testCacheBasic() throws Exception {
         // Crawling with disk cache enabled succeeds without errors
         var engine = Kreuzcrawl.createEngine(null);
         String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/cache_basic";
         var result = Kreuzcrawl.scrape(engine, url);
+        assertEquals(200, result.statusCode());
+    }
+
+    @Test
+    void testCacheEtagConditional() throws Exception {
+        // Etag header enables conditional requests for cached content
+        var engineConfig = MAPPER.readValue("{\"max_depth\":1}", CrawlConfig.class);
+        var engine = Kreuzcrawl.createEngine(engineConfig);
+        String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/cache_etag_conditional";
+        var result = Kreuzcrawl.scrape(engine, url);
+        // skipped: field 'pages.length' not available on result type
+        assertEquals(200, result.statusCode());
+    }
+
+    @Test
+    void testCacheLastModified() throws Exception {
+        // Last-Modified header enables conditional requests via If-Modified-Since
+        var engineConfig = MAPPER.readValue("{\"max_depth\":1}", CrawlConfig.class);
+        var engine = Kreuzcrawl.createEngine(engineConfig);
+        String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/cache_last_modified";
+        var result = Kreuzcrawl.scrape(engine, url);
+        // skipped: field 'pages.length' not available on result type
+    }
+
+    @Test
+    void testCacheMissFreshFetch() throws Exception {
+        // Uncached URLs are fetched fresh without conditional headers
+        var engineConfig = MAPPER.readValue("{\"max_depth\":1}", CrawlConfig.class);
+        var engine = Kreuzcrawl.createEngine(engineConfig);
+        String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/cache_miss_fresh_fetch";
+        var result = Kreuzcrawl.scrape(engine, url);
+        // skipped: field 'pages.length' not available on result type
         assertEquals(200, result.statusCode());
     }
 

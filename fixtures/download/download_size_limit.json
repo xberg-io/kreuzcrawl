@@ -1,0 +1,29 @@
+{
+	"id": "download_size_limit",
+	"description": "Reject documents exceeding the configured size limit",
+	"tags": ["download", "size-limit"],
+	"input": {
+		"mock_responses": [
+			{
+				"path": "/large_document.pdf",
+				"status_code": 200,
+				"headers": {
+					"content-type": "application/pdf"
+				},
+				"body_inline": "This is a large PDF document that exceeds the size limit threshold configured in the test. It contains enough content to surpass one hundred bytes to trigger the size limit validation."
+			}
+		],
+		"config": {
+			"respect_robots_txt": false,
+			"download_documents": true,
+			"document_max_size": 100
+		}
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "status_code",
+			"value": 200
+		}
+	]
+}

@@ -1,0 +1,78 @@
+{
+	"id": "stream_large_crawl",
+	"description": "Stream handles crawl of 5+ pages with multiple events",
+	"tags": ["stream", "large"],
+	"input": {
+		"mock_responses": [
+			{
+				"path": "/",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><body><a href=\"/child1\">Child 1</a><a href=\"/child2\">Child 2</a><a href=\"/child3\">Child 3</a><a href=\"/child4\">Child 4</a><a href=\"/child5\">Child 5</a></body></html>"
+			},
+			{
+				"path": "/child1",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html"
+				},
+				"body_inline": "<html><body><h1>Child 1</h1></body></html>"
+			},
+			{
+				"path": "/child2",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html"
+				},
+				"body_inline": "<html><body><h1>Child 2</h1></body></html>"
+			},
+			{
+				"path": "/child3",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html"
+				},
+				"body_inline": "<html><body><h1>Child 3</h1></body></html>"
+			},
+			{
+				"path": "/child4",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html"
+				},
+				"body_inline": "<html><body><h1>Child 4</h1></body></html>"
+			},
+			{
+				"path": "/child5",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html"
+				},
+				"body_inline": "<html><body><h1>Child 5</h1></body></html>"
+			}
+		],
+		"config": {
+			"max_depth": 1,
+			"respect_robots_txt": false
+		}
+	},
+	"assertions": [
+		{
+			"type": "greater_than_or_equal",
+			"field": "stream.event_count_min",
+			"value": 6
+		},
+		{
+			"type": "equals",
+			"field": "stream.has_page_event",
+			"value": true
+		},
+		{
+			"type": "equals",
+			"field": "stream.has_complete_event",
+			"value": true
+		}
+	]
+}

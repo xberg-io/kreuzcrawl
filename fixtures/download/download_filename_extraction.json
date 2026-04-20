@@ -1,0 +1,34 @@
+{
+	"id": "download_filename_extraction",
+	"description": "Extract filename from Content-Disposition header",
+	"tags": ["download", "filename", "content-disposition"],
+	"input": {
+		"mock_responses": [
+			{
+				"path": "/report.pdf",
+				"status_code": 200,
+				"headers": {
+					"content-type": "application/pdf",
+					"content-disposition": "attachment; filename=\"report.pdf\""
+				},
+				"body_file": "pdf/sample.pdf"
+			}
+		],
+		"config": {
+			"respect_robots_txt": false,
+			"download_documents": true
+		}
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "downloaded_document.mime_type",
+			"value": "application/pdf"
+		},
+		{
+			"type": "equals",
+			"field": "status_code",
+			"value": 200
+		}
+	]
+}

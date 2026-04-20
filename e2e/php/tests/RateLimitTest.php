@@ -13,6 +13,19 @@ use Kreuzcrawl\CrawlConfig;
 /** E2e tests for category: rate_limit. */
 final class RateLimitTest extends TestCase
 {
+    /** Exponential backoff retry succeeds after 429 Too Many Requests */
+    public function test_rate_limit_adaptive_backoff(): void
+    {
+        $engine_config = CrawlConfig::default();
+        $engine_config->respect_robots_txt = false;
+        $engine_config->retry_codes = [429];
+        $engine_config->retry_count = 2;
+        $engine = Kreuzcrawl::createEngine($engine_config);
+        $url = getenv('MOCK_SERVER_URL') . '/fixtures/rate_limit_adaptive_backoff';
+        $result = Kreuzcrawl::scrape_async($engine, $url);
+        $this->assertEquals(200, $result->status_code);
+    }
+
     /** Rate limiter adds delay between requests to the same domain */
     public function test_rate_limit_basic_delay(): void
     {
@@ -21,9 +34,36 @@ final class RateLimitTest extends TestCase
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/rate_limit_basic_delay';
         $this->expectNotToPerformAssertions();
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         // skipped: field 'crawl.pages_crawled' not available on result type
         // skipped: field 'rate_limit.min_duration_ms' not available on result type
+    }
+
+    /** Per-domain rate limiting applies delay between requests to same domain */
+    public function test_rate_limit_per_domain(): void
+    {
+        $engine_config = CrawlConfig::default();
+        $engine_config->max_concurrent = 1;
+        $engine_config->max_depth = 1;
+        $engine = Kreuzcrawl::createEngine($engine_config);
+        $url = getenv('MOCK_SERVER_URL') . '/fixtures/rate_limit_per_domain';
+        $result = Kreuzcrawl::scrape_async($engine, $url);
+        // skipped: field 'pages.length' not available on result type
+        $this->assertEquals(200, $result->status_code);
+    }
+
+    /** Respects Crawl-delay directive in robots.txt */
+    public function test_rate_limit_robots_crawl_delay(): void
+    {
+        $engine_config = CrawlConfig::default();
+        $engine_config->max_depth = 1;
+        $engine_config->respect_robots_txt = true;
+        $engine_config->user_agent = "TestBot";
+        $engine = Kreuzcrawl::createEngine($engine_config);
+        $url = getenv('MOCK_SERVER_URL') . '/fixtures/rate_limit_robots_crawl_delay';
+        $result = Kreuzcrawl::scrape_async($engine, $url);
+        // skipped: field 'pages.length' not available on result type
+        $this->assertEquals(200, $result->status_code);
     }
 
     /** Rate limiter with zero delay does not slow crawling */
@@ -34,7 +74,7 @@ final class RateLimitTest extends TestCase
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/rate_limit_zero_no_delay';
         $this->expectNotToPerformAssertions();
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         // skipped: field 'crawl.pages_crawled' not available on result type
     }
 }

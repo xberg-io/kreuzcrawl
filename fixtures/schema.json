@@ -61,7 +61,7 @@
 				},
 				"crawl_strategy": {
 					"type": "string",
-					"enum": ["bfs", "dfs", "best_first"],
+					"enum": ["bfs", "dfs", "best_first", "adaptive"],
 					"description": "Crawl traversal strategy (not part of CrawlConfig)"
 				},
 				"content_filter": {
@@ -173,8 +173,28 @@
 							"properties": {
 								"url": { "type": "string" }
 							}
-						}
+						},
+						"download_documents": { "type": "boolean", "description": "Enable document downloading (PDF, etc.)" },
+						"document_mime_types": {
+							"type": "array",
+							"items": { "type": "string" },
+							"description": "Allowlist of MIME types to download"
+						},
+						"document_max_size": { "type": "integer", "minimum": 0, "description": "Max document size in bytes" },
+						"warc_output": { "type": "string", "description": "Path to write WARC output file" },
+						"browser_profile": { "type": "string", "description": "Named browser profile for persistent sessions" },
+						"save_browser_profile": { "type": "boolean", "description": "Save changes back to browser profile" }
 					}
+				},
+				"actions": {
+					"type": "array",
+					"items": { "type": "object" },
+					"description": "Page interaction actions (Click, Type, Scroll, Wait, ExecuteJs, etc.)"
+				},
+				"batch_mode": {
+					"type": "string",
+					"enum": ["scrape", "crawl"],
+					"description": "Whether batch operation is scrape or crawl (default: scrape)"
 				}
 			}
 		},
@@ -186,7 +206,19 @@
 				"properties": {
 					"type": {
 						"type": "string",
-						"enum": ["equals", "contains", "min", "max", "error"],
+						"enum": [
+							"equals",
+							"contains",
+							"not_empty",
+							"greater_than_or_equal",
+							"less_than_or_equal",
+							"greater_than",
+							"less_than",
+							"contains_all",
+							"is_empty",
+							"not_contains",
+							"error"
+						],
 						"description": "Assertion type."
 					},
 					"field": {

@@ -1,0 +1,50 @@
+{
+	"id": "rate_limit_per_domain",
+	"description": "Per-domain rate limiting applies delay between requests to same domain",
+	"tags": ["rate_limit", "per_domain"],
+	"input": {
+		"mock_responses": [
+			{
+				"path": "/",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html"
+				},
+				"body_inline": "<html><body><h1>Home</h1><a href=\"/page1\">P1</a><a href=\"/page2\">P2</a></body></html>"
+			},
+			{
+				"path": "/page1",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html"
+				},
+				"body_inline": "<html><body><h1>Page 1</h1></body></html>"
+			},
+			{
+				"path": "/page2",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html"
+				},
+				"body_inline": "<html><body><h1>Page 2</h1></body></html>"
+			}
+		],
+		"rate_limit_delay_ms": 100,
+		"config": {
+			"max_depth": 1,
+			"max_concurrent": 1
+		}
+	},
+	"assertions": [
+		{
+			"type": "greater_than_or_equal",
+			"field": "pages.length",
+			"value": 2
+		},
+		{
+			"type": "equals",
+			"field": "status_code",
+			"value": 200
+		}
+	]
+}

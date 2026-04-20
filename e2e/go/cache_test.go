@@ -4,6 +4,7 @@
 package e2e_test
 
 import (
+	"encoding/json"
 	"os"
 	"testing"
 
@@ -21,6 +22,66 @@ func Test_CacheBasic(t *testing.T) {
 	if err != nil {
 		t.Fatalf("call failed: %v", err)
 	}
+	if result.StatusCode != 200 {
+		t.Errorf("equals mismatch: got %v", result.StatusCode)
+	}
+}
+
+func Test_CacheEtagConditional(t *testing.T) {
+	// Etag header enables conditional requests for cached content
+	var engineConfig pkg.CrawlConfig
+	if err := json.Unmarshal([]byte(`{"max_depth":1}`), &engineConfig); err != nil {
+		t.Fatalf("config parse failed: %v", err)
+	}
+	engine, createErr := pkg.CreateEngine(&engineConfig)
+	if createErr != nil {
+		t.Fatalf("create handle failed: %v", createErr)
+	}
+	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/cache_etag_conditional"
+	result, err := pkg.Scrape(engine, url)
+	if err != nil {
+		t.Fatalf("call failed: %v", err)
+	}
+	// skipped: field 'pages.length' not available on result type
+	if result.StatusCode != 200 {
+		t.Errorf("equals mismatch: got %v", result.StatusCode)
+	}
+}
+
+func Test_CacheLastModified(t *testing.T) {
+	// Last-Modified header enables conditional requests via If-Modified-Since
+	var engineConfig pkg.CrawlConfig
+	if err := json.Unmarshal([]byte(`{"max_depth":1}`), &engineConfig); err != nil {
+		t.Fatalf("config parse failed: %v", err)
+	}
+	engine, createErr := pkg.CreateEngine(&engineConfig)
+	if createErr != nil {
+		t.Fatalf("create handle failed: %v", createErr)
+	}
+	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/cache_last_modified"
+	_, err := pkg.Scrape(engine, url)
+	if err != nil {
+		t.Fatalf("call failed: %v", err)
+	}
+	// skipped: field 'pages.length' not available on result type
+}
+
+func Test_CacheMissFreshFetch(t *testing.T) {
+	// Uncached URLs are fetched fresh without conditional headers
+	var engineConfig pkg.CrawlConfig
+	if err := json.Unmarshal([]byte(`{"max_depth":1}`), &engineConfig); err != nil {
+		t.Fatalf("config parse failed: %v", err)
+	}
+	engine, createErr := pkg.CreateEngine(&engineConfig)
+	if createErr != nil {
+		t.Fatalf("create handle failed: %v", createErr)
+	}
+	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/cache_miss_fresh_fetch"
+	result, err := pkg.Scrape(engine, url)
+	if err != nil {
+		t.Fatalf("call failed: %v", err)
+	}
+	// skipped: field 'pages.length' not available on result type
 	if result.StatusCode != 200 {
 		t.Errorf("equals mismatch: got %v", result.StatusCode)
 	}

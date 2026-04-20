@@ -4,7 +4,64 @@
 import os
 
 import pytest
-from kreuzcrawl import create_engine, scrape
+from kreuzcrawl import CrawlConfig, create_engine, scrape
+
+
+@pytest.mark.asyncio
+async def test_batch_crawl_basic() -> None:
+    """Batch crawl of 2 seed URLs with links to discover."""
+    engine_config = CrawlConfig(max_depth=1, respect_robots_txt=False)
+    engine = create_engine(engine_config)
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/batch_crawl_basic"
+    _ = await scrape(engine=engine, url=url)
+    # skipped: field 'batch.completed_count' not available on result type
+    # skipped: field 'batch.failed_count' not available on result type
+    # skipped: field 'batch.total_count' not available on result type
+
+
+@pytest.mark.asyncio
+async def test_batch_crawl_partial_failure() -> None:
+    """Batch crawl where one seed URL returns 404 error."""
+    engine_config = CrawlConfig(max_depth=1, respect_robots_txt=False)
+    engine = create_engine(engine_config)
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/batch_crawl_partial_failure"
+    _ = await scrape(engine=engine, url=url)
+    # skipped: field 'batch.completed_count' not available on result type
+    # skipped: field 'batch.failed_count' not available on result type
+    # skipped: field 'batch.total_count' not available on result type
+
+
+@pytest.mark.asyncio
+async def test_batch_crawl_with_config() -> None:
+    """Batch crawl with max_depth=1 config verifying pages are discovered."""
+    engine_config = CrawlConfig(max_depth=1, respect_robots_txt=False)
+    engine = create_engine(engine_config)
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/batch_crawl_with_config"
+    _ = await scrape(engine=engine, url=url)
+    # skipped: field 'batch.completed_count' not available on result type
+    # skipped: field 'batch.failed_count' not available on result type
+
+
+@pytest.mark.asyncio
+async def test_batch_scrape_empty_urls_error() -> None:
+    """Batch scrape with empty batch_urls array returns error."""
+    engine = create_engine(None)
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/batch_scrape_empty_urls_error"
+    with pytest.raises(Exception) as exc_info:
+        await scrape(engine=engine, url=url)
+    assert "urls" in str(exc_info.value)
+
+
+@pytest.mark.asyncio
+async def test_batch_scrape_with_config() -> None:
+    """Batch scrape with main_content_only=true configuration."""
+    engine_config = CrawlConfig(main_content_only=True)
+    engine = create_engine(engine_config)
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/batch_scrape_with_config"
+    _ = await scrape(engine=engine, url=url)
+    # skipped: field 'batch.completed_count' not available on result type
+    # skipped: field 'batch.failed_count' not available on result type
+    # skipped: field 'batch.total_count' not available on result type
 
 
 @pytest.mark.asyncio

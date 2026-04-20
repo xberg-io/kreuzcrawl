@@ -1,0 +1,50 @@
+{
+	"id": "interact_scroll_down",
+	"description": "Scroll down on the page and verify success",
+	"tags": ["interaction", "scroll"],
+	"skip": {
+		"languages": ["wasm", "homebrew"],
+		"reason": "Requires browser feature"
+	},
+	"input": {
+		"mock_responses": [
+			{
+				"path": "/",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><head><title>Scroll Test</title><style>body { height: 2000px; }</style></head><body><h1>Long Page</h1><p>Content repeated for scrolling</p><p>More content below</p></body></html>"
+			}
+		],
+		"config": {
+			"browser": {
+				"mode": "always"
+			}
+		},
+		"actions": [
+			{
+				"type": "scroll",
+				"direction": "down",
+				"amount": 500
+			}
+		]
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "interaction.action_results[0].success",
+			"value": true
+		},
+		{
+			"type": "equals",
+			"field": "interaction.action_results[0].action_type",
+			"value": "scroll"
+		},
+		{
+			"type": "equals",
+			"field": "interaction.action_results[0].action_index",
+			"value": 0
+		}
+	]
+}

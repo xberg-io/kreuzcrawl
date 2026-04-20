@@ -22,4 +22,27 @@ public class StealthTests
         var result = await KreuzcrawlLib.Scrape(engine, url);
         Assert.Equal(200, result.StatusCode);
     }
+
+    [Fact]
+    public async Task Test_StealthUaRotationRoundRobin()
+    {
+        // User-agent rotation cycles through multiple agents across multiple requests
+        var engineConfig = JsonSerializer.Deserialize<CrawlConfig>("{\"max_depth\":1,\"max_pages\":3,\"user_agents\":[\"Mozilla/5.0 (Windows NT 10.0; Win64; x64) TestAgent-1\",\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15) TestAgent-2\"]}", ConfigOptions)!;
+        var engine = KreuzcrawlLib.CreateEngine(engineConfig);
+        var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/stealth_ua_rotation_round_robin";
+        var result = await KreuzcrawlLib.Scrape(engine, url);
+        // skipped: field 'pages.length' not available on result type
+    }
+
+    [Fact]
+    public async Task Test_StealthUaRotationSingleDomain()
+    {
+        // Custom user-agent string is applied for single domain crawl
+        var engineConfig = JsonSerializer.Deserialize<CrawlConfig>("{\"max_depth\":0,\"stay_on_domain\":true,\"user_agents\":[\"Mozilla/5.0 TestBot/1.0 (+http://example.com/bot)\"]}", ConfigOptions)!;
+        var engine = KreuzcrawlLib.CreateEngine(engineConfig);
+        var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/stealth_ua_rotation_single_domain";
+        var result = await KreuzcrawlLib.Scrape(engine, url);
+        Assert.Equal(200, result.StatusCode);
+        // skipped: field 'pages.length' not available on result type
+    }
 }

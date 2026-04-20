@@ -1,0 +1,39 @@
+{
+	"id": "proxy_basic_success",
+	"description": "Configure proxy URL and successfully crawl through it",
+	"tags": ["proxy", "basic"],
+	"skip": {
+		"languages": ["wasm", "homebrew"],
+		"reason": "Proxy configuration not supported in WASM or Homebrew environments"
+	},
+	"input": {
+		"mock_responses": [
+			{
+				"path": "/",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><body><h1>Proxy Success</h1><p>Request went through proxy</p></body></html>"
+			}
+		],
+		"config": {
+			"proxy": {
+				"url": "http://127.0.0.1:8888"
+			},
+			"respect_robots_txt": false
+		}
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "status_code",
+			"value": 200
+		},
+		{
+			"type": "equals",
+			"field": "pages.length",
+			"value": 1
+		}
+	]
+}

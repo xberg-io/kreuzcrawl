@@ -1,0 +1,33 @@
+{
+	"id": "download_basic_pdf",
+	"description": "Download a basic PDF document with download_documents enabled",
+	"tags": ["download", "pdf"],
+	"input": {
+		"mock_responses": [
+			{
+				"path": "/document.pdf",
+				"status_code": 200,
+				"headers": {
+					"content-type": "application/pdf"
+				},
+				"body_file": "pdf/sample.pdf"
+			}
+		],
+		"config": {
+			"respect_robots_txt": false,
+			"download_documents": true
+		}
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "downloaded_document.mime_type",
+			"value": "application/pdf"
+		},
+		{
+			"type": "min",
+			"field": "downloaded_document.size",
+			"value": 1
+		}
+	]
+}

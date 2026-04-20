@@ -22,4 +22,25 @@ class StealthTest {
         assertEquals(200, result.statusCode());
     }
 
+    @Test
+    void testStealthUaRotationRoundRobin() throws Exception {
+        // User-agent rotation cycles through multiple agents across multiple requests
+        var engineConfig = MAPPER.readValue("{\"max_depth\":1,\"max_pages\":3,\"user_agents\":[\"Mozilla/5.0 (Windows NT 10.0; Win64; x64) TestAgent-1\",\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15) TestAgent-2\"]}", CrawlConfig.class);
+        var engine = Kreuzcrawl.createEngine(engineConfig);
+        String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/stealth_ua_rotation_round_robin";
+        var result = Kreuzcrawl.scrape(engine, url);
+        // skipped: field 'pages.length' not available on result type
+    }
+
+    @Test
+    void testStealthUaRotationSingleDomain() throws Exception {
+        // Custom user-agent string is applied for single domain crawl
+        var engineConfig = MAPPER.readValue("{\"max_depth\":0,\"stay_on_domain\":true,\"user_agents\":[\"Mozilla/5.0 TestBot/1.0 (+http://example.com/bot)\"]}", CrawlConfig.class);
+        var engine = Kreuzcrawl.createEngine(engineConfig);
+        String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/stealth_ua_rotation_single_domain";
+        var result = Kreuzcrawl.scrape(engine, url);
+        assertEquals(200, result.statusCode());
+        // skipped: field 'pages.length' not available on result type
+    }
+
 }

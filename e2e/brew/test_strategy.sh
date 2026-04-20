@@ -3,6 +3,20 @@
 # E2e tests for category: strategy
 set -euo pipefail
 
+test_strategy_adaptive_saturation() {
+  # Adaptive strategy stops early when encountering saturation (duplicate content)
+  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/strategy_adaptive_saturation" --format json >/dev/null
+
+  # skipped: field 'crawl.pages_crawled' not available on result type
+}
+
+test_strategy_adaptive_window() {
+  # Adaptive strategy crawls more pages when content is diverse
+  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/strategy_adaptive_window" --format json >/dev/null
+
+  # skipped: field 'crawl.pages_crawled' not available on result type
+}
+
 test_strategy_best_first_seed() {
   # BestFirst strategy always processes the seed URL first
   kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/strategy_best_first_seed" --format json >/dev/null
@@ -28,6 +42,8 @@ test_strategy_dfs_depth_first() {
 }
 
 run_tests_strategy() {
+  run_test test_strategy_adaptive_saturation
+  run_test test_strategy_adaptive_window
   run_test test_strategy_best_first_seed
   run_test test_strategy_bfs_default_order
   run_test test_strategy_dfs_depth_first

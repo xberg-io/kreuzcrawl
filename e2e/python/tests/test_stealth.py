@@ -15,3 +15,35 @@ async def test_stealth_ua_rotation_config() -> None:
     url = os.environ["MOCK_SERVER_URL"] + "/fixtures/stealth_ua_rotation_config"
     result = await scrape(engine=engine, url=url)
     assert result.status_code == 200
+
+
+@pytest.mark.asyncio
+async def test_stealth_ua_rotation_round_robin() -> None:
+    """User-agent rotation cycles through multiple agents across multiple requests."""
+    engine_config = CrawlConfig(
+        max_depth=1,
+        max_pages=3,
+        user_agents=[
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) TestAgent-1",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15) TestAgent-2",
+        ],
+    )
+    engine = create_engine(engine_config)
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/stealth_ua_rotation_round_robin"
+    _ = await scrape(engine=engine, url=url)
+    # skipped: field 'pages.length' not available on result type
+
+
+@pytest.mark.asyncio
+async def test_stealth_ua_rotation_single_domain() -> None:
+    """Custom user-agent string is applied for single domain crawl."""
+    engine_config = CrawlConfig(
+        max_depth=0,
+        stay_on_domain=True,
+        user_agents=["Mozilla/5.0 TestBot/1.0 (+http://example.com/bot)"],
+    )
+    engine = create_engine(engine_config)
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/stealth_ua_rotation_single_domain"
+    result = await scrape(engine=engine, url=url)
+    assert result.status_code == 200
+    # skipped: field 'pages.length' not available on result type

@@ -183,6 +183,24 @@ func Test_BrowserDetectVueShell(t *testing.T) {
 	// skipped: field 'browser.browser_used' not available on result type
 }
 
+func Test_BrowserExtraWait(t *testing.T) {
+	// Browser extra_wait adds additional time after network_idle to ensure all async operations complete
+	var engineConfig pkg.CrawlConfig
+	if err := json.Unmarshal([]byte(`{"browser":{"extra_wait":200,"mode":"always","wait":"network_idle"}}`), &engineConfig); err != nil {
+		t.Fatalf("config parse failed: %v", err)
+	}
+	engine, createErr := pkg.CreateEngine(&engineConfig)
+	if createErr != nil {
+		t.Fatalf("create handle failed: %v", createErr)
+	}
+	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/browser_extra_wait"
+	_, err := pkg.Scrape(engine, url)
+	if err != nil {
+		t.Fatalf("call failed: %v", err)
+	}
+	// skipped: field 'browser.browser_used' not available on result type
+}
+
 func Test_BrowserFallbackSpaRender(t *testing.T) {
 	// Browser auto re-fetches SPA shell when JS rendering is detected
 	var engineConfig pkg.CrawlConfig
@@ -236,4 +254,67 @@ func Test_BrowserModeAlways(t *testing.T) {
 		t.Fatalf("call failed: %v", err)
 	}
 	// skipped: field 'browser.browser_used' not available on result type
+}
+
+func Test_BrowserProfileBasic(t *testing.T) {
+	// Browser profile configuration persists and reuses browser state across crawl sessions
+	var engineConfig pkg.CrawlConfig
+	if err := json.Unmarshal([]byte(`{"browser":{"mode":"always"},"browser_profile":"test-profile"}`), &engineConfig); err != nil {
+		t.Fatalf("config parse failed: %v", err)
+	}
+	engine, createErr := pkg.CreateEngine(&engineConfig)
+	if createErr != nil {
+		t.Fatalf("create handle failed: %v", createErr)
+	}
+	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/browser_profile_basic"
+	result, err := pkg.Scrape(engine, url)
+	if err != nil {
+		t.Fatalf("call failed: %v", err)
+	}
+	// skipped: field 'browser.browser_used' not available on result type
+	if result.StatusCode != 200 {
+		t.Errorf("equals mismatch: got %v", result.StatusCode)
+	}
+}
+
+func Test_BrowserWaitFixed(t *testing.T) {
+	// Browser wait strategy 'fixed' waits for a specific duration after page navigation
+	var engineConfig pkg.CrawlConfig
+	if err := json.Unmarshal([]byte(`{"browser":{"extra_wait":100,"mode":"always","wait":"fixed"}}`), &engineConfig); err != nil {
+		t.Fatalf("config parse failed: %v", err)
+	}
+	engine, createErr := pkg.CreateEngine(&engineConfig)
+	if createErr != nil {
+		t.Fatalf("create handle failed: %v", createErr)
+	}
+	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/browser_wait_fixed"
+	result, err := pkg.Scrape(engine, url)
+	if err != nil {
+		t.Fatalf("call failed: %v", err)
+	}
+	// skipped: field 'browser.browser_used' not available on result type
+	if result.StatusCode != 200 {
+		t.Errorf("equals mismatch: got %v", result.StatusCode)
+	}
+}
+
+func Test_BrowserWaitSelector(t *testing.T) {
+	// Browser wait strategy 'selector' waits for specific CSS selector before considering page loaded
+	var engineConfig pkg.CrawlConfig
+	if err := json.Unmarshal([]byte(`{"browser":{"mode":"always","wait":"selector","wait_selector":"#content"}}`), &engineConfig); err != nil {
+		t.Fatalf("config parse failed: %v", err)
+	}
+	engine, createErr := pkg.CreateEngine(&engineConfig)
+	if createErr != nil {
+		t.Fatalf("create handle failed: %v", createErr)
+	}
+	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/browser_wait_selector"
+	result, err := pkg.Scrape(engine, url)
+	if err != nil {
+		t.Fatalf("call failed: %v", err)
+	}
+	// skipped: field 'browser.browser_used' not available on result type
+	if result.StatusCode != 200 {
+		t.Errorf("equals mismatch: got %v", result.StatusCode)
+	}
 }

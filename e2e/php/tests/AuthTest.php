@@ -21,7 +21,7 @@ final class AuthTest extends TestCase
         $engine_config->respect_robots_txt = false;
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/auth_basic_http';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(true, $result->auth_header_sent);
         $this->assertEquals(200, $result->status_code);
     }
@@ -34,7 +34,7 @@ final class AuthTest extends TestCase
         $engine_config->respect_robots_txt = false;
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/auth_bearer_token';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(true, $result->auth_header_sent);
         $this->assertEquals(200, $result->status_code);
     }
@@ -47,7 +47,7 @@ final class AuthTest extends TestCase
         $engine_config->respect_robots_txt = false;
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/auth_custom_header';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(true, $result->auth_header_sent);
         $this->assertEquals(200, $result->status_code);
     }

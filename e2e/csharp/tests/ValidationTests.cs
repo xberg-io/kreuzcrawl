@@ -13,6 +13,25 @@ public class ValidationTests
     private static readonly JsonSerializerOptions ConfigOptions = new() { Converters = { new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower) }, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault };
 
     [Fact]
+    public async Task Test_ValidationEmptyBatchUrls()
+    {
+        // batch operation with empty batch_urls array is rejected
+        var engine = KreuzcrawlLib.CreateEngine(null);
+        var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/validation_empty_batch_urls";
+        await Assert.ThrowsAsync<KreuzcrawlException>(() => KreuzcrawlLib.Scrape(engine, url));
+    }
+
+    [Fact]
+    public async Task Test_ValidationInvalidAuthConfig()
+    {
+        // auth object with no recognized variant (empty object) is rejected
+        var engineConfig = JsonSerializer.Deserialize<CrawlConfig>("{\"auth\":{}}", ConfigOptions)!;
+        var engine = KreuzcrawlLib.CreateEngine(engineConfig);
+        var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/validation_invalid_auth_config";
+        await Assert.ThrowsAsync<KreuzcrawlException>(() => KreuzcrawlLib.Scrape(engine, url));
+    }
+
+    [Fact]
     public async Task Test_ValidationInvalidExcludeRegex()
     {
         // Invalid regex in exclude_paths is rejected
@@ -33,12 +52,42 @@ public class ValidationTests
     }
 
     [Fact]
+    public async Task Test_ValidationInvalidProxyUrl()
+    {
+        // proxy with invalid URL like 'not-a-url' is rejected
+        var engineConfig = JsonSerializer.Deserialize<CrawlConfig>("{\"proxy\":{\"url\":\"not-a-url\"}}", ConfigOptions)!;
+        var engine = KreuzcrawlLib.CreateEngine(engineConfig);
+        var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/validation_invalid_proxy_url";
+        await Assert.ThrowsAsync<KreuzcrawlException>(() => KreuzcrawlLib.Scrape(engine, url));
+    }
+
+    [Fact]
     public async Task Test_ValidationInvalidRetryCode()
     {
         // Retry code outside 100-599 is rejected
         var engineConfig = JsonSerializer.Deserialize<CrawlConfig>("{\"retry_codes\":[999]}", ConfigOptions)!;
         var engine = KreuzcrawlLib.CreateEngine(engineConfig);
         var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/validation_invalid_retry_code";
+        await Assert.ThrowsAsync<KreuzcrawlException>(() => KreuzcrawlLib.Scrape(engine, url));
+    }
+
+    [Fact]
+    public async Task Test_ValidationMaxConcurrentZero()
+    {
+        // max_concurrent=0 is rejected as invalid config (minimum is 1)
+        var engineConfig = JsonSerializer.Deserialize<CrawlConfig>("{\"max_concurrent\":0}", ConfigOptions)!;
+        var engine = KreuzcrawlLib.CreateEngine(engineConfig);
+        var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/validation_max_concurrent_zero";
+        await Assert.ThrowsAsync<KreuzcrawlException>(() => KreuzcrawlLib.Scrape(engine, url));
+    }
+
+    [Fact]
+    public async Task Test_ValidationMaxDepthTooHigh()
+    {
+        // max_depth=200 exceeds limit of 100
+        var engineConfig = JsonSerializer.Deserialize<CrawlConfig>("{\"max_depth\":200}", ConfigOptions)!;
+        var engine = KreuzcrawlLib.CreateEngine(engineConfig);
+        var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/validation_max_depth_too_high";
         await Assert.ThrowsAsync<KreuzcrawlException>(() => KreuzcrawlLib.Scrape(engine, url));
     }
 
@@ -59,6 +108,16 @@ public class ValidationTests
         var engineConfig = JsonSerializer.Deserialize<CrawlConfig>("{\"max_redirects\":200}", ConfigOptions)!;
         var engine = KreuzcrawlLib.CreateEngine(engineConfig);
         var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/validation_max_redirects_too_high";
+        await Assert.ThrowsAsync<KreuzcrawlException>(() => KreuzcrawlLib.Scrape(engine, url));
+    }
+
+    [Fact]
+    public async Task Test_ValidationNegativeBodySize()
+    {
+        // max_body_size set to -1 is rejected as invalid config
+        var engineConfig = JsonSerializer.Deserialize<CrawlConfig>("{\"max_body_size\":0}", ConfigOptions)!;
+        var engine = KreuzcrawlLib.CreateEngine(engineConfig);
+        var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/validation_negative_body_size";
         await Assert.ThrowsAsync<KreuzcrawlException>(() => KreuzcrawlLib.Scrape(engine, url));
     }
 

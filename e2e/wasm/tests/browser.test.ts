@@ -4,7 +4,7 @@ import { scrape, createEngine, WasmCrawlConfig } from "kreuzcrawl";
 
 describe("browser", () => {
 	it("browser_config_auto_no_feature: Browser mode 'auto' without browser feature enabled does not use browser", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.browser = { mode: "auto" };
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/browser_config_auto_no_feature`;
@@ -15,7 +15,7 @@ describe("browser", () => {
 	});
 
 	it("browser_config_never_mode: Browser mode 'never' prevents browser fallback even for SPA shell content", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.browser = { mode: "never" };
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/browser_config_never_mode`;
@@ -91,7 +91,7 @@ describe("browser", () => {
 	});
 
 	it("browser_fallback_spa_render: Browser auto re-fetches SPA shell when JS rendering is detected", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.browser = { mode: "auto" };
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/browser_fallback_spa_render`;
@@ -101,7 +101,7 @@ describe("browser", () => {
 	});
 
 	it("browser_fallback_waf_blocked: Browser fallback triggers when WAF blocks the HTTP request (Cloudflare 403)", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.browser = { mode: "auto" };
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/browser_fallback_waf_blocked`;
@@ -110,7 +110,7 @@ describe("browser", () => {
 	});
 
 	it("browser_mode_always: Browser mode 'always' uses browser even for normal server-rendered pages", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.browser = { mode: "always" };
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/browser_mode_always`;

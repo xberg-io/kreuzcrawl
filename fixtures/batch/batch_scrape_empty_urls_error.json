@@ -1,0 +1,25 @@
+{
+	"id": "batch_scrape_empty_urls_error",
+	"description": "Batch scrape with empty batch_urls array returns error",
+	"tags": ["batch", "error"],
+	"input": {
+		"mock_responses": [
+			{
+				"path": "/",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><body><h1>Root</h1></body></html>"
+			}
+		],
+		"batch_urls": [],
+		"config": {}
+	},
+	"assertions": [
+		{
+			"type": "error",
+			"value": "urls"
+		}
+	]
+}

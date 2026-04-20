@@ -23,6 +23,36 @@ describe("stream", () => {
 		// skipped: field 'stream.has_complete_event' not available on result type
 	});
 
+	it("stream_error_event_mid_crawl: Stream emits error event when a page fails mid-crawl, but other pages succeed", async () => {
+		const engineConfig = { maxConcurrent: 1, maxDepth: 1, respectRobotsTxt: false };
+		const engine = createEngine(engineConfig);
+		const url = `${process.env.MOCK_SERVER_URL}/fixtures/stream_error_event_mid_crawl`;
+		await scrape(engine, url);
+		// skipped: field 'stream.has_page_event' not available on result type
+		// skipped: field 'stream.has_error_event' not available on result type
+		// skipped: field 'stream.has_complete_event' not available on result type
+	});
+
+	it("stream_event_ordering: Stream ensures complete event arrives after all page events", async () => {
+		const engineConfig = { maxConcurrent: 1, maxDepth: 1, respectRobotsTxt: false };
+		const engine = createEngine(engineConfig);
+		const url = `${process.env.MOCK_SERVER_URL}/fixtures/stream_event_ordering`;
+		await scrape(engine, url);
+		// skipped: field 'stream.has_complete_event' not available on result type
+		// skipped: field 'stream.has_page_event' not available on result type
+		// skipped: field 'stream.event_count_min' not available on result type
+	});
+
+	it("stream_large_crawl: Stream handles crawl of 5+ pages with multiple events", async () => {
+		const engineConfig = { maxDepth: 1, respectRobotsTxt: false };
+		const engine = createEngine(engineConfig);
+		const url = `${process.env.MOCK_SERVER_URL}/fixtures/stream_large_crawl`;
+		await scrape(engine, url);
+		// skipped: field 'stream.event_count_min' not available on result type
+		// skipped: field 'stream.has_page_event' not available on result type
+		// skipped: field 'stream.has_complete_event' not available on result type
+	});
+
 	it("stream_with_error_event: Stream emits page and complete events even when some pages fail", async () => {
 		const engineConfig = { maxConcurrent: 1, maxDepth: 1 };
 		const engine = createEngine(engineConfig);

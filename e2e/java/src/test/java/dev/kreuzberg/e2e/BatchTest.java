@@ -4,9 +4,69 @@ package dev.kreuzberg.e2e;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import dev.kreuzberg.kreuzcrawl.Kreuzcrawl;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import dev.kreuzberg.kreuzcrawl.CrawlConfig;
 
 /** E2e tests for category: batch. */
 class BatchTest {
+
+    private static final ObjectMapper MAPPER = new ObjectMapper().registerModule(new Jdk8Module());
+    @Test
+    void testBatchCrawlBasic() throws Exception {
+        // Batch crawl of 2 seed URLs with links to discover
+        var engineConfig = MAPPER.readValue("{\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
+        var engine = Kreuzcrawl.createEngine(engineConfig);
+        String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/batch_crawl_basic";
+        var result = Kreuzcrawl.scrape(engine, url);
+        // skipped: field 'batch.completed_count' not available on result type
+        // skipped: field 'batch.failed_count' not available on result type
+        // skipped: field 'batch.total_count' not available on result type
+    }
+
+    @Test
+    void testBatchCrawlPartialFailure() throws Exception {
+        // Batch crawl where one seed URL returns 404 error
+        var engineConfig = MAPPER.readValue("{\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
+        var engine = Kreuzcrawl.createEngine(engineConfig);
+        String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/batch_crawl_partial_failure";
+        var result = Kreuzcrawl.scrape(engine, url);
+        // skipped: field 'batch.completed_count' not available on result type
+        // skipped: field 'batch.failed_count' not available on result type
+        // skipped: field 'batch.total_count' not available on result type
+    }
+
+    @Test
+    void testBatchCrawlWithConfig() throws Exception {
+        // Batch crawl with max_depth=1 config verifying pages are discovered
+        var engineConfig = MAPPER.readValue("{\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
+        var engine = Kreuzcrawl.createEngine(engineConfig);
+        String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/batch_crawl_with_config";
+        var result = Kreuzcrawl.scrape(engine, url);
+        // skipped: field 'batch.completed_count' not available on result type
+        // skipped: field 'batch.failed_count' not available on result type
+    }
+
+    @Test
+    void testBatchScrapeEmptyUrlsError() throws Exception {
+        // Batch scrape with empty batch_urls array returns error
+        var engine = Kreuzcrawl.createEngine(null);
+        String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/batch_scrape_empty_urls_error";
+        assertThrows(Exception.class, () -> Kreuzcrawl.scrape(engine, url));
+    }
+
+    @Test
+    void testBatchScrapeWithConfig() throws Exception {
+        // Batch scrape with main_content_only=true configuration
+        var engineConfig = MAPPER.readValue("{\"main_content_only\":true}", CrawlConfig.class);
+        var engine = Kreuzcrawl.createEngine(engineConfig);
+        String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/batch_scrape_with_config";
+        var result = Kreuzcrawl.scrape(engine, url);
+        // skipped: field 'batch.completed_count' not available on result type
+        // skipped: field 'batch.failed_count' not available on result type
+        // skipped: field 'batch.total_count' not available on result type
+    }
+
     @Test
     void testScrapeBatchBasic() throws Exception {
         // Batch scrape of multiple URLs all succeeding

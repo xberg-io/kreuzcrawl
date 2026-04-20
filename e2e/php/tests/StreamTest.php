@@ -22,7 +22,7 @@ final class StreamTest extends TestCase
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/crawl_stream_events';
         $this->expectNotToPerformAssertions();
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         // skipped: field 'stream.event_count_min' not available on result type
         // skipped: field 'stream.has_page_event' not available on result type
         // skipped: field 'stream.has_complete_event' not available on result type
@@ -37,7 +37,54 @@ final class StreamTest extends TestCase
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/stream_depth_crawl';
         $this->expectNotToPerformAssertions();
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
+        // skipped: field 'stream.event_count_min' not available on result type
+        // skipped: field 'stream.has_page_event' not available on result type
+        // skipped: field 'stream.has_complete_event' not available on result type
+    }
+
+    /** Stream emits error event when a page fails mid-crawl, but other pages succeed */
+    public function test_stream_error_event_mid_crawl(): void
+    {
+        $engine_config = CrawlConfig::default();
+        $engine_config->max_concurrent = 1;
+        $engine_config->max_depth = 1;
+        $engine_config->respect_robots_txt = false;
+        $engine = Kreuzcrawl::createEngine($engine_config);
+        $url = getenv('MOCK_SERVER_URL') . '/fixtures/stream_error_event_mid_crawl';
+        $this->expectNotToPerformAssertions();
+        $result = Kreuzcrawl::scrape_async($engine, $url);
+        // skipped: field 'stream.has_page_event' not available on result type
+        // skipped: field 'stream.has_error_event' not available on result type
+        // skipped: field 'stream.has_complete_event' not available on result type
+    }
+
+    /** Stream ensures complete event arrives after all page events */
+    public function test_stream_event_ordering(): void
+    {
+        $engine_config = CrawlConfig::default();
+        $engine_config->max_concurrent = 1;
+        $engine_config->max_depth = 1;
+        $engine_config->respect_robots_txt = false;
+        $engine = Kreuzcrawl::createEngine($engine_config);
+        $url = getenv('MOCK_SERVER_URL') . '/fixtures/stream_event_ordering';
+        $this->expectNotToPerformAssertions();
+        $result = Kreuzcrawl::scrape_async($engine, $url);
+        // skipped: field 'stream.has_complete_event' not available on result type
+        // skipped: field 'stream.has_page_event' not available on result type
+        // skipped: field 'stream.event_count_min' not available on result type
+    }
+
+    /** Stream handles crawl of 5+ pages with multiple events */
+    public function test_stream_large_crawl(): void
+    {
+        $engine_config = CrawlConfig::default();
+        $engine_config->max_depth = 1;
+        $engine_config->respect_robots_txt = false;
+        $engine = Kreuzcrawl::createEngine($engine_config);
+        $url = getenv('MOCK_SERVER_URL') . '/fixtures/stream_large_crawl';
+        $this->expectNotToPerformAssertions();
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         // skipped: field 'stream.event_count_min' not available on result type
         // skipped: field 'stream.has_page_event' not available on result type
         // skipped: field 'stream.has_complete_event' not available on result type
@@ -52,7 +99,7 @@ final class StreamTest extends TestCase
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/stream_with_error_event';
         $this->expectNotToPerformAssertions();
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         // skipped: field 'stream.has_page_event' not available on result type
         // skipped: field 'stream.has_complete_event' not available on result type
         // skipped: field 'stream.event_count_min' not available on result type

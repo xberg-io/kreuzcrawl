@@ -1,0 +1,54 @@
+{
+	"id": "strategy_adaptive_window",
+	"description": "Adaptive strategy crawls more pages when content is diverse",
+	"tags": ["strategy", "adaptive", "diverse"],
+	"input": {
+		"mock_responses": [
+			{
+				"path": "/",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><body><h1>Homepage</h1><a href=\"/blog\">Blog</a><a href=\"/docs\">Docs</a><a href=\"/api\">API</a></body></html>"
+			},
+			{
+				"path": "/blog",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html"
+				},
+				"body_inline": "<html><body><h1>Blog Posts</h1><article>Latest articles about web crawling</article><p>Detailed technical content about crawling strategies</p></body></html>"
+			},
+			{
+				"path": "/docs",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html"
+				},
+				"body_inline": "<html><body><h1>Documentation</h1><section>Complete API documentation with examples</section><p>Detailed guides and tutorials for users</p></body></html>"
+			},
+			{
+				"path": "/api",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html"
+				},
+				"body_inline": "<html><body><h1>API Reference</h1><section>REST endpoints and their parameters</section><p>Request/response examples for all API operations</p></body></html>"
+			}
+		],
+		"crawl_strategy": "best_first",
+		"config": {
+			"max_depth": 1,
+			"max_concurrent": 1,
+			"respect_robots_txt": false
+		}
+	},
+	"assertions": [
+		{
+			"type": "greater_than_or_equal",
+			"field": "crawl.pages_crawled",
+			"value": 3
+		}
+	]
+}

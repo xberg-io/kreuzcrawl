@@ -13,6 +13,26 @@ class StrategyTest {
 
     private static final ObjectMapper MAPPER = new ObjectMapper().registerModule(new Jdk8Module());
     @Test
+    void testStrategyAdaptiveSaturation() throws Exception {
+        // Adaptive strategy stops early when encountering saturation (duplicate content)
+        var engineConfig = MAPPER.readValue("{\"max_concurrent\":1,\"max_depth\":2,\"respect_robots_txt\":false}", CrawlConfig.class);
+        var engine = Kreuzcrawl.createEngine(engineConfig);
+        String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/strategy_adaptive_saturation";
+        var result = Kreuzcrawl.scrape(engine, url);
+        // skipped: field 'crawl.pages_crawled' not available on result type
+    }
+
+    @Test
+    void testStrategyAdaptiveWindow() throws Exception {
+        // Adaptive strategy crawls more pages when content is diverse
+        var engineConfig = MAPPER.readValue("{\"max_concurrent\":1,\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
+        var engine = Kreuzcrawl.createEngine(engineConfig);
+        String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/strategy_adaptive_window";
+        var result = Kreuzcrawl.scrape(engine, url);
+        // skipped: field 'crawl.pages_crawled' not available on result type
+    }
+
+    @Test
     void testStrategyBestFirstSeed() throws Exception {
         // BestFirst strategy always processes the seed URL first
         var engineConfig = MAPPER.readValue("{\"max_concurrent\":1,\"max_depth\":1}", CrawlConfig.class);

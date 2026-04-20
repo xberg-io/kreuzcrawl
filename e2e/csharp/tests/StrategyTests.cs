@@ -13,6 +13,28 @@ public class StrategyTests
     private static readonly JsonSerializerOptions ConfigOptions = new() { Converters = { new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower) }, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault };
 
     [Fact]
+    public async Task Test_StrategyAdaptiveSaturation()
+    {
+        // Adaptive strategy stops early when encountering saturation (duplicate content)
+        var engineConfig = JsonSerializer.Deserialize<CrawlConfig>("{\"max_concurrent\":1,\"max_depth\":2,\"respect_robots_txt\":false}", ConfigOptions)!;
+        var engine = KreuzcrawlLib.CreateEngine(engineConfig);
+        var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/strategy_adaptive_saturation";
+        var result = await KreuzcrawlLib.Scrape(engine, url);
+        // skipped: field 'crawl.pages_crawled' not available on result type
+    }
+
+    [Fact]
+    public async Task Test_StrategyAdaptiveWindow()
+    {
+        // Adaptive strategy crawls more pages when content is diverse
+        var engineConfig = JsonSerializer.Deserialize<CrawlConfig>("{\"max_concurrent\":1,\"max_depth\":1,\"respect_robots_txt\":false}", ConfigOptions)!;
+        var engine = KreuzcrawlLib.CreateEngine(engineConfig);
+        var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/strategy_adaptive_window";
+        var result = await KreuzcrawlLib.Scrape(engine, url);
+        // skipped: field 'crawl.pages_crawled' not available on result type
+    }
+
+    [Fact]
     public async Task Test_StrategyBestFirstSeed()
     {
         // BestFirst strategy always processes the seed URL first

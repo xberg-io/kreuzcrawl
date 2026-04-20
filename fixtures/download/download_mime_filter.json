@@ -1,0 +1,42 @@
+{
+	"id": "download_mime_filter",
+	"description": "Only download documents matching specified MIME types (PDF only, not DOCX)",
+	"tags": ["download", "mime-type", "filter"],
+	"input": {
+		"mock_responses": [
+			{
+				"path": "/document.pdf",
+				"status_code": 200,
+				"headers": {
+					"content-type": "application/pdf"
+				},
+				"body_file": "pdf/sample.pdf"
+			},
+			{
+				"path": "/document.docx",
+				"status_code": 200,
+				"headers": {
+					"content-type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+				},
+				"body_inline": "DOCX content placeholder"
+			}
+		],
+		"config": {
+			"respect_robots_txt": false,
+			"download_documents": true,
+			"document_mime_types": ["application/pdf"]
+		}
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "downloaded_document.mime_type",
+			"value": "application/pdf"
+		},
+		{
+			"type": "min",
+			"field": "downloaded_document.size",
+			"value": 1
+		}
+	]
+}

@@ -27,6 +27,42 @@ defmodule E2e.StreamTest do
     end
   end
 
+  describe "stream_error_event_mid_crawl" do
+    test "Stream emits error event when a page fails mid-crawl, but other pages succeed" do
+      engine_config = "{\"max_concurrent\":1,\"max_depth\":1,\"respect_robots_txt\":false}"
+      {:ok, engine} = Kreuzcrawl.create_engine(engine_config)
+      url = System.get_env("MOCK_SERVER_URL") <> "/fixtures/stream_error_event_mid_crawl"
+      {:ok, result} = Kreuzcrawl.scrape_async(engine, url)
+      # skipped: field 'stream.has_page_event' not available on result type
+      # skipped: field 'stream.has_error_event' not available on result type
+      # skipped: field 'stream.has_complete_event' not available on result type
+    end
+  end
+
+  describe "stream_event_ordering" do
+    test "Stream ensures complete event arrives after all page events" do
+      engine_config = "{\"max_concurrent\":1,\"max_depth\":1,\"respect_robots_txt\":false}"
+      {:ok, engine} = Kreuzcrawl.create_engine(engine_config)
+      url = System.get_env("MOCK_SERVER_URL") <> "/fixtures/stream_event_ordering"
+      {:ok, result} = Kreuzcrawl.scrape_async(engine, url)
+      # skipped: field 'stream.has_complete_event' not available on result type
+      # skipped: field 'stream.has_page_event' not available on result type
+      # skipped: field 'stream.event_count_min' not available on result type
+    end
+  end
+
+  describe "stream_large_crawl" do
+    test "Stream handles crawl of 5+ pages with multiple events" do
+      engine_config = "{\"max_depth\":1,\"respect_robots_txt\":false}"
+      {:ok, engine} = Kreuzcrawl.create_engine(engine_config)
+      url = System.get_env("MOCK_SERVER_URL") <> "/fixtures/stream_large_crawl"
+      {:ok, result} = Kreuzcrawl.scrape_async(engine, url)
+      # skipped: field 'stream.event_count_min' not available on result type
+      # skipped: field 'stream.has_page_event' not available on result type
+      # skipped: field 'stream.has_complete_event' not available on result type
+    end
+  end
+
   describe "stream_with_error_event" do
     test "Stream emits page and complete events even when some pages fail" do
       engine_config = "{\"max_concurrent\":1,\"max_depth\":1}"

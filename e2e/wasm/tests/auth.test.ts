@@ -4,7 +4,7 @@ import { scrape, createEngine, WasmCrawlConfig } from "kreuzcrawl";
 
 describe("auth", () => {
 	it("auth_basic_http: Sends HTTP Basic authentication header", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.auth = { password: "testpass", type: "basic", username: "testuser" };
 		engineConfig.respectRobotsTxt = false;
 		const engine = createEngine(engineConfig);
@@ -15,7 +15,7 @@ describe("auth", () => {
 	});
 
 	it("auth_bearer_token: Sends Bearer token in Authorization header", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.auth = { token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test", type: "bearer" };
 		engineConfig.respectRobotsTxt = false;
 		const engine = createEngine(engineConfig);
@@ -26,7 +26,7 @@ describe("auth", () => {
 	});
 
 	it("auth_custom_header: Sends authentication via custom header (X-API-Key)", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.auth = { name: "X-API-Key", type: "header", value: "sk-test-key-12345" };
 		engineConfig.respectRobotsTxt = false;
 		const engine = createEngine(engineConfig);

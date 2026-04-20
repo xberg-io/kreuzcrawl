@@ -39,6 +39,45 @@ public class StreamTests
     }
 
     [Fact]
+    public async Task Test_StreamErrorEventMidCrawl()
+    {
+        // Stream emits error event when a page fails mid-crawl, but other pages succeed
+        var engineConfig = JsonSerializer.Deserialize<CrawlConfig>("{\"max_concurrent\":1,\"max_depth\":1,\"respect_robots_txt\":false}", ConfigOptions)!;
+        var engine = KreuzcrawlLib.CreateEngine(engineConfig);
+        var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/stream_error_event_mid_crawl";
+        var result = await KreuzcrawlLib.Scrape(engine, url);
+        // skipped: field 'stream.has_page_event' not available on result type
+        // skipped: field 'stream.has_error_event' not available on result type
+        // skipped: field 'stream.has_complete_event' not available on result type
+    }
+
+    [Fact]
+    public async Task Test_StreamEventOrdering()
+    {
+        // Stream ensures complete event arrives after all page events
+        var engineConfig = JsonSerializer.Deserialize<CrawlConfig>("{\"max_concurrent\":1,\"max_depth\":1,\"respect_robots_txt\":false}", ConfigOptions)!;
+        var engine = KreuzcrawlLib.CreateEngine(engineConfig);
+        var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/stream_event_ordering";
+        var result = await KreuzcrawlLib.Scrape(engine, url);
+        // skipped: field 'stream.has_complete_event' not available on result type
+        // skipped: field 'stream.has_page_event' not available on result type
+        // skipped: field 'stream.event_count_min' not available on result type
+    }
+
+    [Fact]
+    public async Task Test_StreamLargeCrawl()
+    {
+        // Stream handles crawl of 5+ pages with multiple events
+        var engineConfig = JsonSerializer.Deserialize<CrawlConfig>("{\"max_depth\":1,\"respect_robots_txt\":false}", ConfigOptions)!;
+        var engine = KreuzcrawlLib.CreateEngine(engineConfig);
+        var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/stream_large_crawl";
+        var result = await KreuzcrawlLib.Scrape(engine, url);
+        // skipped: field 'stream.event_count_min' not available on result type
+        // skipped: field 'stream.has_page_event' not available on result type
+        // skipped: field 'stream.has_complete_event' not available on result type
+    }
+
+    [Fact]
     public async Task Test_StreamWithErrorEvent()
     {
         // Stream emits page and complete events even when some pages fail

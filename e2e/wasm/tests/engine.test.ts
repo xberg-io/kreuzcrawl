@@ -12,7 +12,7 @@ describe("engine", () => {
 	});
 
 	it("engine_crawl_basic: CrawlEngine with defaults crawls multiple pages like the free function", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.maxDepth = 1;
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/engine_crawl_basic`;
@@ -41,7 +41,7 @@ describe("engine", () => {
 	});
 
 	it("engine_stream_basic: CrawlEngine with defaults streams events like the free function", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.maxDepth = 1;
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/engine_stream_basic`;

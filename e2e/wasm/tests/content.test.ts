@@ -12,7 +12,7 @@ describe("content", () => {
 	});
 
 	it("content_charset_iso8859: Handles ISO-8859-1 encoded page correctly", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.respectRobotsTxt = false;
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/content_charset_iso8859`;
@@ -21,7 +21,7 @@ describe("content", () => {
 	});
 
 	it("content_empty_body: Handles 200 response with empty body gracefully", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.respectRobotsTxt = false;
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/content_empty_body`;
@@ -30,7 +30,7 @@ describe("content", () => {
 	});
 
 	it("content_gzip_compressed: Handles response with Accept-Encoding gzip negotiation", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.respectRobotsTxt = false;
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/content_gzip_compressed`;
@@ -40,7 +40,7 @@ describe("content", () => {
 	});
 
 	it("content_large_page_limit: Respects max body size limit and truncates or skips oversized pages", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.maxBodySize = 1024;
 		engineConfig.respectRobotsTxt = false;
 		const engine = createEngine(engineConfig);
@@ -50,7 +50,7 @@ describe("content", () => {
 	});
 
 	it("content_main_only: Extracts only main content area, excluding nav, sidebar, footer", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.mainContentOnly = true;
 		engineConfig.respectRobotsTxt = false;
 		const engine = createEngine(engineConfig);
@@ -60,7 +60,7 @@ describe("content", () => {
 	});
 
 	it("content_pdf_no_extension: Detects PDF content by Content-Type header when URL has no .pdf extension", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.respectRobotsTxt = false;
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/content_pdf_no_extension`;
@@ -69,7 +69,7 @@ describe("content", () => {
 	});
 
 	it("content_remove_tags: Removes specified HTML elements by CSS selector before processing", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.removeTags = ["nav", "aside", "footer"];
 		engineConfig.respectRobotsTxt = false;
 		const engine = createEngine(engineConfig);
@@ -79,7 +79,7 @@ describe("content", () => {
 	});
 
 	it("content_utf8_bom: Handles UTF-8 content with BOM marker correctly", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.respectRobotsTxt = false;
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/content_utf8_bom`;

@@ -37,6 +37,42 @@ class StreamTest {
     }
 
     @Test
+    void testStreamErrorEventMidCrawl() throws Exception {
+        // Stream emits error event when a page fails mid-crawl, but other pages succeed
+        var engineConfig = MAPPER.readValue("{\"max_concurrent\":1,\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
+        var engine = Kreuzcrawl.createEngine(engineConfig);
+        String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/stream_error_event_mid_crawl";
+        var result = Kreuzcrawl.scrape(engine, url);
+        // skipped: field 'stream.has_page_event' not available on result type
+        // skipped: field 'stream.has_error_event' not available on result type
+        // skipped: field 'stream.has_complete_event' not available on result type
+    }
+
+    @Test
+    void testStreamEventOrdering() throws Exception {
+        // Stream ensures complete event arrives after all page events
+        var engineConfig = MAPPER.readValue("{\"max_concurrent\":1,\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
+        var engine = Kreuzcrawl.createEngine(engineConfig);
+        String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/stream_event_ordering";
+        var result = Kreuzcrawl.scrape(engine, url);
+        // skipped: field 'stream.has_complete_event' not available on result type
+        // skipped: field 'stream.has_page_event' not available on result type
+        // skipped: field 'stream.event_count_min' not available on result type
+    }
+
+    @Test
+    void testStreamLargeCrawl() throws Exception {
+        // Stream handles crawl of 5+ pages with multiple events
+        var engineConfig = MAPPER.readValue("{\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
+        var engine = Kreuzcrawl.createEngine(engineConfig);
+        String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/stream_large_crawl";
+        var result = Kreuzcrawl.scrape(engine, url);
+        // skipped: field 'stream.event_count_min' not available on result type
+        // skipped: field 'stream.has_page_event' not available on result type
+        // skipped: field 'stream.has_complete_event' not available on result type
+    }
+
+    @Test
     void testStreamWithErrorEvent() throws Exception {
         // Stream emits page and complete events even when some pages fail
         var engineConfig = MAPPER.readValue("{\"max_concurrent\":1,\"max_depth\":1}", CrawlConfig.class);

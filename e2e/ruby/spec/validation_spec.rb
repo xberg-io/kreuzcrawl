@@ -5,6 +5,19 @@ require 'kreuzcrawl'
 require 'json'
 
 RSpec.describe 'validation' do
+  it 'validation_empty_batch_urls: batch operation with empty batch_urls array is rejected' do
+    engine = Kreuzcrawl.create_engine(nil)
+    url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/validation_empty_batch_urls"
+    expect { Kreuzcrawl.scrape(engine, url) }.to raise_error
+  end
+
+  it 'validation_invalid_auth_config: auth object with no recognized variant (empty object) is rejected' do
+    engine_config = { 'auth' => {  } }
+    engine = Kreuzcrawl.create_engine(engine_config.to_json)
+    url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/validation_invalid_auth_config"
+    expect { Kreuzcrawl.scrape(engine, url) }.to raise_error
+  end
+
   it 'validation_invalid_exclude_regex: Invalid regex in exclude_paths is rejected' do
     engine_config = { 'exclude_paths' => ['(unclosed'] }
     engine = Kreuzcrawl.create_engine(engine_config.to_json)
@@ -19,10 +32,31 @@ RSpec.describe 'validation' do
     expect { Kreuzcrawl.scrape(engine, url) }.to raise_error
   end
 
+  it 'validation_invalid_proxy_url: proxy with invalid URL like \'not-a-url\' is rejected' do
+    engine_config = { 'proxy' => { 'url' => 'not-a-url' } }
+    engine = Kreuzcrawl.create_engine(engine_config.to_json)
+    url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/validation_invalid_proxy_url"
+    expect { Kreuzcrawl.scrape(engine, url) }.to raise_error
+  end
+
   it 'validation_invalid_retry_code: Retry code outside 100-599 is rejected' do
     engine_config = { 'retry_codes' => [999] }
     engine = Kreuzcrawl.create_engine(engine_config.to_json)
     url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/validation_invalid_retry_code"
+    expect { Kreuzcrawl.scrape(engine, url) }.to raise_error
+  end
+
+  it 'validation_max_concurrent_zero: max_concurrent=0 is rejected as invalid config (minimum is 1)' do
+    engine_config = { 'max_concurrent' => 0 }
+    engine = Kreuzcrawl.create_engine(engine_config.to_json)
+    url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/validation_max_concurrent_zero"
+    expect { Kreuzcrawl.scrape(engine, url) }.to raise_error
+  end
+
+  it 'validation_max_depth_too_high: max_depth=200 exceeds limit of 100' do
+    engine_config = { 'max_depth' => 200 }
+    engine = Kreuzcrawl.create_engine(engine_config.to_json)
+    url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/validation_max_depth_too_high"
     expect { Kreuzcrawl.scrape(engine, url) }.to raise_error
   end
 
@@ -37,6 +71,13 @@ RSpec.describe 'validation' do
     engine_config = { 'max_redirects' => 200 }
     engine = Kreuzcrawl.create_engine(engine_config.to_json)
     url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/validation_max_redirects_too_high"
+    expect { Kreuzcrawl.scrape(engine, url) }.to raise_error
+  end
+
+  it 'validation_negative_body_size: max_body_size set to -1 is rejected as invalid config' do
+    engine_config = { 'max_body_size' => 0 }
+    engine = Kreuzcrawl.create_engine(engine_config.to_json)
+    url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/validation_negative_body_size"
     expect { Kreuzcrawl.scrape(engine, url) }.to raise_error
   end
 

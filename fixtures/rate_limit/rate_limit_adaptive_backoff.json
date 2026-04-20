@@ -1,0 +1,29 @@
+{
+	"id": "rate_limit_adaptive_backoff",
+	"description": "Exponential backoff retry succeeds after 429 Too Many Requests",
+	"tags": ["rate_limit", "retry", "backoff"],
+	"input": {
+		"mock_responses": [
+			{
+				"path": "/",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html"
+				},
+				"body_inline": "<html><body><h1>Home</h1></body></html>"
+			}
+		],
+		"config": {
+			"retry_count": 2,
+			"retry_codes": [429],
+			"respect_robots_txt": false
+		}
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "status_code",
+			"value": 200
+		}
+	]
+}

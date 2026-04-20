@@ -106,6 +106,16 @@ defmodule E2e.BrowserTest do
     end
   end
 
+  describe "browser_extra_wait" do
+    test "Browser extra_wait adds additional time after network_idle to ensure all async operations complete" do
+      engine_config = "{\"browser\":{\"extra_wait\":200,\"mode\":\"always\",\"wait\":\"network_idle\"}}"
+      {:ok, engine} = Kreuzcrawl.create_engine(engine_config)
+      url = System.get_env("MOCK_SERVER_URL") <> "/fixtures/browser_extra_wait"
+      {:ok, result} = Kreuzcrawl.scrape_async(engine, url)
+      # skipped: field 'browser.browser_used' not available on result type
+    end
+  end
+
   describe "browser_fallback_spa_render" do
     test "Browser auto re-fetches SPA shell when JS rendering is detected" do
       engine_config = "{\"browser\":{\"mode\":\"auto\"}}"
@@ -134,6 +144,39 @@ defmodule E2e.BrowserTest do
       url = System.get_env("MOCK_SERVER_URL") <> "/fixtures/browser_mode_always"
       {:ok, result} = Kreuzcrawl.scrape_async(engine, url)
       # skipped: field 'browser.browser_used' not available on result type
+    end
+  end
+
+  describe "browser_profile_basic" do
+    test "Browser profile configuration persists and reuses browser state across crawl sessions" do
+      engine_config = "{\"browser\":{\"mode\":\"always\"},\"browser_profile\":\"test-profile\"}"
+      {:ok, engine} = Kreuzcrawl.create_engine(engine_config)
+      url = System.get_env("MOCK_SERVER_URL") <> "/fixtures/browser_profile_basic"
+      {:ok, result} = Kreuzcrawl.scrape_async(engine, url)
+      # skipped: field 'browser.browser_used' not available on result type
+      assert result.status_code == 200
+    end
+  end
+
+  describe "browser_wait_fixed" do
+    test "Browser wait strategy 'fixed' waits for a specific duration after page navigation" do
+      engine_config = "{\"browser\":{\"extra_wait\":100,\"mode\":\"always\",\"wait\":\"fixed\"}}"
+      {:ok, engine} = Kreuzcrawl.create_engine(engine_config)
+      url = System.get_env("MOCK_SERVER_URL") <> "/fixtures/browser_wait_fixed"
+      {:ok, result} = Kreuzcrawl.scrape_async(engine, url)
+      # skipped: field 'browser.browser_used' not available on result type
+      assert result.status_code == 200
+    end
+  end
+
+  describe "browser_wait_selector" do
+    test "Browser wait strategy 'selector' waits for specific CSS selector before considering page loaded" do
+      engine_config = "{\"browser\":{\"mode\":\"always\",\"wait\":\"selector\",\"wait_selector\":\"\#content\"}}"
+      {:ok, engine} = Kreuzcrawl.create_engine(engine_config)
+      url = System.get_env("MOCK_SERVER_URL") <> "/fixtures/browser_wait_selector"
+      {:ok, result} = Kreuzcrawl.scrape_async(engine, url)
+      # skipped: field 'browser.browser_used' not available on result type
+      assert result.status_code == 200
     end
   end
 end

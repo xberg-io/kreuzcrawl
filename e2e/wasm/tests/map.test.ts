@@ -4,7 +4,7 @@ import { scrape, createEngine, WasmCrawlConfig } from "kreuzcrawl";
 
 describe("map", () => {
 	it("map_discover_urls: Discovers all URLs on a site without fetching full content", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.maxDepth = 0;
 		engineConfig.respectRobotsTxt = false;
 		const engine = createEngine(engineConfig);
@@ -14,7 +14,7 @@ describe("map", () => {
 	});
 
 	it("map_exclude_patterns: Excludes URLs matching patterns from URL map", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.excludePaths = ["/private/.*", "/api/.*"];
 		engineConfig.maxDepth = 0;
 		engineConfig.respectRobotsTxt = false;
@@ -25,7 +25,7 @@ describe("map", () => {
 	});
 
 	it("map_include_subdomains: Includes subdomain URLs in URL map discovery", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.allowSubdomains = true;
 		engineConfig.maxDepth = 0;
 		engineConfig.respectRobotsTxt = false;
@@ -37,7 +37,7 @@ describe("map", () => {
 	});
 
 	it("map_large_sitemap: Handles large sitemap with 100+ URLs", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.respectRobotsTxt = false;
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/map_large_sitemap`;
@@ -46,7 +46,7 @@ describe("map", () => {
 	});
 
 	it("map_limit_pagination: Limits map result count to specified maximum", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.mapLimit = 5;
 		engineConfig.maxDepth = 0;
 		engineConfig.respectRobotsTxt = false;
@@ -57,7 +57,7 @@ describe("map", () => {
 	});
 
 	it("map_search_filter: Filters map results by search keyword", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.mapSearch = "blog";
 		engineConfig.maxDepth = 0;
 		engineConfig.respectRobotsTxt = false;

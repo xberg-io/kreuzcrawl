@@ -46,7 +46,7 @@ describe("error", () => {
 	});
 
 	it("error_connection_refused: Handles connection refused error gracefully", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.requestTimeout = 5000;
 		engineConfig.respectRobotsTxt = false;
 		const engine = createEngine(engineConfig);
@@ -55,7 +55,7 @@ describe("error", () => {
 	});
 
 	it("error_dns_resolution: Handles DNS resolution failure gracefully", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.requestTimeout = 5000;
 		engineConfig.respectRobotsTxt = false;
 		const engine = createEngine(engineConfig);
@@ -72,7 +72,7 @@ describe("error", () => {
 	});
 
 	it("error_invalid_proxy: Proxy pointing to unreachable address causes connection error during scrape", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.proxy = { url: "http://127.0.0.1:1" };
 		engineConfig.requestTimeout = 2000;
 		const engine = createEngine(engineConfig);
@@ -81,7 +81,7 @@ describe("error", () => {
 	});
 
 	it("error_partial_response: Handles incomplete or truncated HTTP response", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.respectRobotsTxt = false;
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/error_partial_response`;
@@ -95,7 +95,7 @@ describe("error", () => {
 	});
 
 	it("error_retry_503: Retries request on 503 Service Unavailable response", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.respectRobotsTxt = false;
 		engineConfig.retryCodes = [503];
 		engineConfig.retryCount = 2;
@@ -105,7 +105,7 @@ describe("error", () => {
 	});
 
 	it("error_retry_backoff: Implements exponential backoff when retrying failed requests", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.respectRobotsTxt = false;
 		engineConfig.retryCodes = [429];
 		engineConfig.retryCount = 3;
@@ -115,7 +115,7 @@ describe("error", () => {
 	});
 
 	it("error_ssl_invalid_cert: Handles SSL certificate validation error", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.requestTimeout = 5000;
 		engineConfig.respectRobotsTxt = false;
 		const engine = createEngine(engineConfig);
@@ -124,7 +124,7 @@ describe("error", () => {
 	});
 
 	it("error_timeout: Handles request timeout", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.requestTimeout = 1;
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/error_timeout`;

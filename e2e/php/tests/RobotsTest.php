@@ -20,7 +20,7 @@ final class RobotsTest extends TestCase
         $engine_config->respect_robots_txt = true;
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/robots_allow_all';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(true, $result->is_allowed);
     }
 
@@ -31,7 +31,7 @@ final class RobotsTest extends TestCase
         $engine_config->respect_robots_txt = true;
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/robots_allow_override';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(true, $result->is_allowed);
     }
 
@@ -43,7 +43,7 @@ final class RobotsTest extends TestCase
         $engine_config->user_agent = "kreuzcrawl";
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/robots_comments_handling';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(true, $result->is_allowed);
     }
 
@@ -55,7 +55,7 @@ final class RobotsTest extends TestCase
         $engine_config->user_agent = "kreuzcrawl";
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/robots_crawl_delay';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(2, $result->crawl_delay);
     }
 
@@ -66,7 +66,7 @@ final class RobotsTest extends TestCase
         $engine_config->respect_robots_txt = true;
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/robots_disallow_path';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(false, $result->is_allowed);
     }
 
@@ -77,7 +77,7 @@ final class RobotsTest extends TestCase
         $engine_config->respect_robots_txt = true;
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/robots_meta_nofollow';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(true, $result->nofollow_detected);
     }
 
@@ -88,7 +88,7 @@ final class RobotsTest extends TestCase
         $engine_config->respect_robots_txt = true;
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/robots_meta_noindex';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(true, $result->noindex_detected);
     }
 
@@ -99,7 +99,7 @@ final class RobotsTest extends TestCase
         $engine_config->respect_robots_txt = true;
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/robots_missing_404';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(true, $result->is_allowed);
     }
 
@@ -111,7 +111,7 @@ final class RobotsTest extends TestCase
         $engine_config->user_agent = "SpecificBot";
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/robots_multiple_user_agents';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(true, $result->is_allowed);
     }
 
@@ -123,7 +123,7 @@ final class RobotsTest extends TestCase
         $engine_config->user_agent = "kreuzcrawl";
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/robots_request_rate';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(5, $result->crawl_delay);
         $this->assertEquals(true, $result->is_allowed);
     }
@@ -135,7 +135,7 @@ final class RobotsTest extends TestCase
         $engine_config->respect_robots_txt = true;
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/robots_sitemap_directive';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(true, $result->is_allowed);
     }
 
@@ -147,7 +147,7 @@ final class RobotsTest extends TestCase
         $engine_config->user_agent = "KreuzcrawlBot";
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/robots_user_agent_specific';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(false, $result->is_allowed);
     }
 
@@ -158,7 +158,7 @@ final class RobotsTest extends TestCase
         $engine_config->respect_robots_txt = true;
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/robots_wildcard_paths';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals(false, $result->is_allowed);
     }
 
@@ -169,7 +169,7 @@ final class RobotsTest extends TestCase
         $engine_config->respect_robots_txt = true;
         $engine = Kreuzcrawl::createEngine($engine_config);
         $url = getenv('MOCK_SERVER_URL') . '/fixtures/robots_x_robots_tag';
-        $result = Kreuzcrawl::scrape($engine, $url);
+        $result = Kreuzcrawl::scrape_async($engine, $url);
         $this->assertEquals("noindex, nofollow", $result->x_robots_tag);
         $this->assertEquals(true, $result->noindex_detected);
         $this->assertEquals(true, $result->nofollow_detected);

@@ -3,8 +3,22 @@ import { describe, it, expect } from "vitest";
 import { scrape, createEngine, WasmCrawlConfig } from "kreuzcrawl";
 
 describe("validation", () => {
+	it("validation_empty_batch_urls: batch operation with empty batch_urls array is rejected", async () => {
+		const engine = createEngine(null);
+		const url = `${process.env.MOCK_SERVER_URL}/fixtures/validation_empty_batch_urls`;
+		await expect(async () => await scrape(engine, url)).rejects.toThrow();
+	});
+
+	it("validation_invalid_auth_config: auth object with no recognized variant (empty object) is rejected", async () => {
+		const engineConfig = new WasmCrawlConfig();
+		engineConfig.auth = {};
+		const engine = createEngine(engineConfig);
+		const url = `${process.env.MOCK_SERVER_URL}/fixtures/validation_invalid_auth_config`;
+		await expect(async () => await scrape(engine, url)).rejects.toThrow();
+	});
+
 	it("validation_invalid_exclude_regex: Invalid regex in exclude_paths is rejected", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.excludePaths = ["(unclosed"];
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/validation_invalid_exclude_regex`;
@@ -12,23 +26,47 @@ describe("validation", () => {
 	});
 
 	it("validation_invalid_include_regex: Invalid regex in include_paths is rejected", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.includePaths = ["[invalid"];
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/validation_invalid_include_regex`;
 		await expect(async () => await scrape(engine, url)).rejects.toThrow();
 	});
 
+	it("validation_invalid_proxy_url: proxy with invalid URL like 'not-a-url' is rejected", async () => {
+		const engineConfig = new WasmCrawlConfig();
+		engineConfig.proxy = { url: "not-a-url" };
+		const engine = createEngine(engineConfig);
+		const url = `${process.env.MOCK_SERVER_URL}/fixtures/validation_invalid_proxy_url`;
+		await expect(async () => await scrape(engine, url)).rejects.toThrow();
+	});
+
 	it("validation_invalid_retry_code: Retry code outside 100-599 is rejected", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.retryCodes = [999];
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/validation_invalid_retry_code`;
 		await expect(async () => await scrape(engine, url)).rejects.toThrow();
 	});
 
+	it("validation_max_concurrent_zero: max_concurrent=0 is rejected as invalid config (minimum is 1)", async () => {
+		const engineConfig = new WasmCrawlConfig();
+		engineConfig.maxConcurrent = 0;
+		const engine = createEngine(engineConfig);
+		const url = `${process.env.MOCK_SERVER_URL}/fixtures/validation_max_concurrent_zero`;
+		await expect(async () => await scrape(engine, url)).rejects.toThrow();
+	});
+
+	it("validation_max_depth_too_high: max_depth=200 exceeds limit of 100", async () => {
+		const engineConfig = new WasmCrawlConfig();
+		engineConfig.maxDepth = 200;
+		const engine = createEngine(engineConfig);
+		const url = `${process.env.MOCK_SERVER_URL}/fixtures/validation_max_depth_too_high`;
+		await expect(async () => await scrape(engine, url)).rejects.toThrow();
+	});
+
 	it("validation_max_pages_zero: max_pages=0 is rejected as invalid config", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.maxPages = 0;
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/validation_max_pages_zero`;
@@ -36,15 +74,23 @@ describe("validation", () => {
 	});
 
 	it("validation_max_redirects_too_high: max_redirects > 100 is rejected as invalid config", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.maxRedirects = 200;
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/validation_max_redirects_too_high`;
 		await expect(async () => await scrape(engine, url)).rejects.toThrow();
 	});
 
+	it("validation_negative_body_size: max_body_size set to -1 is rejected as invalid config", async () => {
+		const engineConfig = new WasmCrawlConfig();
+		engineConfig.maxBodySize = 0;
+		const engine = createEngine(engineConfig);
+		const url = `${process.env.MOCK_SERVER_URL}/fixtures/validation_negative_body_size`;
+		await expect(async () => await scrape(engine, url)).rejects.toThrow();
+	});
+
 	it("validation_timeout_zero: Zero request timeout is rejected as invalid config", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.requestTimeout = 0;
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/validation_timeout_zero`;

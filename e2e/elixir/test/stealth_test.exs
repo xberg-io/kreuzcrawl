@@ -12,4 +12,25 @@ defmodule E2e.StealthTest do
       assert result.status_code == 200
     end
   end
+
+  describe "stealth_ua_rotation_round_robin" do
+    test "User-agent rotation cycles through multiple agents across multiple requests" do
+      engine_config = "{\"max_depth\":1,\"max_pages\":3,\"user_agents\":[\"Mozilla/5.0 (Windows NT 10.0; Win64; x64) TestAgent-1\",\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15) TestAgent-2\"]}"
+      {:ok, engine} = Kreuzcrawl.create_engine(engine_config)
+      url = System.get_env("MOCK_SERVER_URL") <> "/fixtures/stealth_ua_rotation_round_robin"
+      {:ok, result} = Kreuzcrawl.scrape_async(engine, url)
+      # skipped: field 'pages.length' not available on result type
+    end
+  end
+
+  describe "stealth_ua_rotation_single_domain" do
+    test "Custom user-agent string is applied for single domain crawl" do
+      engine_config = "{\"max_depth\":0,\"stay_on_domain\":true,\"user_agents\":[\"Mozilla/5.0 TestBot/1.0 (+http://example.com/bot)\"]}"
+      {:ok, engine} = Kreuzcrawl.create_engine(engine_config)
+      url = System.get_env("MOCK_SERVER_URL") <> "/fixtures/stealth_ua_rotation_single_domain"
+      {:ok, result} = Kreuzcrawl.scrape_async(engine, url)
+      assert result.status_code == 200
+      # skipped: field 'pages.length' not available on result type
+    end
+  end
 end

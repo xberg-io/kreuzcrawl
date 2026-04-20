@@ -1,0 +1,55 @@
+{
+	"id": "batch_crawl_partial_failure",
+	"description": "Batch crawl where one seed URL returns 404 error",
+	"tags": ["batch", "crawl"],
+	"input": {
+		"mock_responses": [
+			{
+				"path": "/good_seed",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><body><h1>Good Seed</h1><a href=\"/good_seed/child\">Child</a></body></html>"
+			},
+			{
+				"path": "/good_seed/child",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><body><h1>Good Child</h1></body></html>"
+			},
+			{
+				"path": "/bad_seed",
+				"status_code": 404,
+				"headers": {
+					"content-type": "text/html"
+				},
+				"body_inline": "<html><body>Not Found</body></html>"
+			}
+		],
+		"batch_urls": ["/good_seed", "/bad_seed"],
+		"config": {
+			"max_depth": 1,
+			"respect_robots_txt": false
+		}
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "batch.completed_count",
+			"value": 1
+		},
+		{
+			"type": "equals",
+			"field": "batch.failed_count",
+			"value": 1
+		},
+		{
+			"type": "equals",
+			"field": "batch.total_count",
+			"value": 2
+		}
+	]
+}

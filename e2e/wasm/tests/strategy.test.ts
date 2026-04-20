@@ -3,8 +3,30 @@ import { describe, it, expect } from "vitest";
 import { scrape, createEngine, WasmCrawlConfig } from "kreuzcrawl";
 
 describe("strategy", () => {
+	it("strategy_adaptive_saturation: Adaptive strategy stops early when encountering saturation (duplicate content)", async () => {
+		const engineConfig = new WasmCrawlConfig();
+		engineConfig.maxConcurrent = 1;
+		engineConfig.maxDepth = 2;
+		engineConfig.respectRobotsTxt = false;
+		const engine = createEngine(engineConfig);
+		const url = `${process.env.MOCK_SERVER_URL}/fixtures/strategy_adaptive_saturation`;
+		const result = await scrape(engine, url);
+		// skipped: field 'crawl.pages_crawled' not available on result type
+	});
+
+	it("strategy_adaptive_window: Adaptive strategy crawls more pages when content is diverse", async () => {
+		const engineConfig = new WasmCrawlConfig();
+		engineConfig.maxConcurrent = 1;
+		engineConfig.maxDepth = 1;
+		engineConfig.respectRobotsTxt = false;
+		const engine = createEngine(engineConfig);
+		const url = `${process.env.MOCK_SERVER_URL}/fixtures/strategy_adaptive_window`;
+		const result = await scrape(engine, url);
+		// skipped: field 'crawl.pages_crawled' not available on result type
+	});
+
 	it("strategy_best_first_seed: BestFirst strategy always processes the seed URL first", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.maxConcurrent = 1;
 		engineConfig.maxDepth = 1;
 		const engine = createEngine(engineConfig);
@@ -15,7 +37,7 @@ describe("strategy", () => {
 	});
 
 	it("strategy_bfs_default_order: BFS strategy visits pages in breadth-first order", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.maxConcurrent = 1;
 		engineConfig.maxDepth = 2;
 		const engine = createEngine(engineConfig);
@@ -26,7 +48,7 @@ describe("strategy", () => {
 	});
 
 	it("strategy_dfs_depth_first: DFS strategy visits pages in depth-first order", async () => {
-		const engineConfig = WasmCrawlConfig.default();
+		const engineConfig = new WasmCrawlConfig();
 		engineConfig.maxConcurrent = 1;
 		engineConfig.maxDepth = 2;
 		const engine = createEngine(engineConfig);
