@@ -3,6 +3,9 @@ package dev.kreuzberg.kreuzcrawl;
 
 import java.util.Optional;
 
+/**
+ * Information about a favicon or icon link.
+ */
 public class FaviconInfoBuilder {
 
 	private String url = "";

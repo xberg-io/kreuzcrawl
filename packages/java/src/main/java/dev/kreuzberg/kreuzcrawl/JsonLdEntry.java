@@ -4,7 +4,15 @@ package dev.kreuzberg.kreuzcrawl;
 import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record JsonLdEntry(@JsonProperty("schema_type") String schemaType, Optional<String> name, String raw) {
+/**
+ * A JSON-LD structured data entry found on a page.
+ */
+public record JsonLdEntry(
+		/** The {@code @type} value from the JSON-LD object. */
+		@JsonProperty("schema_type") String schemaType,
+		/** The {@code name} value, if present. */
+		Optional<String> name, /** The raw JSON-LD string. */
+		String raw) {
 	public static JsonLdEntryBuilder builder() {
 		return new JsonLdEntryBuilder();
 	}

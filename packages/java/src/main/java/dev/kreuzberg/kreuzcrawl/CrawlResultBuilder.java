@@ -4,6 +4,9 @@ package dev.kreuzberg.kreuzcrawl;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * The result of a multi-page crawl operation.
+ */
 public class CrawlResultBuilder {
 
 	private List<CrawlPageResult> pages = List.of();

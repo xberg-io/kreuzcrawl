@@ -3,6 +3,9 @@ package dev.kreuzberg.kreuzcrawl;
 
 import java.util.Optional;
 
+/**
+ * A downloaded asset from a page.
+ */
 public class DownloadedAssetBuilder {
 
 	private String url = "";

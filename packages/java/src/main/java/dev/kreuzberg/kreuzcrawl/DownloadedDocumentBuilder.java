@@ -4,6 +4,13 @@ package dev.kreuzberg.kreuzcrawl;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * A downloaded non-HTML document (PDF, DOCX, image, code file, etc.).
+ *
+ * When the crawler encounters non-HTML content and {@code download_documents}
+ * is enabled, it downloads the raw bytes and populates this struct instead of
+ * skipping the resource.
+ */
 public class DownloadedDocumentBuilder {
 
 	private String url = "";

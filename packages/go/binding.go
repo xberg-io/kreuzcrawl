@@ -774,7 +774,7 @@ type ActionResult struct {
     // Whether the action completed successfully.
     Success bool `json:"success"`
     // Action-specific return data (screenshot bytes, JS return value, scraped HTML).
-    Data *map[string]interface{} `json:"data,omitempty"`
+    Data *json.RawMessage `json:"data,omitempty"`
     // Error message if the action failed.
     Error *string `json:"error,omitempty"`
 }
@@ -799,7 +799,7 @@ func WithActionResultSuccess(v bool) ActionResultOption {
 }
 
 // WithActionResultData sets the data field.
-func WithActionResultData(v map[string]interface{}) ActionResultOption {
+func WithActionResultData(v json.RawMessage) ActionResultOption {
     return func(c *ActionResult) { c.Data = &v }
 }
 
@@ -875,7 +875,7 @@ type ScrapeResult struct {
     // Markdown conversion of the page content.
     Markdown *MarkdownResult `json:"markdown,omitempty"`
     // Structured data extracted by LLM. Populated when using LlmExtractor.
-    ExtractedData *map[string]interface{} `json:"extracted_data,omitempty"`
+    ExtractedData *json.RawMessage `json:"extracted_data,omitempty"`
     // Metadata about the LLM extraction pass (cost, tokens, model).
     ExtractionMeta *ExtractionMeta `json:"extraction_meta,omitempty"`
     // Screenshot of the page as PNG bytes. Populated when browser is used and capture_screenshot is enabled.
@@ -1009,7 +1009,7 @@ func WithScrapeResultMarkdown(v MarkdownResult) ScrapeResultOption {
 }
 
 // WithScrapeResultExtractedData sets the extracted_data field.
-func WithScrapeResultExtractedData(v map[string]interface{}) ScrapeResultOption {
+func WithScrapeResultExtractedData(v json.RawMessage) ScrapeResultOption {
     return func(c *ScrapeResult) { c.ExtractedData = &v }
 }
 
@@ -1104,7 +1104,7 @@ type CrawlPageResult struct {
     // Markdown conversion of the page content.
     Markdown *MarkdownResult `json:"markdown,omitempty"`
     // Structured data extracted by LLM. Populated when using LlmExtractor.
-    ExtractedData *map[string]interface{} `json:"extracted_data,omitempty"`
+    ExtractedData *json.RawMessage `json:"extracted_data,omitempty"`
     // Metadata about the LLM extraction pass (cost, tokens, model).
     ExtractionMeta *ExtractionMeta `json:"extraction_meta,omitempty"`
     // Downloaded non-HTML document (PDF, DOCX, image, code, etc.).
@@ -1201,7 +1201,7 @@ func WithCrawlPageResultMarkdown(v MarkdownResult) CrawlPageResultOption {
 }
 
 // WithCrawlPageResultExtractedData sets the extracted_data field.
-func WithCrawlPageResultExtractedData(v map[string]interface{}) CrawlPageResultOption {
+func WithCrawlPageResultExtractedData(v json.RawMessage) CrawlPageResultOption {
     return func(c *CrawlPageResult) { c.ExtractedData = &v }
 }
 
@@ -1404,9 +1404,9 @@ type MarkdownResult struct {
     // Converted markdown text.
     Content string `json:"content"`
     // Structured document tree with semantic nodes.
-    DocumentStructure *map[string]interface{} `json:"document_structure,omitempty"`
+    DocumentStructure *json.RawMessage `json:"document_structure,omitempty"`
     // Extracted tables with structured cell data.
-    Tables []map[string]interface{} `json:"tables,omitempty"`
+    Tables []json.RawMessage `json:"tables,omitempty"`
     // Non-fatal processing warnings.
     Warnings []string `json:"warnings,omitempty"`
     // Content with links replaced by numbered citations.
@@ -1425,12 +1425,12 @@ func WithMarkdownResultContent(v string) MarkdownResultOption {
 }
 
 // WithMarkdownResultDocumentStructure sets the document_structure field.
-func WithMarkdownResultDocumentStructure(v map[string]interface{}) MarkdownResultOption {
+func WithMarkdownResultDocumentStructure(v json.RawMessage) MarkdownResultOption {
     return func(c *MarkdownResult) { c.DocumentStructure = &v }
 }
 
 // WithMarkdownResultTables sets the tables field.
-func WithMarkdownResultTables(v []map[string]interface{}) MarkdownResultOption {
+func WithMarkdownResultTables(v []json.RawMessage) MarkdownResultOption {
     return func(c *MarkdownResult) { c.Tables = v }
 }
 

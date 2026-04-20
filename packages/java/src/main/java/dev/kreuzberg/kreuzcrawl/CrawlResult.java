@@ -5,9 +5,22 @@ import java.util.List;
 import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record CrawlResult(List<CrawlPageResult> pages, @JsonProperty("final_url") String finalUrl,
-		@JsonProperty("redirect_count") long redirectCount, @JsonProperty("was_skipped") boolean wasSkipped,
-		Optional<String> error, List<CookieInfo> cookies,
+/**
+ * The result of a multi-page crawl operation.
+ */
+public record CrawlResult(
+		/** The list of crawled pages. */
+		List<CrawlPageResult> pages,
+		/** The final URL after following redirects. */
+		@JsonProperty("final_url") String finalUrl,
+		/** The number of redirects followed. */
+		@JsonProperty("redirect_count") long redirectCount,
+		/** Whether any page was skipped during crawling. */
+		@JsonProperty("was_skipped") boolean wasSkipped,
+		/** An error message, if the crawl encountered an issue. */
+		Optional<String> error,
+		/** Cookies collected during the crawl. */
+		List<CookieInfo> cookies, /** Normalized URLs encountered during crawling (for deduplication counting). */
 		@JsonProperty("normalized_urls") List<String> normalizedUrls) {
 	public static CrawlResultBuilder builder() {
 		return new CrawlResultBuilder();

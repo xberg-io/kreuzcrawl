@@ -3,6 +3,9 @@ package dev.kreuzberg.kreuzcrawl;
 
 import java.util.Optional;
 
+/**
+ * Result from a single page action execution.
+ */
 public class ActionResultBuilder {
 
 	private long actionIndex = 0;

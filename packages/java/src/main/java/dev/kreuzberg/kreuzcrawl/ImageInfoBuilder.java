@@ -3,6 +3,9 @@ package dev.kreuzberg.kreuzcrawl;
 
 import java.util.Optional;
 
+/**
+ * Information about an image found on a page.
+ */
 public class ImageInfoBuilder {
 
 	private String url = "";

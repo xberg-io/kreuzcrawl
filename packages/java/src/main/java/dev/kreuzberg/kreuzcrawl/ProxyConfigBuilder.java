@@ -3,6 +3,9 @@ package dev.kreuzberg.kreuzcrawl;
 
 import java.util.Optional;
 
+/**
+ * Proxy configuration for HTTP requests.
+ */
 public class ProxyConfigBuilder {
 
 	private String url = "";

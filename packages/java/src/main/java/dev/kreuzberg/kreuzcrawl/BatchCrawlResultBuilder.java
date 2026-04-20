@@ -3,6 +3,9 @@ package dev.kreuzberg.kreuzcrawl;
 
 import java.util.Optional;
 
+/**
+ * Result from a single URL in a batch crawl operation.
+ */
 public class BatchCrawlResultBuilder {
 
 	private String url = "";

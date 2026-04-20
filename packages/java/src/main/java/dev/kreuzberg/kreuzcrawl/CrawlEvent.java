@@ -4,8 +4,16 @@ package dev.kreuzberg.kreuzcrawl;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+/**
+ * An event emitted during a streaming crawl operation.
+ */
 public enum CrawlEvent {
-	Page("page"), Error("error"), Complete("complete");
+	/** A single page has been crawled. */
+	Page("page"),
+	/** An error occurred while crawling a URL. */
+	Error("error"),
+	/** The crawl has completed. */
+	Complete("complete");
 
 	private final String value;
 

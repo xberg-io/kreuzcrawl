@@ -5,22 +5,67 @@ import java.util.List;
 import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record ScrapeResult(@JsonProperty("status_code") short statusCode,
-		@JsonProperty("content_type") String contentType, String html, @JsonProperty("body_size") long bodySize,
-		PageMetadata metadata, List<LinkInfo> links, List<ImageInfo> images, List<FeedInfo> feeds,
-		@JsonProperty("json_ld") List<JsonLdEntry> jsonLd, @JsonProperty("is_allowed") boolean isAllowed,
+/**
+ * The result of a single-page scrape operation.
+ */
+public record ScrapeResult(
+		/** The HTTP status code of the response. */
+		@JsonProperty("status_code") short statusCode,
+		/** The Content-Type header value. */
+		@JsonProperty("content_type") String contentType,
+		/** The HTML body of the response. */
+		String html,
+		/** The size of the response body in bytes. */
+		@JsonProperty("body_size") long bodySize,
+		/** Extracted metadata from the page. */
+		PageMetadata metadata,
+		/** Links found on the page. */
+		List<LinkInfo> links,
+		/** Images found on the page. */
+		List<ImageInfo> images,
+		/** Feed links found on the page. */
+		List<FeedInfo> feeds,
+		/** JSON-LD entries found on the page. */
+		@JsonProperty("json_ld") List<JsonLdEntry> jsonLd,
+		/** Whether the URL is allowed by robots.txt. */
+		@JsonProperty("is_allowed") boolean isAllowed,
+		/** The crawl delay from robots.txt, in seconds. */
 		@JsonProperty("crawl_delay") Optional<Long> crawlDelay,
+		/** Whether a noindex directive was detected. */
 		@JsonProperty("noindex_detected") boolean noindexDetected,
+		/** Whether a nofollow directive was detected. */
 		@JsonProperty("nofollow_detected") boolean nofollowDetected,
-		@JsonProperty("x_robots_tag") Optional<String> xRobotsTag, @JsonProperty("is_pdf") boolean isPdf,
+		/** The X-Robots-Tag header value, if present. */
+		@JsonProperty("x_robots_tag") Optional<String> xRobotsTag,
+		/** Whether the content is a PDF. */
+		@JsonProperty("is_pdf") boolean isPdf,
+		/** Whether the page was skipped (binary or PDF content). */
 		@JsonProperty("was_skipped") boolean wasSkipped,
+		/** The detected character set encoding. */
 		@JsonProperty("detected_charset") Optional<String> detectedCharset,
+		/** Whether main_content_only was active during extraction. */
 		@JsonProperty("main_content_only") boolean mainContentOnly,
+		/** Whether an authentication header was sent with the request. */
 		@JsonProperty("auth_header_sent") boolean authHeaderSent,
-		@JsonProperty("response_meta") Optional<ResponseMeta> responseMeta, List<DownloadedAsset> assets,
-		@JsonProperty("js_render_hint") boolean jsRenderHint, @JsonProperty("browser_used") boolean browserUsed,
-		Optional<MarkdownResult> markdown, @JsonProperty("extracted_data") Optional<Object> extractedData,
-		@JsonProperty("extraction_meta") Optional<ExtractionMeta> extractionMeta, Optional<byte[]> screenshot,
+		/** Response metadata extracted from HTTP headers. */
+		@JsonProperty("response_meta") Optional<ResponseMeta> responseMeta,
+		/** Downloaded assets from the page. */
+		List<DownloadedAsset> assets,
+		/** Whether the page content suggests JavaScript rendering is needed. */
+		@JsonProperty("js_render_hint") boolean jsRenderHint,
+		/** Whether the browser fallback was used to fetch this page. */
+		@JsonProperty("browser_used") boolean browserUsed,
+		/** Markdown conversion of the page content. */
+		Optional<MarkdownResult> markdown,
+		/** Structured data extracted by LLM. Populated when using LlmExtractor. */
+		@JsonProperty("extracted_data") Optional<Object> extractedData,
+		/** Metadata about the LLM extraction pass (cost, tokens, model). */
+		@JsonProperty("extraction_meta") Optional<ExtractionMeta> extractionMeta,
+		/**
+		 * Screenshot of the page as PNG bytes. Populated when browser is used and
+		 * capture_screenshot is enabled.
+		 */
+		Optional<byte[]> screenshot, /** Downloaded non-HTML document (PDF, DOCX, image, code, etc.). */
 		@JsonProperty("downloaded_document") Optional<DownloadedDocument> downloadedDocument) {
 	public static ScrapeResultBuilder builder() {
 		return new ScrapeResultBuilder();

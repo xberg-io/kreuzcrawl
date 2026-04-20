@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Configuration for crawl, scrape, and map operations.
+ */
 public class CrawlConfigBuilder {
 
 	private Optional<Long> maxDepth = Optional.empty();

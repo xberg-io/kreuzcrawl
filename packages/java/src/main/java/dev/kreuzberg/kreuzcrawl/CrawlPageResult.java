@@ -5,14 +5,49 @@ import java.util.List;
 import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record CrawlPageResult(String url, @JsonProperty("normalized_url") String normalizedUrl,
-		@JsonProperty("status_code") short statusCode, @JsonProperty("content_type") String contentType, String html,
-		@JsonProperty("body_size") long bodySize, PageMetadata metadata, List<LinkInfo> links, List<ImageInfo> images,
-		List<FeedInfo> feeds, @JsonProperty("json_ld") List<JsonLdEntry> jsonLd, long depth,
-		@JsonProperty("stayed_on_domain") boolean stayedOnDomain, @JsonProperty("was_skipped") boolean wasSkipped,
-		@JsonProperty("is_pdf") boolean isPdf, @JsonProperty("detected_charset") Optional<String> detectedCharset,
-		Optional<MarkdownResult> markdown, @JsonProperty("extracted_data") Optional<Object> extractedData,
+/**
+ * The result of crawling a single page during a crawl operation.
+ */
+public record CrawlPageResult(
+		/** The original URL of the page. */
+		String url,
+		/** The normalized URL of the page. */
+		@JsonProperty("normalized_url") String normalizedUrl,
+		/** The HTTP status code of the response. */
+		@JsonProperty("status_code") short statusCode,
+		/** The Content-Type header value. */
+		@JsonProperty("content_type") String contentType,
+		/** The HTML body of the response. */
+		String html,
+		/** The size of the response body in bytes. */
+		@JsonProperty("body_size") long bodySize,
+		/** Extracted metadata from the page. */
+		PageMetadata metadata,
+		/** Links found on the page. */
+		List<LinkInfo> links,
+		/** Images found on the page. */
+		List<ImageInfo> images,
+		/** Feed links found on the page. */
+		List<FeedInfo> feeds,
+		/** JSON-LD entries found on the page. */
+		@JsonProperty("json_ld") List<JsonLdEntry> jsonLd,
+		/** The depth of this page from the start URL. */
+		long depth,
+		/** Whether this page is on the same domain as the start URL. */
+		@JsonProperty("stayed_on_domain") boolean stayedOnDomain,
+		/** Whether this page was skipped (binary or PDF content). */
+		@JsonProperty("was_skipped") boolean wasSkipped,
+		/** Whether the content is a PDF. */
+		@JsonProperty("is_pdf") boolean isPdf,
+		/** The detected character set encoding. */
+		@JsonProperty("detected_charset") Optional<String> detectedCharset,
+		/** Markdown conversion of the page content. */
+		Optional<MarkdownResult> markdown,
+		/** Structured data extracted by LLM. Populated when using LlmExtractor. */
+		@JsonProperty("extracted_data") Optional<Object> extractedData,
+		/** Metadata about the LLM extraction pass (cost, tokens, model). */
 		@JsonProperty("extraction_meta") Optional<ExtractionMeta> extractionMeta,
+		/** Downloaded non-HTML document (PDF, DOCX, image, code, etc.). */
 		@JsonProperty("downloaded_document") Optional<DownloadedDocument> downloadedDocument) {
 	public static CrawlPageResultBuilder builder() {
 		return new CrawlPageResultBuilder();

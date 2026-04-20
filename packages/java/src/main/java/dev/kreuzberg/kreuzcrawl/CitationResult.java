@@ -3,6 +3,9 @@ package dev.kreuzberg.kreuzcrawl;
 
 import java.util.List;
 
+/**
+ * Result of citation conversion.
+ */
 public record CitationResult(String content, List<CitationReference> references) {
 	public static CitationResultBuilder builder() {
 		return new CitationResultBuilder();

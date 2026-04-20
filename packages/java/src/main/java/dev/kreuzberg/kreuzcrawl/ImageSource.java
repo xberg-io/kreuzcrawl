@@ -4,8 +4,18 @@ package dev.kreuzberg.kreuzcrawl;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+/**
+ * The source of an image reference.
+ */
 public enum ImageSource {
-	Img("img"), PictureSource("picture_source"), OgImage("og:image"), TwitterImage("twitter:image");
+	/** An {@code <img>} tag. */
+	Img("img"),
+	/** A {@code <source>} tag inside {@code <picture>}. */
+	PictureSource("picture_source"),
+	/** An {@code og:image} meta tag. */
+	OgImage("og:image"),
+	/** A {@code twitter:image} meta tag. */
+	TwitterImage("twitter:image");
 
 	private final String value;
 

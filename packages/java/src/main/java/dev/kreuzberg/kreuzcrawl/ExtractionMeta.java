@@ -4,8 +4,18 @@ package dev.kreuzberg.kreuzcrawl;
 import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record ExtractionMeta(Optional<Double> cost, @JsonProperty("prompt_tokens") Optional<Long> promptTokens,
-		@JsonProperty("completion_tokens") Optional<Long> completionTokens, Optional<String> model,
+/**
+ * Metadata about an LLM extraction pass.
+ */
+public record ExtractionMeta(
+		/** Estimated cost of the LLM call in USD. */
+		Optional<Double> cost,
+		/** Number of prompt (input) tokens consumed. */
+		@JsonProperty("prompt_tokens") Optional<Long> promptTokens,
+		/** Number of completion (output) tokens generated. */
+		@JsonProperty("completion_tokens") Optional<Long> completionTokens,
+		/** The model identifier used for extraction. */
+		Optional<String> model, /** Number of content chunks sent to the LLM. */
 		@JsonProperty("chunks_processed") long chunksProcessed) {
 	public static ExtractionMetaBuilder builder() {
 		return new ExtractionMetaBuilder();

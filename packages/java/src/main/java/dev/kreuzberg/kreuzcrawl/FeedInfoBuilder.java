@@ -3,6 +3,9 @@ package dev.kreuzberg.kreuzcrawl;
 
 import java.util.Optional;
 
+/**
+ * Information about a feed link found on a page.
+ */
 public class FeedInfoBuilder {
 
 	private String url = "";

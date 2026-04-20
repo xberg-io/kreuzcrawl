@@ -4,8 +4,16 @@ package dev.kreuzberg.kreuzcrawl;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+/**
+ * The type of a feed (RSS, Atom, or JSON Feed).
+ */
 public enum FeedType {
-	Rss("rss"), Atom("atom"), JsonFeed("json_feed");
+	/** RSS feed. */
+	Rss("rss"),
+	/** Atom feed. */
+	Atom("atom"),
+	/** JSON Feed. */
+	JsonFeed("json_feed");
 
 	private final String value;
 

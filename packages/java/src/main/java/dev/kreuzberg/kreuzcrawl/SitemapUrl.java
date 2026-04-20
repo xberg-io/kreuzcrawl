@@ -3,7 +3,17 @@ package dev.kreuzberg.kreuzcrawl;
 
 import java.util.Optional;
 
-public record SitemapUrl(String url, Optional<String> lastmod, Optional<String> changefreq, Optional<String> priority) {
+/**
+ * A URL entry from a sitemap.
+ */
+public record SitemapUrl(
+		/** The URL. */
+		String url,
+		/** The last modification date, if present. */
+		Optional<String> lastmod,
+		/** The change frequency, if present. */
+		Optional<String> changefreq, /** The priority, if present. */
+		Optional<String> priority) {
 	public static SitemapUrlBuilder builder() {
 		return new SitemapUrlBuilder();
 	}

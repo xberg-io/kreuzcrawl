@@ -3,6 +3,9 @@ package dev.kreuzberg.kreuzcrawl;
 
 import java.util.Optional;
 
+/**
+ * Information about a link found on a page.
+ */
 public class LinkInfoBuilder {
 
 	private String url = "";

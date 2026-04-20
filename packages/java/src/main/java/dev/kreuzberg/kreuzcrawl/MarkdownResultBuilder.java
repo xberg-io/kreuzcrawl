@@ -4,6 +4,9 @@ package dev.kreuzberg.kreuzcrawl;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Rich markdown conversion result from HTML processing.
+ */
 public class MarkdownResultBuilder {
 
 	private String content = "";

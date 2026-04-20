@@ -5,8 +5,16 @@ import java.util.List;
 import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record InteractionResult(@JsonProperty("action_results") List<ActionResult> actionResults,
-		@JsonProperty("final_html") String finalHtml, @JsonProperty("final_url") String finalUrl,
+/**
+ * Result of executing a sequence of page interaction actions.
+ */
+public record InteractionResult(
+		/** Results from each executed action. */
+		@JsonProperty("action_results") List<ActionResult> actionResults,
+		/** Final page HTML after all actions completed. */
+		@JsonProperty("final_html") String finalHtml,
+		/** Final page URL (may have changed due to navigation). */
+		@JsonProperty("final_url") String finalUrl, /** Screenshot taken after all actions, if requested. */
 		Optional<byte[]> screenshot) {
 	public static InteractionResultBuilder builder() {
 		return new InteractionResultBuilder();

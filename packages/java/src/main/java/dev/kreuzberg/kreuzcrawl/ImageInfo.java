@@ -3,7 +3,18 @@ package dev.kreuzberg.kreuzcrawl;
 
 import java.util.Optional;
 
-public record ImageInfo(String url, Optional<String> alt, Optional<Integer> width, Optional<Integer> height,
+/**
+ * Information about an image found on a page.
+ */
+public record ImageInfo(
+		/** The image URL. */
+		String url,
+		/** The alt text, if present. */
+		Optional<String> alt,
+		/** The width attribute, if present and parseable. */
+		Optional<Integer> width,
+		/** The height attribute, if present and parseable. */
+		Optional<Integer> height, /** The source of the image reference. */
 		ImageSource source) {
 	public static ImageInfoBuilder builder() {
 		return new ImageInfoBuilder();

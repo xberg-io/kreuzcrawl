@@ -4,7 +4,15 @@ package dev.kreuzberg.kreuzcrawl;
 import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record FeedInfo(String url, Optional<String> title, @JsonProperty("feed_type") FeedType feedType) {
+/**
+ * Information about a feed link found on a page.
+ */
+public record FeedInfo(
+		/** The feed URL. */
+		String url,
+		/** The feed title, if present. */
+		Optional<String> title, /** The type of feed. */
+		@JsonProperty("feed_type") FeedType feedType) {
 	public static FeedInfoBuilder builder() {
 		return new FeedInfoBuilder();
 	}

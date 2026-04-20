@@ -3,6 +3,9 @@ package dev.kreuzberg.kreuzcrawl;
 
 import java.util.Optional;
 
+/**
+ * Metadata about an LLM extraction pass.
+ */
 public class ExtractionMetaBuilder {
 
 	private Optional<Double> cost = Optional.empty();

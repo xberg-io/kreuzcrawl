@@ -4,7 +4,18 @@ package dev.kreuzberg.kreuzcrawl;
 import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record LinkInfo(String url, String text, @JsonProperty("link_type") LinkType linkType, Optional<String> rel,
+/**
+ * Information about a link found on a page.
+ */
+public record LinkInfo(
+		/** The resolved URL of the link. */
+		String url,
+		/** The visible text of the link. */
+		String text,
+		/** The classification of the link. */
+		@JsonProperty("link_type") LinkType linkType,
+		/** The {@code rel} attribute value, if present. */
+		Optional<String> rel, /** Whether the link has {@code rel="nofollow"}. */
 		boolean nofollow) {
 	public static LinkInfoBuilder builder() {
 		return new LinkInfoBuilder();

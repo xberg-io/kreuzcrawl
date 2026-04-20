@@ -5,8 +5,20 @@ import java.util.List;
 import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record MarkdownResult(String content, @JsonProperty("document_structure") Optional<Object> documentStructure,
-		List<Object> tables, List<String> warnings, Optional<CitationResult> citations,
+/**
+ * Rich markdown conversion result from HTML processing.
+ */
+public record MarkdownResult(
+		/** Converted markdown text. */
+		String content,
+		/** Structured document tree with semantic nodes. */
+		@JsonProperty("document_structure") Optional<Object> documentStructure,
+		/** Extracted tables with structured cell data. */
+		List<Object> tables,
+		/** Non-fatal processing warnings. */
+		List<String> warnings,
+		/** Content with links replaced by numbered citations. */
+		Optional<CitationResult> citations, /** Content-filtered markdown optimized for LLM consumption. */
 		@JsonProperty("fit_content") Optional<String> fitContent) {
 	public static MarkdownResultBuilder builder() {
 		return new MarkdownResultBuilder();

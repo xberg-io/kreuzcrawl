@@ -3,6 +3,9 @@ package dev.kreuzberg.kreuzcrawl;
 
 import java.util.Optional;
 
+/**
+ * A URL entry from a sitemap.
+ */
 public class SitemapUrlBuilder {
 
 	private String url = "";

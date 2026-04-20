@@ -3,6 +3,9 @@ package dev.kreuzberg.kreuzcrawl;
 
 import java.util.List;
 
+/**
+ * The result of a map operation, containing discovered URLs.
+ */
 public record MapResult(List<SitemapUrl> urls) {
 	public static MapResultBuilder builder() {
 		return new MapResultBuilder();

@@ -4,8 +4,21 @@ package dev.kreuzberg.kreuzcrawl;
 import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record ActionResult(@JsonProperty("action_index") long actionIndex,
-		@JsonProperty("action_type") String actionType, boolean success, Optional<Object> data,
+/**
+ * Result from a single page action execution.
+ */
+public record ActionResult(
+		/** Zero-based index of the action in the sequence. */
+		@JsonProperty("action_index") long actionIndex,
+		/** The type of action that was executed. */
+		@JsonProperty("action_type") String actionType,
+		/** Whether the action completed successfully. */
+		boolean success,
+		/**
+		 * Action-specific return data (screenshot bytes, JS return value, scraped
+		 * HTML).
+		 */
+		Optional<Object> data, /** Error message if the action failed. */
 		Optional<String> error) {
 	public static ActionResultBuilder builder() {
 		return new ActionResultBuilder();

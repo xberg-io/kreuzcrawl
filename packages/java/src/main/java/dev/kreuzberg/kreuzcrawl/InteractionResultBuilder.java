@@ -4,6 +4,9 @@ package dev.kreuzberg.kreuzcrawl;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Result of executing a sequence of page interaction actions.
+ */
 public class InteractionResultBuilder {
 
 	private List<ActionResult> actionResults = List.of();

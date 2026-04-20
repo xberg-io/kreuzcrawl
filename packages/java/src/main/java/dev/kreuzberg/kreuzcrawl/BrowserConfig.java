@@ -4,8 +4,24 @@ package dev.kreuzberg.kreuzcrawl;
 import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record BrowserConfig(BrowserMode mode, Optional<String> endpoint, Long timeout, BrowserWait waitValue,
+/**
+ * Browser fallback configuration.
+ */
+public record BrowserConfig(
+		/** When to use the headless browser fallback. */
+		BrowserMode mode,
+		/** CDP WebSocket endpoint for connecting to an external browser instance. */
+		Optional<String> endpoint,
+		/**
+		 * Timeout for browser page load and rendering (in milliseconds when
+		 * serialized).
+		 */
+		Long timeout,
+		/** Wait strategy after browser navigation. */
+		BrowserWait waitValue,
+		/** CSS selector to wait for when {@code wait} is {@code Selector}. */
 		@JsonProperty("wait_selector") Optional<String> waitSelector,
+		/** Extra time to wait after the wait condition is met. */
 		@JsonProperty("extra_wait") Optional<Long> extraWait) {
 	public static BrowserConfigBuilder builder() {
 		return new BrowserConfigBuilder();

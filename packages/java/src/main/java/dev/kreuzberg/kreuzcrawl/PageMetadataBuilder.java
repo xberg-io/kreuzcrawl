@@ -4,6 +4,10 @@ package dev.kreuzberg.kreuzcrawl;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Metadata extracted from an HTML page's {@code <meta>} tags and
+ * {@code <title>} element.
+ */
 public class PageMetadataBuilder {
 
 	private Optional<String> title = Optional.empty();

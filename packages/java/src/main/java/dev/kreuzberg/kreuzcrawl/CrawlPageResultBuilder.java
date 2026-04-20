@@ -4,6 +4,9 @@ package dev.kreuzberg.kreuzcrawl;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * The result of crawling a single page during a crawl operation.
+ */
 public class CrawlPageResultBuilder {
 
 	private String url = "";

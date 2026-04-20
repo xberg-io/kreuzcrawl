@@ -4,8 +4,18 @@ package dev.kreuzberg.kreuzcrawl;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+/**
+ * When to use the headless browser fallback.
+ */
 public enum BrowserMode {
-	Auto("auto"), Always("always"), Never("never");
+	/**
+	 * Automatically detect when JS rendering is needed and fall back to browser.
+	 */
+	Auto("auto"),
+	/** Always use the browser for every request. */
+	Always("always"),
+	/** Never use the browser fallback. */
+	Never("never");
 
 	private final String value;
 

@@ -3,6 +3,9 @@ package dev.kreuzberg.kreuzcrawl;
 
 import java.util.Optional;
 
+/**
+ * Information about an HTTP cookie received from a response.
+ */
 public class CookieInfoBuilder {
 
 	private String name = "";

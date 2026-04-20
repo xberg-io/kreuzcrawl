@@ -3,6 +3,9 @@ package dev.kreuzberg.kreuzcrawl;
 
 import java.util.Optional;
 
+/**
+ * Cached page data for HTTP response caching.
+ */
 public class CachedPageBuilder {
 
 	private String url = "";

@@ -4,6 +4,9 @@ package dev.kreuzberg.kreuzcrawl;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Article metadata extracted from {@code article:*} Open Graph tags.
+ */
 public class ArticleMetadataBuilder {
 
 	private Optional<String> publishedTime = Optional.empty();

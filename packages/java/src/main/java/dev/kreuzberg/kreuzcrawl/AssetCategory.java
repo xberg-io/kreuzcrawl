@@ -4,9 +4,30 @@ package dev.kreuzberg.kreuzcrawl;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+/**
+ * The category of a downloaded asset.
+ */
 public enum AssetCategory {
-	Document("document"), Image("image"), Audio("audio"), Video("video"), Font("font"), Stylesheet(
-			"stylesheet"), Script("script"), Archive("archive"), Data("data"), Other("other");
+	/** A document file (PDF, DOC, etc.). */
+	Document("document"),
+	/** An image file. */
+	Image("image"),
+	/** An audio file. */
+	Audio("audio"),
+	/** A video file. */
+	Video("video"),
+	/** A font file. */
+	Font("font"),
+	/** A CSS stylesheet. */
+	Stylesheet("stylesheet"),
+	/** A JavaScript file. */
+	Script("script"),
+	/** An archive file (ZIP, TAR, etc.). */
+	Archive("archive"),
+	/** A data file (JSON, XML, CSV, etc.). */
+	Data("data"),
+	/** An unrecognized asset type. */
+	Other("other");
 
 	private final String value;
 

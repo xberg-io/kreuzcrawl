@@ -3,6 +3,9 @@ package dev.kreuzberg.kreuzcrawl;
 
 import java.util.Optional;
 
+/**
+ * Browser fallback configuration.
+ */
 public class BrowserConfigBuilder {
 
 	private BrowserMode mode = null;

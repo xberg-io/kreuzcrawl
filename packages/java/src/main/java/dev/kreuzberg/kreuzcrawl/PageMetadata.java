@@ -5,31 +5,95 @@ import java.util.List;
 import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record PageMetadata(Optional<String> title, Optional<String> description,
-		@JsonProperty("canonical_url") Optional<String> canonicalUrl, Optional<String> keywords,
-		Optional<String> author, Optional<String> viewport, @JsonProperty("theme_color") Optional<String> themeColor,
-		Optional<String> generator, Optional<String> robots, @JsonProperty("html_lang") Optional<String> htmlLang,
-		@JsonProperty("html_dir") Optional<String> htmlDir, @JsonProperty("og_title") Optional<String> ogTitle,
-		@JsonProperty("og_type") Optional<String> ogType, @JsonProperty("og_image") Optional<String> ogImage,
-		@JsonProperty("og_description") Optional<String> ogDescription, @JsonProperty("og_url") Optional<String> ogUrl,
-		@JsonProperty("og_site_name") Optional<String> ogSiteName, @JsonProperty("og_locale") Optional<String> ogLocale,
-		@JsonProperty("og_video") Optional<String> ogVideo, @JsonProperty("og_audio") Optional<String> ogAudio,
+/**
+ * Metadata extracted from an HTML page's {@code <meta>} tags and
+ * {@code <title>} element.
+ */
+public record PageMetadata(
+		/** The page title from the {@code <title>} element. */
+		Optional<String> title,
+		/** The meta description. */
+		Optional<String> description,
+		/** The canonical URL from {@code <link rel="canonical">}. */
+		@JsonProperty("canonical_url") Optional<String> canonicalUrl,
+		/** Keywords from {@code <meta name="keywords">}. */
+		Optional<String> keywords,
+		/** Author from {@code <meta name="author">}. */
+		Optional<String> author,
+		/** Viewport content from {@code <meta name="viewport">}. */
+		Optional<String> viewport,
+		/** Theme color from {@code <meta name="theme-color">}. */
+		@JsonProperty("theme_color") Optional<String> themeColor,
+		/** Generator from {@code <meta name="generator">}. */
+		Optional<String> generator,
+		/** Robots content from {@code <meta name="robots">}. */
+		Optional<String> robots,
+		/** The {@code lang} attribute from the {@code <html>} element. */
+		@JsonProperty("html_lang") Optional<String> htmlLang,
+		/** The {@code dir} attribute from the {@code <html>} element. */
+		@JsonProperty("html_dir") Optional<String> htmlDir,
+		/** Open Graph title. */
+		@JsonProperty("og_title") Optional<String> ogTitle,
+		/** Open Graph type. */
+		@JsonProperty("og_type") Optional<String> ogType,
+		/** Open Graph image URL. */
+		@JsonProperty("og_image") Optional<String> ogImage,
+		/** Open Graph description. */
+		@JsonProperty("og_description") Optional<String> ogDescription,
+		/** Open Graph URL. */
+		@JsonProperty("og_url") Optional<String> ogUrl,
+		/** Open Graph site name. */
+		@JsonProperty("og_site_name") Optional<String> ogSiteName,
+		/** Open Graph locale. */
+		@JsonProperty("og_locale") Optional<String> ogLocale,
+		/** Open Graph video URL. */
+		@JsonProperty("og_video") Optional<String> ogVideo,
+		/** Open Graph audio URL. */
+		@JsonProperty("og_audio") Optional<String> ogAudio,
+		/** Open Graph locale alternates. */
 		@JsonProperty("og_locale_alternates") Optional<List<String>> ogLocaleAlternates,
+		/** Twitter card type. */
 		@JsonProperty("twitter_card") Optional<String> twitterCard,
+		/** Twitter title. */
 		@JsonProperty("twitter_title") Optional<String> twitterTitle,
+		/** Twitter description. */
 		@JsonProperty("twitter_description") Optional<String> twitterDescription,
+		/** Twitter image URL. */
 		@JsonProperty("twitter_image") Optional<String> twitterImage,
+		/** Twitter site handle. */
 		@JsonProperty("twitter_site") Optional<String> twitterSite,
+		/** Twitter creator handle. */
 		@JsonProperty("twitter_creator") Optional<String> twitterCreator,
-		@JsonProperty("dc_title") Optional<String> dcTitle, @JsonProperty("dc_creator") Optional<String> dcCreator,
+		/** Dublin Core title. */
+		@JsonProperty("dc_title") Optional<String> dcTitle,
+		/** Dublin Core creator. */
+		@JsonProperty("dc_creator") Optional<String> dcCreator,
+		/** Dublin Core subject. */
 		@JsonProperty("dc_subject") Optional<String> dcSubject,
+		/** Dublin Core description. */
 		@JsonProperty("dc_description") Optional<String> dcDescription,
-		@JsonProperty("dc_publisher") Optional<String> dcPublisher, @JsonProperty("dc_date") Optional<String> dcDate,
-		@JsonProperty("dc_type") Optional<String> dcType, @JsonProperty("dc_format") Optional<String> dcFormat,
+		/** Dublin Core publisher. */
+		@JsonProperty("dc_publisher") Optional<String> dcPublisher,
+		/** Dublin Core date. */
+		@JsonProperty("dc_date") Optional<String> dcDate,
+		/** Dublin Core type. */
+		@JsonProperty("dc_type") Optional<String> dcType,
+		/** Dublin Core format. */
+		@JsonProperty("dc_format") Optional<String> dcFormat,
+		/** Dublin Core identifier. */
 		@JsonProperty("dc_identifier") Optional<String> dcIdentifier,
-		@JsonProperty("dc_language") Optional<String> dcLanguage, @JsonProperty("dc_rights") Optional<String> dcRights,
-		Optional<ArticleMetadata> article, Optional<List<HreflangEntry>> hreflangs,
-		Optional<List<FaviconInfo>> favicons, Optional<List<HeadingInfo>> headings,
+		/** Dublin Core language. */
+		@JsonProperty("dc_language") Optional<String> dcLanguage,
+		/** Dublin Core rights. */
+		@JsonProperty("dc_rights") Optional<String> dcRights,
+		/** Article metadata from {@code article:*} Open Graph tags. */
+		Optional<ArticleMetadata> article,
+		/** Hreflang alternate links. */
+		Optional<List<HreflangEntry>> hreflangs,
+		/** Favicon and icon links. */
+		Optional<List<FaviconInfo>> favicons,
+		/** Heading elements (h1-h6). */
+		Optional<List<HeadingInfo>> headings, /** Computed word count of the page body text. */
 		@JsonProperty("word_count") Optional<Long> wordCount) {
 	public static PageMetadataBuilder builder() {
 		return new PageMetadataBuilder();

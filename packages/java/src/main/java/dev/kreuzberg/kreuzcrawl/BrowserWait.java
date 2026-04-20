@@ -4,8 +4,16 @@ package dev.kreuzberg.kreuzcrawl;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+/**
+ * Wait strategy for browser page rendering.
+ */
 public enum BrowserWait {
-	NetworkIdle("network_idle"), Selector("selector"), Fixed("fixed");
+	/** Wait until network activity is idle. */
+	NetworkIdle("network_idle"),
+	/** Wait for a specific CSS selector to appear in the DOM. */
+	Selector("selector"),
+	/** Wait for a fixed duration after navigation. */
+	Fixed("fixed");
 
 	private final String value;
 

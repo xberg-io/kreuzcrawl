@@ -3,6 +3,9 @@ package dev.kreuzberg.kreuzcrawl;
 
 import java.util.Optional;
 
+/**
+ * Response metadata extracted from HTTP headers.
+ */
 public class ResponseMetaBuilder {
 
 	private Optional<String> etag = Optional.empty();

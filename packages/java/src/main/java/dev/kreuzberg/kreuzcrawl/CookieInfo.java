@@ -3,7 +3,17 @@ package dev.kreuzberg.kreuzcrawl;
 
 import java.util.Optional;
 
-public record CookieInfo(String name, String value, Optional<String> domain, Optional<String> path) {
+/**
+ * Information about an HTTP cookie received from a response.
+ */
+public record CookieInfo(
+		/** The cookie name. */
+		String name,
+		/** The cookie value. */
+		String value,
+		/** The cookie domain, if specified. */
+		Optional<String> domain, /** The cookie path, if specified. */
+		Optional<String> path) {
 	public static CookieInfoBuilder builder() {
 		return new CookieInfoBuilder();
 	}

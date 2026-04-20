@@ -3,6 +3,9 @@ package dev.kreuzberg.kreuzcrawl;
 
 import java.util.Optional;
 
+/**
+ * A JSON-LD structured data entry found on a page.
+ */
 public class JsonLdEntryBuilder {
 
 	private String schemaType = "";

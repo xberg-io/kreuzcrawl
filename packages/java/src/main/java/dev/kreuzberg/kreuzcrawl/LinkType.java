@@ -4,8 +4,18 @@ package dev.kreuzberg.kreuzcrawl;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+/**
+ * The classification of a link.
+ */
 public enum LinkType {
-	Internal("internal"), External("external"), Anchor("anchor"), Document("document");
+	/** A link to the same domain. */
+	Internal("internal"),
+	/** A link to a different domain. */
+	External("external"),
+	/** A fragment-only link (e.g., {@code #section}). */
+	Anchor("anchor"),
+	/** A link to a downloadable document (PDF, DOC, etc.). */
+	Document("document");
 
 	private final String value;
 

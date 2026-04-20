@@ -4,6 +4,9 @@ package dev.kreuzberg.kreuzcrawl;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * The result of a single-page scrape operation.
+ */
 public class ScrapeResultBuilder {
 
 	private short statusCode = 0;
