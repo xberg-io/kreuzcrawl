@@ -12,7 +12,7 @@ checked=0
 
 # Convert semver pre-release to PEP 440 for Python comparison
 # e.g., "0.1.0-rc.1" → "0.1.0rc1", "0.1.0-alpha.2" → "0.1.0a2"
-expected_pep440="$(echo "$expected" | sed -E 's/-alpha\.?/a/; s/-beta\.?/b/; s/-rc\.?/rc/; s/\.([0-9]+)$/\1/')"
+expected_pep440="$(echo "$expected" | sed -E 's/-alpha\.?/a/; s/-beta\.?/b/; s/-rc\.?/rc/; s/(a|b|rc)\.([0-9]+)$/\1\2/')"
 
 echo "Expected version: $expected (PEP 440: $expected_pep440)"
 echo "----------------------------------------"
