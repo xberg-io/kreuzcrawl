@@ -1,0 +1,27 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = ["setuptools>=68", "wheel"]
+
+[project]
+name = "kreuzcrawl-api-tests"
+version = "0.0.0"
+description = "Schemathesis API contract tests for kreuzcrawl"
+requires-python = ">=3.10"
+dependencies = [
+    "pytest>=7.4",
+    "requests>=2.31",
+    "schemathesis>=3.38",
+]
+
+[tool.setuptools]
+packages = []
+
+[tool.pytest.ini_options]
+testpaths = ["."]
+python_files = "test_*.py"
+python_functions = "test_*"
+addopts = "-v --tb=short"
+# Schemathesis default hypothesis settings
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+]

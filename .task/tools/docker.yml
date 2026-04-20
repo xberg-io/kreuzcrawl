@@ -18,11 +18,20 @@ tasks:
       - docker run -p 3000:3000 kreuzcrawl:dev
 
   schemathesis:
-    desc: Run schemathesis API contract tests (requires running server on :3000)
+    desc: Run schemathesis API contract tests (auto-starts server)
+    dir: "{{.ROOT_DIR}}/tests/api"
     cmds:
-      - pip3 install schemathesis
+      - uv sync
+      - uv run pytest -v --tb=short
+    env:
+      SCHEMATHESIS_MAX_EXAMPLES: "{{.MAX_EXAMPLES | default 25}}"
+
+  schemathesis:cli:
+    desc: Run schemathesis CLI against a running server (default :3000)
+    cmds:
       - >-
-        schemathesis run http://localhost:3000/openapi.json
-        --max-examples=10
+        uv run --with schemathesis schemathesis run
+        http://{{.HOST | default "localhost"}}:{{.PORT | default "3000"}}/openapi.json
+        --max-examples={{.MAX_EXAMPLES | default "25"}}
         --request-timeout=30000
         --checks not_a_server_error,status_code_conformance,content_type_conformance,response_schema_conformance,negative_data_rejection
