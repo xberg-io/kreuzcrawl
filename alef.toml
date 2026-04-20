@@ -292,6 +292,9 @@ crate_name = "kreuzcrawl"
 handle_struct_type = "CrawlConfig"
 handle_atom_list_fields = ["asset_types"]
 
+[e2e.call.overrides.wasm]
+handle_config_type = "WasmCrawlConfig"
+
 [e2e.call.overrides.brew]
 function = "scrape"
 cli_args = ["--format", "json"]
@@ -559,51 +562,51 @@ categories = ["scrape", "markdown", "metadata"]
 
 [e2e.registry.packages.python]
 name = "kreuzcrawl"
-version = ">=0.1.0rc3"
+version = ">=0.1.0rc9"
 
 [e2e.registry.packages.node]
 name = "@kreuzberg/kreuzcrawl"
-version = "^0.1.0-rc.3"
+version = "^0.1.0-rc.9"
 
 [e2e.registry.packages.rust]
 name = "kreuzcrawl"
-version = "0.1.0-rc.8"
+version = "0.1.0-rc.9"
 
 [e2e.registry.packages.go]
 module = "github.com/kreuzberg-dev/kreuzcrawl/packages/go"
-version = "v0.1.0-rc.3"
+version = "v0.1.0-rc.9"
 
 [e2e.registry.packages.java]
 name = "dev.kreuzberg.kreuzcrawl:kreuzcrawl"
-version = "0.1.0-rc.8"
+version = "0.1.0-rc.9"
 
 [e2e.registry.packages.csharp]
 name = "Kreuzcrawl"
-version = "0.1.0-rc.8"
+version = "0.1.0-rc.9"
 
 [e2e.registry.packages.php]
 name = "kreuzberg-dev/kreuzcrawl"
-version = ">=0.1.0-rc.3"
+version = ">=0.1.0-rc.9"
 
 [e2e.registry.packages.ruby]
 name = "kreuzcrawl"
-version = ">= 0.1.0.pre.rc.3"
+version = ">= 0.1.0.pre.rc.9"
 
 [e2e.registry.packages.elixir]
 name = "kreuzcrawl"
-version = "~> 0.1.0-rc.3"
+version = "~> 0.1.0-rc.9"
 
 [e2e.registry.packages.wasm]
 name = "@kreuzberg/kreuzcrawl-wasm"
-version = "^0.1.0-rc.3"
+version = "^0.1.0-rc.9"
 
 [e2e.registry.packages.brew]
 name = "kreuzcrawl"
-version = "0.1.0-rc.8"
+version = "0.1.0-rc.9"
 
 [e2e.registry.packages.c]
 name = "kreuzcrawl-ffi"
-version = "0.1.0-rc.8"
+version = "0.1.0-rc.9"
 
 # ---------------------------------------------------------------------------
 # Version Sync
