@@ -116,7 +116,7 @@ Kreuzcrawl provides native bindings for 11 languages plus Docker and CLI distrib
     <dependency>
         <groupId>dev.kreuzberg</groupId>
         <artifactId>kreuzcrawl</artifactId>
-        <version>0.1.0-rc.1</version>
+        <version>0.1.0</version>
     </dependency>
     ```
 
@@ -228,7 +228,13 @@ docker run --rm -v $(pwd)/output:/output \
 
 ## CLI
 
-Install the standalone CLI binary:
+### Homebrew (macOS / Linux)
+
+```bash
+brew install kreuzberg-dev/tap/kreuzcrawl
+```
+
+### Cargo
 
 ```bash
 cargo install kreuzcrawl-cli
