@@ -123,7 +123,7 @@ async fn test_content_remove_tags() {
         std::env::var("MOCK_SERVER_URL").expect("MOCK_SERVER_URL not set"),
         "content_remove_tags"
     );
-    let result = scrape(&engine, &url).await;
+    let result = scrape(&engine, &url).await.expect("should succeed");
     assert!(!result.html.is_empty(), "expected non-empty value");
 }
 
