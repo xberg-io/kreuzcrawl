@@ -1,0 +1,43 @@
+{
+	"id": "browser_crawl_waf_fallback",
+	"description": "Crawl with browser mode 'auto' falls back to browser when encountering WAF 403",
+	"tags": ["browser", "crawl", "error"],
+	"skip": {
+		"languages": ["wasm", "homebrew"],
+		"reason": "Browser rendering not available in WASM; homebrew lacks headless browser"
+	},
+	"input": {
+		"mock_responses": [
+			{
+				"path": "/",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><body><h1>Home</h1><a href=\"/protected\">Protected Page</a></body></html>"
+			},
+			{
+				"path": "/protected",
+				"status_code": 403,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><body><h1>Access Denied</h1><p>Your request has been blocked by our security system (WAF). Please try again later.</p></body></html>"
+			}
+		],
+		"config": {
+			"max_depth": 1,
+			"browser": {
+				"mode": "auto"
+			},
+			"respect_robots_txt": false
+		}
+	},
+	"assertions": [
+		{
+			"type": "greater_than_or_equal",
+			"field": "pages.length",
+			"value": 1
+		}
+	]
+}

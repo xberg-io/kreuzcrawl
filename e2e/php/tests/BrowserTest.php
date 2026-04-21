@@ -39,6 +39,35 @@ final class BrowserTest extends TestCase
         // skipped: field 'browser.browser_used' not available on result type
     }
 
+    /** Crawl with browser mode 'always' follows links using browser rendering */
+    public function test_browser_crawl_mode_always(): void
+    {
+        $engine_config = CrawlConfig::default();
+        $engine_config->browser = ["mode" => "always"];
+        $engine_config->max_depth = 1;
+        $engine_config->respect_robots_txt = false;
+        $engine = Kreuzcrawl::createEngine($engine_config);
+        $url = getenv('MOCK_SERVER_URL') . '/fixtures/browser_crawl_mode_always';
+        $this->expectNotToPerformAssertions();
+        $result = Kreuzcrawl::scrape_async($engine, $url);
+        // skipped: field 'pages.length' not available on result type
+        // skipped: field 'browser.browser_used' not available on result type
+    }
+
+    /** Crawl with browser mode 'auto' falls back to browser when encountering WAF 403 */
+    public function test_browser_crawl_waf_fallback(): void
+    {
+        $engine_config = CrawlConfig::default();
+        $engine_config->browser = ["mode" => "auto"];
+        $engine_config->max_depth = 1;
+        $engine_config->respect_robots_txt = false;
+        $engine = Kreuzcrawl::createEngine($engine_config);
+        $url = getenv('MOCK_SERVER_URL') . '/fixtures/browser_crawl_waf_fallback';
+        $this->expectNotToPerformAssertions();
+        $result = Kreuzcrawl::scrape_async($engine, $url);
+        // skipped: field 'pages.length' not available on result type
+    }
+
     /** Does NOT flag a short but real content page as needing JS rendering */
     public function test_browser_detect_minimal_page(): void
     {
@@ -116,6 +145,17 @@ final class BrowserTest extends TestCase
         $this->assertEquals(200, $result->status_code);
         // skipped: field 'browser.js_render_hint' not available on result type
         // skipped: field 'browser.browser_used' not available on result type
+    }
+
+    /** Browser endpoint must be a valid ws:// or wss:// URL, not http:// */
+    public function test_browser_endpoint_invalid(): void
+    {
+        $engine_config = CrawlConfig::default();
+        $engine_config->browser = ["endpoint" => "http://not-websocket:3000", "mode" => "always"];
+        $engine = Kreuzcrawl::createEngine($engine_config);
+        $url = getenv('MOCK_SERVER_URL') . '/fixtures/browser_endpoint_invalid';
+        $this->expectException(\Exception::class);
+        Kreuzcrawl::scrape_async($engine, $url);
     }
 
     /** Browser extra_wait adds additional time after network_idle to ensure all async operations complete */

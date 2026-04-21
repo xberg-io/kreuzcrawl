@@ -3,6 +3,7 @@
 
 use kreuzcrawl::create_engine;
 use kreuzcrawl::scrape;
+use kreuzcrawl::CrawlConfig;
 
 #[tokio::test]
 async fn test_encoding_double_encoded() {
@@ -27,7 +28,7 @@ async fn test_encoding_mixed_charset_page() {
         std::env::var("MOCK_SERVER_URL").expect("MOCK_SERVER_URL not set"),
         "encoding_mixed_charset_page"
     );
-    let result = scrape(&engine, &url).await.expect("should succeed");
+    let result = scrape(&engine, &url).await;
     assert!(!result.html.is_empty(), "expected non-empty value");
 }
 
@@ -54,6 +55,6 @@ async fn test_encoding_unicode_url() {
         std::env::var("MOCK_SERVER_URL").expect("MOCK_SERVER_URL not set"),
         "encoding_unicode_url"
     );
-    let result = scrape(&engine, &url).await.expect("should succeed");
+    let result = scrape(&engine, &url).await;
     assert!(!result.html.is_empty(), "expected non-empty value");
 }

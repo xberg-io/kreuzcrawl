@@ -55,6 +55,43 @@ func Test_BrowserConfigNeverMode(t *testing.T) {
 	// skipped: field 'browser.browser_used' not available on result type
 }
 
+func Test_BrowserCrawlModeAlways(t *testing.T) {
+	// Crawl with browser mode 'always' follows links using browser rendering
+	var engineConfig pkg.CrawlConfig
+	if err := json.Unmarshal([]byte(`{"browser":{"mode":"always"},"max_depth":1,"respect_robots_txt":false}`), &engineConfig); err != nil {
+		t.Fatalf("config parse failed: %v", err)
+	}
+	engine, createErr := pkg.CreateEngine(&engineConfig)
+	if createErr != nil {
+		t.Fatalf("create handle failed: %v", createErr)
+	}
+	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/browser_crawl_mode_always"
+	_, err := pkg.Scrape(engine, url)
+	if err != nil {
+		t.Fatalf("call failed: %v", err)
+	}
+	// skipped: field 'pages.length' not available on result type
+	// skipped: field 'browser.browser_used' not available on result type
+}
+
+func Test_BrowserCrawlWafFallback(t *testing.T) {
+	// Crawl with browser mode 'auto' falls back to browser when encountering WAF 403
+	var engineConfig pkg.CrawlConfig
+	if err := json.Unmarshal([]byte(`{"browser":{"mode":"auto"},"max_depth":1,"respect_robots_txt":false}`), &engineConfig); err != nil {
+		t.Fatalf("config parse failed: %v", err)
+	}
+	engine, createErr := pkg.CreateEngine(&engineConfig)
+	if createErr != nil {
+		t.Fatalf("create handle failed: %v", createErr)
+	}
+	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/browser_crawl_waf_fallback"
+	_, err := pkg.Scrape(engine, url)
+	if err != nil {
+		t.Fatalf("call failed: %v", err)
+	}
+	// skipped: field 'pages.length' not available on result type
+}
+
 func Test_BrowserDetectMinimalPage(t *testing.T) {
 	// Does NOT flag a short but real content page as needing JS rendering
 	engine, createErr := pkg.CreateEngine(nil)
@@ -181,6 +218,23 @@ func Test_BrowserDetectVueShell(t *testing.T) {
 	}
 	// skipped: field 'browser.js_render_hint' not available on result type
 	// skipped: field 'browser.browser_used' not available on result type
+}
+
+func Test_BrowserEndpointInvalid(t *testing.T) {
+	// Browser endpoint must be a valid ws:// or wss:// URL, not http://
+	var engineConfig pkg.CrawlConfig
+	if err := json.Unmarshal([]byte(`{"browser":{"endpoint":"http://not-websocket:3000","mode":"always"}}`), &engineConfig); err != nil {
+		t.Fatalf("config parse failed: %v", err)
+	}
+	engine, createErr := pkg.CreateEngine(&engineConfig)
+	if createErr != nil {
+		t.Fatalf("create handle failed: %v", createErr)
+	}
+	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/browser_endpoint_invalid"
+	_, err := pkg.Scrape(engine, url)
+	if err == nil {
+		t.Errorf("expected an error, but call succeeded")
+	}
 }
 
 func Test_BrowserExtraWait(t *testing.T) {

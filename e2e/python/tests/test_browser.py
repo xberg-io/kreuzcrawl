@@ -32,6 +32,27 @@ async def test_browser_config_never_mode() -> None:
 
 
 @pytest.mark.asyncio
+async def test_browser_crawl_mode_always() -> None:
+    """Crawl with browser mode 'always' follows links using browser rendering."""
+    engine_config = CrawlConfig(browser=BrowserConfig(mode="always"), max_depth=1, respect_robots_txt=False)
+    engine = create_engine(engine_config)
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/browser_crawl_mode_always"
+    _ = await scrape(engine=engine, url=url)
+    # skipped: field 'pages.length' not available on result type
+    # skipped: field 'browser.browser_used' not available on result type
+
+
+@pytest.mark.asyncio
+async def test_browser_crawl_waf_fallback() -> None:
+    """Crawl with browser mode 'auto' falls back to browser when encountering WAF 403."""
+    engine_config = CrawlConfig(browser=BrowserConfig(mode="auto"), max_depth=1, respect_robots_txt=False)
+    engine = create_engine(engine_config)
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/browser_crawl_waf_fallback"
+    _ = await scrape(engine=engine, url=url)
+    # skipped: field 'pages.length' not available on result type
+
+
+@pytest.mark.asyncio
 async def test_browser_detect_minimal_page() -> None:
     """Does NOT flag a short but real content page as needing JS rendering."""
     engine = create_engine(None)
@@ -108,6 +129,17 @@ async def test_browser_detect_vue_shell() -> None:
     assert result.status_code == 200
     # skipped: field 'browser.js_render_hint' not available on result type
     # skipped: field 'browser.browser_used' not available on result type
+
+
+@pytest.mark.asyncio
+async def test_browser_endpoint_invalid() -> None:
+    """Browser endpoint must be a valid ws:// or wss:// URL, not http://."""
+    engine_config = CrawlConfig(browser=BrowserConfig(endpoint="http://not-websocket:3000", mode="always"))
+    engine = create_engine(engine_config)
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/browser_endpoint_invalid"
+    with pytest.raises(Exception) as exc_info:
+        await scrape(engine=engine, url=url)
+    assert "endpoint" in str(exc_info.value)
 
 
 @pytest.mark.asyncio

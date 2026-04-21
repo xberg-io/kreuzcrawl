@@ -27,6 +27,27 @@ defmodule E2e.BrowserTest do
     end
   end
 
+  describe "browser_crawl_mode_always" do
+    test "Crawl with browser mode 'always' follows links using browser rendering" do
+      engine_config = "{\"browser\":{\"mode\":\"always\"},\"max_depth\":1,\"respect_robots_txt\":false}"
+      {:ok, engine} = Kreuzcrawl.create_engine(engine_config)
+      url = System.get_env("MOCK_SERVER_URL") <> "/fixtures/browser_crawl_mode_always"
+      {:ok, result} = Kreuzcrawl.scrape_async(engine, url)
+      # skipped: field 'pages.length' not available on result type
+      # skipped: field 'browser.browser_used' not available on result type
+    end
+  end
+
+  describe "browser_crawl_waf_fallback" do
+    test "Crawl with browser mode 'auto' falls back to browser when encountering WAF 403" do
+      engine_config = "{\"browser\":{\"mode\":\"auto\"},\"max_depth\":1,\"respect_robots_txt\":false}"
+      {:ok, engine} = Kreuzcrawl.create_engine(engine_config)
+      url = System.get_env("MOCK_SERVER_URL") <> "/fixtures/browser_crawl_waf_fallback"
+      {:ok, result} = Kreuzcrawl.scrape_async(engine, url)
+      # skipped: field 'pages.length' not available on result type
+    end
+  end
+
   describe "browser_detect_minimal_page" do
     test "Does NOT flag a short but real content page as needing JS rendering" do
       {:ok, engine} = Kreuzcrawl.create_engine(nil)
@@ -103,6 +124,15 @@ defmodule E2e.BrowserTest do
       assert result.status_code == 200
       # skipped: field 'browser.js_render_hint' not available on result type
       # skipped: field 'browser.browser_used' not available on result type
+    end
+  end
+
+  describe "browser_endpoint_invalid" do
+    test "Browser endpoint must be a valid ws:// or wss:// URL, not http://" do
+      engine_config = "{\"browser\":{\"endpoint\":\"http://not-websocket:3000\",\"mode\":\"always\"}}"
+      {:ok, engine} = Kreuzcrawl.create_engine(engine_config)
+      url = System.get_env("MOCK_SERVER_URL") <> "/fixtures/browser_endpoint_invalid"
+      assert {:error, _} = Kreuzcrawl.scrape_async(engine, url)
     end
   end
 

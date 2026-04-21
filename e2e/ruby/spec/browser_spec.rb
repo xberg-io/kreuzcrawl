@@ -25,6 +25,25 @@ RSpec.describe 'browser' do
     # skipped: field 'browser.browser_used' not available on result type
   end
 
+  it 'browser_crawl_mode_always: Crawl with browser mode \'always\' follows links using browser rendering' do
+    engine_config = { 'browser' => { 'mode' => 'always' }, 'max_depth' => 1, 'respect_robots_txt' => false }
+    engine = Kreuzcrawl.create_engine(engine_config.to_json)
+    url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/browser_crawl_mode_always"
+    result = Kreuzcrawl.scrape(engine, url)
+    # skipped: field 'pages.length' not available on result type
+    # skipped: field 'browser.browser_used' not available on result type
+    expect(result).not_to be_nil
+  end
+
+  it 'browser_crawl_waf_fallback: Crawl with browser mode \'auto\' falls back to browser when encountering WAF 403' do
+    engine_config = { 'browser' => { 'mode' => 'auto' }, 'max_depth' => 1, 'respect_robots_txt' => false }
+    engine = Kreuzcrawl.create_engine(engine_config.to_json)
+    url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/browser_crawl_waf_fallback"
+    result = Kreuzcrawl.scrape(engine, url)
+    # skipped: field 'pages.length' not available on result type
+    expect(result).not_to be_nil
+  end
+
   it 'browser_detect_minimal_page: Does NOT flag a short but real content page as needing JS rendering' do
     engine = Kreuzcrawl.create_engine(nil)
     url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/browser_detect_minimal_page"
@@ -88,6 +107,13 @@ RSpec.describe 'browser' do
     expect(result.status_code).to eq(200)
     # skipped: field 'browser.js_render_hint' not available on result type
     # skipped: field 'browser.browser_used' not available on result type
+  end
+
+  it 'browser_endpoint_invalid: Browser endpoint must be a valid ws:// or wss:// URL, not http://' do
+    engine_config = { 'browser' => { 'endpoint' => 'http://not-websocket:3000', 'mode' => 'always' } }
+    engine = Kreuzcrawl.create_engine(engine_config.to_json)
+    url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/browser_endpoint_invalid"
+    expect { Kreuzcrawl.scrape(engine, url) }.to raise_error
   end
 
   it 'browser_extra_wait: Browser extra_wait adds additional time after network_idle to ensure all async operations complete' do

@@ -27,6 +27,21 @@ test_browser_config_never_mode() {
   # skipped: field 'browser.browser_used' not available on result type
 }
 
+test_browser_crawl_mode_always() {
+  # Crawl with browser mode 'always' follows links using browser rendering
+  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/browser_crawl_mode_always" --format json >/dev/null
+
+  # skipped: field 'pages.length' not available on result type
+  # skipped: field 'browser.browser_used' not available on result type
+}
+
+test_browser_crawl_waf_fallback() {
+  # Crawl with browser mode 'auto' falls back to browser when encountering WAF 403
+  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/browser_crawl_waf_fallback" --format json >/dev/null
+
+  # skipped: field 'pages.length' not available on result type
+}
+
 test_browser_detect_minimal_page() {
   # Does NOT flag a short but real content page as needing JS rendering
   local output
@@ -113,6 +128,14 @@ test_browser_detect_vue_shell() {
   # skipped: field 'browser.browser_used' not available on result type
 }
 
+test_browser_endpoint_invalid() {
+  # Browser endpoint must be a valid ws:// or wss:// URL, not http://
+  if kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/browser_endpoint_invalid" --format json >/dev/null 2>&1; then
+    echo 'FAIL [error]: expected command to fail but it succeeded' >&2
+    return 1
+  fi
+}
+
 test_browser_extra_wait() {
   # Browser extra_wait adds additional time after network_idle to ensure all async operations complete
   kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/browser_extra_wait" --format json >/dev/null
@@ -178,6 +201,8 @@ test_browser_wait_selector() {
 run_tests_browser() {
   run_test test_browser_config_auto_no_feature
   run_test test_browser_config_never_mode
+  run_test test_browser_crawl_mode_always
+  run_test test_browser_crawl_waf_fallback
   run_test test_browser_detect_minimal_page
   run_test test_browser_detect_next_empty
   run_test test_browser_detect_next_rendered
@@ -185,6 +210,7 @@ run_tests_browser() {
   run_test test_browser_detect_nuxt_shell
   run_test test_browser_detect_react_shell
   run_test test_browser_detect_vue_shell
+  run_test test_browser_endpoint_invalid
   run_test test_browser_extra_wait
   run_test test_browser_fallback_spa_render
   run_test test_browser_fallback_waf_blocked

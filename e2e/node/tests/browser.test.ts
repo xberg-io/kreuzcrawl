@@ -23,6 +23,23 @@ describe("browser", () => {
 		// skipped: field 'browser.browser_used' not available on result type
 	});
 
+	it("browser_crawl_mode_always: Crawl with browser mode 'always' follows links using browser rendering", async () => {
+		const engineConfig = { browser: { mode: "always" }, maxDepth: 1, respectRobotsTxt: false };
+		const engine = createEngine(engineConfig);
+		const url = `${process.env.MOCK_SERVER_URL}/fixtures/browser_crawl_mode_always`;
+		await scrape(engine, url);
+		// skipped: field 'pages.length' not available on result type
+		// skipped: field 'browser.browser_used' not available on result type
+	});
+
+	it("browser_crawl_waf_fallback: Crawl with browser mode 'auto' falls back to browser when encountering WAF 403", async () => {
+		const engineConfig = { browser: { mode: "auto" }, maxDepth: 1, respectRobotsTxt: false };
+		const engine = createEngine(engineConfig);
+		const url = `${process.env.MOCK_SERVER_URL}/fixtures/browser_crawl_waf_fallback`;
+		await scrape(engine, url);
+		// skipped: field 'pages.length' not available on result type
+	});
+
 	it("browser_detect_minimal_page: Does NOT flag a short but real content page as needing JS rendering", async () => {
 		const engine = createEngine(null);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/browser_detect_minimal_page`;
@@ -86,6 +103,15 @@ describe("browser", () => {
 		expect(result.statusCode).toBe(200);
 		// skipped: field 'browser.js_render_hint' not available on result type
 		// skipped: field 'browser.browser_used' not available on result type
+	});
+
+	it("browser_endpoint_invalid: Browser endpoint must be a valid ws:// or wss:// URL, not http://", async () => {
+		await expect(async () => {
+			const engineConfig = { browser: { endpoint: "http://not-websocket:3000", mode: "always" } };
+			const engine = createEngine(engineConfig);
+			const url = `${process.env.MOCK_SERVER_URL}/fixtures/browser_endpoint_invalid`;
+			await scrape(engine, url);
+		}).rejects.toThrow();
 	});
 
 	it("browser_extra_wait: Browser extra_wait adds additional time after network_idle to ensure all async operations complete", async () => {

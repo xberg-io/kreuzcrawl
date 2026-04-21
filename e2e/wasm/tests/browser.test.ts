@@ -90,6 +90,14 @@ describe("browser", () => {
 		// skipped: field 'browser.browser_used' not available on result type
 	});
 
+	it("browser_endpoint_invalid: Browser endpoint must be a valid ws:// or wss:// URL, not http://", async () => {
+		const engineConfig = new WasmCrawlConfig();
+		engineConfig.browser = { endpoint: "http://not-websocket:3000", mode: "always" };
+		const engine = createEngine(engineConfig);
+		const url = `${process.env.MOCK_SERVER_URL}/fixtures/browser_endpoint_invalid`;
+		await expect(async () => await scrape(engine, url)).rejects.toThrow();
+	});
+
 	it("browser_fallback_spa_render: Browser auto re-fetches SPA shell when JS rendering is detected", async () => {
 		const engineConfig = new WasmCrawlConfig();
 		engineConfig.browser = { mode: "auto" };

@@ -1,5 +1,40 @@
 # Changelog
 
+## Unreleased
+
+### Features
+
+- **CLI**: Added `--browser-mode` and `--browser-endpoint` flags to `scrape` and `crawl` subcommands
+- **CLI**: Browser fallback now works in the crawl path (was scrape-only)
+- **CLI**: `--timeout` propagated to browser page-load timeout
+- **CLI**: `--browser-endpoint` validated as `ws://` or `wss://` URL
+- **Bindings**: TypeScript discriminated unions for `AuthConfig` and `CrawlEvent`
+- **Bindings**: TypeScript non-optional fields are now required (no `?`) in `.d.ts`
+- **Bindings**: JSDoc on all TypeScript types, functions, enums, and fields
+- **Bindings**: Javadoc on all Java records, enums, and builders (with HTML escaping)
+- **Bindings**: Go uses `json.RawMessage` for JSON value fields (was `interface{}`)
+- **Bindings**: Elixir enum modules generated for all 9 enums
+- **Bindings**: WASM rustdoc on all generated types and functions
+- **Bindings**: WASM structured error objects `{code, message}` (was plain strings)
+- **Docs**: Lychee link checker added to CI docs workflow
+- **E2E**: 48 new test fixtures covering batch_crawl, downloads, interaction, WARC, proxy, browser crawl, and more
+
+### Fixes
+
+- **Bindings**: Python mypy passes without `ignore-errors` (enum lookups, return type imports)
+- **Bindings**: Go enum values use serde rename (e.g., `og:image` not `og_image`)
+- **Bindings**: Go batch functions return error instead of panic
+- **Bindings**: TypeScript string enum values use correct casing (snake_case)
+- **Bindings**: TypeScript `format!("{:?}")` replaced with `.to_string()` for string fields
+- **Bindings**: Elixir NIF crate name `kreuzcrawl_nif` (was `kreuzcrawl_rustler`)
+- **Docs**: Fixed broken links to deleted repos in comparisons page
+- **Docs**: Added `CONTRIBUTING.md` at project root
+- **Docs**: Snippet validator skips bare Ruby method signatures
+- **Docs**: Snippet validator skips bare TypeScript method signatures
+- **CI**: Homebrew formula sha256 handles single-quoted values
+- **CI**: Docs workflow setup-go@v6 for Go 1.26 toolchain
+- **CI**: Ruby `Gemfile.lock` synced for v0.1.1
+
 ## 0.1.1
 
 ### Fixes

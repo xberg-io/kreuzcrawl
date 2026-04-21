@@ -40,6 +40,39 @@ async fn test_browser_config_never_mode() {
 }
 
 #[tokio::test]
+async fn test_browser_crawl_mode_always() {
+    // Crawl with browser mode 'always' follows links using browser rendering
+    let engine_config: CrawlConfig =
+        serde_json::from_str("{\"browser\":{\"mode\":\"always\"},\"max_depth\":1,\"respect_robots_txt\":false}")
+            .expect("config should parse");
+    let engine = create_engine(Some(engine_config)).expect("handle creation should succeed");
+    let url = format!(
+        "{}/fixtures/{}",
+        std::env::var("MOCK_SERVER_URL").expect("MOCK_SERVER_URL not set"),
+        "browser_crawl_mode_always"
+    );
+    let _ = scrape(&engine, &url).await.expect("should succeed");
+    // skipped: field 'pages.length' not available on result type
+    // skipped: field 'browser.browser_used' not available on result type
+}
+
+#[tokio::test]
+async fn test_browser_crawl_waf_fallback() {
+    // Crawl with browser mode 'auto' falls back to browser when encountering WAF 403
+    let engine_config: CrawlConfig =
+        serde_json::from_str("{\"browser\":{\"mode\":\"auto\"},\"max_depth\":1,\"respect_robots_txt\":false}")
+            .expect("config should parse");
+    let engine = create_engine(Some(engine_config)).expect("handle creation should succeed");
+    let url = format!(
+        "{}/fixtures/{}",
+        std::env::var("MOCK_SERVER_URL").expect("MOCK_SERVER_URL not set"),
+        "browser_crawl_waf_fallback"
+    );
+    let _ = scrape(&engine, &url).await.expect("should succeed");
+    // skipped: field 'pages.length' not available on result type
+}
+
+#[tokio::test]
 async fn test_browser_detect_minimal_page() {
     // Does NOT flag a short but real content page as needing JS rendering
     let engine = create_engine(None).expect("handle creation should succeed");
@@ -144,6 +177,26 @@ async fn test_browser_detect_vue_shell() {
     assert_eq!(result.status_code, 200, "equals assertion failed");
     // skipped: field 'browser.js_render_hint' not available on result type
     // skipped: field 'browser.browser_used' not available on result type
+}
+
+#[tokio::test]
+async fn test_browser_endpoint_invalid() {
+    // Browser endpoint must be a valid ws:// or wss:// URL, not http://
+    let engine_config: CrawlConfig =
+        serde_json::from_str("{\"browser\":{\"endpoint\":\"http://not-websocket:3000\",\"mode\":\"always\"}}")
+            .expect("config should parse");
+    let engine = create_engine(Some(engine_config)).expect("handle creation should succeed");
+    let url = format!(
+        "{}/fixtures/{}",
+        std::env::var("MOCK_SERVER_URL").expect("MOCK_SERVER_URL not set"),
+        "browser_endpoint_invalid"
+    );
+    let result = scrape(&engine, &url).await;
+    assert!(result.is_err(), "expected call to fail");
+    assert!(
+        result.as_ref().unwrap_err().to_string().contains("endpoint"),
+        "error message mismatch"
+    );
 }
 
 #[tokio::test]

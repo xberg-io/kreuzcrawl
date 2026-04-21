@@ -1,0 +1,28 @@
+{
+	"id": "browser_endpoint_invalid",
+	"description": "Browser endpoint must be a valid ws:// or wss:// URL, not http://",
+	"tags": ["browser", "validation"],
+	"input": {
+		"mock_responses": [
+			{
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><body><h1>Test Page</h1></body></html>"
+			}
+		],
+		"config": {
+			"browser": {
+				"mode": "always",
+				"endpoint": "http://not-websocket:3000"
+			}
+		}
+	},
+	"assertions": [
+		{
+			"type": "error",
+			"value": "endpoint"
+		}
+	]
+}

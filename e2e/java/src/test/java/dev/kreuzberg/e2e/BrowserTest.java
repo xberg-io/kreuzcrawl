@@ -37,6 +37,27 @@ class BrowserTest {
     }
 
     @Test
+    void testBrowserCrawlModeAlways() throws Exception {
+        // Crawl with browser mode 'always' follows links using browser rendering
+        var engineConfig = MAPPER.readValue("{\"browser\":{\"mode\":\"always\"},\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
+        var engine = Kreuzcrawl.createEngine(engineConfig);
+        String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/browser_crawl_mode_always";
+        var result = Kreuzcrawl.scrape(engine, url);
+        // skipped: field 'pages.length' not available on result type
+        // skipped: field 'browser.browser_used' not available on result type
+    }
+
+    @Test
+    void testBrowserCrawlWafFallback() throws Exception {
+        // Crawl with browser mode 'auto' falls back to browser when encountering WAF 403
+        var engineConfig = MAPPER.readValue("{\"browser\":{\"mode\":\"auto\"},\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
+        var engine = Kreuzcrawl.createEngine(engineConfig);
+        String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/browser_crawl_waf_fallback";
+        var result = Kreuzcrawl.scrape(engine, url);
+        // skipped: field 'pages.length' not available on result type
+    }
+
+    @Test
     void testBrowserDetectMinimalPage() throws Exception {
         // Does NOT flag a short but real content page as needing JS rendering
         var engine = Kreuzcrawl.createEngine(null);
@@ -113,6 +134,15 @@ class BrowserTest {
         assertEquals(200, result.statusCode());
         // skipped: field 'browser.js_render_hint' not available on result type
         // skipped: field 'browser.browser_used' not available on result type
+    }
+
+    @Test
+    void testBrowserEndpointInvalid() throws Exception {
+        // Browser endpoint must be a valid ws:// or wss:// URL, not http://
+        var engineConfig = MAPPER.readValue("{\"browser\":{\"endpoint\":\"http://not-websocket:3000\",\"mode\":\"always\"}}", CrawlConfig.class);
+        var engine = Kreuzcrawl.createEngine(engineConfig);
+        String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/browser_endpoint_invalid";
+        assertThrows(Exception.class, () -> Kreuzcrawl.scrape(engine, url));
     }
 
     @Test

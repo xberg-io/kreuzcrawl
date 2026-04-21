@@ -39,6 +39,29 @@ public class BrowserTests
     }
 
     [Fact]
+    public async Task Test_BrowserCrawlModeAlways()
+    {
+        // Crawl with browser mode 'always' follows links using browser rendering
+        var engineConfig = JsonSerializer.Deserialize<CrawlConfig>("{\"browser\":{\"mode\":\"always\"},\"max_depth\":1,\"respect_robots_txt\":false}", ConfigOptions)!;
+        var engine = KreuzcrawlLib.CreateEngine(engineConfig);
+        var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/browser_crawl_mode_always";
+        var result = await KreuzcrawlLib.Scrape(engine, url);
+        // skipped: field 'pages.length' not available on result type
+        // skipped: field 'browser.browser_used' not available on result type
+    }
+
+    [Fact]
+    public async Task Test_BrowserCrawlWafFallback()
+    {
+        // Crawl with browser mode 'auto' falls back to browser when encountering WAF 403
+        var engineConfig = JsonSerializer.Deserialize<CrawlConfig>("{\"browser\":{\"mode\":\"auto\"},\"max_depth\":1,\"respect_robots_txt\":false}", ConfigOptions)!;
+        var engine = KreuzcrawlLib.CreateEngine(engineConfig);
+        var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/browser_crawl_waf_fallback";
+        var result = await KreuzcrawlLib.Scrape(engine, url);
+        // skipped: field 'pages.length' not available on result type
+    }
+
+    [Fact]
     public async Task Test_BrowserDetectMinimalPage()
     {
         // Does NOT flag a short but real content page as needing JS rendering
@@ -122,6 +145,16 @@ public class BrowserTests
         Assert.Equal(200, result.StatusCode);
         // skipped: field 'browser.js_render_hint' not available on result type
         // skipped: field 'browser.browser_used' not available on result type
+    }
+
+    [Fact]
+    public async Task Test_BrowserEndpointInvalid()
+    {
+        // Browser endpoint must be a valid ws:// or wss:// URL, not http://
+        var engineConfig = JsonSerializer.Deserialize<CrawlConfig>("{\"browser\":{\"endpoint\":\"http://not-websocket:3000\",\"mode\":\"always\"}}", ConfigOptions)!;
+        var engine = KreuzcrawlLib.CreateEngine(engineConfig);
+        var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/browser_endpoint_invalid";
+        await Assert.ThrowsAsync<KreuzcrawlException>(() => KreuzcrawlLib.Scrape(engine, url));
     }
 
     [Fact]
