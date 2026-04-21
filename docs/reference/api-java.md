@@ -260,9 +260,9 @@ Configuration for crawl, scrape, and map operations.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `maxDepth` | `Optional<long>` | `null` | Maximum crawl depth (number of link hops from the start URL). |
-| `maxPages` | `Optional<long>` | `null` | Maximum number of pages to crawl. |
-| `maxConcurrent` | `Optional<long>` | `null` | Maximum number of concurrent requests. |
+| `maxDepth` | `Optional<Long>` | `null` | Maximum crawl depth (number of link hops from the start URL). |
+| `maxPages` | `Optional<Long>` | `null` | Maximum number of pages to crawl. |
+| `maxConcurrent` | `Optional<Long>` | `null` | Maximum number of concurrent requests. |
 | `respectRobotsTxt` | `boolean` | `false` | Whether to respect robots.txt directives. |
 | `userAgent` | `Optional<String>` | `null` | Custom user-agent string. |
 | `stayOnDomain` | `boolean` | `false` | Whether to restrict crawling to the same domain. |
@@ -276,22 +276,22 @@ Configuration for crawl, scrape, and map operations.
 | `retryCodes` | `List<Short>` | `Collections.emptyList()` | HTTP status codes that should trigger a retry. |
 | `cookiesEnabled` | `boolean` | `false` | Whether to enable cookie handling. |
 | `auth` | `Optional<AuthConfig>` | `null` | Authentication configuration. |
-| `maxBodySize` | `Optional<long>` | `null` | Maximum response body size in bytes. |
+| `maxBodySize` | `Optional<Long>` | `null` | Maximum response body size in bytes. |
 | `mainContentOnly` | `boolean` | `false` | Whether to extract only the main content from HTML pages. |
 | `removeTags` | `List<String>` | `Collections.emptyList()` | CSS selectors for tags to remove from HTML before processing. |
-| `mapLimit` | `Optional<long>` | `null` | Maximum number of URLs to return from a map operation. |
+| `mapLimit` | `Optional<Long>` | `null` | Maximum number of URLs to return from a map operation. |
 | `mapSearch` | `Optional<String>` | `null` | Search filter for map results (case-insensitive substring match on URLs). |
 | `downloadAssets` | `boolean` | `false` | Whether to download assets (CSS, JS, images, etc.) from the page. |
 | `assetTypes` | `List<AssetCategory>` | `Collections.emptyList()` | Filter for asset categories to download. |
-| `maxAssetSize` | `Optional<long>` | `null` | Maximum size in bytes for individual asset downloads. |
+| `maxAssetSize` | `Optional<Long>` | `null` | Maximum size in bytes for individual asset downloads. |
 | `browser` | `BrowserConfig` | — | Browser configuration. |
 | `proxy` | `Optional<ProxyConfig>` | `null` | Proxy configuration for HTTP requests. |
 | `userAgents` | `List<String>` | `Collections.emptyList()` | List of user-agent strings for rotation. If non-empty, overrides `user_agent`. |
 | `captureScreenshot` | `boolean` | `false` | Whether to capture a screenshot when using the browser. |
 | `downloadDocuments` | `boolean` | `true` | Whether to download non-HTML documents (PDF, DOCX, images, code, etc.) instead of skipping them. |
-| `documentMaxSize` | `Optional<long>` | `null` | Maximum size in bytes for document downloads. Defaults to 50 MB. |
+| `documentMaxSize` | `Optional<Long>` | `null` | Maximum size in bytes for document downloads. Defaults to 50 MB. |
 | `documentMimeTypes` | `List<String>` | `Collections.emptyList()` | Allowlist of MIME types to download. If empty, uses built-in defaults. |
-| `warcOutput` | `Optional<String>` | `null` | Path to write WARC output. If `None`, WARC output is disabled. |
+| `warcOutput` | `Optional<String>` | `null` | Path to write WARC output. If `null`, WARC output is disabled. |
 | `browserProfile` | `Optional<String>` | `null` | Named browser profile for persistent sessions (cookies, localStorage). |
 | `saveBrowserProfile` | `boolean` | `false` | Whether to save changes back to the browser profile on exit. |
 
@@ -430,9 +430,9 @@ Metadata about an LLM extraction pass.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `cost` | `Optional<double>` | `null` | Estimated cost of the LLM call in USD. |
-| `promptTokens` | `Optional<long>` | `null` | Number of prompt (input) tokens consumed. |
-| `completionTokens` | `Optional<long>` | `null` | Number of completion (output) tokens generated. |
+| `cost` | `Optional<Double>` | `null` | Estimated cost of the LLM call in USD. |
+| `promptTokens` | `Optional<Long>` | `null` | Number of prompt (input) tokens consumed. |
+| `completionTokens` | `Optional<Long>` | `null` | Number of completion (output) tokens generated. |
 | `model` | `Optional<String>` | `null` | The model identifier used for extraction. |
 | `chunksProcessed` | `long` | — | Number of content chunks sent to the LLM. |
 
@@ -498,8 +498,8 @@ Information about an image found on a page.
 |-------|------|---------|-------------|
 | `url` | `String` | — | The image URL. |
 | `alt` | `Optional<String>` | `null` | The alt text, if present. |
-| `width` | `Optional<int>` | `null` | The width attribute, if present and parseable. |
-| `height` | `Optional<int>` | `null` | The height attribute, if present and parseable. |
+| `width` | `Optional<Integer>` | `null` | The width attribute, if present and parseable. |
+| `height` | `Optional<Integer>` | `null` | The height attribute, if present and parseable. |
 | `source` | `ImageSource` | `ImageSource.IMG` | The source of the image reference. |
 
 
@@ -608,7 +608,7 @@ Metadata extracted from an HTML page's `<meta>` tags and `<title>` element.
 | `hreflangs` | `Optional<List<HreflangEntry>>` | `Collections.emptyList()` | Hreflang alternate links. |
 | `favicons` | `Optional<List<FaviconInfo>>` | `Collections.emptyList()` | Favicon and icon links. |
 | `headings` | `Optional<List<HeadingInfo>>` | `Collections.emptyList()` | Heading elements (h1-h6). |
-| `wordCount` | `Optional<long>` | `null` | Computed word count of the page body text. |
+| `wordCount` | `Optional<Long>` | `null` | Computed word count of the page body text. |
 
 
 ---
@@ -659,7 +659,7 @@ The result of a single-page scrape operation.
 | `feeds` | `List<FeedInfo>` | `Collections.emptyList()` | Feed links found on the page. |
 | `jsonLd` | `List<JsonLdEntry>` | `Collections.emptyList()` | JSON-LD entries found on the page. |
 | `isAllowed` | `boolean` | — | Whether the URL is allowed by robots.txt. |
-| `crawlDelay` | `Optional<long>` | `null` | The crawl delay from robots.txt, in seconds. |
+| `crawlDelay` | `Optional<Long>` | `null` | The crawl delay from robots.txt, in seconds. |
 | `noindexDetected` | `boolean` | — | Whether a noindex directive was detected. |
 | `nofollowDetected` | `boolean` | — | Whether a nofollow directive was detected. |
 | `xRobotsTag` | `Optional<String>` | `null` | The X-Robots-Tag header value, if present. |

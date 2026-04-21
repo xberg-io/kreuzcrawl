@@ -15,57 +15,9 @@ sources = [
 version_from = "Cargo.toml"
 workspace_root = "."
 
-[include]
-types = [
-    # Config
-    "CrawlConfig",
-    "BrowserConfig",
-    "BrowserMode",
-    "BrowserWait",
-    "ProxyConfig",
-    "AuthConfig",
-    "ExtractionMeta",
-    # Results
-    "ScrapeResult",
-    "CrawlResult",
-    "CrawlPageResult",
-    "MapResult",
-    "MarkdownResult",
-    "SitemapUrl",
-    "DownloadedDocument",
-    # Discovery
-    "LinkInfo",
-    "LinkType",
-    "ImageInfo",
-    "ImageSource",
-    "FeedInfo",
-    "FeedType",
-    "JsonLdEntry",
-    "CookieInfo",
-    "DownloadedAsset",
-    "AssetCategory",
-    # Metadata
-    "PageMetadata",
-    "ArticleMetadata",
-    "ResponseMeta",
-    "FaviconInfo",
-    "HeadingInfo",
-    "HreflangEntry",
-    # Citations
-    "CitationResult",
-    "CitationReference",
-    # Error
-    "CrawlError",
-    # Adapter
-    "CrawlEngineHandle",
-    "BatchScrapeResult",
-    "BatchCrawlResult",
-]
-functions = ["create_engine", "scrape", "crawl", "map_urls", "batch_scrape", "batch_crawl"]
-
 [exclude]
-functions = []
-types = []
+types = ["CachedPage", "InteractionResult", "ActionResult", "CrawlEvent"]
+functions = ["generate_citations"]
 methods = ["CrawlResult.new"]
 
 [output]

@@ -140,7 +140,7 @@ The result of a single-page scrape operation.
 | `js_render_hint` | `bool` | — | Whether the page content suggests JavaScript rendering is needed. |
 | `browser_used` | `bool` | — | Whether the browser fallback was used to fetch this page. |
 | `markdown` | `MarkdownResult | None` | `None` | Markdown conversion of the page content. |
-| `extracted_data` | `Any | None` | `None` | Structured data extracted by LLM. Populated when extraction is configured. |
+| `extracted_data` | `dict[str, Any] | None` | `None` | Structured data extracted by LLM. Populated when extraction is configured. |
 | `extraction_meta` | `ExtractionMeta | None` | `None` | Metadata about the LLM extraction pass (cost, tokens, model). |
 | `screenshot` | `bytes | None` | `None` | Screenshot of the page as PNG bytes. Populated when browser is used and capture_screenshot is enabled. |
 | `downloaded_document` | `DownloadedDocument | None` | `None` | Downloaded non-HTML document (PDF, DOCX, image, code, etc.). |
@@ -170,7 +170,7 @@ The result of crawling a single page during a crawl operation.
 | `is_pdf` | `bool` | — | Whether the content is a PDF. |
 | `detected_charset` | `str | None` | `None` | The detected character set encoding. |
 | `markdown` | `MarkdownResult | None` | `None` | Markdown conversion of the page content. |
-| `extracted_data` | `Any | None` | `None` | Structured data extracted by LLM. Populated when extraction is configured. |
+| `extracted_data` | `dict[str, Any] | None` | `None` | Structured data extracted by LLM. Populated when extraction is configured. |
 | `extraction_meta` | `ExtractionMeta | None` | `None` | Metadata about the LLM extraction pass (cost, tokens, model). |
 | `downloaded_document` | `DownloadedDocument | None` | `None` | Downloaded non-HTML document (PDF, DOCX, image, code, etc.). |
 
@@ -222,8 +222,8 @@ Rich markdown conversion result from HTML processing.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `content` | `str` | — | Converted markdown text. |
-| `document_structure` | `Any | None` | `None` | Structured document tree with semantic nodes. |
-| `tables` | `list[Any]` | `[]` | Extracted tables with structured cell data. |
+| `document_structure` | `dict[str, Any] | None` | `None` | Structured document tree with semantic nodes. |
+| `tables` | `list[dict[str, Any]]` | `[]` | Extracted tables with structured cell data. |
 | `warnings` | `list[str]` | `[]` | Non-fatal processing warnings. |
 | `citations` | `CitationResult | None` | `None` | Content with links replaced by numbered citations. |
 | `fit_content` | `str | None` | `None` | Content-filtered markdown optimized for LLM consumption. |

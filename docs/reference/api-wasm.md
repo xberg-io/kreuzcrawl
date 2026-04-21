@@ -291,7 +291,7 @@ Configuration for crawl, scrape, and map operations.
 | `downloadDocuments` | `boolean` | `true` | Whether to download non-HTML documents (PDF, DOCX, images, code, etc.) instead of skipping them. |
 | `documentMaxSize` | `number | null` | `null` | Maximum size in bytes for document downloads. Defaults to 50 MB. |
 | `documentMimeTypes` | `Array<string>` | `[]` | Allowlist of MIME types to download. If empty, uses built-in defaults. |
-| `warcOutput` | `string | null` | `null` | Path to write WARC output. If `None`, WARC output is disabled. |
+| `warcOutput` | `string | null` | `null` | Path to write WARC output. If `null`, WARC output is disabled. |
 | `browserProfile` | `string | null` | `null` | Named browser profile for persistent sessions (cookies, localStorage). |
 | `saveBrowserProfile` | `boolean` | `false` | Whether to save changes back to the browser profile on exit. |
 

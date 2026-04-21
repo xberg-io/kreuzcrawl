@@ -291,7 +291,7 @@ Configuration for crawl, scrape, and map operations.
 | `download_documents` | `Boolean` | `true` | Whether to download non-HTML documents (PDF, DOCX, images, code, etc.) instead of skipping them. |
 | `document_max_size` | `Integer?` | `nil` | Maximum size in bytes for document downloads. Defaults to 50 MB. |
 | `document_mime_types` | `Array<String>` | `[]` | Allowlist of MIME types to download. If empty, uses built-in defaults. |
-| `warc_output` | `String?` | `nil` | Path to write WARC output. If `None`, WARC output is disabled. |
+| `warc_output` | `String?` | `nil` | Path to write WARC output. If `nil`, WARC output is disabled. |
 | `browser_profile` | `String?` | `nil` | Named browser profile for persistent sessions (cookies, localStorage). |
 | `save_browser_profile` | `Boolean` | `false` | Whether to save changes back to the browser profile on exit. |
 
