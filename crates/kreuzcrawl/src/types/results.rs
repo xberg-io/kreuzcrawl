@@ -104,8 +104,6 @@ pub struct ScrapeResult {
     pub was_skipped: bool,
     /// The detected character set encoding.
     pub detected_charset: Option<String>,
-    /// Whether main_content_only was active during extraction.
-    pub main_content_only: bool,
     /// Whether an authentication header was sent with the request.
     pub auth_header_sent: bool,
     /// Response metadata extracted from HTTP headers.

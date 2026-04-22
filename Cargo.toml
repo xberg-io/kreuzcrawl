@@ -41,11 +41,12 @@ chrono = { version = "0.4", features = ["serde"] }
 clap = { version = "4", features = ["derive"] }
 dashmap = "6"
 dirs = "6"
+encoding_rs = "0.8"
 
 # Binding framework dependencies
 ext-php-rs = "0.15"
 flate2 = "1"
-html-to-markdown-rs = { version = "3.2", features = ["full"] }
+html-to-markdown-rs = { path = "../html-to-markdown/crates/html-to-markdown", features = ["full"] }
 itertools = "0.14"
 libc = "0.2"
 liter-llm = { version = "1.2", features = ["native-http"] }

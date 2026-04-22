@@ -7,8 +7,8 @@ use crate::assets;
 use crate::browser_detect;
 use crate::error::CrawlError;
 use crate::html::{
-    apply_remove_tags, detect_charset, detect_nofollow, detect_noindex, extract_main_content, extract_page_data,
-    is_binary_content_type, is_binary_url, is_html_content, is_pdf_content,
+    detect_charset, detect_nofollow, detect_noindex, extract_page_data, is_binary_content_type,
+    is_binary_url, is_html_content, is_pdf_content,
 };
 use crate::http::{build_client, http_fetch};
 use crate::normalize::robots_url;
@@ -48,6 +48,23 @@ pub(crate) async fn scrape_from_crawl_response(
     let mut body = resp.body.clone();
 
     let detected_charset = detect_charset(&content_type, &body);
+
+    // Re-decode from raw bytes when a non-UTF-8 charset is detected.
+    // `resp.body` was produced via `String::from_utf8_lossy`, which garbles
+    // Shift_JIS, EUC-JP, and other non-UTF-8 encodings. Re-decode from the
+    // preserved raw bytes using encoding_rs to produce correct text.
+    if let Some(ref charset) = detected_charset {
+        let charset_lower = charset.as_str();
+        if charset_lower != "utf-8"
+            && charset_lower != "us-ascii"
+            && let Some(encoding) = encoding_rs::Encoding::for_label(charset.as_bytes())
+        {
+            let (decoded, _, had_errors) = encoding.decode(&resp.body_bytes);
+            if !had_errors {
+                body = decoded.into_owned();
+            }
+        }
+    }
     let is_pdf = is_pdf_content(&content_type, &body);
 
     // Handle max body size
@@ -76,17 +93,6 @@ pub(crate) async fn scrape_from_crawl_response(
     }
 
     let was_skipped = is_binary_content_type(&content_type) || is_binary_url(parsed_url.as_str()) || is_pdf;
-
-    // Remove tags if specified
-    if !config.remove_tags.is_empty() {
-        body = apply_remove_tags(&body, &config.remove_tags);
-    }
-
-    // Extract main content only
-    let main_content_active = config.main_content_only;
-    if main_content_active {
-        body = extract_main_content(&body);
-    }
 
     let is_html = is_html_content(&content_type, &body);
 
@@ -121,7 +127,17 @@ pub(crate) async fn scrape_from_crawl_response(
         Vec::new()
     };
 
-    let markdown = crate::markdown::convert_to_markdown(&body).await;
+    // Merge CrawlConfig.remove_tags into ContentConfig.exclude_selectors for h2m.
+    // This replaces the old apply_remove_tags() pre-processing step — h2m now
+    // handles all element exclusion during its DOM walk.
+    let content_config = if config.remove_tags.is_empty() {
+        std::borrow::Cow::Borrowed(&config.content)
+    } else {
+        let mut merged = config.content.clone();
+        merged.exclude_selectors.extend(config.remove_tags.iter().cloned());
+        std::borrow::Cow::Owned(merged)
+    };
+    let markdown = crate::markdown::convert_to_markdown(&body, &content_config).await;
 
     Ok(ScrapeResult {
         status_code,
@@ -141,7 +157,6 @@ pub(crate) async fn scrape_from_crawl_response(
         is_pdf,
         was_skipped,
         detected_charset,
-        main_content_only: main_content_active,
         auth_header_sent,
         response_meta: Some(response_meta),
         assets: downloaded_assets,

@@ -5,7 +5,9 @@ mod discovery;
 mod metadata;
 mod results;
 
-pub use config::{AuthConfig, BrowserConfig, BrowserMode, BrowserWait, CrawlConfig, ExtractionMeta, ProxyConfig};
+pub use config::{
+    AuthConfig, BrowserConfig, BrowserMode, BrowserWait, ContentConfig, CrawlConfig, ExtractionMeta, ProxyConfig,
+};
 pub use discovery::{
     AssetCategory, CookieInfo, CrawlEvent, DownloadedAsset, FeedInfo, FeedType, ImageInfo, ImageSource, JsonLdEntry,
     LinkInfo, LinkType,

@@ -53,6 +53,7 @@ chromiumoxide = { workspace = true, optional = true }
 chrono = { workspace = true }
 dashmap = { workspace = true, optional = true }
 dirs = { workspace = true, optional = true }
+encoding_rs = { workspace = true }
 flate2 = { workspace = true }
 html-to-markdown-rs = { workspace = true }
 liter-llm = { workspace = true, optional = true }

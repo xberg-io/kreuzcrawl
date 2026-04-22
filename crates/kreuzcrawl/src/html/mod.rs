@@ -46,7 +46,6 @@ where
 }
 
 pub(crate) use charset::detect_charset;
-pub(crate) use content::{apply_remove_tags, extract_main_content};
 #[cfg(not(target_arch = "wasm32"))]
 pub(crate) use detection::is_pdf_url;
 pub(crate) use detection::{is_binary_content_type, is_binary_url, is_html_content, is_pdf_content};

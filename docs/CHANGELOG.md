@@ -1,5 +1,28 @@
 # Changelog
 
+## Unreleased
+
+### Breaking Changes
+
+- **Config**: `MarkdownConfig` and `PlainTextConfig` replaced by unified `ContentConfig` on `CrawlConfig.content`
+- **Config**: `main_content_only` removed from `CrawlConfig` — use `content.preprocessing_preset: "aggressive"` instead
+- **Config**: `CrawlConfig.remove_tags` now forwarded to h2m's `exclude_selectors` instead of kreuzcrawl's DOM manipulation
+- **Results**: `plain_text` field removed from `ScrapeResult` — set `content.output_format: "plain"` to get plain text in the `markdown` result field
+
+### Features
+
+- **Config**: `ContentConfig` with `output_format` supporting `"markdown"` (default), `"plain"`, `"djot"` — all powered by html-to-markdown-rs
+- **Config**: `ContentConfig.exclude_selectors` for CSS selector-based element exclusion (`.class`, `#id`, `[attr]`) — replaces the buggy `apply_remove_tags` DOM manipulation
+- **Config**: `ContentConfig.preprocessing_preset` (`"minimal"`, `"standard"`, `"aggressive"`) for controlling noise removal aggressiveness
+- **Config**: Full h2m configuration exposed: `strip_tags`, `preserve_tags`, `skip_images`, `max_depth`, `wrap`, `wrap_width`
+- **Encoding**: Non-UTF-8 charset detection and re-decoding via `encoding_rs` (fixes Shift_JIS, EUC-JP, etc.)
+- **Benchmark**: Full benchmark harness at `tools/benchmark-harness/` — 1000-fixture scrape-evals dataset, quality scoring, CPU/memory profiling, flamegraphs, per-fixture output saving
+
+### Fixes
+
+- **Content**: Removed buggy `apply_remove_tags` that corrupted DOM on pages with repeated structural patterns — CSS selector exclusion now handled correctly by h2m during its DOM walk
+- **Content**: Removed duplicate plain text extraction — h2m's `OutputFormat::Plain` handles this natively with proper preprocessing
+
 ## 0.1.2
 
 ### Breaking Changes

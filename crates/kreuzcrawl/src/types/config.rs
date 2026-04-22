@@ -112,6 +112,73 @@ impl Default for AuthConfig {
     }
 }
 
+/// Content extraction and conversion configuration.
+///
+/// Controls how HTML is converted to the output format. Uses
+/// html-to-markdown-rs as the conversion engine for all formats
+/// (markdown, plain text, djot).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(default)]
+pub struct ContentConfig {
+    /// Output format: `"markdown"` (default), `"plain"`, `"djot"`.
+    pub output_format: String,
+    /// Preprocessing aggressiveness: `"minimal"`, `"standard"` (default), `"aggressive"`.
+    ///
+    /// - Minimal: only scripts/styles removed.
+    /// - Standard: also removes nav, nav-hinted headers/footers/asides, forms.
+    /// - Aggressive: removes all footers/asides unconditionally.
+    pub preprocessing_preset: String,
+    /// Remove navigation elements (nav, breadcrumbs, menus). Default: `true`.
+    pub remove_navigation: bool,
+    /// Remove form elements. Default: `true`.
+    pub remove_forms: bool,
+    /// HTML tag names to strip (render children only, remove the tag wrapper).
+    /// Default: `["noscript"]`.
+    #[serde(default)]
+    pub strip_tags: Vec<String>,
+    /// HTML tag names to preserve as raw HTML in output.
+    #[serde(default)]
+    pub preserve_tags: Vec<String>,
+    /// CSS selectors for elements to exclude entirely (element + all content).
+    ///
+    /// Unlike `strip_tags` (which removes the wrapper but keeps children),
+    /// excluded elements and all descendants are dropped. Supports CSS selectors:
+    /// `.class`, `#id`, `[attribute]`, compound selectors.
+    ///
+    /// Example: `[".cookie-banner", "#ad-container", "[role='complementary']"]`
+    #[serde(default)]
+    pub exclude_selectors: Vec<String>,
+    /// Skip image elements in output. Default: `false`.
+    pub skip_images: bool,
+    /// Max DOM traversal depth. Prevents stack overflow on deeply nested HTML.
+    pub max_depth: Option<usize>,
+    /// Enable line wrapping. Default: `false`.
+    pub wrap: bool,
+    /// Wrap width when `wrap` is enabled. Default: `80`.
+    pub wrap_width: usize,
+    /// Include document structure tree in output. Default: `true`.
+    pub include_document_structure: bool,
+}
+
+impl Default for ContentConfig {
+    fn default() -> Self {
+        Self {
+            output_format: "markdown".to_owned(),
+            preprocessing_preset: "standard".to_owned(),
+            remove_navigation: true,
+            remove_forms: true,
+            strip_tags: vec!["noscript".to_owned()],
+            preserve_tags: Vec::new(),
+            exclude_selectors: Vec::new(),
+            skip_images: false,
+            max_depth: None,
+            wrap: false,
+            wrap_width: 80,
+            include_document_structure: true,
+        }
+    }
+}
+
 /// Browser fallback configuration.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields, default)]
@@ -191,11 +258,12 @@ pub struct CrawlConfig {
     pub auth: Option<AuthConfig>,
     /// Maximum response body size in bytes.
     pub max_body_size: Option<usize>,
-    /// Whether to extract only the main content from HTML pages.
-    pub main_content_only: bool,
     /// CSS selectors for tags to remove from HTML before processing.
     #[serde(default)]
     pub remove_tags: Vec<String>,
+    /// Content extraction and conversion configuration.
+    #[serde(default)]
+    pub content: ContentConfig,
     /// Maximum number of URLs to return from a map operation.
     pub map_limit: Option<usize>,
     /// Search filter for map results (case-insensitive substring match on URLs).
@@ -257,8 +325,8 @@ impl Default for CrawlConfig {
             cookies_enabled: false,
             auth: None,
             max_body_size: None,
-            main_content_only: false,
             remove_tags: Vec::new(),
+            content: ContentConfig::default(),
             map_limit: None,
             map_search: None,
             download_assets: false,

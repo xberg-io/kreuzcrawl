@@ -49,6 +49,8 @@ includes:
     taskfile: .task/tools/docs.yml
   snippets:
     taskfile: .task/workflows/snippets.yml
+  benchmark:
+    taskfile: .task/workflows/benchmark.yml
   _tools:
     taskfile: .task/tools/general.yml
     flatten: true

@@ -50,8 +50,8 @@ pub use error::CrawlError;
 #[cfg(feature = "mcp")]
 pub use mcp::{start_mcp_server, start_mcp_server_with_config};
 pub use types::{
-    ArticleMetadata, AssetCategory, AuthConfig, BrowserConfig, BrowserMode, BrowserWait, CookieInfo, CrawlConfig,
-    CrawlPageResult, CrawlResult, DownloadedAsset, DownloadedDocument, ExtractionMeta, FaviconInfo, FeedInfo, FeedType,
-    HeadingInfo, HreflangEntry, ImageInfo, ImageSource, JsonLdEntry, LinkInfo, LinkType, MapResult, MarkdownResult,
-    PageMetadata, ProxyConfig, ResponseMeta, ScrapeResult, SitemapUrl,
+    ArticleMetadata, AssetCategory, AuthConfig, BrowserConfig, BrowserMode, BrowserWait, ContentConfig, CookieInfo,
+    CrawlConfig, CrawlPageResult, CrawlResult, DownloadedAsset, DownloadedDocument, ExtractionMeta, FaviconInfo,
+    FeedInfo, FeedType, HeadingInfo, HreflangEntry, ImageInfo, ImageSource, JsonLdEntry, LinkInfo, LinkType, MapResult,
+    MarkdownResult, PageMetadata, ProxyConfig, ResponseMeta, ScrapeResult, SitemapUrl,
 };

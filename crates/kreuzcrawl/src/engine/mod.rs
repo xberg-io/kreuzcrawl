@@ -170,7 +170,6 @@ impl CrawlEngine {
                     is_pdf: false,
                     was_skipped: false,
                     detected_charset: None,
-                    main_content_only: self.config.main_content_only,
                     auth_header_sent: self.config.auth.is_some(),
                     response_meta: None,
                     assets: Vec::new(),

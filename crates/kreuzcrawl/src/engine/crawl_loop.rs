@@ -632,7 +632,7 @@ impl CrawlEngine {
             .await?;
         }
 
-        let markdown = crate::markdown::convert_to_markdown(&body).await;
+        let markdown = crate::markdown::convert_to_markdown(&body, &self.config.content).await;
 
         let page = CrawlPageResult {
             url: page_url.clone(),
