@@ -340,14 +340,12 @@ checksum = "2af50177e190e07a26ab74f8b1efbfe2ef87da2116221318cb1c2e82baf7de06"
 name = "benchmark-harness"
 version = "0.2.0"
 dependencies = [
- "ahash",
  "async-trait",
  "chrono",
  "clap",
  "kreuzcrawl",
  "num_cpus",
  "pprof",
- "rayon",
  "regex",
  "reqwest",
  "serde",

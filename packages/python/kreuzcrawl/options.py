@@ -5,7 +5,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from ._kreuzcrawl import (
+        CitationResult,
+        CrawlResult,
+        ScrapeResult,
+    )
 
 
 class BrowserMode(str, Enum):

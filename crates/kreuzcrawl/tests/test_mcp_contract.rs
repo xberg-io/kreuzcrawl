@@ -18,7 +18,6 @@ fn test_crawl_config_json_roundtrip() {
         user_agent: Some("TestBot/1.0".to_string()),
         stay_on_domain: true,
         allow_subdomains: true,
-        main_content_only: true,
         cookies_enabled: true,
         retry_count: 3,
         max_redirects: 5,
@@ -35,7 +34,6 @@ fn test_crawl_config_json_roundtrip() {
     assert_eq!(deserialized.user_agent.as_deref(), Some("TestBot/1.0"));
     assert!(deserialized.stay_on_domain);
     assert!(deserialized.allow_subdomains);
-    assert!(deserialized.main_content_only);
     assert!(deserialized.cookies_enabled);
     assert_eq!(deserialized.retry_count, 3);
     assert_eq!(deserialized.max_redirects, 5);

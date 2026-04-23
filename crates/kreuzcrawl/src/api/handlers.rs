@@ -137,8 +137,8 @@ pub async fn crawl_handler(
     if let Some(pages) = req.max_pages {
         config.max_pages = Some(pages);
     }
-    if let Some(only_main) = req.only_main_content {
-        config.main_content_only = only_main;
+    if let Some(true) = req.only_main_content {
+        config.content.preprocessing_preset = "aggressive".to_owned();
     }
     if let Some(ref includes) = req.include_paths {
         config.include_paths = includes.clone();
