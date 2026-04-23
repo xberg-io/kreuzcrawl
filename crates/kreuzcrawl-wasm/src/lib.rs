@@ -19,7 +19,6 @@
 use std::sync::Arc;
 use wasm_bindgen::prelude::*;
 
-
 /// Metadata about an LLM extraction pass.
 #[derive(Clone, Default)]
 #[wasm_bindgen]
