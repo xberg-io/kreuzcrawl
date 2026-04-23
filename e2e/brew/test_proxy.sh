@@ -4,28 +4,28 @@
 set -euo pipefail
 
 test_proxy_authenticated() {
-  # Proxy with username and password credentials authenticates successfully
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/proxy_authenticated" --format json)
+    # Proxy with username and password credentials authenticates successfully
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/proxy_authenticated" --format json)
 
-  local val_status_code
-  val_status_code=$(echo "$output" | jq -r '.status_code')
-  assert_equals "$val_status_code" '200' 'status_code'
-  # skipped: field 'pages.length' not available on result type
+    local val_status_code
+    val_status_code=$(echo "$output" | jq -r '.status_code')
+    assert_equals "$val_status_code" '200' 'status_code'
+    # skipped: field 'pages.length' not available on result type
 }
 
 test_proxy_basic_success() {
-  # Configure proxy URL and successfully crawl through it
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/proxy_basic_success" --format json)
+    # Configure proxy URL and successfully crawl through it
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/proxy_basic_success" --format json)
 
-  local val_status_code
-  val_status_code=$(echo "$output" | jq -r '.status_code')
-  assert_equals "$val_status_code" '200' 'status_code'
-  # skipped: field 'pages.length' not available on result type
+    local val_status_code
+    val_status_code=$(echo "$output" | jq -r '.status_code')
+    assert_equals "$val_status_code" '200' 'status_code'
+    # skipped: field 'pages.length' not available on result type
 }
 
 run_tests_proxy() {
-  run_test test_proxy_authenticated
-  run_test test_proxy_basic_success
+    run_test test_proxy_authenticated
+    run_test test_proxy_basic_success
 }

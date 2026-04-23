@@ -43,8 +43,8 @@ RSpec.describe 'batch' do
     expect { Kreuzcrawl.scrape(engine, url) }.to raise_error
   end
 
-  it 'batch_scrape_with_config: Batch scrape with main_content_only=true configuration' do
-    engine_config = { 'main_content_only' => true }
+  it 'batch_scrape_with_config: Batch scrape with aggressive preprocessing configuration' do
+    engine_config = { 'content' => { 'preprocessing_preset' => 'aggressive' } }
     engine = Kreuzcrawl.create_engine(engine_config.to_json)
     url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/batch_scrape_with_config"
     result = Kreuzcrawl.scrape(engine, url)

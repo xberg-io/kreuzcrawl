@@ -4,35 +4,35 @@
 set -euo pipefail
 
 test_stealth_ua_rotation_config() {
-  # User-agent rotation config is accepted and crawl succeeds
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/stealth_ua_rotation_config" --format json)
+    # User-agent rotation config is accepted and crawl succeeds
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/stealth_ua_rotation_config" --format json)
 
-  local val_status_code
-  val_status_code=$(echo "$output" | jq -r '.status_code')
-  assert_equals "$val_status_code" '200' 'status_code'
+    local val_status_code
+    val_status_code=$(echo "$output" | jq -r '.status_code')
+    assert_equals "$val_status_code" '200' 'status_code'
 }
 
 test_stealth_ua_rotation_round_robin() {
-  # User-agent rotation cycles through multiple agents across multiple requests
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/stealth_ua_rotation_round_robin" --format json >/dev/null
+    # User-agent rotation cycles through multiple agents across multiple requests
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/stealth_ua_rotation_round_robin" --format json >/dev/null
 
-  # skipped: field 'pages.length' not available on result type
+    # skipped: field 'pages.length' not available on result type
 }
 
 test_stealth_ua_rotation_single_domain() {
-  # Custom user-agent string is applied for single domain crawl
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/stealth_ua_rotation_single_domain" --format json)
+    # Custom user-agent string is applied for single domain crawl
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/stealth_ua_rotation_single_domain" --format json)
 
-  local val_status_code
-  val_status_code=$(echo "$output" | jq -r '.status_code')
-  assert_equals "$val_status_code" '200' 'status_code'
-  # skipped: field 'pages.length' not available on result type
+    local val_status_code
+    val_status_code=$(echo "$output" | jq -r '.status_code')
+    assert_equals "$val_status_code" '200' 'status_code'
+    # skipped: field 'pages.length' not available on result type
 }
 
 run_tests_stealth() {
-  run_test test_stealth_ua_rotation_config
-  run_test test_stealth_ua_rotation_round_robin
-  run_test test_stealth_ua_rotation_single_domain
+    run_test test_stealth_ua_rotation_config
+    run_test test_stealth_ua_rotation_round_robin
+    run_test test_stealth_ua_rotation_single_domain
 }

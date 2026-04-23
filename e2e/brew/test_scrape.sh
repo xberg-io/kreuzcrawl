@@ -4,283 +4,283 @@
 set -euo pipefail
 
 test_scrape_asset_dedup() {
-  # Same asset linked twice results in one download with one unique hash
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/scrape_asset_dedup" --format json)
+    # Same asset linked twice results in one download with one unique hash
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/scrape_asset_dedup" --format json)
 
-  local val_status_code
-  val_status_code=$(echo "$output" | jq -r '.status_code')
-  assert_equals "$val_status_code" '200' 'status_code'
-  local val_assets_length
-  val_assets_length=$(echo "$output" | jq -r '.assets | length')
-  assert_equals "$val_assets_length" '2' 'assets.length'
-  local val_assets___content_hash
-  val_assets___content_hash=$(echo "$output" | jq -r '.assets[].content_hash')
-  assert_not_empty "$val_assets___content_hash" 'assets[].content_hash'
+    local val_status_code
+    val_status_code=$(echo "$output" | jq -r '.status_code')
+    assert_equals "$val_status_code" '200' 'status_code'
+    local val_assets_length
+    val_assets_length=$(echo "$output" | jq -r '.assets | length')
+    assert_equals "$val_assets_length" '2' 'assets.length'
+    local val_assets___content_hash
+    val_assets___content_hash=$(echo "$output" | jq -r '.assets[].content_hash')
+    assert_not_empty "$val_assets___content_hash" 'assets[].content_hash'
 }
 
 test_scrape_asset_max_size() {
-  # Skips assets exceeding max_asset_size limit
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/scrape_asset_max_size" --format json)
+    # Skips assets exceeding max_asset_size limit
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/scrape_asset_max_size" --format json)
 
-  local val_status_code
-  val_status_code=$(echo "$output" | jq -r '.status_code')
-  assert_equals "$val_status_code" '200' 'status_code'
-  local val_assets_length
-  val_assets_length=$(echo "$output" | jq -r '.assets | length')
-  assert_equals "$val_assets_length" '2' 'assets.length'
+    local val_status_code
+    val_status_code=$(echo "$output" | jq -r '.status_code')
+    assert_equals "$val_status_code" '200' 'status_code'
+    local val_assets_length
+    val_assets_length=$(echo "$output" | jq -r '.assets | length')
+    assert_equals "$val_assets_length" '2' 'assets.length'
 }
 
 test_scrape_asset_type_filter() {
-  # Only downloads image assets when asset_types filter is set
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/scrape_asset_type_filter" --format json)
+    # Only downloads image assets when asset_types filter is set
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/scrape_asset_type_filter" --format json)
 
-  local val_status_code
-  val_status_code=$(echo "$output" | jq -r '.status_code')
-  assert_equals "$val_status_code" '200' 'status_code'
-  local val_assets_length
-  val_assets_length=$(echo "$output" | jq -r '.assets | length')
-  assert_equals "$val_assets_length" '1' 'assets.length'
-  local val_assets___category
-  val_assets___category=$(echo "$output" | jq -r '.assets[].asset_category')
-  assert_contains "$val_assets___category" 'image' 'assets[].category'
+    local val_status_code
+    val_status_code=$(echo "$output" | jq -r '.status_code')
+    assert_equals "$val_status_code" '200' 'status_code'
+    local val_assets_length
+    val_assets_length=$(echo "$output" | jq -r '.assets | length')
+    assert_equals "$val_assets_length" '1' 'assets.length'
+    local val_assets___category
+    val_assets___category=$(echo "$output" | jq -r '.assets[].asset_category')
+    assert_contains "$val_assets___category" 'image' 'assets[].category'
 }
 
 test_scrape_basic_html_page() {
-  # Scrapes a simple HTML page and extracts title, description, and links
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/scrape_basic_html_page" --format json)
+    # Scrapes a simple HTML page and extracts title, description, and links
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/scrape_basic_html_page" --format json)
 
-  local val_status_code
-  val_status_code=$(echo "$output" | jq -r '.status_code')
-  assert_equals "$val_status_code" '200' 'status_code'
-  local val_content_type
-  val_content_type=$(echo "$output" | jq -r '.content_type')
-  assert_equals "$val_content_type" 'text/html' 'content_type'
-  local val_html
-  val_html=$(echo "$output" | jq -r '.html')
-  assert_not_empty "$val_html" 'html'
-  local val_metadata_title
-  val_metadata_title=$(echo "$output" | jq -r '.metadata.title')
-  assert_equals "$val_metadata_title" 'Example Domain' 'metadata.title'
-  local val_metadata_description
-  val_metadata_description=$(echo "$output" | jq -r '.metadata.description')
-  assert_contains "$val_metadata_description" 'illustrative examples' 'metadata.description'
-  local val_metadata_canonical_url
-  val_metadata_canonical_url=$(echo "$output" | jq -r '.metadata.canonical_url')
-  assert_not_empty "$val_metadata_canonical_url" 'metadata.canonical_url'
-  local val_links_length
-  val_links_length=$(echo "$output" | jq -r '.links | length')
-  assert_greater_than "$val_links_length" '0' 'links.length'
-  local val_images_length
-  val_images_length=$(echo "$output" | jq -r '.images | length')
-  assert_equals "$val_images_length" '0' 'images.length'
-  local val_og_title
-  val_og_title=$(echo "$output" | jq -r '.metadata.og_title')
-  assert_is_empty "$val_og_title" 'og.title'
+    local val_status_code
+    val_status_code=$(echo "$output" | jq -r '.status_code')
+    assert_equals "$val_status_code" '200' 'status_code'
+    local val_content_type
+    val_content_type=$(echo "$output" | jq -r '.content_type')
+    assert_equals "$val_content_type" 'text/html' 'content_type'
+    local val_html
+    val_html=$(echo "$output" | jq -r '.html')
+    assert_not_empty "$val_html" 'html'
+    local val_metadata_title
+    val_metadata_title=$(echo "$output" | jq -r '.metadata.title')
+    assert_equals "$val_metadata_title" 'Example Domain' 'metadata.title'
+    local val_metadata_description
+    val_metadata_description=$(echo "$output" | jq -r '.metadata.description')
+    assert_contains "$val_metadata_description" 'illustrative examples' 'metadata.description'
+    local val_metadata_canonical_url
+    val_metadata_canonical_url=$(echo "$output" | jq -r '.metadata.canonical_url')
+    assert_not_empty "$val_metadata_canonical_url" 'metadata.canonical_url'
+    local val_links_length
+    val_links_length=$(echo "$output" | jq -r '.links | length')
+    assert_greater_than "$val_links_length" '0' 'links.length'
+    local val_images_length
+    val_images_length=$(echo "$output" | jq -r '.images | length')
+    assert_equals "$val_images_length" '0' 'images.length'
+    local val_og_title
+    val_og_title=$(echo "$output" | jq -r '.metadata.og_title')
+    assert_is_empty "$val_og_title" 'og.title'
 }
 
 test_scrape_complex_links() {
-  # Classifies links by type: internal, external, anchor, document, image
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/scrape_complex_links" --format json)
+    # Classifies links by type: internal, external, anchor, document, image
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/scrape_complex_links" --format json)
 
-  local val_status_code
-  val_status_code=$(echo "$output" | jq -r '.status_code')
-  assert_equals "$val_status_code" '200' 'status_code'
-  local val_links_length
-  val_links_length=$(echo "$output" | jq -r '.links | length')
-  assert_greater_than "$val_links_length" '9' 'links.length'
-  local val_links___url
-  val_links___url=$(echo "$output" | jq -r '.links[].url')
-  assert_not_empty "$val_links___url" 'links[].url'
+    local val_status_code
+    val_status_code=$(echo "$output" | jq -r '.status_code')
+    assert_equals "$val_status_code" '200' 'status_code'
+    local val_links_length
+    val_links_length=$(echo "$output" | jq -r '.links | length')
+    assert_greater_than "$val_links_length" '9' 'links.length'
+    local val_links___url
+    val_links___url=$(echo "$output" | jq -r '.links[].url')
+    assert_not_empty "$val_links___url" 'links[].url'
 }
 
 test_scrape_download_assets() {
-  # Downloads CSS, JS, and image assets from page
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/scrape_download_assets" --format json)
+    # Downloads CSS, JS, and image assets from page
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/scrape_download_assets" --format json)
 
-  local val_status_code
-  val_status_code=$(echo "$output" | jq -r '.status_code')
-  assert_equals "$val_status_code" '200' 'status_code'
-  local val_assets_length
-  val_assets_length=$(echo "$output" | jq -r '.assets | length')
-  assert_greater_than "$val_assets_length" '2' 'assets.length'
+    local val_status_code
+    val_status_code=$(echo "$output" | jq -r '.status_code')
+    assert_equals "$val_status_code" '200' 'status_code'
+    local val_assets_length
+    val_assets_length=$(echo "$output" | jq -r '.assets | length')
+    assert_greater_than "$val_assets_length" '2' 'assets.length'
 }
 
 test_scrape_dublin_core() {
-  # Extracts Dublin Core metadata from a page
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/scrape_dublin_core" --format json)
+    # Extracts Dublin Core metadata from a page
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/scrape_dublin_core" --format json)
 
-  local val_status_code
-  val_status_code=$(echo "$output" | jq -r '.status_code')
-  assert_equals "$val_status_code" '200' 'status_code'
-  local val_dublin_core_title
-  val_dublin_core_title=$(echo "$output" | jq -r '.metadata.dc_title')
-  assert_not_empty "$val_dublin_core_title" 'dublin_core.title'
-  local val_dublin_core_title
-  val_dublin_core_title=$(echo "$output" | jq -r '.metadata.dc_title')
-  assert_equals "$val_dublin_core_title" 'Effects of Climate Change on Marine Biodiversity' 'dublin_core.title'
-  local val_dublin_core_creator
-  val_dublin_core_creator=$(echo "$output" | jq -r '.metadata.dc_creator')
-  assert_equals "$val_dublin_core_creator" 'Dr. Jane Smith' 'dublin_core.creator'
+    local val_status_code
+    val_status_code=$(echo "$output" | jq -r '.status_code')
+    assert_equals "$val_status_code" '200' 'status_code'
+    local val_dublin_core_title
+    val_dublin_core_title=$(echo "$output" | jq -r '.metadata.dc_title')
+    assert_not_empty "$val_dublin_core_title" 'dublin_core.title'
+    local val_dublin_core_title
+    val_dublin_core_title=$(echo "$output" | jq -r '.metadata.dc_title')
+    assert_equals "$val_dublin_core_title" 'Effects of Climate Change on Marine Biodiversity' 'dublin_core.title'
+    local val_dublin_core_creator
+    val_dublin_core_creator=$(echo "$output" | jq -r '.metadata.dc_creator')
+    assert_equals "$val_dublin_core_creator" 'Dr. Jane Smith' 'dublin_core.creator'
 }
 
 test_scrape_empty_page() {
-  # Handles an empty HTML document without errors
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/scrape_empty_page" --format json)
+    # Handles an empty HTML document without errors
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/scrape_empty_page" --format json)
 
-  local val_status_code
-  val_status_code=$(echo "$output" | jq -r '.status_code')
-  assert_equals "$val_status_code" '200' 'status_code'
-  local val_links_length
-  val_links_length=$(echo "$output" | jq -r '.links | length')
-  assert_greater_than "$val_links_length" '-1' 'links.length'
-  local val_images_length
-  val_images_length=$(echo "$output" | jq -r '.images | length')
-  assert_equals "$val_images_length" '0' 'images.length'
+    local val_status_code
+    val_status_code=$(echo "$output" | jq -r '.status_code')
+    assert_equals "$val_status_code" '200' 'status_code'
+    local val_links_length
+    val_links_length=$(echo "$output" | jq -r '.links | length')
+    assert_greater_than "$val_links_length" '-1' 'links.length'
+    local val_images_length
+    val_images_length=$(echo "$output" | jq -r '.images | length')
+    assert_equals "$val_images_length" '0' 'images.length'
 }
 
 test_scrape_feed_discovery() {
-  # Discovers RSS, Atom, and JSON feed links
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/scrape_feed_discovery" --format json)
+    # Discovers RSS, Atom, and JSON feed links
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/scrape_feed_discovery" --format json)
 
-  local val_status_code
-  val_status_code=$(echo "$output" | jq -r '.status_code')
-  assert_equals "$val_status_code" '200' 'status_code'
-  local val_feeds_length
-  val_feeds_length=$(echo "$output" | jq -r '.feeds | length')
-  assert_greater_than_or_equal "$val_feeds_length" '3' 'feeds.length'
+    local val_status_code
+    val_status_code=$(echo "$output" | jq -r '.status_code')
+    assert_equals "$val_status_code" '200' 'status_code'
+    local val_feeds_length
+    val_feeds_length=$(echo "$output" | jq -r '.feeds | length')
+    assert_greater_than_or_equal "$val_feeds_length" '3' 'feeds.length'
 }
 
 test_scrape_image_sources() {
-  # Extracts images from img, picture, og:image, twitter:image
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/scrape_image_sources" --format json)
+    # Extracts images from img, picture, og:image, twitter:image
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/scrape_image_sources" --format json)
 
-  local val_status_code
-  val_status_code=$(echo "$output" | jq -r '.status_code')
-  assert_equals "$val_status_code" '200' 'status_code'
-  local val_images_length
-  val_images_length=$(echo "$output" | jq -r '.images | length')
-  assert_greater_than "$val_images_length" '4' 'images.length'
-  local val_og_image
-  val_og_image=$(echo "$output" | jq -r '.metadata.og_image')
-  assert_equals "$val_og_image" 'https://example.com/images/og-hero.jpg' 'og.image'
+    local val_status_code
+    val_status_code=$(echo "$output" | jq -r '.status_code')
+    assert_equals "$val_status_code" '200' 'status_code'
+    local val_images_length
+    val_images_length=$(echo "$output" | jq -r '.images | length')
+    assert_greater_than "$val_images_length" '4' 'images.length'
+    local val_og_image
+    val_og_image=$(echo "$output" | jq -r '.metadata.og_image')
+    assert_equals "$val_og_image" 'https://example.com/images/og-hero.jpg' 'og.image'
 }
 
 test_scrape_js_heavy_spa() {
-  # Handles SPA page with JavaScript-only content (no server-rendered HTML)
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/scrape_js_heavy_spa" --format json)
+    # Handles SPA page with JavaScript-only content (no server-rendered HTML)
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/scrape_js_heavy_spa" --format json)
 
-  local val_html
-  val_html=$(echo "$output" | jq -r '.html')
-  assert_not_empty "$val_html" 'html'
+    local val_html
+    val_html=$(echo "$output" | jq -r '.html')
+    assert_not_empty "$val_html" 'html'
 }
 
 test_scrape_json_ld() {
-  # Extracts JSON-LD structured data from a page
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/scrape_json_ld" --format json)
+    # Extracts JSON-LD structured data from a page
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/scrape_json_ld" --format json)
 
-  local val_status_code
-  val_status_code=$(echo "$output" | jq -r '.status_code')
-  assert_equals "$val_status_code" '200' 'status_code'
-  local val_json_ld
-  val_json_ld=$(echo "$output" | jq -r '.json_ld')
-  assert_not_empty "$val_json_ld" 'json_ld'
-  local val_json_ld_type
-  val_json_ld_type=$(echo "$output" | jq -r '.json_ld[].schema_type')
-  assert_equals "$val_json_ld_type" 'Recipe' 'json_ld.type'
-  local val_json_ld_name
-  val_json_ld_name=$(echo "$output" | jq -r '.json_ld.name')
-  assert_equals "$val_json_ld_name" 'Best Chocolate Cake' 'json_ld.name'
+    local val_status_code
+    val_status_code=$(echo "$output" | jq -r '.status_code')
+    assert_equals "$val_status_code" '200' 'status_code'
+    local val_json_ld
+    val_json_ld=$(echo "$output" | jq -r '.json_ld')
+    assert_not_empty "$val_json_ld" 'json_ld'
+    local val_json_ld_type
+    val_json_ld_type=$(echo "$output" | jq -r '.json_ld[].schema_type')
+    assert_equals "$val_json_ld_type" 'Recipe' 'json_ld.type'
+    local val_json_ld_name
+    val_json_ld_name=$(echo "$output" | jq -r '.json_ld.name')
+    assert_equals "$val_json_ld_name" 'Best Chocolate Cake' 'json_ld.name'
 }
 
 test_scrape_malformed_html() {
-  # Gracefully handles broken HTML without crashing
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/scrape_malformed_html" --format json)
+    # Gracefully handles broken HTML without crashing
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/scrape_malformed_html" --format json)
 
-  local val_status_code
-  val_status_code=$(echo "$output" | jq -r '.status_code')
-  assert_equals "$val_status_code" '200' 'status_code'
-  local val_html
-  val_html=$(echo "$output" | jq -r '.html')
-  assert_not_empty "$val_html" 'html'
-  local val_metadata_description
-  val_metadata_description=$(echo "$output" | jq -r '.metadata.description')
-  assert_contains "$val_metadata_description" 'broken HTML' 'metadata.description'
+    local val_status_code
+    val_status_code=$(echo "$output" | jq -r '.status_code')
+    assert_equals "$val_status_code" '200' 'status_code'
+    local val_html
+    val_html=$(echo "$output" | jq -r '.html')
+    assert_not_empty "$val_html" 'html'
+    local val_metadata_description
+    val_metadata_description=$(echo "$output" | jq -r '.metadata.description')
+    assert_contains "$val_metadata_description" 'broken HTML' 'metadata.description'
 }
 
 test_scrape_og_metadata() {
-  # Extracts full Open Graph metadata from a page
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/scrape_og_metadata" --format json)
+    # Extracts full Open Graph metadata from a page
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/scrape_og_metadata" --format json)
 
-  local val_status_code
-  val_status_code=$(echo "$output" | jq -r '.status_code')
-  assert_equals "$val_status_code" '200' 'status_code'
-  local val_og_title
-  val_og_title=$(echo "$output" | jq -r '.metadata.og_title')
-  assert_not_empty "$val_og_title" 'og.title'
-  local val_og_title
-  val_og_title=$(echo "$output" | jq -r '.metadata.og_title')
-  assert_equals "$val_og_title" 'Article Title' 'og.title'
-  local val_og_type
-  val_og_type=$(echo "$output" | jq -r '.metadata.og_type')
-  assert_equals "$val_og_type" 'article' 'og.type'
-  local val_og_image
-  val_og_image=$(echo "$output" | jq -r '.metadata.og_image')
-  assert_equals "$val_og_image" 'https://example.com/images/article-hero.jpg' 'og.image'
-  local val_og_description
-  val_og_description=$(echo "$output" | jq -r '.metadata.og_description')
-  assert_not_empty "$val_og_description" 'og.description'
-  local val_metadata_title
-  val_metadata_title=$(echo "$output" | jq -r '.metadata.title')
-  assert_equals "$val_metadata_title" 'Article Title - Example Blog' 'metadata.title'
+    local val_status_code
+    val_status_code=$(echo "$output" | jq -r '.status_code')
+    assert_equals "$val_status_code" '200' 'status_code'
+    local val_og_title
+    val_og_title=$(echo "$output" | jq -r '.metadata.og_title')
+    assert_not_empty "$val_og_title" 'og.title'
+    local val_og_title
+    val_og_title=$(echo "$output" | jq -r '.metadata.og_title')
+    assert_equals "$val_og_title" 'Article Title' 'og.title'
+    local val_og_type
+    val_og_type=$(echo "$output" | jq -r '.metadata.og_type')
+    assert_equals "$val_og_type" 'article' 'og.type'
+    local val_og_image
+    val_og_image=$(echo "$output" | jq -r '.metadata.og_image')
+    assert_equals "$val_og_image" 'https://example.com/images/article-hero.jpg' 'og.image'
+    local val_og_description
+    val_og_description=$(echo "$output" | jq -r '.metadata.og_description')
+    assert_not_empty "$val_og_description" 'og.description'
+    local val_metadata_title
+    val_metadata_title=$(echo "$output" | jq -r '.metadata.title')
+    assert_equals "$val_metadata_title" 'Article Title - Example Blog' 'metadata.title'
 }
 
 test_scrape_twitter_card() {
-  # Extracts Twitter Card metadata from a page
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/scrape_twitter_card" --format json)
+    # Extracts Twitter Card metadata from a page
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/scrape_twitter_card" --format json)
 
-  local val_status_code
-  val_status_code=$(echo "$output" | jq -r '.status_code')
-  assert_equals "$val_status_code" '200' 'status_code'
-  local val_twitter_card
-  val_twitter_card=$(echo "$output" | jq -r '.metadata.twitter_card')
-  assert_not_empty "$val_twitter_card" 'twitter.card'
-  local val_twitter_card_type
-  val_twitter_card_type=$(echo "$output" | jq -r '.metadata.twitter_card')
-  assert_equals "$val_twitter_card_type" 'summary_large_image' 'twitter.card_type'
-  local val_twitter_title
-  val_twitter_title=$(echo "$output" | jq -r '.metadata.twitter_title')
-  assert_equals "$val_twitter_title" 'New Product Launch' 'twitter.title'
+    local val_status_code
+    val_status_code=$(echo "$output" | jq -r '.status_code')
+    assert_equals "$val_status_code" '200' 'status_code'
+    local val_twitter_card
+    val_twitter_card=$(echo "$output" | jq -r '.metadata.twitter_card')
+    assert_not_empty "$val_twitter_card" 'twitter.card'
+    local val_twitter_card_type
+    val_twitter_card_type=$(echo "$output" | jq -r '.metadata.twitter_card')
+    assert_equals "$val_twitter_card_type" 'summary_large_image' 'twitter.card_type'
+    local val_twitter_title
+    val_twitter_title=$(echo "$output" | jq -r '.metadata.twitter_title')
+    assert_equals "$val_twitter_title" 'New Product Launch' 'twitter.title'
 }
 
 run_tests_scrape() {
-  run_test test_scrape_asset_dedup
-  run_test test_scrape_asset_max_size
-  run_test test_scrape_asset_type_filter
-  run_test test_scrape_basic_html_page
-  run_test test_scrape_complex_links
-  run_test test_scrape_download_assets
-  run_test test_scrape_dublin_core
-  run_test test_scrape_empty_page
-  run_test test_scrape_feed_discovery
-  run_test test_scrape_image_sources
-  run_test test_scrape_js_heavy_spa
-  run_test test_scrape_json_ld
-  run_test test_scrape_malformed_html
-  run_test test_scrape_og_metadata
-  run_test test_scrape_twitter_card
+    run_test test_scrape_asset_dedup
+    run_test test_scrape_asset_max_size
+    run_test test_scrape_asset_type_filter
+    run_test test_scrape_basic_html_page
+    run_test test_scrape_complex_links
+    run_test test_scrape_download_assets
+    run_test test_scrape_dublin_core
+    run_test test_scrape_empty_page
+    run_test test_scrape_feed_discovery
+    run_test test_scrape_image_sources
+    run_test test_scrape_js_heavy_spa
+    run_test test_scrape_json_ld
+    run_test test_scrape_malformed_html
+    run_test test_scrape_og_metadata
+    run_test test_scrape_twitter_card
 }

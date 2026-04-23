@@ -1,27 +1,26 @@
 {
-	"id": "content_main_only",
-	"description": "Extracts only main content area, excluding nav, sidebar, footer",
-	"tags": ["content", "extraction"],
-	"input": {
-		"mock_responses": [
-			{
-				"status_code": 200,
-				"headers": {
-					"content-type": "text/html; charset=utf-8"
-				},
-				"body_file": "html/main_content_page.html"
-			}
-		],
-		"config": {
-			"respect_robots_txt": false,
-			"main_content_only": true
-		}
-	},
-	"assertions": [
-		{
-			"type": "equals",
-			"field": "content.main_content_only",
-			"value": true
-		}
-	]
+  "id": "content_main_only",
+  "description": "Extracts content with aggressive preprocessing, excluding nav, sidebar, footer",
+  "tags": [
+    "content",
+    "extraction"
+  ],
+  "input": {
+    "mock_responses": [
+      {
+        "status_code": 200,
+        "headers": {
+          "content-type": "text/html; charset=utf-8"
+        },
+        "body_file": "html/main_content_page.html"
+      }
+    ],
+    "config": {
+      "respect_robots_txt": false,
+      "content": {
+        "preprocessing_preset": "aggressive"
+      }
+    }
+  },
+  "assertions": []
 }

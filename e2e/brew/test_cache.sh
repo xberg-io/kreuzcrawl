@@ -4,47 +4,47 @@
 set -euo pipefail
 
 test_cache_basic() {
-  # Crawling with disk cache enabled succeeds without errors
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/cache_basic" --format json)
+    # Crawling with disk cache enabled succeeds without errors
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/cache_basic" --format json)
 
-  local val_status_code
-  val_status_code=$(echo "$output" | jq -r '.status_code')
-  assert_equals "$val_status_code" '200' 'status_code'
+    local val_status_code
+    val_status_code=$(echo "$output" | jq -r '.status_code')
+    assert_equals "$val_status_code" '200' 'status_code'
 }
 
 test_cache_etag_conditional() {
-  # Etag header enables conditional requests for cached content
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/cache_etag_conditional" --format json)
+    # Etag header enables conditional requests for cached content
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/cache_etag_conditional" --format json)
 
-  # skipped: field 'pages.length' not available on result type
-  local val_status_code
-  val_status_code=$(echo "$output" | jq -r '.status_code')
-  assert_equals "$val_status_code" '200' 'status_code'
+    # skipped: field 'pages.length' not available on result type
+    local val_status_code
+    val_status_code=$(echo "$output" | jq -r '.status_code')
+    assert_equals "$val_status_code" '200' 'status_code'
 }
 
 test_cache_last_modified() {
-  # Last-Modified header enables conditional requests via If-Modified-Since
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/cache_last_modified" --format json >/dev/null
+    # Last-Modified header enables conditional requests via If-Modified-Since
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/cache_last_modified" --format json >/dev/null
 
-  # skipped: field 'pages.length' not available on result type
+    # skipped: field 'pages.length' not available on result type
 }
 
 test_cache_miss_fresh_fetch() {
-  # Uncached URLs are fetched fresh without conditional headers
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/cache_miss_fresh_fetch" --format json)
+    # Uncached URLs are fetched fresh without conditional headers
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/cache_miss_fresh_fetch" --format json)
 
-  # skipped: field 'pages.length' not available on result type
-  local val_status_code
-  val_status_code=$(echo "$output" | jq -r '.status_code')
-  assert_equals "$val_status_code" '200' 'status_code'
+    # skipped: field 'pages.length' not available on result type
+    local val_status_code
+    val_status_code=$(echo "$output" | jq -r '.status_code')
+    assert_equals "$val_status_code" '200' 'status_code'
 }
 
 run_tests_cache() {
-  run_test test_cache_basic
-  run_test test_cache_etag_conditional
-  run_test test_cache_last_modified
-  run_test test_cache_miss_fresh_fetch
+    run_test test_cache_basic
+    run_test test_cache_etag_conditional
+    run_test test_cache_last_modified
+    run_test test_cache_miss_fresh_fetch
 }

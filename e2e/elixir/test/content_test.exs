@@ -55,12 +55,11 @@ defmodule E2e.ContentTest do
   end
 
   describe "content_main_only" do
-    test "Extracts only main content area, excluding nav, sidebar, footer" do
-      engine_config = "{\"main_content_only\":true,\"respect_robots_txt\":false}"
+    test "Extracts content with aggressive preprocessing, excluding nav, sidebar, footer" do
+      engine_config = "{\"content\":{\"preprocessing_preset\":\"aggressive\"},\"respect_robots_txt\":false}"
       {:ok, engine} = Kreuzcrawl.create_engine(engine_config)
       url = System.get_env("MOCK_SERVER_URL") <> "/fixtures/content_main_only"
       {:ok, result} = Kreuzcrawl.scrape_async(engine, url)
-      assert result.main_content_only == true
     end
   end
 

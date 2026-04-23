@@ -4,249 +4,249 @@
 set -euo pipefail
 
 test_content_binary_skip() {
-  # Skips image and video content types gracefully
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/content_binary_skip" --format json)
+    # Skips image and video content types gracefully
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/content_binary_skip" --format json)
 
-  local val_content_was_skipped
-  val_content_was_skipped=$(echo "$output" | jq -r '.was_skipped')
-  assert_equals "$val_content_was_skipped" 'true' 'content.was_skipped'
+    local val_content_was_skipped
+    val_content_was_skipped=$(echo "$output" | jq -r '.was_skipped')
+    assert_equals "$val_content_was_skipped" 'true' 'content.was_skipped'
 }
 
 test_content_pdf_link_skip() {
-  # Encounters PDF link and skips or marks as document type
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/content_pdf_link_skip" --format json)
+    # Encounters PDF link and skips or marks as document type
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/content_pdf_link_skip" --format json)
 
-  local val_content_was_skipped
-  val_content_was_skipped=$(echo "$output" | jq -r '.was_skipped')
-  assert_equals "$val_content_was_skipped" 'true' 'content.was_skipped'
+    local val_content_was_skipped
+    val_content_was_skipped=$(echo "$output" | jq -r '.was_skipped')
+    assert_equals "$val_content_was_skipped" 'true' 'content.was_skipped'
 }
 
 test_crawl_concurrent_depth() {
-  # Concurrent crawl respects max_depth limit
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_concurrent_depth" --format json >/dev/null
+    # Concurrent crawl respects max_depth limit
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_concurrent_depth" --format json >/dev/null
 
-  # skipped: field 'pages.length' not available on result type
-  # skipped: field 'stayed_on_domain' not available on result type
+    # skipped: field 'pages.length' not available on result type
+    # skipped: field 'stayed_on_domain' not available on result type
 }
 
 test_crawl_concurrent_limit() {
-  # Respects max concurrent requests limit during crawl
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_concurrent_limit" --format json >/dev/null
+    # Respects max concurrent requests limit during crawl
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_concurrent_limit" --format json >/dev/null
 
-  # skipped: field 'pages.length' not available on result type
+    # skipped: field 'pages.length' not available on result type
 }
 
 test_crawl_concurrent_max_pages() {
-  # Concurrent crawl respects max_pages budget
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_concurrent_max_pages" --format json >/dev/null
+    # Concurrent crawl respects max_pages budget
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_concurrent_max_pages" --format json >/dev/null
 
-  # skipped: field 'pages.length' not available on result type
+    # skipped: field 'pages.length' not available on result type
 }
 
 test_crawl_custom_headers() {
-  # Sends custom headers on all crawl requests
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_custom_headers" --format json >/dev/null
+    # Sends custom headers on all crawl requests
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_custom_headers" --format json >/dev/null
 
-  # skipped: field 'pages.length' not available on result type
+    # skipped: field 'pages.length' not available on result type
 }
 
 test_crawl_depth_one() {
-  # Follows links one level deep from start page
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_depth_one" --format json >/dev/null
+    # Follows links one level deep from start page
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_depth_one" --format json >/dev/null
 
-  # skipped: field 'pages.length' not available on result type
-  # skipped: field 'stayed_on_domain' not available on result type
+    # skipped: field 'pages.length' not available on result type
+    # skipped: field 'stayed_on_domain' not available on result type
 }
 
 test_crawl_depth_priority() {
-  # Crawls in breadth-first order, processing depth-0 pages before depth-1
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_depth_priority" --format json >/dev/null
+    # Crawls in breadth-first order, processing depth-0 pages before depth-1
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_depth_priority" --format json >/dev/null
 
-  # skipped: field 'pages.length' not available on result type
+    # skipped: field 'pages.length' not available on result type
 }
 
 test_crawl_depth_two() {
-  # Crawls 3 levels deep (depth 0, 1, 2)
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_depth_two" --format json >/dev/null
+    # Crawls 3 levels deep (depth 0, 1, 2)
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_depth_two" --format json >/dev/null
 
-  # skipped: field 'pages.length' not available on result type
-  # skipped: field 'pages.length' not available on result type
+    # skipped: field 'pages.length' not available on result type
+    # skipped: field 'pages.length' not available on result type
 }
 
 test_crawl_depth_two_chain() {
-  # Depth=2 crawl follows a chain of links across three levels
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_depth_two_chain" --format json >/dev/null
+    # Depth=2 crawl follows a chain of links across three levels
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_depth_two_chain" --format json >/dev/null
 
-  # skipped: field 'pages.length' not available on result type
+    # skipped: field 'pages.length' not available on result type
 }
 
 test_crawl_double_slash_normalization() {
-  # Normalizes double slashes in URL paths (//page to /page)
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_double_slash_normalization" --format json >/dev/null
+    # Normalizes double slashes in URL paths (//page to /page)
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_double_slash_normalization" --format json >/dev/null
 
-  # skipped: field 'unique_urls.length' not available on result type
+    # skipped: field 'unique_urls.length' not available on result type
 }
 
 test_crawl_empty_page_no_links() {
-  # Crawl completes when child page has no outgoing links
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_empty_page_no_links" --format json >/dev/null
+    # Crawl completes when child page has no outgoing links
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_empty_page_no_links" --format json >/dev/null
 
-  # skipped: field 'pages.length' not available on result type
+    # skipped: field 'pages.length' not available on result type
 }
 
 test_crawl_exclude_path_pattern() {
-  # Skips URLs matching the exclude path pattern
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_exclude_path_pattern" --format json >/dev/null
+    # Skips URLs matching the exclude path pattern
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_exclude_path_pattern" --format json >/dev/null
 
-  # skipped: field 'pages.length' not available on result type
+    # skipped: field 'pages.length' not available on result type
 }
 
 test_crawl_external_links_ignored() {
-  # External links are discovered but not followed when stay_on_domain is true
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_external_links_ignored" --format json >/dev/null
+    # External links are discovered but not followed when stay_on_domain is true
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_external_links_ignored" --format json >/dev/null
 
-  # skipped: field 'pages.length' not available on result type
-  # skipped: field 'stayed_on_domain' not available on result type
+    # skipped: field 'pages.length' not available on result type
+    # skipped: field 'stayed_on_domain' not available on result type
 }
 
 test_crawl_fragment_stripping() {
-  # Strips #fragment from URLs for deduplication
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_fragment_stripping" --format json >/dev/null
+    # Strips #fragment from URLs for deduplication
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_fragment_stripping" --format json >/dev/null
 
-  # skipped: field 'unique_urls.length' not available on result type
+    # skipped: field 'unique_urls.length' not available on result type
 }
 
 test_crawl_include_path_pattern() {
-  # Only follows URLs matching the include path pattern
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_include_path_pattern" --format json >/dev/null
+    # Only follows URLs matching the include path pattern
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_include_path_pattern" --format json >/dev/null
 
-  # skipped: field 'pages.length' not available on result type
+    # skipped: field 'pages.length' not available on result type
 }
 
 test_crawl_max_depth_zero() {
-  # max_depth=0 crawls only the seed page with no link following
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_max_depth_zero" --format json >/dev/null
+    # max_depth=0 crawls only the seed page with no link following
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_max_depth_zero" --format json >/dev/null
 
-  # skipped: field 'pages.length' not available on result type
-  # skipped: field 'pages.length' not available on result type
+    # skipped: field 'pages.length' not available on result type
+    # skipped: field 'pages.length' not available on result type
 }
 
 test_crawl_max_pages() {
-  # Stops crawling at page budget limit
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_max_pages" --format json >/dev/null
+    # Stops crawling at page budget limit
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_max_pages" --format json >/dev/null
 
-  # skipped: field 'pages.length' not available on result type
+    # skipped: field 'pages.length' not available on result type
 }
 
 test_crawl_mixed_content_types() {
-  # Crawl handles links to non-HTML content types gracefully
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_mixed_content_types" --format json >/dev/null
+    # Crawl handles links to non-HTML content types gracefully
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_mixed_content_types" --format json >/dev/null
 
-  # skipped: field 'pages.length' not available on result type
+    # skipped: field 'pages.length' not available on result type
 }
 
 test_crawl_multiple_redirects_in_traversal() {
-  # Multiple linked pages with redirects are handled during crawl traversal
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_multiple_redirects_in_traversal" --format json >/dev/null
+    # Multiple linked pages with redirects are handled during crawl traversal
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_multiple_redirects_in_traversal" --format json >/dev/null
 
-  # skipped: field 'pages.length' not available on result type
+    # skipped: field 'pages.length' not available on result type
 }
 
 test_crawl_query_param_dedup() {
-  # Deduplicates URLs with same query params in different order
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_query_param_dedup" --format json >/dev/null
+    # Deduplicates URLs with same query params in different order
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_query_param_dedup" --format json >/dev/null
 
-  # skipped: field 'unique_urls.length' not available on result type
+    # skipped: field 'unique_urls.length' not available on result type
 }
 
 test_crawl_redirect_in_traversal() {
-  # Links that redirect are followed during crawl traversal
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_redirect_in_traversal" --format json >/dev/null
+    # Links that redirect are followed during crawl traversal
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_redirect_in_traversal" --format json >/dev/null
 
-  # skipped: field 'pages.length' not available on result type
+    # skipped: field 'pages.length' not available on result type
 }
 
 test_crawl_self_link_no_loop() {
-  # Page linking to itself does not cause infinite crawl loop
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_self_link_no_loop" --format json >/dev/null
+    # Page linking to itself does not cause infinite crawl loop
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_self_link_no_loop" --format json >/dev/null
 
-  # skipped: field 'pages.length' not available on result type
+    # skipped: field 'pages.length' not available on result type
 }
 
 test_crawl_single_page_no_links() {
-  # Crawling a page with no links returns only the seed page
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_single_page_no_links" --format json >/dev/null
+    # Crawling a page with no links returns only the seed page
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_single_page_no_links" --format json >/dev/null
 
-  # skipped: field 'pages.length' not available on result type
+    # skipped: field 'pages.length' not available on result type
 }
 
 test_crawl_stay_on_domain() {
-  # Does not follow external links when stay_on_domain is true
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_stay_on_domain" --format json >/dev/null
+    # Does not follow external links when stay_on_domain is true
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_stay_on_domain" --format json >/dev/null
 
-  # skipped: field 'pages.length' not available on result type
-  # skipped: field 'stayed_on_domain' not available on result type
+    # skipped: field 'pages.length' not available on result type
+    # skipped: field 'stayed_on_domain' not available on result type
 }
 
 test_crawl_subdomain_exclusion() {
-  # Stays on exact domain and skips subdomain links
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_subdomain_exclusion" --format json >/dev/null
+    # Stays on exact domain and skips subdomain links
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_subdomain_exclusion" --format json >/dev/null
 
-  # skipped: field 'pages.length' not available on result type
-  # skipped: field 'stayed_on_domain' not available on result type
+    # skipped: field 'pages.length' not available on result type
+    # skipped: field 'stayed_on_domain' not available on result type
 }
 
 test_crawl_subdomain_inclusion() {
-  # Crawls subdomains when allow_subdomains is enabled
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_subdomain_inclusion" --format json >/dev/null
+    # Crawls subdomains when allow_subdomains is enabled
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_subdomain_inclusion" --format json >/dev/null
 
-  # skipped: field 'pages.length' not available on result type
+    # skipped: field 'pages.length' not available on result type
 }
 
 test_crawl_trailing_slash_dedup() {
-  # Deduplicates /page and /page/ as the same URL
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_trailing_slash_dedup" --format json >/dev/null
+    # Deduplicates /page and /page/ as the same URL
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_trailing_slash_dedup" --format json >/dev/null
 
-  # skipped: field 'unique_urls.length' not available on result type
+    # skipped: field 'unique_urls.length' not available on result type
 }
 
 test_crawl_url_deduplication() {
-  # Deduplicates URLs that differ only by fragment or query params
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_url_deduplication" --format json >/dev/null
+    # Deduplicates URLs that differ only by fragment or query params
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_url_deduplication" --format json >/dev/null
 
-  # skipped: field 'pages.length' not available on result type
+    # skipped: field 'pages.length' not available on result type
 }
 
 run_tests_crawl() {
-  run_test test_content_binary_skip
-  run_test test_content_pdf_link_skip
-  run_test test_crawl_concurrent_depth
-  run_test test_crawl_concurrent_limit
-  run_test test_crawl_concurrent_max_pages
-  run_test test_crawl_custom_headers
-  run_test test_crawl_depth_one
-  run_test test_crawl_depth_priority
-  run_test test_crawl_depth_two
-  run_test test_crawl_depth_two_chain
-  run_test test_crawl_double_slash_normalization
-  run_test test_crawl_empty_page_no_links
-  run_test test_crawl_exclude_path_pattern
-  run_test test_crawl_external_links_ignored
-  run_test test_crawl_fragment_stripping
-  run_test test_crawl_include_path_pattern
-  run_test test_crawl_max_depth_zero
-  run_test test_crawl_max_pages
-  run_test test_crawl_mixed_content_types
-  run_test test_crawl_multiple_redirects_in_traversal
-  run_test test_crawl_query_param_dedup
-  run_test test_crawl_redirect_in_traversal
-  run_test test_crawl_self_link_no_loop
-  run_test test_crawl_single_page_no_links
-  run_test test_crawl_stay_on_domain
-  run_test test_crawl_subdomain_exclusion
-  run_test test_crawl_subdomain_inclusion
-  run_test test_crawl_trailing_slash_dedup
-  run_test test_crawl_url_deduplication
+    run_test test_content_binary_skip
+    run_test test_content_pdf_link_skip
+    run_test test_crawl_concurrent_depth
+    run_test test_crawl_concurrent_limit
+    run_test test_crawl_concurrent_max_pages
+    run_test test_crawl_custom_headers
+    run_test test_crawl_depth_one
+    run_test test_crawl_depth_priority
+    run_test test_crawl_depth_two
+    run_test test_crawl_depth_two_chain
+    run_test test_crawl_double_slash_normalization
+    run_test test_crawl_empty_page_no_links
+    run_test test_crawl_exclude_path_pattern
+    run_test test_crawl_external_links_ignored
+    run_test test_crawl_fragment_stripping
+    run_test test_crawl_include_path_pattern
+    run_test test_crawl_max_depth_zero
+    run_test test_crawl_max_pages
+    run_test test_crawl_mixed_content_types
+    run_test test_crawl_multiple_redirects_in_traversal
+    run_test test_crawl_query_param_dedup
+    run_test test_crawl_redirect_in_traversal
+    run_test test_crawl_self_link_no_loop
+    run_test test_crawl_single_page_no_links
+    run_test test_crawl_stay_on_domain
+    run_test test_crawl_subdomain_exclusion
+    run_test test_crawl_subdomain_inclusion
+    run_test test_crawl_trailing_slash_dedup
+    run_test test_crawl_url_deduplication
 }

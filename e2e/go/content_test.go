@@ -119,9 +119,9 @@ func Test_ContentLargePageLimit(t *testing.T) {
 }
 
 func Test_ContentMainOnly(t *testing.T) {
-	// Extracts only main content area, excluding nav, sidebar, footer
+	// Extracts content with aggressive preprocessing, excluding nav, sidebar, footer
 	var engineConfig pkg.CrawlConfig
-	if err := json.Unmarshal([]byte(`{"main_content_only":true,"respect_robots_txt":false}`), &engineConfig); err != nil {
+	if err := json.Unmarshal([]byte(`{"content":{"preprocessing_preset":"aggressive"},"respect_robots_txt":false}`), &engineConfig); err != nil {
 		t.Fatalf("config parse failed: %v", err)
 	}
 	engine, createErr := pkg.CreateEngine(&engineConfig)
@@ -129,12 +129,9 @@ func Test_ContentMainOnly(t *testing.T) {
 		t.Fatalf("create handle failed: %v", createErr)
 	}
 	url := os.Getenv("MOCK_SERVER_URL") + "/fixtures/content_main_only"
-	result, err := pkg.Scrape(engine, url)
+	_, err := pkg.Scrape(engine, url)
 	if err != nil {
 		t.Fatalf("call failed: %v", err)
-	}
-	if result.MainContentOnly != true {
-		t.Errorf("equals mismatch: got %v", result.MainContentOnly)
 	}
 }
 

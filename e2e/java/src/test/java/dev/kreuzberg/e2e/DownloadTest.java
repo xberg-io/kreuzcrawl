@@ -20,7 +20,6 @@ class DownloadTest {
         String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/download_basic_pdf";
         var result = Kreuzcrawl.scrape(engine, url);
         assertEquals("application/pdf", result.downloadedDocument().orElseThrow().mimeType().trim());
-        // TODO: unsupported assertion type: min
     }
 
     @Test
@@ -42,7 +41,6 @@ class DownloadTest {
         String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/download_mime_filter";
         var result = Kreuzcrawl.scrape(engine, url);
         assertEquals("application/pdf", result.downloadedDocument().orElseThrow().mimeType().trim());
-        // TODO: unsupported assertion type: min
     }
 
     @Test

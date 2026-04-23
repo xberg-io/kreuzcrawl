@@ -8,83 +8,91 @@ set -euo pipefail
 
 # Verify that jq is available.
 if ! command -v jq &>/dev/null; then
-  echo 'error: jq is required but not found in PATH' >&2
-  exit 1
+    echo 'error: jq is required but not found in PATH' >&2
+    exit 1
 fi
 
 PASS=0
 FAIL=0
 
 assert_equals() {
-  local actual="$1" expected="$2" label="$3"
-  if [ "$actual" != "$expected" ]; then
-    echo "FAIL [$label]: expected '$expected', got '$actual'" >&2
-    return 1
-  fi
+    local actual="$1" expected="$2" label="$3"
+    if [ "$actual" != "$expected" ]; then
+        echo "FAIL [$label]: expected '$expected', got '$actual'" >&2
+        return 1
+    fi
 }
 
 assert_contains() {
-  local actual="$1" expected="$2" label="$3"
-  if [[ "$actual" != *"$expected"* ]]; then
-    echo "FAIL [$label]: expected to contain '$expected'" >&2
-    return 1
-  fi
+    local actual="$1" expected="$2" label="$3"
+    if [[ "$actual" != *"$expected"* ]]; then
+        echo "FAIL [$label]: expected to contain '$expected'" >&2
+        return 1
+    fi
 }
 
 assert_not_empty() {
-  local actual="$1" label="$2"
-  if [ -z "$actual" ]; then
-    echo "FAIL [$label]: expected non-empty value" >&2
-    return 1
-  fi
+    local actual="$1" label="$2"
+    if [ -z "$actual" ]; then
+        echo "FAIL [$label]: expected non-empty value" >&2
+        return 1
+    fi
 }
 
 assert_count_min() {
-  local count="$1" min="$2" label="$3"
-  if [ "$count" -lt "$min" ]; then
-    echo "FAIL [$label]: expected at least $min elements, got $count" >&2
-    return 1
-  fi
+    local count="$1" min="$2" label="$3"
+    if [ "$count" -lt "$min" ]; then
+        echo "FAIL [$label]: expected at least $min elements, got $count" >&2
+        return 1
+    fi
 }
 
 assert_greater_than() {
-  local val="$1" threshold="$2" label="$3"
-  if [ "$(echo "$val > $threshold" | bc -l)" != "1" ]; then
-    echo "FAIL [$label]: expected $val > $threshold" >&2
-    return 1
-  fi
+    local val="$1" threshold="$2" label="$3"
+    if [ "$(echo "$val > $threshold" | bc -l)" != "1" ]; then
+        echo "FAIL [$label]: expected $val > $threshold" >&2
+        return 1
+    fi
 }
 
 assert_greater_than_or_equal() {
-  local actual="$1" expected="$2" label="$3"
-  if [ "$actual" -lt "$expected" ]; then
-    echo "FAIL [$label]: expected $actual >= $expected" >&2
-    return 1
-  fi
+    local actual="$1" expected="$2" label="$3"
+    if [ "$actual" -lt "$expected" ]; then
+        echo "FAIL [$label]: expected $actual >= $expected" >&2
+        return 1
+    fi
 }
 
 assert_is_empty() {
-  local actual="$1" label="$2"
-  if [ -n "$actual" ]; then
-    echo "FAIL [$label]: expected empty value, got '$actual'" >&2
-    return 1
-  fi
+    local actual="$1" label="$2"
+    if [ -n "$actual" ]; then
+        echo "FAIL [$label]: expected empty value, got '$actual'" >&2
+        return 1
+    fi
 }
 
 assert_less_than() {
-  local actual="$1" expected="$2" label="$3"
-  if [ "$actual" -ge "$expected" ]; then
-    echo "FAIL [$label]: expected $actual < $expected" >&2
-    return 1
-  fi
+    local actual="$1" expected="$2" label="$3"
+    if [ "$actual" -ge "$expected" ]; then
+        echo "FAIL [$label]: expected $actual < $expected" >&2
+        return 1
+    fi
+}
+
+assert_less_than_or_equal() {
+    local actual="$1" expected="$2" label="$3"
+    if [ "$actual" -gt "$expected" ]; then
+        echo "FAIL [$label]: expected $actual <= $expected" >&2
+        return 1
+    fi
 }
 
 assert_not_contains() {
-  local actual="$1" expected="$2" label="$3"
-  if [[ "$actual" == *"$expected"* ]]; then
-    echo "FAIL [$label]: expected not to contain '$expected'" >&2
-    return 1
-  fi
+    local actual="$1" expected="$2" label="$3"
+    if [[ "$actual" == *"$expected"* ]]; then
+        echo "FAIL [$label]: expected not to contain '$expected'" >&2
+        return 1
+    fi
 }
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -151,14 +159,14 @@ source "$SCRIPT_DIR/test_validation.sh"
 source "$SCRIPT_DIR/test_warc.sh"
 
 run_test() {
-  local name="$1"
-  if "$name"; then
-    echo "PASS: $name"
-    PASS=$((PASS + 1))
-  else
-    echo "FAIL: $name"
-    FAIL=$((FAIL + 1))
-  fi
+    local name="$1"
+    if "$name"; then
+        echo "PASS: $name"
+        PASS=$((PASS + 1))
+    else
+        echo "FAIL: $name"
+        FAIL=$((FAIL + 1))
+    fi
 }
 
 # Run all generated test functions.

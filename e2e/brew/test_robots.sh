@@ -4,167 +4,167 @@
 set -euo pipefail
 
 test_robots_allow_all() {
-  # Permissive robots.txt allows all paths
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/robots_allow_all" --format json)
+    # Permissive robots.txt allows all paths
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/robots_allow_all" --format json)
 
-  local val_robots_is_allowed
-  val_robots_is_allowed=$(echo "$output" | jq -r '.is_allowed')
-  assert_equals "$val_robots_is_allowed" 'true' 'robots.is_allowed'
+    local val_robots_is_allowed
+    val_robots_is_allowed=$(echo "$output" | jq -r '.is_allowed')
+    assert_equals "$val_robots_is_allowed" 'true' 'robots.is_allowed'
 }
 
 test_robots_allow_override() {
-  # Allow directive overrides Disallow for specific paths
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/robots_allow_override" --format json)
+    # Allow directive overrides Disallow for specific paths
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/robots_allow_override" --format json)
 
-  local val_robots_is_allowed
-  val_robots_is_allowed=$(echo "$output" | jq -r '.is_allowed')
-  assert_equals "$val_robots_is_allowed" 'true' 'robots.is_allowed'
+    local val_robots_is_allowed
+    val_robots_is_allowed=$(echo "$output" | jq -r '.is_allowed')
+    assert_equals "$val_robots_is_allowed" 'true' 'robots.is_allowed'
 }
 
 test_robots_comments_handling() {
-  # Correctly parses robots.txt with inline and line comments
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/robots_comments_handling" --format json)
+    # Correctly parses robots.txt with inline and line comments
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/robots_comments_handling" --format json)
 
-  local val_robots_is_allowed
-  val_robots_is_allowed=$(echo "$output" | jq -r '.is_allowed')
-  assert_equals "$val_robots_is_allowed" 'true' 'robots.is_allowed'
+    local val_robots_is_allowed
+    val_robots_is_allowed=$(echo "$output" | jq -r '.is_allowed')
+    assert_equals "$val_robots_is_allowed" 'true' 'robots.is_allowed'
 }
 
 test_robots_crawl_delay() {
-  # Respects crawl-delay directive from robots.txt
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/robots_crawl_delay" --format json)
+    # Respects crawl-delay directive from robots.txt
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/robots_crawl_delay" --format json)
 
-  local val_robots_crawl_delay
-  val_robots_crawl_delay=$(echo "$output" | jq -r '.crawl_delay')
-  assert_equals "$val_robots_crawl_delay" '2' 'robots.crawl_delay'
+    local val_robots_crawl_delay
+    val_robots_crawl_delay=$(echo "$output" | jq -r '.crawl_delay')
+    assert_equals "$val_robots_crawl_delay" '2' 'robots.crawl_delay'
 }
 
 test_robots_disallow_path() {
-  # Robots.txt disallows specific paths
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/robots_disallow_path" --format json)
+    # Robots.txt disallows specific paths
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/robots_disallow_path" --format json)
 
-  local val_robots_is_allowed
-  val_robots_is_allowed=$(echo "$output" | jq -r '.is_allowed')
-  assert_equals "$val_robots_is_allowed" 'false' 'robots.is_allowed'
+    local val_robots_is_allowed
+    val_robots_is_allowed=$(echo "$output" | jq -r '.is_allowed')
+    assert_equals "$val_robots_is_allowed" 'false' 'robots.is_allowed'
 }
 
 test_robots_meta_nofollow() {
-  # Detects nofollow meta robots tag and skips link extraction
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/robots_meta_nofollow" --format json)
+    # Detects nofollow meta robots tag and skips link extraction
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/robots_meta_nofollow" --format json)
 
-  local val_robots_nofollow_detected
-  val_robots_nofollow_detected=$(echo "$output" | jq -r '.nofollow_detected')
-  assert_equals "$val_robots_nofollow_detected" 'true' 'robots.nofollow_detected'
+    local val_robots_nofollow_detected
+    val_robots_nofollow_detected=$(echo "$output" | jq -r '.nofollow_detected')
+    assert_equals "$val_robots_nofollow_detected" 'true' 'robots.nofollow_detected'
 }
 
 test_robots_meta_noindex() {
-  # Detects noindex meta robots tag in HTML page
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/robots_meta_noindex" --format json)
+    # Detects noindex meta robots tag in HTML page
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/robots_meta_noindex" --format json)
 
-  local val_robots_noindex_detected
-  val_robots_noindex_detected=$(echo "$output" | jq -r '.noindex_detected')
-  assert_equals "$val_robots_noindex_detected" 'true' 'robots.noindex_detected'
+    local val_robots_noindex_detected
+    val_robots_noindex_detected=$(echo "$output" | jq -r '.noindex_detected')
+    assert_equals "$val_robots_noindex_detected" 'true' 'robots.noindex_detected'
 }
 
 test_robots_missing_404() {
-  # Missing robots.txt (404) allows all crawling
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/robots_missing_404" --format json)
+    # Missing robots.txt (404) allows all crawling
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/robots_missing_404" --format json)
 
-  local val_robots_is_allowed
-  val_robots_is_allowed=$(echo "$output" | jq -r '.is_allowed')
-  assert_equals "$val_robots_is_allowed" 'true' 'robots.is_allowed'
+    local val_robots_is_allowed
+    val_robots_is_allowed=$(echo "$output" | jq -r '.is_allowed')
+    assert_equals "$val_robots_is_allowed" 'true' 'robots.is_allowed'
 }
 
 test_robots_multiple_user_agents() {
-  # Picks the most specific user-agent block from robots.txt
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/robots_multiple_user_agents" --format json)
+    # Picks the most specific user-agent block from robots.txt
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/robots_multiple_user_agents" --format json)
 
-  local val_robots_is_allowed
-  val_robots_is_allowed=$(echo "$output" | jq -r '.is_allowed')
-  assert_equals "$val_robots_is_allowed" 'true' 'robots.is_allowed'
+    local val_robots_is_allowed
+    val_robots_is_allowed=$(echo "$output" | jq -r '.is_allowed')
+    assert_equals "$val_robots_is_allowed" 'true' 'robots.is_allowed'
 }
 
 test_robots_request_rate() {
-  # Parses request-rate directive from robots.txt
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/robots_request_rate" --format json)
+    # Parses request-rate directive from robots.txt
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/robots_request_rate" --format json)
 
-  local val_robots_crawl_delay
-  val_robots_crawl_delay=$(echo "$output" | jq -r '.crawl_delay')
-  assert_equals "$val_robots_crawl_delay" '5' 'robots.crawl_delay'
-  local val_robots_is_allowed
-  val_robots_is_allowed=$(echo "$output" | jq -r '.is_allowed')
-  assert_equals "$val_robots_is_allowed" 'true' 'robots.is_allowed'
+    local val_robots_crawl_delay
+    val_robots_crawl_delay=$(echo "$output" | jq -r '.crawl_delay')
+    assert_equals "$val_robots_crawl_delay" '5' 'robots.crawl_delay'
+    local val_robots_is_allowed
+    val_robots_is_allowed=$(echo "$output" | jq -r '.is_allowed')
+    assert_equals "$val_robots_is_allowed" 'true' 'robots.is_allowed'
 }
 
 test_robots_sitemap_directive() {
-  # Discovers sitemap URL from Sitemap directive in robots.txt
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/robots_sitemap_directive" --format json)
+    # Discovers sitemap URL from Sitemap directive in robots.txt
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/robots_sitemap_directive" --format json)
 
-  local val_robots_is_allowed
-  val_robots_is_allowed=$(echo "$output" | jq -r '.is_allowed')
-  assert_equals "$val_robots_is_allowed" 'true' 'robots.is_allowed'
+    local val_robots_is_allowed
+    val_robots_is_allowed=$(echo "$output" | jq -r '.is_allowed')
+    assert_equals "$val_robots_is_allowed" 'true' 'robots.is_allowed'
 }
 
 test_robots_user_agent_specific() {
-  # Matches user-agent specific rules in robots.txt
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/robots_user_agent_specific" --format json)
+    # Matches user-agent specific rules in robots.txt
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/robots_user_agent_specific" --format json)
 
-  local val_robots_is_allowed
-  val_robots_is_allowed=$(echo "$output" | jq -r '.is_allowed')
-  assert_equals "$val_robots_is_allowed" 'false' 'robots.is_allowed'
+    local val_robots_is_allowed
+    val_robots_is_allowed=$(echo "$output" | jq -r '.is_allowed')
+    assert_equals "$val_robots_is_allowed" 'false' 'robots.is_allowed'
 }
 
 test_robots_wildcard_paths() {
-  # Handles wildcard Disallow patterns in robots.txt
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/robots_wildcard_paths" --format json)
+    # Handles wildcard Disallow patterns in robots.txt
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/robots_wildcard_paths" --format json)
 
-  local val_robots_is_allowed
-  val_robots_is_allowed=$(echo "$output" | jq -r '.is_allowed')
-  assert_equals "$val_robots_is_allowed" 'false' 'robots.is_allowed'
+    local val_robots_is_allowed
+    val_robots_is_allowed=$(echo "$output" | jq -r '.is_allowed')
+    assert_equals "$val_robots_is_allowed" 'false' 'robots.is_allowed'
 }
 
 test_robots_x_robots_tag() {
-  # Respects X-Robots-Tag HTTP header directives
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/robots_x_robots_tag" --format json)
+    # Respects X-Robots-Tag HTTP header directives
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/robots_x_robots_tag" --format json)
 
-  local val_robots_x_robots_tag
-  val_robots_x_robots_tag=$(echo "$output" | jq -r '.x_robots_tag')
-  assert_equals "$val_robots_x_robots_tag" 'noindex, nofollow' 'robots.x_robots_tag'
-  local val_robots_noindex_detected
-  val_robots_noindex_detected=$(echo "$output" | jq -r '.noindex_detected')
-  assert_equals "$val_robots_noindex_detected" 'true' 'robots.noindex_detected'
-  local val_robots_nofollow_detected
-  val_robots_nofollow_detected=$(echo "$output" | jq -r '.nofollow_detected')
-  assert_equals "$val_robots_nofollow_detected" 'true' 'robots.nofollow_detected'
+    local val_robots_x_robots_tag
+    val_robots_x_robots_tag=$(echo "$output" | jq -r '.x_robots_tag')
+    assert_equals "$val_robots_x_robots_tag" 'noindex, nofollow' 'robots.x_robots_tag'
+    local val_robots_noindex_detected
+    val_robots_noindex_detected=$(echo "$output" | jq -r '.noindex_detected')
+    assert_equals "$val_robots_noindex_detected" 'true' 'robots.noindex_detected'
+    local val_robots_nofollow_detected
+    val_robots_nofollow_detected=$(echo "$output" | jq -r '.nofollow_detected')
+    assert_equals "$val_robots_nofollow_detected" 'true' 'robots.nofollow_detected'
 }
 
 run_tests_robots() {
-  run_test test_robots_allow_all
-  run_test test_robots_allow_override
-  run_test test_robots_comments_handling
-  run_test test_robots_crawl_delay
-  run_test test_robots_disallow_path
-  run_test test_robots_meta_nofollow
-  run_test test_robots_meta_noindex
-  run_test test_robots_missing_404
-  run_test test_robots_multiple_user_agents
-  run_test test_robots_request_rate
-  run_test test_robots_sitemap_directive
-  run_test test_robots_user_agent_specific
-  run_test test_robots_wildcard_paths
-  run_test test_robots_x_robots_tag
+    run_test test_robots_allow_all
+    run_test test_robots_allow_override
+    run_test test_robots_comments_handling
+    run_test test_robots_crawl_delay
+    run_test test_robots_disallow_path
+    run_test test_robots_meta_nofollow
+    run_test test_robots_meta_noindex
+    run_test test_robots_missing_404
+    run_test test_robots_multiple_user_agents
+    run_test test_robots_request_rate
+    run_test test_robots_sitemap_directive
+    run_test test_robots_user_agent_specific
+    run_test test_robots_wildcard_paths
+    run_test test_robots_x_robots_tag
 }

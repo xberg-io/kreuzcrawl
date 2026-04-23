@@ -4,112 +4,112 @@
 set -euo pipefail
 
 test_links_anchor_fragment() {
-  # Identifies fragment-only links as anchor type
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/links_anchor_fragment" --format json)
+    # Identifies fragment-only links as anchor type
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/links_anchor_fragment" --format json)
 
 }
 
 test_links_base_tag() {
-  # Resolves relative URLs using base tag href
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/links_base_tag" --format json)
+    # Resolves relative URLs using base tag href
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/links_base_tag" --format json)
 
-  local val_links_length
-  val_links_length=$(echo "$output" | jq -r '.links | length')
-  assert_greater_than "$val_links_length" '2' 'links.length'
-  local val_links___url
-  val_links___url=$(echo "$output" | jq -r '.links[].url')
-  assert_contains "$val_links___url" 'example.com' 'links[].url'
+    local val_links_length
+    val_links_length=$(echo "$output" | jq -r '.links | length')
+    assert_greater_than "$val_links_length" '2' 'links.length'
+    local val_links___url
+    val_links___url=$(echo "$output" | jq -r '.links[].url')
+    assert_contains "$val_links___url" 'example.com' 'links[].url'
 }
 
 test_links_document_types() {
-  # Detects PDF, DOCX, XLSX links as document type
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/links_document_types" --format json)
+    # Detects PDF, DOCX, XLSX links as document type
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/links_document_types" --format json)
 
 }
 
 test_links_empty_href() {
-  # Handles empty href attributes without errors
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/links_empty_href" --format json)
+    # Handles empty href attributes without errors
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/links_empty_href" --format json)
 
-  local val_links_length
-  val_links_length=$(echo "$output" | jq -r '.links | length')
-  assert_greater_than "$val_links_length" '0' 'links.length'
-  local val_links___url
-  val_links___url=$(echo "$output" | jq -r '.links[].url')
-  assert_contains "$val_links___url" '/valid' 'links[].url'
+    local val_links_length
+    val_links_length=$(echo "$output" | jq -r '.links | length')
+    assert_greater_than "$val_links_length" '0' 'links.length'
+    local val_links___url
+    val_links___url=$(echo "$output" | jq -r '.links[].url')
+    assert_contains "$val_links___url" '/valid' 'links[].url'
 }
 
 test_links_internal_external_classification() {
-  # Correctly classifies internal vs external links by domain
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/links_internal_external_classification" --format json)
+    # Correctly classifies internal vs external links by domain
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/links_internal_external_classification" --format json)
 
-  local val_links_length
-  val_links_length=$(echo "$output" | jq -r '.links | length')
-  assert_greater_than "$val_links_length" '4' 'links.length'
-  local val_links___url
-  val_links___url=$(echo "$output" | jq -r '.links[].url')
-  assert_not_empty "$val_links___url" 'links[].url'
+    local val_links_length
+    val_links_length=$(echo "$output" | jq -r '.links | length')
+    assert_greater_than "$val_links_length" '4' 'links.length'
+    local val_links___url
+    val_links___url=$(echo "$output" | jq -r '.links[].url')
+    assert_not_empty "$val_links___url" 'links[].url'
 }
 
 test_links_mailto_javascript_skip() {
-  # Skips mailto:, javascript:, and tel: scheme links
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/links_mailto_javascript_skip" --format json)
+    # Skips mailto:, javascript:, and tel: scheme links
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/links_mailto_javascript_skip" --format json)
 
-  local val_links_length
-  val_links_length=$(echo "$output" | jq -r '.links | length')
-  assert_greater_than "$val_links_length" '0' 'links.length'
-  local val_links___url
-  val_links___url=$(echo "$output" | jq -r '.links[].url')
-  assert_not_contains "$val_links___url" 'mailto:' 'links[].url'
+    local val_links_length
+    val_links_length=$(echo "$output" | jq -r '.links | length')
+    assert_greater_than "$val_links_length" '0' 'links.length'
+    local val_links___url
+    val_links___url=$(echo "$output" | jq -r '.links[].url')
+    assert_not_contains "$val_links___url" 'mailto:' 'links[].url'
 }
 
 test_links_protocol_relative() {
-  # Handles protocol-relative URLs (//example.com) correctly
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/links_protocol_relative" --format json)
+    # Handles protocol-relative URLs (//example.com) correctly
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/links_protocol_relative" --format json)
 
-  local val_links_length
-  val_links_length=$(echo "$output" | jq -r '.links | length')
-  assert_greater_than "$val_links_length" '1' 'links.length'
-  local val_links___url
-  val_links___url=$(echo "$output" | jq -r '.links[].url')
-  assert_contains "$val_links___url" '//' 'links[].url'
+    local val_links_length
+    val_links_length=$(echo "$output" | jq -r '.links | length')
+    assert_greater_than "$val_links_length" '1' 'links.length'
+    local val_links___url
+    val_links___url=$(echo "$output" | jq -r '.links[].url')
+    assert_contains "$val_links___url" '//' 'links[].url'
 }
 
 test_links_rel_attributes() {
-  # Preserves rel=nofollow and rel=canonical attributes
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/links_rel_attributes" --format json)
+    # Preserves rel=nofollow and rel=canonical attributes
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/links_rel_attributes" --format json)
 
-  local val_links_length
-  val_links_length=$(echo "$output" | jq -r '.links | length')
-  assert_greater_than "$val_links_length" '0' 'links.length'
+    local val_links_length
+    val_links_length=$(echo "$output" | jq -r '.links | length')
+    assert_greater_than "$val_links_length" '0' 'links.length'
 }
 
 test_links_relative_parent() {
-  # Resolves ../ and ./ relative parent path links correctly
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/links_relative_parent" --format json)
+    # Resolves ../ and ./ relative parent path links correctly
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/links_relative_parent" --format json)
 
-  local val_links_length
-  val_links_length=$(echo "$output" | jq -r '.links | length')
-  assert_greater_than "$val_links_length" '3' 'links.length'
+    local val_links_length
+    val_links_length=$(echo "$output" | jq -r '.links | length')
+    assert_greater_than "$val_links_length" '3' 'links.length'
 }
 
 run_tests_links() {
-  run_test test_links_anchor_fragment
-  run_test test_links_base_tag
-  run_test test_links_document_types
-  run_test test_links_empty_href
-  run_test test_links_internal_external_classification
-  run_test test_links_mailto_javascript_skip
-  run_test test_links_protocol_relative
-  run_test test_links_rel_attributes
-  run_test test_links_relative_parent
+    run_test test_links_anchor_fragment
+    run_test test_links_base_tag
+    run_test test_links_document_types
+    run_test test_links_empty_href
+    run_test test_links_internal_external_classification
+    run_test test_links_mailto_javascript_skip
+    run_test test_links_protocol_relative
+    run_test test_links_rel_attributes
+    run_test test_links_relative_parent
 }

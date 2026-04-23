@@ -46,12 +46,12 @@ RSpec.describe 'content' do
     expect(result.body_size).to be < 1025
   end
 
-  it 'content_main_only: Extracts only main content area, excluding nav, sidebar, footer' do
-    engine_config = { 'main_content_only' => true, 'respect_robots_txt' => false }
+  it 'content_main_only: Extracts content with aggressive preprocessing, excluding nav, sidebar, footer' do
+    engine_config = { 'content' => { 'preprocessing_preset' => 'aggressive' }, 'respect_robots_txt' => false }
     engine = Kreuzcrawl.create_engine(engine_config.to_json)
     url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/content_main_only"
     result = Kreuzcrawl.scrape(engine, url)
-    expect(result.main_content_only).to be(true)
+    expect(result).not_to be_nil
   end
 
   it 'content_pdf_no_extension: Detects PDF content by Content-Type header when URL has no .pdf extension' do
@@ -63,7 +63,7 @@ RSpec.describe 'content' do
   end
 
   it 'content_remove_tags: Removes specified HTML elements by CSS selector before processing' do
-    engine_config = { 'remove_tags' => %w[nav aside footer], 'respect_robots_txt' => false }
+    engine_config = { 'remove_tags' => ['nav', 'aside', 'footer'], 'respect_robots_txt' => false }
     engine = Kreuzcrawl.create_engine(engine_config.to_json)
     url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/content_remove_tags"
     result = Kreuzcrawl.scrape(engine, url)

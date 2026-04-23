@@ -4,66 +4,66 @@
 set -euo pipefail
 
 test_engine_batch_basic() {
-  # CrawlEngine with defaults batch scrapes like the free function
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/engine_batch_basic" --format json >/dev/null
+    # CrawlEngine with defaults batch scrapes like the free function
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/engine_batch_basic" --format json >/dev/null
 
-  # skipped: field 'batch.completed_count' not available on result type
-  # skipped: field 'batch.total_count' not available on result type
+    # skipped: field 'batch.completed_count' not available on result type
+    # skipped: field 'batch.total_count' not available on result type
 }
 
 test_engine_crawl_basic() {
-  # CrawlEngine with defaults crawls multiple pages like the free function
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/engine_crawl_basic" --format json >/dev/null
+    # CrawlEngine with defaults crawls multiple pages like the free function
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/engine_crawl_basic" --format json >/dev/null
 
-  # skipped: field 'crawl.pages_crawled' not available on result type
-  # skipped: field 'crawl.min_pages' not available on result type
+    # skipped: field 'crawl.pages_crawled' not available on result type
+    # skipped: field 'crawl.min_pages' not available on result type
 }
 
 test_engine_map_basic() {
-  # CrawlEngine with defaults discovers URLs like the free function
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/engine_map_basic" --format json >/dev/null
+    # CrawlEngine with defaults discovers URLs like the free function
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/engine_map_basic" --format json >/dev/null
 
-  # skipped: field 'map.min_urls' not available on result type
+    # skipped: field 'map.min_urls' not available on result type
 }
 
 test_engine_scrape_basic() {
-  # CrawlEngine with defaults scrapes a page identically to the free function
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/engine_scrape_basic" --format json)
+    # CrawlEngine with defaults scrapes a page identically to the free function
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/engine_scrape_basic" --format json)
 
-  local val_status_code
-  val_status_code=$(echo "$output" | jq -r '.status_code')
-  assert_equals "$val_status_code" '200' 'status_code'
-  local val_content_type
-  val_content_type=$(echo "$output" | jq -r '.content_type')
-  assert_equals "$val_content_type" 'text/html' 'content_type'
-  local val_metadata_title
-  val_metadata_title=$(echo "$output" | jq -r '.metadata.title')
-  assert_equals "$val_metadata_title" 'Engine Test' 'metadata.title'
-  local val_metadata_description
-  val_metadata_description=$(echo "$output" | jq -r '.metadata.description')
-  assert_contains "$val_metadata_description" 'Testing the engine' 'metadata.description'
-  local val_links_length
-  val_links_length=$(echo "$output" | jq -r '.links | length')
-  assert_greater_than_or_equal "$val_links_length" '1' 'links.length'
-  local val_metadata_headings_length
-  val_metadata_headings_length=$(echo "$output" | jq -r '.metadata.headings | length')
-  assert_greater_than_or_equal "$val_metadata_headings_length" '1' 'metadata.headings.length'
+    local val_status_code
+    val_status_code=$(echo "$output" | jq -r '.status_code')
+    assert_equals "$val_status_code" '200' 'status_code'
+    local val_content_type
+    val_content_type=$(echo "$output" | jq -r '.content_type')
+    assert_equals "$val_content_type" 'text/html' 'content_type'
+    local val_metadata_title
+    val_metadata_title=$(echo "$output" | jq -r '.metadata.title')
+    assert_equals "$val_metadata_title" 'Engine Test' 'metadata.title'
+    local val_metadata_description
+    val_metadata_description=$(echo "$output" | jq -r '.metadata.description')
+    assert_contains "$val_metadata_description" 'Testing the engine' 'metadata.description'
+    local val_links_length
+    val_links_length=$(echo "$output" | jq -r '.links | length')
+    assert_greater_than_or_equal "$val_links_length" '1' 'links.length'
+    local val_metadata_headings_length
+    val_metadata_headings_length=$(echo "$output" | jq -r '.metadata.headings | length')
+    assert_greater_than_or_equal "$val_metadata_headings_length" '1' 'metadata.headings.length'
 }
 
 test_engine_stream_basic() {
-  # CrawlEngine with defaults streams events like the free function
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/engine_stream_basic" --format json >/dev/null
+    # CrawlEngine with defaults streams events like the free function
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/engine_stream_basic" --format json >/dev/null
 
-  # skipped: field 'stream.has_page_event' not available on result type
-  # skipped: field 'stream.has_complete_event' not available on result type
-  # skipped: field 'stream.event_count_min' not available on result type
+    # skipped: field 'stream.has_page_event' not available on result type
+    # skipped: field 'stream.has_complete_event' not available on result type
+    # skipped: field 'stream.event_count_min' not available on result type
 }
 
 run_tests_engine() {
-  run_test test_engine_batch_basic
-  run_test test_engine_crawl_basic
-  run_test test_engine_map_basic
-  run_test test_engine_scrape_basic
-  run_test test_engine_stream_basic
+    run_test test_engine_batch_basic
+    run_test test_engine_crawl_basic
+    run_test test_engine_map_basic
+    run_test test_engine_scrape_basic
+    run_test test_engine_stream_basic
 }

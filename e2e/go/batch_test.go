@@ -84,9 +84,9 @@ func Test_BatchScrapeEmptyUrlsError(t *testing.T) {
 }
 
 func Test_BatchScrapeWithConfig(t *testing.T) {
-	// Batch scrape with main_content_only=true configuration
+	// Batch scrape with aggressive preprocessing configuration
 	var engineConfig pkg.CrawlConfig
-	if err := json.Unmarshal([]byte(`{"main_content_only":true}`), &engineConfig); err != nil {
+	if err := json.Unmarshal([]byte(`{"content":{"preprocessing_preset":"aggressive"}}`), &engineConfig); err != nil {
 		t.Fatalf("config parse failed: %v", err)
 	}
 	engine, createErr := pkg.CreateEngine(&engineConfig)

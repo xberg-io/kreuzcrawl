@@ -57,8 +57,8 @@ class BatchTest {
 
     @Test
     void testBatchScrapeWithConfig() throws Exception {
-        // Batch scrape with main_content_only=true configuration
-        var engineConfig = MAPPER.readValue("{\"main_content_only\":true}", CrawlConfig.class);
+        // Batch scrape with aggressive preprocessing configuration
+        var engineConfig = MAPPER.readValue("{\"content\":{\"preprocessing_preset\":\"aggressive\"}}", CrawlConfig.class);
         var engine = Kreuzcrawl.createEngine(engineConfig);
         String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/batch_scrape_with_config";
         var result = Kreuzcrawl.scrape(engine, url);

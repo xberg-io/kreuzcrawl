@@ -21,7 +21,6 @@ public class DownloadTests
         var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/download_basic_pdf";
         var result = await KreuzcrawlLib.Scrape(engine, url);
         Assert.Equal("application/pdf", result.DownloadedDocument!.MimeType.Trim());
-        // TODO: unsupported assertion type: min
     }
 
     [Fact]
@@ -45,7 +44,6 @@ public class DownloadTests
         var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/download_mime_filter";
         var result = await KreuzcrawlLib.Scrape(engine, url);
         Assert.Equal("application/pdf", result.DownloadedDocument!.MimeType.Trim());
-        // TODO: unsupported assertion type: min
     }
 
     [Fact]

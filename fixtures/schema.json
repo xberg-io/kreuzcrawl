@@ -137,7 +137,7 @@
 							"items": { "type": "string" },
 							"description": "CSS selectors for elements to remove"
 						},
-						"main_content_only": { "type": "boolean", "description": "Extract only main content area" },
+						"content": { "type": "object", "description": "Content extraction configuration" },
 						"map_search": { "type": "string", "description": "Search keyword filter for map results" },
 						"map_limit": { "type": "integer", "minimum": 1, "description": "Limit number of map results" },
 						"browser": {

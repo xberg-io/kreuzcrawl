@@ -4,64 +4,64 @@
 set -euo pipefail
 
 test_crawl_stream_events() {
-  # Crawl stream produces page and complete events
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_stream_events" --format json >/dev/null
+    # Crawl stream produces page and complete events
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/crawl_stream_events" --format json >/dev/null
 
-  # skipped: field 'stream.event_count_min' not available on result type
-  # skipped: field 'stream.has_page_event' not available on result type
-  # skipped: field 'stream.has_complete_event' not available on result type
+    # skipped: field 'stream.event_count_min' not available on result type
+    # skipped: field 'stream.has_page_event' not available on result type
+    # skipped: field 'stream.has_complete_event' not available on result type
 }
 
 test_stream_depth_crawl() {
-  # Stream produces events for multi-depth crawl with link following
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/stream_depth_crawl" --format json >/dev/null
+    # Stream produces events for multi-depth crawl with link following
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/stream_depth_crawl" --format json >/dev/null
 
-  # skipped: field 'stream.event_count_min' not available on result type
-  # skipped: field 'stream.has_page_event' not available on result type
-  # skipped: field 'stream.has_complete_event' not available on result type
+    # skipped: field 'stream.event_count_min' not available on result type
+    # skipped: field 'stream.has_page_event' not available on result type
+    # skipped: field 'stream.has_complete_event' not available on result type
 }
 
 test_stream_error_event_mid_crawl() {
-  # Stream emits error event when a page fails mid-crawl, but other pages succeed
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/stream_error_event_mid_crawl" --format json >/dev/null
+    # Stream emits error event when a page fails mid-crawl, but other pages succeed
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/stream_error_event_mid_crawl" --format json >/dev/null
 
-  # skipped: field 'stream.has_page_event' not available on result type
-  # skipped: field 'stream.has_error_event' not available on result type
-  # skipped: field 'stream.has_complete_event' not available on result type
+    # skipped: field 'stream.has_page_event' not available on result type
+    # skipped: field 'stream.has_error_event' not available on result type
+    # skipped: field 'stream.has_complete_event' not available on result type
 }
 
 test_stream_event_ordering() {
-  # Stream ensures complete event arrives after all page events
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/stream_event_ordering" --format json >/dev/null
+    # Stream ensures complete event arrives after all page events
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/stream_event_ordering" --format json >/dev/null
 
-  # skipped: field 'stream.has_complete_event' not available on result type
-  # skipped: field 'stream.has_page_event' not available on result type
-  # skipped: field 'stream.event_count_min' not available on result type
+    # skipped: field 'stream.has_complete_event' not available on result type
+    # skipped: field 'stream.has_page_event' not available on result type
+    # skipped: field 'stream.event_count_min' not available on result type
 }
 
 test_stream_large_crawl() {
-  # Stream handles crawl of 5+ pages with multiple events
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/stream_large_crawl" --format json >/dev/null
+    # Stream handles crawl of 5+ pages with multiple events
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/stream_large_crawl" --format json >/dev/null
 
-  # skipped: field 'stream.event_count_min' not available on result type
-  # skipped: field 'stream.has_page_event' not available on result type
-  # skipped: field 'stream.has_complete_event' not available on result type
+    # skipped: field 'stream.event_count_min' not available on result type
+    # skipped: field 'stream.has_page_event' not available on result type
+    # skipped: field 'stream.has_complete_event' not available on result type
 }
 
 test_stream_with_error_event() {
-  # Stream emits page and complete events even when some pages fail
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/stream_with_error_event" --format json >/dev/null
+    # Stream emits page and complete events even when some pages fail
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/stream_with_error_event" --format json >/dev/null
 
-  # skipped: field 'stream.has_page_event' not available on result type
-  # skipped: field 'stream.has_complete_event' not available on result type
-  # skipped: field 'stream.event_count_min' not available on result type
+    # skipped: field 'stream.has_page_event' not available on result type
+    # skipped: field 'stream.has_complete_event' not available on result type
+    # skipped: field 'stream.event_count_min' not available on result type
 }
 
 run_tests_stream() {
-  run_test test_crawl_stream_events
-  run_test test_stream_depth_crawl
-  run_test test_stream_error_event_mid_crawl
-  run_test test_stream_event_ordering
-  run_test test_stream_large_crawl
-  run_test test_stream_with_error_event
+    run_test test_crawl_stream_events
+    run_test test_stream_depth_crawl
+    run_test test_stream_error_event_mid_crawl
+    run_test test_stream_event_ordering
+    run_test test_stream_large_crawl
+    run_test test_stream_with_error_event
 }

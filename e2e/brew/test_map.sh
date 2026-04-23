@@ -4,54 +4,54 @@
 set -euo pipefail
 
 test_map_discover_urls() {
-  # Discovers all URLs on a site without fetching full content
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/map_discover_urls" --format json >/dev/null
+    # Discovers all URLs on a site without fetching full content
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/map_discover_urls" --format json >/dev/null
 
-  # skipped: field 'urls.length' not available on result type
+    # skipped: field 'urls.length' not available on result type
 }
 
 test_map_exclude_patterns() {
-  # Excludes URLs matching patterns from URL map
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/map_exclude_patterns" --format json >/dev/null
+    # Excludes URLs matching patterns from URL map
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/map_exclude_patterns" --format json >/dev/null
 
-  # skipped: field 'urls.length' not available on result type
+    # skipped: field 'urls.length' not available on result type
 }
 
 test_map_include_subdomains() {
-  # Includes subdomain URLs in URL map discovery
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/map_include_subdomains" --format json >/dev/null
+    # Includes subdomain URLs in URL map discovery
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/map_include_subdomains" --format json >/dev/null
 
-  # skipped: field 'urls.length' not available on result type
-  # skipped: field 'urls' not available on result type
+    # skipped: field 'urls.length' not available on result type
+    # skipped: field 'urls' not available on result type
 }
 
 test_map_large_sitemap() {
-  # Handles large sitemap with 100+ URLs
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/map_large_sitemap" --format json >/dev/null
+    # Handles large sitemap with 100+ URLs
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/map_large_sitemap" --format json >/dev/null
 
-  # skipped: field 'urls.length' not available on result type
+    # skipped: field 'urls.length' not available on result type
 }
 
 test_map_limit_pagination() {
-  # Limits map result count to specified maximum
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/map_limit_pagination" --format json >/dev/null
+    # Limits map result count to specified maximum
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/map_limit_pagination" --format json >/dev/null
 
-  # skipped: field 'urls.length' not available on result type
+    # skipped: field 'urls.length' not available on result type
 }
 
 test_map_search_filter() {
-  # Filters map results by search keyword
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/map_search_filter" --format json >/dev/null
+    # Filters map results by search keyword
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/map_search_filter" --format json >/dev/null
 
-  # skipped: field 'urls.length' not available on result type
-  # skipped: field 'urls' not available on result type
+    # skipped: field 'urls.length' not available on result type
+    # skipped: field 'urls' not available on result type
 }
 
 run_tests_map() {
-  run_test test_map_discover_urls
-  run_test test_map_exclude_patterns
-  run_test test_map_include_subdomains
-  run_test test_map_large_sitemap
-  run_test test_map_limit_pagination
-  run_test test_map_search_filter
+    run_test test_map_discover_urls
+    run_test test_map_exclude_patterns
+    run_test test_map_include_subdomains
+    run_test test_map_large_sitemap
+    run_test test_map_limit_pagination
+    run_test test_map_search_filter
 }

@@ -4,54 +4,54 @@
 set -euo pipefail
 
 test_encoding_double_encoded() {
-  # Handles double-encoded URL characters (%25C3%25B6)
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/encoding_double_encoded" --format json)
+    # Handles double-encoded URL characters (%25C3%25B6)
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/encoding_double_encoded" --format json)
 
-  local val_html
-  val_html=$(echo "$output" | jq -r '.html')
-  assert_not_empty "$val_html" 'html'
-  local val_links_length
-  val_links_length=$(echo "$output" | jq -r '.links | length')
-  assert_greater_than_or_equal "$val_links_length" '1' 'links.length'
+    local val_html
+    val_html=$(echo "$output" | jq -r '.html')
+    assert_not_empty "$val_html" 'html'
+    local val_links_length
+    val_links_length=$(echo "$output" | jq -r '.links | length')
+    assert_greater_than_or_equal "$val_links_length" '1' 'links.length'
 }
 
 test_encoding_mixed_charset_page() {
-  # Handles charset mismatch between HTTP header and HTML meta tag
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/encoding_mixed_charset_page" --format json)
+    # Handles charset mismatch between HTTP header and HTML meta tag
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/encoding_mixed_charset_page" --format json)
 
-  local val_html
-  val_html=$(echo "$output" | jq -r '.html')
-  assert_not_empty "$val_html" 'html'
+    local val_html
+    val_html=$(echo "$output" | jq -r '.html')
+    assert_not_empty "$val_html" 'html'
 }
 
 test_encoding_percent_encoded_path() {
-  # Handles percent-encoded spaces and characters in URL paths
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/encoding_percent_encoded_path" --format json)
+    # Handles percent-encoded spaces and characters in URL paths
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/encoding_percent_encoded_path" --format json)
 
-  local val_html
-  val_html=$(echo "$output" | jq -r '.html')
-  assert_not_empty "$val_html" 'html'
-  local val_links_length
-  val_links_length=$(echo "$output" | jq -r '.links | length')
-  assert_greater_than_or_equal "$val_links_length" '2' 'links.length'
+    local val_html
+    val_html=$(echo "$output" | jq -r '.html')
+    assert_not_empty "$val_html" 'html'
+    local val_links_length
+    val_links_length=$(echo "$output" | jq -r '.links | length')
+    assert_greater_than_or_equal "$val_links_length" '2' 'links.length'
 }
 
 test_encoding_unicode_url() {
-  # Handles Unicode characters in URLs (Hebrew, Japanese, Cyrillic)
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/encoding_unicode_url" --format json)
+    # Handles Unicode characters in URLs (Hebrew, Japanese, Cyrillic)
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/encoding_unicode_url" --format json)
 
-  local val_html
-  val_html=$(echo "$output" | jq -r '.html')
-  assert_not_empty "$val_html" 'html'
+    local val_html
+    val_html=$(echo "$output" | jq -r '.html')
+    assert_not_empty "$val_html" 'html'
 }
 
 run_tests_encoding() {
-  run_test test_encoding_double_encoded
-  run_test test_encoding_mixed_charset_page
-  run_test test_encoding_percent_encoded_path
-  run_test test_encoding_unicode_url
+    run_test test_encoding_double_encoded
+    run_test test_encoding_mixed_charset_page
+    run_test test_encoding_percent_encoded_path
+    run_test test_encoding_unicode_url
 }

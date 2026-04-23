@@ -12,7 +12,7 @@ RSpec.describe 'validation' do
   end
 
   it 'validation_invalid_auth_config: auth object with no recognized variant (empty object) is rejected' do
-    engine_config = { 'auth' => {} }
+    engine_config = { 'auth' => {  } }
     engine = Kreuzcrawl.create_engine(engine_config.to_json)
     url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/validation_invalid_auth_config"
     expect { Kreuzcrawl.scrape(engine, url) }.to raise_error

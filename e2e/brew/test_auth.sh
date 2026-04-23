@@ -4,46 +4,46 @@
 set -euo pipefail
 
 test_auth_basic_http() {
-  # Sends HTTP Basic authentication header
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/auth_basic_http" --format json)
+    # Sends HTTP Basic authentication header
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/auth_basic_http" --format json)
 
-  local val_auth_header_sent
-  val_auth_header_sent=$(echo "$output" | jq -r '.auth_header_sent')
-  assert_equals "$val_auth_header_sent" 'true' 'auth_header_sent'
-  local val_status_code
-  val_status_code=$(echo "$output" | jq -r '.status_code')
-  assert_equals "$val_status_code" '200' 'status_code'
+    local val_auth_header_sent
+    val_auth_header_sent=$(echo "$output" | jq -r '.auth_header_sent')
+    assert_equals "$val_auth_header_sent" 'true' 'auth_header_sent'
+    local val_status_code
+    val_status_code=$(echo "$output" | jq -r '.status_code')
+    assert_equals "$val_status_code" '200' 'status_code'
 }
 
 test_auth_bearer_token() {
-  # Sends Bearer token in Authorization header
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/auth_bearer_token" --format json)
+    # Sends Bearer token in Authorization header
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/auth_bearer_token" --format json)
 
-  local val_auth_header_sent
-  val_auth_header_sent=$(echo "$output" | jq -r '.auth_header_sent')
-  assert_equals "$val_auth_header_sent" 'true' 'auth_header_sent'
-  local val_status_code
-  val_status_code=$(echo "$output" | jq -r '.status_code')
-  assert_equals "$val_status_code" '200' 'status_code'
+    local val_auth_header_sent
+    val_auth_header_sent=$(echo "$output" | jq -r '.auth_header_sent')
+    assert_equals "$val_auth_header_sent" 'true' 'auth_header_sent'
+    local val_status_code
+    val_status_code=$(echo "$output" | jq -r '.status_code')
+    assert_equals "$val_status_code" '200' 'status_code'
 }
 
 test_auth_custom_header() {
-  # Sends authentication via custom header (X-API-Key)
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/auth_custom_header" --format json)
+    # Sends authentication via custom header (X-API-Key)
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/auth_custom_header" --format json)
 
-  local val_auth_header_sent
-  val_auth_header_sent=$(echo "$output" | jq -r '.auth_header_sent')
-  assert_equals "$val_auth_header_sent" 'true' 'auth_header_sent'
-  local val_status_code
-  val_status_code=$(echo "$output" | jq -r '.status_code')
-  assert_equals "$val_status_code" '200' 'status_code'
+    local val_auth_header_sent
+    val_auth_header_sent=$(echo "$output" | jq -r '.auth_header_sent')
+    assert_equals "$val_auth_header_sent" 'true' 'auth_header_sent'
+    local val_status_code
+    val_status_code=$(echo "$output" | jq -r '.status_code')
+    assert_equals "$val_status_code" '200' 'status_code'
 }
 
 run_tests_auth() {
-  run_test test_auth_basic_http
-  run_test test_auth_bearer_token
-  run_test test_auth_custom_header
+    run_test test_auth_basic_http
+    run_test test_auth_bearer_token
+    run_test test_auth_custom_header
 }

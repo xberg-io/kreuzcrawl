@@ -11,7 +11,6 @@ RSpec.describe 'download' do
     url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/download_basic_pdf"
     result = Kreuzcrawl.scrape(engine, url)
     expect(result.downloaded_document.mime_type).to eq('application/pdf')
-    # TODO: unsupported assertion type: min
   end
 
   it 'download_filename_extraction: Extract filename from Content-Disposition header' do
@@ -29,7 +28,6 @@ RSpec.describe 'download' do
     url = "#{ENV.fetch('MOCK_SERVER_URL')}/fixtures/download_mime_filter"
     result = Kreuzcrawl.scrape(engine, url)
     expect(result.downloaded_document.mime_type).to eq('application/pdf')
-    # TODO: unsupported assertion type: min
   end
 
   it 'download_no_document: HTML pages are not downloaded as documents even when download_documents is enabled' do

@@ -106,12 +106,11 @@ impl Drop for ProfileGuard {
             }
         };
 
-        if let Some(parent) = self.output_path.parent() {
-            if let Err(e) = std::fs::create_dir_all(parent) {
+        if let Some(parent) = self.output_path.parent()
+            && let Err(e) = std::fs::create_dir_all(parent) {
                 tracing::warn!(error = %e, "failed to create profile output dir on drop");
                 return;
             }
-        }
 
         match File::create(&self.output_path) {
             Ok(file) => {

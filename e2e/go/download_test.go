@@ -32,9 +32,6 @@ func Test_DownloadBasicPdf(t *testing.T) {
 			t.Errorf("equals mismatch: got %v", result.DownloadedDocument.MimeType)
 		}
 	}
-	if result.DownloadedDocument != nil {
-		// TODO: unsupported assertion type: min
-	}
 }
 
 func Test_DownloadFilenameExtraction(t *testing.T) {
@@ -81,9 +78,6 @@ func Test_DownloadMimeFilter(t *testing.T) {
 		if strings.TrimSpace(result.DownloadedDocument.MimeType) != `application/pdf` {
 			t.Errorf("equals mismatch: got %v", result.DownloadedDocument.MimeType)
 		}
-	}
-	if result.DownloadedDocument != nil {
-		// TODO: unsupported assertion type: min
 	}
 }
 

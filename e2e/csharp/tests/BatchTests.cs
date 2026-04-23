@@ -62,8 +62,8 @@ public class BatchTests
     [Fact]
     public async Task Test_BatchScrapeWithConfig()
     {
-        // Batch scrape with main_content_only=true configuration
-        var engineConfig = JsonSerializer.Deserialize<CrawlConfig>("{\"main_content_only\":true}", ConfigOptions)!;
+        // Batch scrape with aggressive preprocessing configuration
+        var engineConfig = JsonSerializer.Deserialize<CrawlConfig>("{\"content\":{\"preprocessing_preset\":\"aggressive\"}}", ConfigOptions)!;
         var engine = KreuzcrawlLib.CreateEngine(engineConfig);
         var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/batch_scrape_with_config";
         var result = await KreuzcrawlLib.Scrape(engine, url);

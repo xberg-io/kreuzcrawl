@@ -4,81 +4,81 @@
 set -euo pipefail
 
 test_batch_crawl_basic() {
-  # Batch crawl of 2 seed URLs with links to discover
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/batch_crawl_basic" --format json >/dev/null
+    # Batch crawl of 2 seed URLs with links to discover
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/batch_crawl_basic" --format json >/dev/null
 
-  # skipped: field 'batch.completed_count' not available on result type
-  # skipped: field 'batch.failed_count' not available on result type
-  # skipped: field 'batch.total_count' not available on result type
+    # skipped: field 'batch.completed_count' not available on result type
+    # skipped: field 'batch.failed_count' not available on result type
+    # skipped: field 'batch.total_count' not available on result type
 }
 
 test_batch_crawl_partial_failure() {
-  # Batch crawl where one seed URL returns 404 error
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/batch_crawl_partial_failure" --format json >/dev/null
+    # Batch crawl where one seed URL returns 404 error
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/batch_crawl_partial_failure" --format json >/dev/null
 
-  # skipped: field 'batch.completed_count' not available on result type
-  # skipped: field 'batch.failed_count' not available on result type
-  # skipped: field 'batch.total_count' not available on result type
+    # skipped: field 'batch.completed_count' not available on result type
+    # skipped: field 'batch.failed_count' not available on result type
+    # skipped: field 'batch.total_count' not available on result type
 }
 
 test_batch_crawl_with_config() {
-  # Batch crawl with max_depth=1 config verifying pages are discovered
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/batch_crawl_with_config" --format json >/dev/null
+    # Batch crawl with max_depth=1 config verifying pages are discovered
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/batch_crawl_with_config" --format json >/dev/null
 
-  # skipped: field 'batch.completed_count' not available on result type
-  # skipped: field 'batch.failed_count' not available on result type
+    # skipped: field 'batch.completed_count' not available on result type
+    # skipped: field 'batch.failed_count' not available on result type
 }
 
 test_batch_scrape_empty_urls_error() {
-  # Batch scrape with empty batch_urls array returns error
-  if kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/batch_scrape_empty_urls_error" --format json >/dev/null 2>&1; then
-    echo 'FAIL [error]: expected command to fail but it succeeded' >&2
-    return 1
-  fi
+    # Batch scrape with empty batch_urls array returns error
+    if kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/batch_scrape_empty_urls_error" --format json >/dev/null 2>&1; then
+        echo 'FAIL [error]: expected command to fail but it succeeded' >&2
+        return 1
+    fi
 }
 
 test_batch_scrape_with_config() {
-  # Batch scrape with main_content_only=true configuration
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/batch_scrape_with_config" --format json >/dev/null
+    # Batch scrape with aggressive preprocessing configuration
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/batch_scrape_with_config" --format json >/dev/null
 
-  # skipped: field 'batch.completed_count' not available on result type
-  # skipped: field 'batch.failed_count' not available on result type
-  # skipped: field 'batch.total_count' not available on result type
+    # skipped: field 'batch.completed_count' not available on result type
+    # skipped: field 'batch.failed_count' not available on result type
+    # skipped: field 'batch.total_count' not available on result type
 }
 
 test_scrape_batch_basic() {
-  # Batch scrape of multiple URLs all succeeding
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/scrape_batch_basic" --format json >/dev/null
+    # Batch scrape of multiple URLs all succeeding
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/scrape_batch_basic" --format json >/dev/null
 
-  # skipped: field 'batch.completed_count' not available on result type
-  # skipped: field 'batch.failed_count' not available on result type
-  # skipped: field 'batch.total_count' not available on result type
+    # skipped: field 'batch.completed_count' not available on result type
+    # skipped: field 'batch.failed_count' not available on result type
+    # skipped: field 'batch.total_count' not available on result type
 }
 
 test_scrape_batch_partial_failure() {
-  # Batch scrape with one URL failing returns partial results
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/scrape_batch_partial_failure" --format json >/dev/null
+    # Batch scrape with one URL failing returns partial results
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/scrape_batch_partial_failure" --format json >/dev/null
 
-  # skipped: field 'batch.completed_count' not available on result type
-  # skipped: field 'batch.failed_count' not available on result type
-  # skipped: field 'batch.total_count' not available on result type
+    # skipped: field 'batch.completed_count' not available on result type
+    # skipped: field 'batch.failed_count' not available on result type
+    # skipped: field 'batch.total_count' not available on result type
 }
 
 test_scrape_batch_progress() {
-  # Batch scrape results include specific URL
-  kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/scrape_batch_progress" --format json >/dev/null
+    # Batch scrape results include specific URL
+    kreuzcrawl scrape "${MOCK_SERVER_URL}/fixtures/scrape_batch_progress" --format json >/dev/null
 
-  # skipped: field 'batch.total_count' not available on result type
-  # skipped: field 'batch.results' not available on result type
+    # skipped: field 'batch.total_count' not available on result type
+    # skipped: field 'batch.results' not available on result type
 }
 
 run_tests_batch() {
-  run_test test_batch_crawl_basic
-  run_test test_batch_crawl_partial_failure
-  run_test test_batch_crawl_with_config
-  run_test test_batch_scrape_empty_urls_error
-  run_test test_batch_scrape_with_config
-  run_test test_scrape_batch_basic
-  run_test test_scrape_batch_partial_failure
-  run_test test_scrape_batch_progress
+    run_test test_batch_crawl_basic
+    run_test test_batch_crawl_partial_failure
+    run_test test_batch_crawl_with_config
+    run_test test_batch_scrape_empty_urls_error
+    run_test test_batch_scrape_with_config
+    run_test test_scrape_batch_basic
+    run_test test_scrape_batch_partial_failure
+    run_test test_scrape_batch_progress
 }

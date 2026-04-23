@@ -47,8 +47,8 @@ defmodule E2e.BatchTest do
   end
 
   describe "batch_scrape_with_config" do
-    test "Batch scrape with main_content_only=true configuration" do
-      engine_config = "{\"main_content_only\":true}"
+    test "Batch scrape with aggressive preprocessing configuration" do
+      engine_config = "{\"content\":{\"preprocessing_preset\":\"aggressive\"}}"
       {:ok, engine} = Kreuzcrawl.create_engine(engine_config)
       url = System.get_env("MOCK_SERVER_URL") <> "/fixtures/batch_scrape_with_config"
       {:ok, result} = Kreuzcrawl.scrape_async(engine, url)

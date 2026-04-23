@@ -10,7 +10,6 @@ defmodule E2e.DownloadTest do
       url = System.get_env("MOCK_SERVER_URL") <> "/fixtures/download_basic_pdf"
       {:ok, result} = Kreuzcrawl.scrape_async(engine, url)
       assert String.trim(result.downloaded_document.mime_type) == "application/pdf"
-      # TODO: unsupported assertion type: min
     end
   end
 
@@ -32,7 +31,6 @@ defmodule E2e.DownloadTest do
       url = System.get_env("MOCK_SERVER_URL") <> "/fixtures/download_mime_filter"
       {:ok, result} = Kreuzcrawl.scrape_async(engine, url)
       assert String.trim(result.downloaded_document.mime_type) == "application/pdf"
-      # TODO: unsupported assertion type: min
     end
   end
 

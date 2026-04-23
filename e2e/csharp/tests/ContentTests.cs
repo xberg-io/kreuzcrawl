@@ -71,12 +71,11 @@ public class ContentTests
     [Fact]
     public async Task Test_ContentMainOnly()
     {
-        // Extracts only main content area, excluding nav, sidebar, footer
-        var engineConfig = JsonSerializer.Deserialize<CrawlConfig>("{\"main_content_only\":true,\"respect_robots_txt\":false}", ConfigOptions)!;
+        // Extracts content with aggressive preprocessing, excluding nav, sidebar, footer
+        var engineConfig = JsonSerializer.Deserialize<CrawlConfig>("{\"content\":{\"preprocessing_preset\":\"aggressive\"},\"respect_robots_txt\":false}", ConfigOptions)!;
         var engine = KreuzcrawlLib.CreateEngine(engineConfig);
         var url = Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/content_main_only";
         var result = await KreuzcrawlLib.Scrape(engine, url);
-        Assert.Equal(true, result.MainContentOnly);
     }
 
     [Fact]

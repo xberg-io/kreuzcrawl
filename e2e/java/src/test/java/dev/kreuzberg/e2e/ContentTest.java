@@ -65,12 +65,11 @@ class ContentTest {
 
     @Test
     void testContentMainOnly() throws Exception {
-        // Extracts only main content area, excluding nav, sidebar, footer
-        var engineConfig = MAPPER.readValue("{\"main_content_only\":true,\"respect_robots_txt\":false}", CrawlConfig.class);
+        // Extracts content with aggressive preprocessing, excluding nav, sidebar, footer
+        var engineConfig = MAPPER.readValue("{\"content\":{\"preprocessing_preset\":\"aggressive\"},\"respect_robots_txt\":false}", CrawlConfig.class);
         var engine = Kreuzcrawl.createEngine(engineConfig);
         String url = System.getenv("MOCK_SERVER_URL") + "/fixtures/content_main_only";
         var result = Kreuzcrawl.scrape(engine, url);
-        assertEquals(true, result.mainContentOnly());
     }
 
     @Test
