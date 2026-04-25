@@ -94,14 +94,6 @@ repos:
       - id: cargo-deny
         args: ["check"]
 
-  # JavaScript/TypeScript/JSON/CSS: biome (formatting + linting with autofixes)
-  - repo: https://github.com/biomejs/pre-commit
-    rev: v2.4.13
-    hooks:
-      - id: biome-format
-        exclude: ^tools/benchmark-harness/fixtures/
-      - id: biome-lint
-
   - repo: https://github.com/oxc-project/mirrors-oxlint
     rev: v1.60.0
     hooks:
