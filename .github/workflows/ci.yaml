@@ -2100,10 +2100,9 @@ jobs:
           PKG_CONFIG_PATH: ${{ env.PKG_CONFIG_PATH }}
 
       - name: Install golangci-lint
-        shell: bash
-        run: |
-          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$(go env GOPATH)/bin"
-          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+        uses: golangci/golangci-lint-action@v9
+        with:
+          install-only: true
 
       - name: Run Go lint checks
         shell: bash
