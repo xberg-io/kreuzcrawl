@@ -2,7 +2,7 @@
 title: "Go API Reference"
 ---
 
-## Go API Reference <span class="version-badge">v0.3.0-rc.2</span>
+## Go API Reference <span class="version-badge">v0.3.0-rc.3</span>
 
 ### Functions
 
@@ -861,4 +861,3 @@ Errors that can occur during crawling, scraping, or mapping operations.
 
 
 ---
-

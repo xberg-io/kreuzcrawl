@@ -89,6 +89,7 @@ languages = [
     "wasm",
     "brew",
 ]
+
 fields_optional = [
     "markdown",
     "metadata.title",
@@ -195,6 +196,23 @@ result_fields = [
     "screenshot",
     "downloaded_document",
 ]
+
+# Format e2e directories with the same tooling prek runs in `task <lang>:format` /
+# `task <lang>:lint`. Without these the prek hooks autofix files post-finalisation
+# and break alef-verify (the embedded `alef:hash` is computed before the autofix).
+[e2e.format]
+rust = "(cd {dir} && cargo fmt --all)"
+python = "ruff check --fix {dir} && ruff format {dir}"
+go = "gofmt -w {dir}"
+ruby = "(cd {dir} && bundle exec rubocop --config .rubocop.yaml --autocorrect-all .)"
+php = "(cd {dir} && ../../packages/php/vendor/bin/php-cs-fixer fix --rules='@PSR12,@PHP82Migration' --path-mode=override .)"
+
+# Java is formatted by Spotless (Eclipse 4.31) via maven verify in prek's
+# `java-verify` hook. alef's default `google-java-format` produces different
+# output, breaking alef-verify. Use Spotless directly so the two pipelines
+# agree on byte-for-byte output.
+[format_overrides.java]
+command = "mvn -f packages/java/pom.xml -B -DskipTests -Dgpg.skip=true -Dskip.rust.ffi=true spotless:apply"
 
 [e2e.call]
 function = "scrape"

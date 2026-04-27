@@ -14,7 +14,7 @@ repos:
 
   # AI-Rulez: auto-generate AI assistant configuration files
   - repo: https://github.com/Goldziher/ai-rulez
-    rev: v4.0.7
+    rev: v4.0.8
     hooks:
       - id: ai-rulez-validate
       - id: ai-rulez-generate
@@ -96,7 +96,7 @@ repos:
         args: ["check"]
 
   - repo: https://github.com/oxc-project/mirrors-oxlint
-    rev: v1.61.0
+    rev: v1.62.0
     hooks:
       - id: oxlint
         args: ["--fix"]
@@ -168,7 +168,7 @@ repos:
 
   # Spelling: fast Rust-based spell checker
   - repo: https://github.com/crate-ci/typos
-    rev: v1.45.1
+    rev: v1.45.2
     hooks:
       - id: typos
         args: [--force-exclude]
@@ -197,7 +197,7 @@ repos:
 
   # Alef: format, lint, verify bindings, sync versions
   - repo: https://github.com/kreuzberg-dev/alef
-    rev: v0.10.0
+    rev: v0.10.4
     hooks:
       - id: alef-verify
       - id: alef-sync-versions

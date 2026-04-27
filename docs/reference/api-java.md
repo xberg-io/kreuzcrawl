@@ -2,7 +2,7 @@
 title: "Java API Reference"
 ---
 
-## Java API Reference <span class="version-badge">v0.3.0-rc.2</span>
+## Java API Reference <span class="version-badge">v0.3.0-rc.3</span>
 
 ### Functions
 
@@ -861,4 +861,3 @@ Errors that can occur during crawling, scraping, or mapping operations.
 
 
 ---
-
