@@ -18,7 +18,7 @@
     <img src="https://img.shields.io/maven-central/v/dev.kreuzberg.kreuzcrawl/kreuzcrawl?label=Java&color=007ec6" alt="Java">
   </a>
   <a href="https://pkg.go.dev/github.com/kreuzberg-dev/kreuzcrawl/packages/go">
-    <img src="https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzcrawl?label=Go&color=007ec6&filter=v0.3.0-rc.6" alt="Go">
+    <img src="https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzcrawl?label=Go&color=007ec6&filter=v0.3.0-rc.7" alt="Go">
   </a>
   <a href="https://www.nuget.org/packages/Kreuzcrawl/">
     <img src="https://img.shields.io/nuget/v/Kreuzcrawl?label=C%23&color=007ec6" alt="C#">
@@ -62,7 +62,7 @@ Panama FFM API (Java 21+) for zero-overhead native calls with full type safety.
 <dependency>
     <groupId>dev.kreuzberg.kreuzcrawl</groupId>
     <artifactId>kreuzcrawl</artifactId>
-    <version>0.3.0-rc.6</version>
+    <version>0.3.0-rc.7</version>
 </dependency>
 ```
 
