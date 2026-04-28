@@ -146,6 +146,17 @@ jobs:
       - name: Install Task
         uses: kreuzberg-dev/actions/install-task@v1
 
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: "1.26"
+
+      - name: Setup Go CGO environment
+        uses: kreuzberg-dev/actions/setup-go-cgo-env@v1
+
+      - name: Install alef
+        uses: kreuzberg-dev/actions/install-alef@v1
+
       - name: Run prek hooks
         uses: j178/prek-action@v2
         with:
