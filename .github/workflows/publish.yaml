@@ -1019,6 +1019,12 @@ jobs:
         include:
           - runner: macos-latest
             bottle_tag: arm64_sequoia
+          - runner: macos-15-intel
+            bottle_tag: sequoia
+          - runner: ubuntu-latest
+            bottle_tag: x86_64_linux
+          - runner: ubuntu-24.04-arm
+            bottle_tag: arm64_linux
     steps:
       - name: Checkout
         uses: actions/checkout@v6
