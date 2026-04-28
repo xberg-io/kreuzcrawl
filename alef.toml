@@ -597,6 +597,14 @@ extra_paths = [
     "packages/ruby/ext/kreuzcrawl_rb/src/kreuzcrawl/version.rb",
 ]
 
+# kreuzcrawl-cli depends on kreuzcrawl via a path; cargo publish requires
+# the dep also declares a version. Keep that version in lockstep with the
+# workspace bump so every rc tag stays publishable.
+[[sync.text_replacements]]
+path = "crates/kreuzcrawl-cli/Cargo.toml"
+search = 'kreuzcrawl = \{ path = "../kreuzcrawl", version = "=[^"]*"'
+replace = 'kreuzcrawl = { path = "../kreuzcrawl", version = "={version}"'
+
 # ---------------------------------------------------------------------------
 # Lint
 # ---------------------------------------------------------------------------

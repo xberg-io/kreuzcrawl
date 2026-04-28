@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |spec|
   spec.name = 'kreuzcrawl'
-  spec.version = '0.3.0.pre.rc.8'
+  spec.version = '0.3.0.pre.rc.9'
   spec.authors       = ['Kreuzberg Team']
   spec.summary       = 'High-performance web crawling engine'
   spec.description   = 'High-performance web crawling engine'
