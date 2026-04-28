@@ -14,7 +14,14 @@ checked=0
 # e.g., "0.1.0-rc.1" → "0.1.0rc1", "0.1.0-alpha.2" → "0.1.0a2"
 expected_pep440="$(echo "$expected" | sed -E 's/-alpha\.?/a/; s/-beta\.?/b/; s/-rc\.?/rc/; s/(a|b|rc)\.([0-9]+)$/\1\2/')"
 
-echo "Expected version: $expected (PEP 440: $expected_pep440)"
+# Convert semver pre-release to RubyGems canonical format for Ruby comparison
+# e.g., "0.3.0-rc.7" → "0.3.0.pre.rc.7", release versions stay unchanged.
+case "$expected" in
+*-*) expected_rubygems="$(echo "$expected" | sed -E 's/-/.pre./')" ;;
+*) expected_rubygems="$expected" ;;
+esac
+
+echo "Expected version: $expected (PEP 440: $expected_pep440, RubyGems: $expected_rubygems)"
 echo "----------------------------------------"
 
 check_version() {
@@ -57,8 +64,9 @@ fi
 
 ruby_version_file="$(find packages/ruby -name version.rb -path '*/kreuzcrawl/version.rb' 2>/dev/null | head -1)"
 if [ -n "$ruby_version_file" ]; then
-  ruby_version="$(grep 'VERSION' "$ruby_version_file" | sed -n 's/.*VERSION *= *"\([^"]*\)".*/\1/p')"
-  check_version "$ruby_version_file" "$ruby_version" "$expected"
+  # alef writes single-quoted Ruby strings; accept either quote style.
+  ruby_version="$(grep 'VERSION' "$ruby_version_file" | sed -nE "s/.*VERSION *= *['\"]([^'\"]*)['\"].*/\1/p")"
+  check_version "$ruby_version_file" "$ruby_version" "$expected_rubygems"
 fi
 
 if [ -f packages/r/DESCRIPTION ]; then
