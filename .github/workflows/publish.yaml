@@ -596,7 +596,7 @@ jobs:
           args: --release -i python${{ matrix.python }} --out ../../target/wheels ${{ matrix.extra_args }}
           target: ${{ matrix.rust_target }}
           working-directory: packages/python
-          sccache: true
+          sccache: false
 
       - name: Setup Python (macOS)
         if: matrix.label == 'macos-arm64'
