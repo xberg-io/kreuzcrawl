@@ -1,6 +1,6 @@
 {
 	"name": "@kreuzberg/kreuzcrawl",
-	"version": "0.3.0-rc.14",
+	"version": "0.3.0-rc.15",
 	"main": "index.js",
 	"types": "index.d.ts",
 	"repository": {

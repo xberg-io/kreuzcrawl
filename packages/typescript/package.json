@@ -1,6 +1,6 @@
 {
   "name": "@kreuzberg/kreuzcrawl",
-  "version": "0.3.0-rc.14",
+  "version": "0.3.0-rc.15",
   "description": "High-performance web crawling engine",
   "keywords": [
     "crawl",
