@@ -1,9 +1,7 @@
 {
 	"id": "validation_invalid_include_regex",
 	"description": "Invalid regex in include_paths is rejected",
-	"tags": [
-		"validation"
-	],
+	"tags": ["validation"],
 	"input": {
 		"mock_responses": [
 			{
@@ -12,9 +10,7 @@
 			}
 		],
 		"config": {
-			"include_paths": [
-				"[invalid"
-			]
+			"include_paths": ["[invalid"]
 		}
 	},
 	"assertions": [

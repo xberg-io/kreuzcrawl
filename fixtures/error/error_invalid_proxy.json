@@ -1,10 +1,7 @@
 {
 	"id": "error_invalid_proxy",
 	"description": "Proxy pointing to unreachable address causes connection error during scrape",
-	"tags": [
-		"proxy",
-		"error"
-	],
+	"tags": ["proxy", "error"],
 	"input": {
 		"mock_responses": [
 			{

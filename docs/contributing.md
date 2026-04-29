@@ -90,7 +90,7 @@ Four things that aren't obvious from the code:
 
 [gitfluff](https://github.com/Goldziher/gitfluff) lints commit messages on commit. Format:
 
-```
+```text
 <type>(<scope>): <subject>
 
 [optional body]

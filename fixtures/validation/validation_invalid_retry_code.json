@@ -1,9 +1,7 @@
 {
 	"id": "validation_invalid_retry_code",
 	"description": "Retry code outside 100-599 is rejected",
-	"tags": [
-		"validation"
-	],
+	"tags": ["validation"],
 	"input": {
 		"mock_responses": [
 			{
@@ -12,9 +10,7 @@
 			}
 		],
 		"config": {
-			"retry_codes": [
-				999
-			]
+			"retry_codes": [999]
 		}
 	},
 	"assertions": [

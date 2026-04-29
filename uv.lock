@@ -130,7 +130,7 @@ wheels = [
 
 [[package]]
 name = "kreuzcrawl"
-version = "0.3.0rc15"
+version = "0.3.0rc16"
 source = { editable = "packages/python" }
 
 [[package]]

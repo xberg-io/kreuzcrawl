@@ -46,7 +46,7 @@ tasks:
     desc: Pack C# NuGet package for publishing
     dir: packages/csharp
     cmds:
-      - dotnet pack Kreuzcrawl/Kreuzcrawl.csproj -c Release {{.CLI_ARGS | default ""}}
+      - dotnet pack Kreuzcrawl.csproj -c Release {{.CLI_ARGS | default ""}}
 
   build:bindings:
     desc: Build C# bindings for benchmarking

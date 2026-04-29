@@ -1,9 +1,7 @@
 {
 	"id": "validation_invalid_exclude_regex",
 	"description": "Invalid regex in exclude_paths is rejected",
-	"tags": [
-		"validation"
-	],
+	"tags": ["validation"],
 	"input": {
 		"mock_responses": [
 			{
@@ -12,9 +10,7 @@
 			}
 		],
 		"config": {
-			"exclude_paths": [
-				"(unclosed"
-			]
+			"exclude_paths": ["(unclosed"]
 		}
 	},
 	"assertions": [

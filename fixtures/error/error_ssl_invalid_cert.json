@@ -1,10 +1,7 @@
 {
 	"id": "error_ssl_invalid_cert",
 	"description": "Handles SSL certificate validation error",
-	"tags": [
-		"error",
-		"ssl"
-	],
+	"tags": ["error", "ssl"],
 	"input": {
 		"mock_responses": [
 			{

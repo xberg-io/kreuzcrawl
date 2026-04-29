@@ -1,130 +1,130 @@
 [
-  {
-    "id": "amazon-product",
-    "url": "https://www.amazon.com/dp/B0D1XD1ZV3",
-    "category": "e-commerce",
-    "verify_selectors": ["#productTitle", ".a-price"],
-    "verify_text": ["Add to Cart"],
-    "tags": ["waf", "cloudflare"]
-  },
-  {
-    "id": "github-repo",
-    "url": "https://github.com/rust-lang/rust",
-    "category": "professional",
-    "verify_selectors": [".repository-content"],
-    "verify_text": ["README", "rust-lang"],
-    "tags": ["js-render"]
-  },
-  {
-    "id": "reddit-post",
-    "url": "https://www.reddit.com/r/rust/",
-    "category": "social",
-    "verify_selectors": [],
-    "verify_text": ["rust", "community"],
-    "tags": ["js-render"]
-  },
-  {
-    "id": "youtube-video",
-    "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-    "category": "social",
-    "verify_selectors": [],
-    "verify_text": ["Rick Astley"],
-    "tags": ["js-render", "consent-wall"]
-  },
-  {
-    "id": "linkedin-company",
-    "url": "https://www.linkedin.com/company/anthropic",
-    "category": "professional",
-    "verify_selectors": [],
-    "verify_text": ["Anthropic"],
-    "tags": ["login-wall"]
-  },
-  {
-    "id": "indeed-jobs",
-    "url": "https://www.indeed.com/jobs?q=software+engineer&l=San+Francisco",
-    "category": "professional",
-    "verify_selectors": [".jobsearch-ResultsList"],
-    "verify_text": ["Software Engineer"],
-    "tags": ["cloudflare"]
-  },
-  {
-    "id": "bestbuy-product",
-    "url": "https://www.bestbuy.com/site/apple-macbook-air-13-inch-laptop-m4-chip-16gb-memory-256gb/6604203.p",
-    "category": "e-commerce",
-    "verify_selectors": [".sku-title"],
-    "verify_text": ["MacBook"],
-    "tags": ["js-render"]
-  },
-  {
-    "id": "ebay-listing",
-    "url": "https://www.ebay.com/sch/i.html?_nkw=laptop",
-    "category": "e-commerce",
-    "verify_selectors": [".srp-results"],
-    "verify_text": ["laptop"],
-    "tags": []
-  },
-  {
-    "id": "walmart-product",
-    "url": "https://www.walmart.com/ip/Apple-AirPods-Pro-2nd-Generation/1752657021",
-    "category": "e-commerce",
-    "verify_selectors": [],
-    "verify_text": ["AirPods"],
-    "tags": ["cloudflare"]
-  },
-  {
-    "id": "trustpilot-reviews",
-    "url": "https://www.trustpilot.com/review/amazon.com",
-    "category": "review",
-    "verify_selectors": [],
-    "verify_text": ["Amazon", "review"],
-    "tags": ["cloudflare"]
-  },
-  {
-    "id": "zillow-listing",
-    "url": "https://www.zillow.com/san-francisco-ca/",
-    "category": "real-estate",
-    "verify_selectors": [],
-    "verify_text": ["San Francisco", "home"],
-    "tags": ["anti-bot"]
-  },
-  {
-    "id": "g2-product",
-    "url": "https://www.g2.com/products/slack/reviews",
-    "category": "review",
-    "verify_selectors": [],
-    "verify_text": ["Slack", "review"],
-    "tags": ["cloudflare"]
-  },
-  {
-    "id": "capterra-product",
-    "url": "https://www.capterra.com/p/132455/Slack/",
-    "category": "review",
-    "verify_selectors": [],
-    "verify_text": ["Slack"],
-    "tags": ["waf"]
-  },
-  {
-    "id": "google-search",
-    "url": "https://www.google.com/search?q=rust+programming+language",
-    "category": "search",
-    "verify_selectors": [],
-    "verify_text": ["rust"],
-    "tags": ["captcha", "fingerprint"]
-  },
-  {
-    "id": "instagram-profile",
-    "url": "https://www.instagram.com/natgeo/",
-    "category": "social",
-    "verify_selectors": [],
-    "verify_text": ["National Geographic"],
-    "tags": ["login-wall", "js-render"]
-  },
-  {
-    "id": "twitter-profile",
-    "url": "https://x.com/rustlang",
-    "category": "social",
-    "verify_selectors": [],
-    "verify_text": ["Rust"],
-    "tags": ["anti-bot", "js-render"]
-  }
+	{
+		"id": "amazon-product",
+		"url": "https://www.amazon.com/dp/B0D1XD1ZV3",
+		"category": "e-commerce",
+		"verify_selectors": ["#productTitle", ".a-price"],
+		"verify_text": ["Add to Cart"],
+		"tags": ["waf", "cloudflare"]
+	},
+	{
+		"id": "github-repo",
+		"url": "https://github.com/rust-lang/rust",
+		"category": "professional",
+		"verify_selectors": [".repository-content"],
+		"verify_text": ["README", "rust-lang"],
+		"tags": ["js-render"]
+	},
+	{
+		"id": "reddit-post",
+		"url": "https://www.reddit.com/r/rust/",
+		"category": "social",
+		"verify_selectors": [],
+		"verify_text": ["rust", "community"],
+		"tags": ["js-render"]
+	},
+	{
+		"id": "youtube-video",
+		"url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+		"category": "social",
+		"verify_selectors": [],
+		"verify_text": ["Rick Astley"],
+		"tags": ["js-render", "consent-wall"]
+	},
+	{
+		"id": "linkedin-company",
+		"url": "https://www.linkedin.com/company/anthropic",
+		"category": "professional",
+		"verify_selectors": [],
+		"verify_text": ["Anthropic"],
+		"tags": ["login-wall"]
+	},
+	{
+		"id": "indeed-jobs",
+		"url": "https://www.indeed.com/jobs?q=software+engineer&l=San+Francisco",
+		"category": "professional",
+		"verify_selectors": [".jobsearch-ResultsList"],
+		"verify_text": ["Software Engineer"],
+		"tags": ["cloudflare"]
+	},
+	{
+		"id": "bestbuy-product",
+		"url": "https://www.bestbuy.com/site/apple-macbook-air-13-inch-laptop-m4-chip-16gb-memory-256gb/6604203.p",
+		"category": "e-commerce",
+		"verify_selectors": [".sku-title"],
+		"verify_text": ["MacBook"],
+		"tags": ["js-render"]
+	},
+	{
+		"id": "ebay-listing",
+		"url": "https://www.ebay.com/sch/i.html?_nkw=laptop",
+		"category": "e-commerce",
+		"verify_selectors": [".srp-results"],
+		"verify_text": ["laptop"],
+		"tags": []
+	},
+	{
+		"id": "walmart-product",
+		"url": "https://www.walmart.com/ip/Apple-AirPods-Pro-2nd-Generation/1752657021",
+		"category": "e-commerce",
+		"verify_selectors": [],
+		"verify_text": ["AirPods"],
+		"tags": ["cloudflare"]
+	},
+	{
+		"id": "trustpilot-reviews",
+		"url": "https://www.trustpilot.com/review/amazon.com",
+		"category": "review",
+		"verify_selectors": [],
+		"verify_text": ["Amazon", "review"],
+		"tags": ["cloudflare"]
+	},
+	{
+		"id": "zillow-listing",
+		"url": "https://www.zillow.com/san-francisco-ca/",
+		"category": "real-estate",
+		"verify_selectors": [],
+		"verify_text": ["San Francisco", "home"],
+		"tags": ["anti-bot"]
+	},
+	{
+		"id": "g2-product",
+		"url": "https://www.g2.com/products/slack/reviews",
+		"category": "review",
+		"verify_selectors": [],
+		"verify_text": ["Slack", "review"],
+		"tags": ["cloudflare"]
+	},
+	{
+		"id": "capterra-product",
+		"url": "https://www.capterra.com/p/132455/Slack/",
+		"category": "review",
+		"verify_selectors": [],
+		"verify_text": ["Slack"],
+		"tags": ["waf"]
+	},
+	{
+		"id": "google-search",
+		"url": "https://www.google.com/search?q=rust+programming+language",
+		"category": "search",
+		"verify_selectors": [],
+		"verify_text": ["rust"],
+		"tags": ["captcha", "fingerprint"]
+	},
+	{
+		"id": "instagram-profile",
+		"url": "https://www.instagram.com/natgeo/",
+		"category": "social",
+		"verify_selectors": [],
+		"verify_text": ["National Geographic"],
+		"tags": ["login-wall", "js-render"]
+	},
+	{
+		"id": "twitter-profile",
+		"url": "https://x.com/rustlang",
+		"category": "social",
+		"verify_selectors": [],
+		"verify_text": ["Rust"],
+		"tags": ["anti-bot", "js-render"]
+	}
 ]
