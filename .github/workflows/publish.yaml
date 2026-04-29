@@ -1710,18 +1710,18 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           pattern: csharp-native-assets-*
-          path: packages/csharp/Kreuzcrawl/runtimes
+          path: packages/csharp/runtimes
           merge-multiple: true
 
       - name: Verify native assets were downloaded
         shell: bash
         run: |
           echo "=== Downloaded native assets ===" >&2
-          find packages/csharp/Kreuzcrawl -type f \( -name '*.so' -o -name '*.dylib' -o -name '*.dll' \) 2>/dev/null | head -20 || true
-          if [ -z "$(find packages/csharp/Kreuzcrawl -type f \( -name '*.so' -o -name '*.dylib' -o -name '*.dll' \) 2>/dev/null)" ]; then
+          find packages/csharp/runtimes -type f \( -name '*.so' -o -name '*.dylib' -o -name '*.dll' \) 2>/dev/null | head -20 || true
+          if [ -z "$(find packages/csharp/runtimes -type f \( -name '*.so' -o -name '*.dylib' -o -name '*.dll' \) 2>/dev/null)" ]; then
             echo "ERROR: No native assets downloaded!" >&2
-            echo "Directory structure of packages/csharp/Kreuzcrawl:" >&2
-            find packages/csharp/Kreuzcrawl -type f | head -30 || echo "  (empty)"
+            echo "Directory structure of packages/csharp/runtimes:" >&2
+            find packages/csharp/runtimes -type f | head -30 || echo "  (empty)"
             exit 1
           fi
 

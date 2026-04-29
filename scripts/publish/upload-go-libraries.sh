@@ -16,7 +16,8 @@ trap 'rm -f "$existing_assets"' EXIT
 
 gh release view "$tag" --json assets | jq -r '.assets[].name' >"$existing_assets" 2>/dev/null || true
 
-for file in "$artifacts_dir"/go-ffi-*.tar.gz; do
+shopt -s nullglob
+for file in "$artifacts_dir"/*.tar.gz; do
   if [ -f "$file" ]; then
     base="$(basename "$file")"
     if grep -Fxq "$base" "$existing_assets"; then
