@@ -18,7 +18,7 @@
     <img src="https://img.shields.io/maven-central/v/dev.kreuzberg.kreuzcrawl/kreuzcrawl?label=Java&color=007ec6" alt="Java">
   </a>
   <a href="https://pkg.go.dev/github.com/kreuzberg-dev/kreuzcrawl/packages/go">
-    <img src="https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzcrawl?label=Go&color=007ec6&filter=v0.3.0-rc.12" alt="Go">
+    <img src="https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzcrawl?label=Go&color=007ec6&filter=v0.3.0-rc.13" alt="Go">
   </a>
   <a href="https://www.nuget.org/packages/Kreuzcrawl/">
     <img src="https://img.shields.io/nuget/v/Kreuzcrawl?label=C%23&color=007ec6" alt="C#">

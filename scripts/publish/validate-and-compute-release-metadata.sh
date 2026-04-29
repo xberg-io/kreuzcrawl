@@ -128,7 +128,7 @@ set_all_targets() {
   release_java=true
   release_csharp=true
   release_go=true
-  release_wasm=false
+  release_wasm=true
   release_php=true
   release_elixir=true
   release_r=true

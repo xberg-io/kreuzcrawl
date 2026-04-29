@@ -26,6 +26,8 @@ pub use rate_limit::PerDomainRateLimitLayer;
 pub use service::HttpFetchService;
 #[cfg(all(not(target_arch = "wasm32"), feature = "tracing"))]
 pub use tracing_layer::CrawlTracingLayer;
-pub use types::{CrawlRequest, CrawlResponse};
+#[cfg(not(target_arch = "wasm32"))]
+pub use types::CrawlRequest;
+pub use types::CrawlResponse;
 #[cfg(not(target_arch = "wasm32"))]
 pub use ua_rotation::UaRotationLayer;

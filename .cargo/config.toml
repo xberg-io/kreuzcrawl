@@ -6,7 +6,9 @@ git-fetch-with-cli = true
 
 # Required for ext-php-rs: PHP symbols are resolved at runtime when PHP loads the
 # extension, not at link time. Allow undefined symbols to avoid linker errors.
-[target.'cfg(not(target_os = "windows"))']
+# Excluded from wasm32 targets because rust-lld (WASM linker) does not support
+# the -Wl,-undefined,dynamic_lookup flag.
+[target.'cfg(all(not(target_os = "windows"), not(target_arch = "wasm32")))']
 rustflags = ["-C", "link-arg=-Wl,-undefined,dynamic_lookup"]
 
 [target.x86_64-pc-windows-msvc]

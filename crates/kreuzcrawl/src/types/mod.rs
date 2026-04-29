@@ -8,9 +8,11 @@ mod results;
 pub use config::{
     AuthConfig, BrowserConfig, BrowserMode, BrowserWait, ContentConfig, CrawlConfig, ExtractionMeta, ProxyConfig,
 };
+#[cfg(not(target_arch = "wasm32"))]
+pub use discovery::CrawlEvent;
 pub use discovery::{
-    AssetCategory, CookieInfo, CrawlEvent, DownloadedAsset, FeedInfo, FeedType, ImageInfo, ImageSource, JsonLdEntry,
-    LinkInfo, LinkType,
+    AssetCategory, CookieInfo, DownloadedAsset, FeedInfo, FeedType, ImageInfo, ImageSource, JsonLdEntry, LinkInfo,
+    LinkType,
 };
 pub use metadata::{ArticleMetadata, FaviconInfo, HeadingInfo, HreflangEntry, PageMetadata, ResponseMeta};
 pub use results::{

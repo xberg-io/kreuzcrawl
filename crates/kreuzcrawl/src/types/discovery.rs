@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 
+// CrawlPageResult is only referenced inside CrawlEvent, which is not compiled on wasm32.
+#[cfg(not(target_arch = "wasm32"))]
 use super::CrawlPageResult;
 
 /// The classification of a link.
@@ -214,6 +216,10 @@ impl std::fmt::Debug for AssetCategory {
 }
 
 /// An event emitted during a streaming crawl operation.
+///
+/// Not available on `wasm32` targets — streaming requires native concurrency
+/// primitives (tokio channels, `JoinSet`) that are not supported on wasm32.
+#[cfg(not(target_arch = "wasm32"))]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum CrawlEvent {
     /// A single page has been crawled.
@@ -232,6 +238,7 @@ pub enum CrawlEvent {
     },
 }
 
+#[cfg(not(target_arch = "wasm32"))]
 impl Default for CrawlEvent {
     fn default() -> Self {
         Self::Complete { pages_crawled: 0 }

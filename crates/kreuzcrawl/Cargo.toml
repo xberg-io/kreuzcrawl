@@ -14,18 +14,19 @@ categories.workspace = true
 description = "High-performance web crawling engine"
 
 [package.metadata.cargo-machete]
-ignored = ["base64", "getrandom", "memchr"]
+ignored = ["base64", "getrandom", "getrandom03", "memchr"]
 
 [features]
 default = ["native-runtime"]
-native-runtime = [
-    "tokio/rt-multi-thread",
-    "tokio/net",
-    "tokio/fs",
-    "tokio/signal",
-    "tokio/process",
-    "tokio/io-util",
-]
+# native-runtime marks that the crate is running on a real OS (not wasm32).
+# The actual OS-specific tokio sub-features (net, fs, signal, process, io-util,
+# rt-multi-thread) are activated via the [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+# section below, so they are never compiled for wasm32 targets regardless of which
+# features are enabled.  This keeps the feature flag meaningful for optional
+# native-only deps (chromiumoxide, axum, …) while avoiding the mio compile
+# error that occurs when tokio's net/fs/signal/process features are requested
+# on wasm32-unknown-unknown.
+native-runtime = []
 browser = ["dep:chromiumoxide", "dep:dirs", "native-runtime"]
 ai = ["dep:liter-llm", "dep:minijinja"]
 tracing = ["dep:tracing"]
@@ -79,8 +80,21 @@ url = { workspace = true }
 utoipa = { workspace = true, optional = true }
 uuid = { workspace = true, optional = true }
 
+# On non-wasm targets, activate the OS-specific tokio features that pull in mio.
+# These cannot be listed inside the `native-runtime` feature because Cargo feature
+# activations are not target-conditional; putting them here ensures they are never
+# requested on wasm32-unknown-unknown.
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+tokio = { version = "1", features = ["rt-multi-thread", "net", "fs", "signal", "process", "io-util"] }
+
+# wasm32: getrandom must use the JS backend for both the v0.3 and v0.4 API
+# surfaces that appear in the dependency tree.
+# - getrandom v0.4 is declared directly (also listed in cargo-machete ignore).
+# - getrandom v0.3 is pulled transitively by ahash; we force the wasm_js feature
+#   here using a package-rename alias so Cargo merges it into the resolved v0.3.x.
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 getrandom = { version = "0.4", features = ["wasm_js"] }
+getrandom03 = { package = "getrandom", version = "0.3", features = ["wasm_js"] }
 
 [dev-dependencies]
 async-trait = { workspace = true }

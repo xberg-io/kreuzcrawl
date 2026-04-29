@@ -338,7 +338,7 @@ checksum = "2af50177e190e07a26ab74f8b1efbfe2ef87da2116221318cb1c2e82baf7de06"
 
 [[package]]
 name = "benchmark-harness"
-version = "0.3.0-rc.12"
+version = "0.3.0-rc.13"
 dependencies = [
  "ahash",
  "async-trait",
@@ -2166,7 +2166,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl"
-version = "0.3.0-rc.12"
+version = "0.3.0-rc.13"
 dependencies = [
  "ahash",
  "astral-tl",
@@ -2180,6 +2180,7 @@ dependencies = [
  "dirs",
  "encoding_rs",
  "flate2",
+ "getrandom 0.3.4",
  "getrandom 0.4.2",
  "html-to-markdown-rs",
  "liter-llm",
@@ -2208,14 +2209,14 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl-bindings-common"
-version = "0.3.0-rc.12"
+version = "0.3.0-rc.13"
 dependencies = [
  "kreuzcrawl",
 ]
 
 [[package]]
 name = "kreuzcrawl-cli"
-version = "0.3.0-rc.12"
+version = "0.3.0-rc.13"
 dependencies = [
  "clap",
  "kreuzcrawl",
@@ -2225,7 +2226,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl-e2e-generator"
-version = "0.3.0-rc.12"
+version = "0.3.0-rc.13"
 dependencies = [
  "anyhow",
  "camino",
@@ -2238,7 +2239,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl-ffi"
-version = "0.3.0-rc.12"
+version = "0.3.0-rc.13"
 dependencies = [
  "cbindgen",
  "kreuzcrawl",
@@ -2248,7 +2249,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl-node"
-version = "0.3.0-rc.12"
+version = "0.3.0-rc.13"
 dependencies = [
  "kreuzcrawl",
  "napi",
@@ -2260,7 +2261,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl-php"
-version = "0.3.0-rc.12"
+version = "0.3.0-rc.13"
 dependencies = [
  "ext-php-rs",
  "kreuzcrawl",
@@ -2271,7 +2272,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl-py"
-version = "0.3.0-rc.12"
+version = "0.3.0-rc.13"
 dependencies = [
  "kreuzcrawl",
  "pyo3",
@@ -2282,7 +2283,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl-wasm"
-version = "0.3.0-rc.12"
+version = "0.3.0-rc.13"
 dependencies = [
  "futures-util",
  "js-sys",
@@ -2295,7 +2296,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl_nif"
-version = "0.3.0-rc.12"
+version = "0.3.0-rc.13"
 dependencies = [
  "kreuzcrawl",
  "rustler",
@@ -2536,7 +2537,7 @@ dependencies = [
 
 [[package]]
 name = "mock-server"
-version = "0.3.0-rc.12"
+version = "0.3.0-rc.13"
 dependencies = [
  "axum",
  "clap",
@@ -3910,7 +3911,7 @@ checksum = "67b1b7a3b5fe4f1376887184045fcf45c69e92af734b7aaddc05fb777b6fbd03"
 
 [[package]]
 name = "snippet-runner"
-version = "0.3.0-rc.12"
+version = "0.3.0-rc.13"
 dependencies = [
  "clap",
  "rayon",
