@@ -42,7 +42,7 @@ def test_scrape_help(image: str) -> bool:
 
 def test_scrape_json(image: str) -> bool:
     """Test scraping a public URL with JSON output."""
-    result = run(image, "scrape", "https://example.com", "--format", "json", check=False)
+    result = run(image, "scrape", "https://example.com", "--format", "json", "--browser-mode", "never", check=False)
     if result.returncode != 0:
         print(f"  FAIL: scrape json — exit code {result.returncode}")
         if result.stderr:
