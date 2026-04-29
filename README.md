@@ -85,7 +85,7 @@ High-performance Rust web crawling engine for structured data extraction. Scrape
 | **[C#](https://github.com/kreuzberg-dev/kreuzcrawl/tree/main/packages/csharp)** | [NuGet](https://www.nuget.org/packages/Kreuzcrawl/) | `dotnet add package Kreuzcrawl` |
 | **[Ruby](https://github.com/kreuzberg-dev/kreuzcrawl/tree/main/packages/ruby)** | [kreuzcrawl](https://rubygems.org/gems/kreuzcrawl) | `gem install kreuzcrawl` |
 | **[PHP](https://github.com/kreuzberg-dev/kreuzcrawl/tree/main/packages/php)** | [kreuzberg-dev/kreuzcrawl](https://packagist.org/packages/kreuzberg-dev/kreuzcrawl) | `composer require kreuzberg-dev/kreuzcrawl` |
-| **[Elixir](https://github.com/kreuzberg-dev/kreuzcrawl/tree/main/packages/elixir)** | [kreuzcrawl](https://hex.pm/packages/kreuzcrawl) | `{:kreuzcrawl, "~> 0.1"}` |
+| **[Elixir](https://github.com/kreuzberg-dev/kreuzcrawl/tree/main/packages/elixir)** | [kreuzcrawl](https://hex.pm/packages/kreuzcrawl) | `{:kreuzcrawl, "~> 0.2"}` |
 | **[WASM](https://github.com/kreuzberg-dev/kreuzcrawl/tree/main/packages/wasm)** | [@kreuzberg/kreuzcrawl-wasm](https://www.npmjs.com/package/@kreuzberg/kreuzcrawl-wasm) | `npm install @kreuzberg/kreuzcrawl-wasm` |
 | **[C FFI](https://github.com/kreuzberg-dev/kreuzcrawl/tree/main/crates/kreuzcrawl-ffi)** | [GitHub Releases](https://github.com/kreuzberg-dev/kreuzcrawl/releases) | C header + shared library |
 | **[CLI](https://github.com/kreuzberg-dev/kreuzcrawl/tree/main/crates/kreuzcrawl-cli)** | [crates.io](https://crates.io/crates/kreuzcrawl-cli) | `cargo install kreuzcrawl-cli` |

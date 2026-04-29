@@ -64,7 +64,7 @@ HTML-to-markdown conversion runs automatically on every page via `html-to-markdo
 ## AI and LLM Integration
 
 !!! info "Feature gate"
-    Requires the `ai` feature: `kreuzcrawl = { version = "0.1", features = ["ai"] }`
+    Requires the `ai` feature: `kreuzcrawl = { version = "0.3", features = ["ai"] }`
 
 | Feature | Description |
 |---------|-------------|
@@ -79,7 +79,7 @@ HTML-to-markdown conversion runs automatically on every page via `html-to-markdo
 ## Anti-Bot and Browser Automation
 
 !!! info "Feature gate"
-    Requires the `browser` feature: `kreuzcrawl = { version = "0.1", features = ["browser"] }`
+    Requires the `browser` feature: `kreuzcrawl = { version = "0.3", features = ["browser"] }`
 
 | Feature | Description |
 |---------|-------------|
@@ -153,7 +153,7 @@ HTML-to-markdown conversion runs automatically on every page via `html-to-markdo
 ## WARC Output
 
 !!! info "Feature gate"
-    Requires the `warc` feature: `kreuzcrawl = { version = "0.1", features = ["warc"] }`
+    Requires the `warc` feature: `kreuzcrawl = { version = "0.3", features = ["warc"] }`
 
 | Feature | Description |
 |---------|-------------|

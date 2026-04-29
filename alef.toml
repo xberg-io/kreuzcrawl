@@ -513,6 +513,22 @@ extension via ext-php-rs with typed properties, PHP 8.2+ support, and PHPStan ty
 [readme.languages.php.snippets]
 basic_usage = "getting-started/basic_usage.md"
 
+[readme.languages.wasm]
+name = "WebAssembly"
+template = "language_package.md"
+output_path = "crates/kreuzcrawl-wasm/README.md"
+package_manager = ["npm"]
+package_name = "@kreuzberg/kreuzcrawl-wasm"
+install_command = "npm install @kreuzberg/kreuzcrawl-wasm"
+description = """
+WebAssembly bindings for **kreuzcrawl** — a high-performance Rust web crawling engine. Built with
+wasm-bindgen for use in browsers and Node.js. Single-threaded; features requiring `std::thread`
+are not available.
+"""
+
+[readme.languages.wasm.snippets]
+basic_usage = "getting-started/basic_usage.md"
+
 [readme.languages.elixir]
 name = "Elixir"
 template = "language_package.md"

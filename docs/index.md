@@ -71,7 +71,7 @@ Kreuzcrawl extracts metadata, converts HTML to markdown, supports LLM-powered st
 
     ```toml title="Cargo.toml"
     [dependencies]
-    kreuzcrawl = { version = "0.1", features = ["ai", "browser"] }
+    kreuzcrawl = { version = "0.3", features = ["ai", "browser"] }
     tokio = { version = "1", features = ["full"] }
     ```
 

@@ -47,7 +47,7 @@ kreuzcrawl --version
 
     ```toml title="Cargo.toml"
     [dependencies]
-    kreuzcrawl = "0.1"
+    kreuzcrawl = "0.3"
     tokio = { version = "1", features = ["full"] }
     ```
 
@@ -67,7 +67,7 @@ kreuzcrawl --version
 
     ```toml title="Cargo.toml"
     [dependencies]
-    kreuzcrawl = { version = "0.1", features = ["browser", "ai", "mcp"] }
+    kreuzcrawl = { version = "0.3", features = ["browser", "ai", "mcp"] }
     ```
 
     !!! note "Rust version"
@@ -110,7 +110,7 @@ kreuzcrawl --version
     Requires Ruby 3.2+. Add to your `Gemfile`:
 
     ```ruby title="Gemfile"
-    gem "kreuzcrawl", "~> 0.1"
+    gem "kreuzcrawl", "~> 0.2"
     ```
 
     Then:
@@ -132,7 +132,7 @@ kreuzcrawl --version
     Requires Go 1.21+. The Go bindings use cgo with the C FFI layer:
 
     ```bash
-    go get github.com/kreuzberg-dev/kreuzcrawl
+    go get github.com/kreuzberg-dev/kreuzcrawl/packages/go
     ```
 
     !!! warning "Build requirement"
@@ -144,9 +144,9 @@ kreuzcrawl --version
 
     ```xml title="pom.xml"
     <dependency>
-        <groupId>dev.kreuzberg</groupId>
+        <groupId>dev.kreuzberg.kreuzcrawl</groupId>
         <artifactId>kreuzcrawl</artifactId>
-        <version>0.1.0</version>
+        <version>0.3.0-rc.17</version>
     </dependency>
     ```
 
@@ -163,7 +163,7 @@ kreuzcrawl --version
     Or in your `.csproj`:
 
     ```xml title="Kreuzcrawl.csproj"
-    <PackageReference Include="Kreuzcrawl" Version="0.1.0" />
+    <PackageReference Include="Kreuzcrawl" Version="0.3.0-rc.17" />
     ```
 
     The C# bindings use P/Invoke to call the C FFI layer.
@@ -173,7 +173,7 @@ kreuzcrawl --version
     Requires PHP 8.2+. Install the extension via Composer:
 
     ```bash
-    composer require kreuzberg/kreuzcrawl
+    composer require kreuzberg-dev/kreuzcrawl
     ```
 
     The PHP bindings are built with [ext-php-rs](https://github.com/davidcole1340/ext-php-rs) and load as a native PHP extension.
@@ -190,7 +190,7 @@ kreuzcrawl --version
     ```elixir title="mix.exs"
     defp deps do
       [
-        {:kreuzcrawl, "~> 0.1.0"}
+        {:kreuzcrawl, "~> 0.2"}
       ]
     end
     ```
