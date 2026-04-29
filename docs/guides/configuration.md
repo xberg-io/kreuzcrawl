@@ -4,26 +4,27 @@ All kreuzcrawl operations are controlled through `CrawlConfig`. This guide cover
 
 ## Builder pattern
 
-The `CrawlEngineBuilder` provides a fluent API for constructing a `CrawlEngine` with custom configuration and trait implementations:
+The engine's trait-based builder (`CrawlEngine::builder()`) is an internal API — it is not re-exported from the crate root. For most use cases, pass a `CrawlConfig` directly to `create_engine`:
 
 ```rust
-use kreuzcrawl::{CrawlEngine, CrawlConfig, BestFirstStrategy, Bm25Filter};
+use kreuzcrawl::{CrawlConfig, CrawlEngineHandle, create_engine};
 
-let engine = CrawlEngine::builder()
-    .config(CrawlConfig {
-        max_depth: Some(3),
-        max_pages: Some(100),
-        max_concurrent: Some(5),
-        stay_on_domain: true,
-        respect_robots_txt: true,
-        ..Default::default()
-    })
-    .strategy(BestFirstStrategy)
-    .content_filter(Bm25Filter::new("rust programming", 0.3))
-    .build()?;
+let engine: CrawlEngineHandle = create_engine(Some(CrawlConfig {
+    max_depth: Some(3),
+    max_pages: Some(100),
+    max_concurrent: Some(5),
+    stay_on_domain: true,
+    respect_robots_txt: true,
+    ..Default::default()
+}))?;
 ```
 
-### Builder methods
+!!! note "Custom strategy and filter types"
+    Alternative crawl strategies (`BestFirstStrategy`, `DfsStrategy`, `AdaptiveStrategy`) and content filters (`Bm25Filter`) exist in the crate's `defaults` module, but that module is not part of the public API. Custom strategies and filters are not currently supported for external use until the relevant traits are re-exported.
+
+### Builder methods (internal reference)
+
+These methods exist on `CrawlEngineBuilder` and are used by `create_engine` internally. They are listed here so you know which defaults are in effect:
 
 | Method | Accepts | Default |
 |---|---|---|
@@ -36,16 +37,14 @@ let engine = CrawlEngine::builder()
 | `.content_filter(impl ContentFilter)` | Post-extraction page filter | `NoopFilter` |
 | `.cache(impl CrawlCache)` | HTTP response cache | `NoopCache` |
 
-All fields are optional. Unset fields use their default implementations from the `defaults` module.
-
-The `.build()` call validates the configuration and returns `Result<CrawlEngine, CrawlError>`.
+Unset fields use their defaults. `create_engine` calls `.build()` which validates the config and returns `Result<CrawlEngineHandle, CrawlError>`.
 
 ## Convenience constructors
 
-For simple use cases that do not need custom trait implementations, use the binding functions:
+For most use cases, `create_engine` plus one of the top-level async functions is all you need:
 
 ```rust
-use kreuzcrawl::{create_engine, scrape, crawl, map_urls};
+use kreuzcrawl::{CrawlConfig, create_engine, scrape, crawl, map_urls};
 
 let engine = create_engine(Some(CrawlConfig {
     max_depth: Some(2),
@@ -58,6 +57,31 @@ let map_result = map_urls(&engine, "https://example.com").await?;
 ```
 
 Passing `None` to `create_engine` uses `CrawlConfig::default()`.
+
+For scraping or crawling multiple URLs in one go, use the batch variants. Each URL runs concurrently; failures are captured per-URL rather than bubbling up as an error:
+
+```rust
+use kreuzcrawl::{create_engine, batch_scrape, batch_crawl};
+
+let engine = create_engine(None)?;
+
+let scrape_results = batch_scrape(&engine, vec![
+    "https://example.com".into(),
+    "https://example.org".into(),
+]).await;
+
+let crawl_results = batch_crawl(&engine, vec![
+    "https://example.com".into(),
+    "https://example.org".into(),
+]).await;
+
+// Each entry in the Vec has .url, .result (Option<_>), and .error (Option<String>).
+for r in &scrape_results {
+    if let Some(err) = &r.error {
+        eprintln!("{}: {}", r.url, err);
+    }
+}
+```
 
 ## Config validation
 

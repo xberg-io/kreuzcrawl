@@ -43,17 +43,19 @@ The engine is composed of seven pluggable trait objects, each held behind `Arc<d
 
 All traits are `Send + Sync` and use `async_trait` (except `CrawlStrategy`, which is synchronous).
 
+!!! warning "Default implementations are internal"
+    The types named in the "Default Implementation" column (`InMemoryFrontier`, `PerDomainThrottle`, `BfsStrategy`, etc.) live in the `defaults` module, which is `pub(crate)`. You cannot import them directly. To use the defaults, call `create_engine(config)` — it wires up all seven traits automatically. If you need a custom implementation, implement the relevant trait on your own type and pass it through the builder (see the [configuration guide](../guides/configuration.md#builder-pattern)).
+
 ## Builder Pattern
 
 `CrawlEngine` is constructed exclusively through `CrawlEngineBuilder`. Any trait left unset is filled with its default implementation:
 
 ```rust
-let engine = CrawlEngine::builder()
-    .config(config)
-    .frontier(my_frontier)
-    .strategy(DfsStrategy)
-    .build()?;
+// create_engine is the public path — it calls builder() with default trait implementations.
+let engine = create_engine(Some(config))?;
 ```
+
+For the uncommon case of injecting custom trait implementations, the internal builder is only reachable from within this crate (e.g. as a workspace member or fork). External projects cannot inject custom trait implementations until the relevant items are re-exported.
 
 The builder calls `config.validate()` before constructing the engine and returns `Result<CrawlEngine, CrawlError>`.
 

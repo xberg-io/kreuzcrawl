@@ -18,25 +18,24 @@ kreuzcrawl serve --host 0.0.0.0 --port 3000
 
 ### Programmatic
 
+The `api` module is internal. The public entry point is `serve_api`, re-exported from the crate root:
+
 ```rust
-use std::sync::Arc;
-use kreuzcrawl::{CrawlConfig, CrawlEngine};
-use kreuzcrawl::api::serve;
+use kreuzcrawl::{CrawlConfig, serve_api};
 
-let engine = CrawlEngine::builder()
-    .config(CrawlConfig::default())
-    .build()?;
-
-serve("0.0.0.0", 3000, Arc::new(engine)).await?;
+serve_api("0.0.0.0", 3000, CrawlConfig::default()).await?;
 ```
 
-Or with the convenience wrapper that builds the engine internally:
+Pass a custom config if you need non-default crawl settings:
 
 ```rust
-use kreuzcrawl::api::serve_with_config;
-use kreuzcrawl::CrawlConfig;
+use kreuzcrawl::{CrawlConfig, serve_api};
 
-serve_with_config("0.0.0.0", 3000, CrawlConfig::default()).await?;
+serve_api("127.0.0.1", 8080, CrawlConfig {
+    max_concurrent: Some(20),
+    respect_robots_txt: true,
+    ..Default::default()
+}).await?;
 ```
 
 ## Middleware stack
@@ -297,7 +296,5 @@ Error codes map to HTTP status codes:
 | `SERVER_ERROR` | 502 | Upstream server error |
 | `INTERNAL_ERROR` | 500 | Unexpected internal error |
 
-!!! tip "Embedding the router"
-    The `create_router()` function returns an Axum `Router` that can be embedded in your
-    own application or used with Tower's `oneshot` for testing. Pass a shared
-    `Arc<CrawlEngine>` to configure the crawl behaviour.
+!!! note "Feature gate"
+    The server requires the `api` Cargo feature. Add `features = ["api"]` to your `Cargo.toml` dependency, or pass `--features api` to `cargo run`.

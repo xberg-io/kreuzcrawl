@@ -5,7 +5,37 @@ description: Install Kreuzcrawl for Rust, Python, TypeScript, Ruby, Go, Java, C#
 
 # Installation
 
-Kreuzcrawl provides native bindings for 11 languages plus Docker and CLI distribution. Choose your platform below.
+<div class="cli-hero" markdown>
+
+## CLI
+
+The fastest way to get started. No Rust toolchain needed if you use Homebrew.
+
+=== "Homebrew (macOS / Linux)"
+
+    ```bash
+    brew install kreuzberg-dev/tap/kreuzcrawl
+    ```
+
+=== "Cargo"
+
+    ```bash
+    cargo install kreuzcrawl-cli
+    ```
+
+    With optional features:
+
+    ```bash
+    cargo install kreuzcrawl-cli --features "api,mcp"
+    ```
+
+Verify:
+
+```bash
+kreuzcrawl --version
+```
+
+</div>
 
 ---
 
@@ -226,28 +256,8 @@ docker run --rm -v $(pwd)/output:/output \
 
 ---
 
-## CLI
+## Where to go next
 
-### Homebrew (macOS / Linux)
-
-```bash
-brew install kreuzberg-dev/tap/kreuzcrawl
-```
-
-### Cargo
-
-```bash
-cargo install kreuzcrawl-cli
-```
-
-With optional features:
-
-```bash
-cargo install kreuzcrawl-cli --features "api,mcp"
-```
-
-Verify the installation:
-
-```bash
-kreuzcrawl --version
-```
+- **[Quick start](quickstart.md)** — Scrape a page, run a crawl, and map a site in under five minutes. Covers the CLI and the Rust API side by side.
+- **[Configuration guide](../guides/configuration.md)** — Every `CrawlConfig` field with its default and validation rules. Start here if you need to tune depth, concurrency, or content filtering.
+- **[Features overview](../features.md)** — What the engine can do: browser rendering, LLM extraction, REST API, MCP, WARC output, and more. Useful for figuring out which feature flags you need.
