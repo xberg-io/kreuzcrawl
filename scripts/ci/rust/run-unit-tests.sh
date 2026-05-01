@@ -23,7 +23,7 @@ echo "  CARGO_TERM_COLOR: ${CARGO_TERM_COLOR:-not set}"
 
 echo "Workspace information:"
 echo "  Repository: $REPO_ROOT"
-echo "  Excluded packages: kreuzcrawl-e2e-generator, kreuzcrawl-py, kreuzcrawl-node (+ benchmark-harness on Windows)"
+echo "  Excluded packages: kreuzcrawl-e2e-generator, kreuzcrawl-py, kreuzcrawl-node (+ benchmark-harness on Windows, + kreuzcrawl-php on macOS)"
 
 if [ ! -d "$TESSDATA_PREFIX" ]; then
   echo "WARNING: TESSDATA_PREFIX directory not found: $TESSDATA_PREFIX"
@@ -67,10 +67,12 @@ if ! {
   if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || "$OSTYPE" == "win32" ]]; then
     extra_excludes+=(--exclude benchmark-harness)
   fi
-  # pdfium-render must be excluded from the main workspace test and run separately
-  # with --test-threads=1 because pdfium's FFI bindings use global state and are not thread-safe.
-  # On ARM64 Linux we skip pdfium-render entirely due to pdfium binary incompatibility.
-  extra_excludes+=(--exclude kreuzcrawl-pdfium-render)
+  # kreuzcrawl-php depends on ext-php-rs which requires a `php` executable at build time.
+  # macOS GitHub runners don't have PHP installed by default and we don't run setup-php
+  # in this job — exclude the PHP binding crate from the workspace test there.
+  if [[ "$(uname -s)" == "Darwin" ]]; then
+    extra_excludes+=(--exclude kreuzcrawl-php)
+  fi
   RUST_BACKTRACE=full cargo test \
     --workspace \
     --exclude kreuzcrawl \
@@ -80,12 +82,6 @@ if ! {
     ${extra_excludes[@]+"${extra_excludes[@]}"} \
     --all-features \
     --verbose
-
-  # Run pdfium-render tests single-threaded (skip on ARM64 Linux due to binary incompatibility)
-  if ! [[ "$(uname -m)" == "aarch64" && "$(uname -s)" == "Linux" ]]; then
-    echo "=== cargo test -p kreuzcrawl-pdfium-render (single-threaded) ==="
-    RUST_BACKTRACE=full cargo test -p kreuzcrawl-pdfium-render --verbose -- --test-threads=1
-  fi
 } 2>&1 | tee "$TEST_LOG"; then
   echo "=== Test execution failed ==="
   echo "Last 50 lines of test output:"
