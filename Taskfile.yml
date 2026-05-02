@@ -191,36 +191,21 @@ tasks:
     cmds:
       - task: lint
 
-  e2e:generate:all:
-    desc: Generate all E2E tests from fixtures across all supported languages
+  test:e2e:
+    desc: Generate and run e2e tests across all bindings
     cmds:
-      - task: rust:e2e:generate
-      - task: python:e2e:generate
-      - task: node:e2e:generate
-      - task: go:e2e:generate
-      - task: java:e2e:generate
-      - task: csharp:e2e:generate
-      - task: wasm:e2e:deno:generate
-      - task: wasm:e2e:workers:generate
-      - task: ruby:e2e:generate
-      - task: php:e2e:generate
-      - task: elixir:e2e:generate
-      - task: c:e2e:generate
+      - alef e2e generate
+      - alef test --e2e
 
-  e2e:test:all:
-    desc: Run all E2E tests across all supported languages
+  e2e:generate:
+    desc: Generate E2E tests for all languages from fixtures
     cmds:
-      - task: rust:e2e:test
-      - task: python:e2e:test
-      - task: node:e2e:test
-      - task: go:e2e:test
-      - task: java:e2e:test
-      - task: csharp:e2e:test
-      - task: wasm:e2e:deno:test
-      - task: wasm:e2e:workers:test
-      - task: ruby:e2e:test
-      - task: php:e2e:test
-      - task: c:e2e:test
+      - alef e2e generate
+
+  e2e:test:
+    desc: Run E2E tests for all languages (alias for test:e2e)
+    cmds:
+      - task: test:e2e
 
   e2e:lint:all:
     desc: Lint all generated E2E test code
