@@ -13,6 +13,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	pkg "github.com/kreuzberg-dev/kreuzcrawl/packages/go"
 )
 
