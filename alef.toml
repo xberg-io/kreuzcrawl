@@ -1,5 +1,5 @@
 [workspace]
-alef_version = "0.14.13"
+alef_version = "0.14.19"
 languages = ["python", "node", "ruby", "php", "ffi", "go", "java", "csharp", "elixir", "wasm"]
 
 # Java is formatted by Spotless (Eclipse 4.31) via maven verify in prek's

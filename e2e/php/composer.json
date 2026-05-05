@@ -6,6 +6,11 @@
     "phpunit/phpunit": "^13.1",
     "guzzlehttp/guzzle": "^7.0"
   },
+  "autoload": {
+    "psr-4": {
+      "Kreuzcrawl\\": "../../packages/php/src/"
+    }
+  },
   "autoload-dev": {
     "psr-4": {
       "Kreuzcrawl\\E2e\\": "tests/"

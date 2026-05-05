@@ -52,6 +52,9 @@ struct FixtureFile {
     id: String,
     #[serde(default)]
     input: serde_json::Value,
+    /// New single-response format: `mock_response: { status, body, headers }`.
+    #[serde(default)]
+    mock_response: Option<serde_json::Value>,
 }
 
 /// A mock response spec from the fixture.
@@ -104,14 +107,39 @@ fn load_fixtures(fixtures_dir: &std::path::Path) -> RouteMap {
             }
         };
 
-        // Extract mock_responses from input.
-        let mock_responses = fixture
-            .input
-            .get("mock_responses")
-            .and_then(|v| serde_json::from_value::<Vec<MockResponseSpec>>(v.clone()).ok());
-
-        let Some(mock_responses) = mock_responses else {
-            continue;
+        // Support two fixture formats:
+        // 1. New: top-level `mock_response: { status, body, headers }` → single route at `/`
+        // 2. Old: `input.mock_responses: [{ path, status_code, headers, body_inline, ... }]`
+        let mock_responses: Vec<MockResponseSpec> = if let Some(ref mr) = fixture.mock_response {
+            // New format: convert to a single MockResponseSpec at default path "/"
+            let status_code = mr.get("status").and_then(|v| v.as_u64()).unwrap_or(200) as u16;
+            let body_inline = mr.get("body").and_then(|v| v.as_str()).map(String::from);
+            let headers: HashMap<String, String> = mr
+                .get("headers")
+                .and_then(|v| v.as_object())
+                .map(|obj| {
+                    obj.iter()
+                        .filter_map(|(k, v)| v.as_str().map(|s| (k.clone(), s.to_string())))
+                        .collect()
+                })
+                .unwrap_or_default();
+            vec![MockResponseSpec {
+                path: "/".to_string(),
+                status_code,
+                headers,
+                body_file: None,
+                body_inline,
+                delay_ms: None,
+            }]
+        } else {
+            match fixture
+                .input
+                .get("mock_responses")
+                .and_then(|v| serde_json::from_value::<Vec<MockResponseSpec>>(v.clone()).ok())
+            {
+                Some(v) => v,
+                None => continue,
+            }
         };
 
         for spec in &mock_responses {

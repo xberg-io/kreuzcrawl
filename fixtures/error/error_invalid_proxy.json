@@ -1,28 +1,21 @@
 {
-	"id": "error_invalid_proxy",
-	"description": "Proxy pointing to unreachable address causes connection error during scrape",
-	"tags": ["proxy", "error"],
-	"input": {
-		"mock_responses": [
-			{
-				"status_code": 200,
-				"body_inline": "<html></html>"
-			}
-		],
-		"config": {
-			"proxy": {
-				"url": "http://127.0.0.1:1"
-			},
-			"request_timeout": 2000
-		}
-	},
-	"assertions": [
-		{
-			"type": "error"
-		},
-		{
-			"type": "error",
-			"value": "connection"
-		}
-	]
+  "id": "error_invalid_proxy",
+  "description": "Proxy pointing to unreachable address causes connection error during scrape",
+  "tags": [
+    "proxy",
+    "error"
+  ],
+  "assertions": [
+    {
+      "type": "error"
+    },
+    {
+      "type": "error",
+      "value": "connection"
+    }
+  ],
+  "mock_response": {
+    "status": 200,
+    "body": "<html></html>"
+  }
 }

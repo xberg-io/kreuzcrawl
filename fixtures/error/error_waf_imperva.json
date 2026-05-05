@@ -5,18 +5,6 @@
     "error",
     "waf"
   ],
-  "input": {
-    "config": {},
-    "mock_responses": [
-      {
-        "status_code": 403,
-        "headers": {
-          "content-type": "text/html"
-        },
-        "body_inline": "<html><body>Powered by Incapsula. _incap_ses_ cookie required.</body></html>"
-      }
-    ]
-  },
   "assertions": [
     {
       "type": "error"
@@ -26,5 +14,12 @@
       "field": "error.is_waf_blocked",
       "value": true
     }
-  ]
+  ],
+  "mock_response": {
+    "status": 403,
+    "body": "<html><body>Powered by Incapsula. _incap_ses_ cookie required.</body></html>",
+    "headers": {
+      "content-type": "text/html"
+    }
+  }
 }

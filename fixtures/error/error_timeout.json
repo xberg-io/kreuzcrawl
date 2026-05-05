@@ -1,29 +1,23 @@
 {
-	"id": "error_timeout",
-	"description": "Handles request timeout",
-	"tags": ["error"],
-	"input": {
-		"mock_responses": [
-			{
-				"status_code": 200,
-				"headers": {
-					"content-type": "text/html; charset=utf-8"
-				},
-				"body_inline": "<html><body><h1>Delayed</h1></body></html>",
-				"delay_ms": 500
-			}
-		],
-		"config": {
-			"request_timeout": 1
-		}
-	},
-	"assertions": [
-		{
-			"type": "error"
-		},
-		{
-			"type": "error",
-			"value": "timeout"
-		}
-	]
+  "id": "error_timeout",
+  "description": "Handles request timeout",
+  "tags": [
+    "error"
+  ],
+  "assertions": [
+    {
+      "type": "error"
+    },
+    {
+      "type": "error",
+      "value": "timeout"
+    }
+  ],
+  "mock_response": {
+    "status": 200,
+    "body": "<html><body><h1>Delayed</h1></body></html>",
+    "headers": {
+      "content-type": "text/html; charset=utf-8"
+    }
+  }
 }

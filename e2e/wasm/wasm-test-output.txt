@@ -1,0 +1,33 @@
+
+> kreuzcrawl-e2e-wasm@0.1.0 test /Users/naamanhirschfeld/workspace/kreuzberg-dev/kreuzcrawl/e2e/wasm
+> vitest run
+
+failed to load config from /Users/naamanhirschfeld/workspace/kreuzberg-dev/kreuzcrawl/e2e/wasm/vitest.config.ts
+
+⎯⎯⎯⎯⎯⎯⎯ Startup Error ⎯⎯⎯⎯⎯⎯⎯⎯
+Error: Cannot find module 'esbuild'
+Require stack:
+- /Users/naamanhirschfeld/workspace/kreuzberg-dev/kreuzcrawl/e2e/wasm/node_modules/vite/dist/node/index.js
+- /Users/naamanhirschfeld/workspace/kreuzberg-dev/kreuzcrawl/e2e/wasm/node_modules/vite-plugin-top-level-await/dist/esbuild.js
+- /Users/naamanhirschfeld/workspace/kreuzberg-dev/kreuzcrawl/e2e/wasm/node_modules/vite-plugin-top-level-await/dist/index.js
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1475:15)
+    at wrapResolveFilename (node:internal/modules/cjs/loader:1048:27)
+    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1072:10)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1093:12)
+    at Module._load (node:internal/modules/cjs/loader:1261:25)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.require (node:internal/modules/cjs/loader:1575:12)
+    at requireFrom (/Users/naamanhirschfeld/workspace/kreuzberg-dev/kreuzcrawl/e2e/wasm/node_modules/vite-plugin-top-level-await/dist/esbuild.js:14:26)
+    at Object.<anonymous> (/Users/naamanhirschfeld/workspace/kreuzberg-dev/kreuzcrawl/e2e/wasm/node_modules/vite-plugin-top-level-await/dist/esbuild.js:16:19)
+    at Module._compile (node:internal/modules/cjs/loader:1829:14) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/Users/naamanhirschfeld/workspace/kreuzberg-dev/kreuzcrawl/e2e/wasm/node_modules/vite/dist/node/index.js',
+    '/Users/naamanhirschfeld/workspace/kreuzberg-dev/kreuzcrawl/e2e/wasm/node_modules/vite-plugin-top-level-await/dist/esbuild.js',
+    '/Users/naamanhirschfeld/workspace/kreuzberg-dev/kreuzcrawl/e2e/wasm/node_modules/vite-plugin-top-level-await/dist/index.js'
+  ]
+}
+
+
+
+ ELIFECYCLE  Test failed. See above for more details.

@@ -54,38 +54,41 @@ tasks:
     deps: [mock-server:start]
     cmds:
       # Build bindings before testing.
-      - task: rust:build
-      - task: python:build:dev
-      - task: node:build:dev
-      - task: rust:ffi:build
-      - task: go:build
-      - task: java:build
-      - task: csharp:build
-      - task: ruby:build
-      - task: php:build
-      - task: elixir:build
-      # Run e2e tests (source mock server URL and pass to each task).
+      - task: :rust:build
+      - task: :python:build:dev
+      - task: :node:build:dev
+      - task: :rust:ffi:build
+      - task: :go:build
+      - task: :java:build
+      - task: :csharp:build
+      - task: :ruby:build
+      - task: :php:build
+      - task: :elixir:build
+      # Run e2e tests (source mock server URL, run all suites, fail at end if any failed).
       - cmd: |
           eval "$(cat .mock-server.env 2>/dev/null)"
           export MOCK_SERVER_URL
-          MOCK_SERVER_URL="$MOCK_SERVER_URL" task rust:e2e:test
-          MOCK_SERVER_URL="$MOCK_SERVER_URL" task python:e2e:test
-          MOCK_SERVER_URL="$MOCK_SERVER_URL" task node:e2e:test
-          MOCK_SERVER_URL="$MOCK_SERVER_URL" task go:e2e:test
-          MOCK_SERVER_URL="$MOCK_SERVER_URL" task java:e2e:test
-          MOCK_SERVER_URL="$MOCK_SERVER_URL" task csharp:e2e:test
-          MOCK_SERVER_URL="$MOCK_SERVER_URL" task ruby:e2e:test
-          MOCK_SERVER_URL="$MOCK_SERVER_URL" task php:e2e:test
-          MOCK_SERVER_URL="$MOCK_SERVER_URL" task elixir:e2e:test
+          overall=0
+          MOCK_SERVER_URL="$MOCK_SERVER_URL" task rust:e2e:test    || overall=$?
+          MOCK_SERVER_URL="$MOCK_SERVER_URL" task python:e2e:test  || overall=$?
+          MOCK_SERVER_URL="$MOCK_SERVER_URL" task node:e2e:test    || overall=$?
+          MOCK_SERVER_URL="$MOCK_SERVER_URL" task go:e2e:test      || overall=$?
+          MOCK_SERVER_URL="$MOCK_SERVER_URL" task java:e2e:test    || overall=$?
+          MOCK_SERVER_URL="$MOCK_SERVER_URL" task csharp:e2e:test  || overall=$?
+          MOCK_SERVER_URL="$MOCK_SERVER_URL" task ruby:e2e:test    || overall=$?
+          MOCK_SERVER_URL="$MOCK_SERVER_URL" task php:e2e:test     || overall=$?
+          MOCK_SERVER_URL="$MOCK_SERVER_URL" task elixir:e2e:test  || overall=$?
+          exit $overall
       - defer: { task: mock-server:stop }
 
   test:quick:
     desc: Quick E2E test (Rust only — fastest feedback)
-    deps: [mock-server:start, rust:build]
+    deps: [mock-server:start]
     env:
       MOCK_SERVER_URL:
         sh: cat .mock-server.env 2>/dev/null | grep MOCK_SERVER_URL | cut -d= -f2
     cmds:
+      - task: :rust:build
       - task: rust:e2e:test
       - defer: { task: mock-server:stop }
 

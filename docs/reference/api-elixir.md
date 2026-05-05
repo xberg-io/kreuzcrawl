@@ -23,7 +23,7 @@ def create_engine(config)
 **Parameters:**
 
 | Name     | Type         | Required | Description |
-| -------- | ------------ | -------- | ----------- |
+| -------- | ------------ | -------- | ----------- | ------------------------- |
 | `config` | `CrawlConfig | nil`     | No          | The configuration options |
 
 **Returns:** `CrawlEngineHandle`
@@ -155,7 +155,7 @@ def batch_crawl(engine, urls)
 Article metadata extracted from `article:*` Open Graph tags.
 
 | Field            | Type               | Default | Description       |
-| ---------------- | ------------------ | ------- | ----------------- |
+| ---------------- | ------------------ | ------- | ----------------- | ------------------------------ |
 | `published_time` | `String.t()        | nil`    | `nil`             | The article publication time.  |
 | `modified_time`  | `String.t()        | nil`    | `nil`             | The article modification time. |
 | `author`         | `String.t()        | nil`    | `nil`             | The article author.            |
@@ -169,7 +169,7 @@ Article metadata extracted from `article:*` Open Graph tags.
 Result from a single URL in a batch crawl operation.
 
 | Field    | Type         | Default | Description                    |
-| -------- | ------------ | ------- | ------------------------------ |
+| -------- | ------------ | ------- | ------------------------------ | --------------------------------------- |
 | `url`    | `String.t()` | —       | The seed URL that was crawled. |
 | `result` | `CrawlResult | nil`    | `nil`                          | The crawl result, if successful.        |
 | `error`  | `String.t()  | nil`    | `nil`                          | The error message, if the crawl failed. |
@@ -181,7 +181,7 @@ Result from a single URL in a batch crawl operation.
 Result from a single URL in a batch scrape operation.
 
 | Field    | Type          | Default | Description               |
-| -------- | ------------- | ------- | ------------------------- |
+| -------- | ------------- | ------- | ------------------------- | ---------------------------------------- |
 | `url`    | `String.t()`  | —       | The URL that was scraped. |
 | `result` | `ScrapeResult | nil`    | `nil`                     | The scrape result, if successful.        |
 | `error`  | `String.t()   | nil`    | `nil`                     | The error message, if the scrape failed. |
@@ -193,7 +193,7 @@ Result from a single URL in a batch scrape operation.
 Browser fallback configuration.
 
 | Field           | Type          | Default         | Description                                                                    |
-| --------------- | ------------- | --------------- | ------------------------------------------------------------------------------ |
+| --------------- | ------------- | --------------- | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------- |
 | `mode`          | `BrowserMode` | `:auto`         | When to use the headless browser fallback.                                     |
 | `endpoint`      | `String.t()   | nil`            | `nil`                                                                          | CDP WebSocket endpoint for connecting to an external browser instance. |
 | `timeout`       | `integer()`   | `30000ms`       | Timeout for browser page load and rendering (in milliseconds when serialized). |
@@ -243,7 +243,7 @@ html-to-markdown-rs as the conversion engine for all formats
 (markdown, plain text, djot).
 
 | Field                        | Type               | Default      | Description                                                                                                                                                                                                                                                                                                                                         |
-| ---------------------------- | ------------------ | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ---------------------------- | ------------------ | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
 | `output_format`              | `String.t()`       | `"markdown"` | Output format: `"markdown"` (default), `"plain"`, `"djot"`.                                                                                                                                                                                                                                                                                         |
 | `preprocessing_preset`       | `String.t()`       | `"standard"` | Preprocessing aggressiveness: `"minimal"`, `"standard"` (default), `"aggressive"`. - Minimal: only scripts/styles removed. - Standard: also removes nav, nav-hinted headers/footers/asides, forms. - Aggressive: removes all footers/asides unconditionally.                                                                                        |
 | `remove_navigation`          | `boolean()`        | `true`       | Remove navigation elements (nav, breadcrumbs, menus). Default: `true`.                                                                                                                                                                                                                                                                              |
@@ -274,7 +274,7 @@ def default()
 Information about an HTTP cookie received from a response.
 
 | Field    | Type         | Default | Description       |
-| -------- | ------------ | ------- | ----------------- |
+| -------- | ------------ | ------- | ----------------- | -------------------------------- |
 | `name`   | `String.t()` | —       | The cookie name.  |
 | `value`  | `String.t()` | —       | The cookie value. |
 | `domain` | `String.t()  | nil`    | `nil`             | The cookie domain, if specified. |
@@ -287,7 +287,7 @@ Information about an HTTP cookie received from a response.
 Configuration for crawl, scrape, and map operations.
 
 | Field                  | Type                  | Default   | Description                                                                                      |
-| ---------------------- | --------------------- | --------- | ------------------------------------------------------------------------------------------------ |
+| ---------------------- | --------------------- | --------- | ------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
 | `max_depth`            | `integer()            | nil`      | `nil`                                                                                            | Maximum crawl depth (number of link hops from the start URL).                                                                                |
 | `max_pages`            | `integer()            | nil`      | `nil`                                                                                            | Maximum number of pages to crawl.                                                                                                            |
 | `max_concurrent`       | `integer()            | nil`      | `nil`                                                                                            | Maximum number of concurrent requests.                                                                                                       |
@@ -360,7 +360,7 @@ Default implementations for all pluggable components are used internally.
 The result of crawling a single page during a crawl operation.
 
 | Field                 | Type                | Default | Description                                               |
-| --------------------- | ------------------- | ------- | --------------------------------------------------------- |
+| --------------------- | ------------------- | ------- | --------------------------------------------------------- | -------------------------------------------------------------------------- |
 | `url`                 | `String.t()`        | —       | The original URL of the page.                             |
 | `normalized_url`      | `String.t()`        | —       | The normalized URL of the page.                           |
 | `status_code`         | `integer()`         | —       | The HTTP status code of the response.                     |
@@ -389,7 +389,7 @@ The result of crawling a single page during a crawl operation.
 The result of a multi-page crawl operation.
 
 | Field             | Type                    | Default | Description                                                               |
-| ----------------- | ----------------------- | ------- | ------------------------------------------------------------------------- |
+| ----------------- | ----------------------- | ------- | ------------------------------------------------------------------------- | ---------------------------------------------------- |
 | `pages`           | `list(CrawlPageResult)` | `[]`    | The list of crawled pages.                                                |
 | `final_url`       | `String.t()`            | —       | The final URL after following redirects.                                  |
 | `redirect_count`  | `integer()`             | —       | The number of redirects followed.                                         |
@@ -417,7 +417,7 @@ def unique_normalized_urls()
 A downloaded asset from a page.
 
 | Field            | Type            | Default  | Description                            |
-| ---------------- | --------------- | -------- | -------------------------------------- |
+| ---------------- | --------------- | -------- | -------------------------------------- | ------------------------------------------------------------------------ |
 | `url`            | `String.t()`    | —        | The original URL of the asset.         |
 | `content_hash`   | `String.t()`    | —        | The SHA-256 content hash of the asset. |
 | `mime_type`      | `String.t()     | nil`     | `nil`                                  | The MIME type from the Content-Type header.                              |
@@ -436,7 +436,7 @@ enabled, it downloads the raw bytes and populates this struct instead of
 skipping the resource.
 
 | Field          | Type         | Default | Description                                            |
-| -------------- | ------------ | ------- | ------------------------------------------------------ |
+| -------------- | ------------ | ------- | ------------------------------------------------------ | -------------------------------------------------------- |
 | `url`          | `String.t()` | —       | The URL the document was fetched from.                 |
 | `mime_type`    | `String.t()` | —       | The MIME type from the Content-Type header.            |
 | `content`      | `binary()`   | —       | Raw document bytes. Skipped during JSON serialization. |
@@ -452,7 +452,7 @@ skipping the resource.
 Metadata about an LLM extraction pass.
 
 | Field               | Type        | Default | Description                               |
-| ------------------- | ----------- | ------- | ----------------------------------------- |
+| ------------------- | ----------- | ------- | ----------------------------------------- | ----------------------------------------------- |
 | `cost`              | `float()    | nil`    | `nil`                                     | Estimated cost of the LLM call in USD.          |
 | `prompt_tokens`     | `integer()  | nil`    | `nil`                                     | Number of prompt (input) tokens consumed.       |
 | `completion_tokens` | `integer()  | nil`    | `nil`                                     | Number of completion (output) tokens generated. |
@@ -466,7 +466,7 @@ Metadata about an LLM extraction pass.
 Information about a favicon or icon link.
 
 | Field       | Type         | Default | Description                                             |
-| ----------- | ------------ | ------- | ------------------------------------------------------- |
+| ----------- | ------------ | ------- | ------------------------------------------------------- | ---------------------------------- |
 | `url`       | `String.t()` | —       | The icon URL.                                           |
 | `rel`       | `String.t()` | —       | The `rel` attribute (e.g., "icon", "apple-touch-icon"). |
 | `sizes`     | `String.t()  | nil`    | `nil`                                                   | The `sizes` attribute, if present. |
@@ -479,7 +479,7 @@ Information about a favicon or icon link.
 Information about a feed link found on a page.
 
 | Field       | Type         | Default | Description       |
-| ----------- | ------------ | ------- | ----------------- |
+| ----------- | ------------ | ------- | ----------------- | --------------------------- |
 | `url`       | `String.t()` | —       | The feed URL.     |
 | `title`     | `String.t()  | nil`    | `nil`             | The feed title, if present. |
 | `feed_type` | `FeedType`   | `:rss`  | The type of feed. |
@@ -513,7 +513,7 @@ An hreflang alternate link entry.
 Information about an image found on a page.
 
 | Field    | Type          | Default | Description                        |
-| -------- | ------------- | ------- | ---------------------------------- |
+| -------- | ------------- | ------- | ---------------------------------- | ----------------------------------------------- |
 | `url`    | `String.t()`  | —       | The image URL.                     |
 | `alt`    | `String.t()   | nil`    | `nil`                              | The alt text, if present.                       |
 | `width`  | `integer()    | nil`    | `nil`                              | The width attribute, if present and parseable.  |
@@ -527,7 +527,7 @@ Information about an image found on a page.
 A JSON-LD structured data entry found on a page.
 
 | Field         | Type         | Default | Description                                |
-| ------------- | ------------ | ------- | ------------------------------------------ |
+| ------------- | ------------ | ------- | ------------------------------------------ | ----------------------------- |
 | `schema_type` | `String.t()` | —       | The `@type` value from the JSON-LD object. |
 | `name`        | `String.t()  | nil`    | `nil`                                      | The `name` value, if present. |
 | `raw`         | `String.t()` | —       | The raw JSON-LD string.                    |
@@ -539,7 +539,7 @@ A JSON-LD structured data entry found on a page.
 Information about a link found on a page.
 
 | Field       | Type         | Default     | Description                            |
-| ----------- | ------------ | ----------- | -------------------------------------- |
+| ----------- | ------------ | ----------- | -------------------------------------- | -------------------------------------- |
 | `url`       | `String.t()` | —           | The resolved URL of the link.          |
 | `text`      | `String.t()` | —           | The visible text of the link.          |
 | `link_type` | `LinkType`   | `:internal` | The classification of the link.        |
@@ -563,7 +563,7 @@ The result of a map operation, containing discovered URLs.
 Rich markdown conversion result from HTML processing.
 
 | Field                | Type               | Default | Description                                 |
-| -------------------- | ------------------ | ------- | ------------------------------------------- |
+| -------------------- | ------------------ | ------- | ------------------------------------------- | -------------------------------------------------------- |
 | `content`            | `String.t()`       | —       | Converted markdown text.                    |
 | `document_structure` | `term()            | nil`    | `nil`                                       | Structured document tree with semantic nodes.            |
 | `tables`             | `list(term())`     | `[]`    | Extracted tables with structured cell data. |
@@ -578,7 +578,7 @@ Rich markdown conversion result from HTML processing.
 Metadata extracted from an HTML page's `<meta>` tags and `<title>` element.
 
 | Field                  | Type                 | Default | Description |
-| ---------------------- | -------------------- | ------- | ----------- |
+| ---------------------- | -------------------- | ------- | ----------- | -------------------------------------------------- |
 | `title`                | `String.t()          | nil`    | `nil`       | The page title from the `<title>` element.         |
 | `description`          | `String.t()          | nil`    | `nil`       | The meta description.                              |
 | `canonical_url`        | `String.t()          | nil`    | `nil`       | The canonical URL from `<link rel="canonical">`.   |
@@ -630,7 +630,7 @@ Metadata extracted from an HTML page's `<meta>` tags and `<title>` element.
 Proxy configuration for HTTP requests.
 
 | Field      | Type         | Default | Description                                                    |
-| ---------- | ------------ | ------- | -------------------------------------------------------------- |
+| ---------- | ------------ | ------- | -------------------------------------------------------------- | ------------------------------------------- |
 | `url`      | `String.t()` | —       | Proxy URL (e.g. "<http://proxy:8080",> "socks5://proxy:1080"). |
 | `username` | `String.t()  | nil`    | `nil`                                                          | Optional username for proxy authentication. |
 | `password` | `String.t()  | nil`    | `nil`                                                          | Optional password for proxy authentication. |
@@ -642,7 +642,7 @@ Proxy configuration for HTTP requests.
 Response metadata extracted from HTTP headers.
 
 | Field              | Type        | Default | Description |
-| ------------------ | ----------- | ------- | ----------- |
+| ------------------ | ----------- | ------- | ----------- | ---------------------------------- |
 | `etag`             | `String.t() | nil`    | `nil`       | The ETag header value.             |
 | `last_modified`    | `String.t() | nil`    | `nil`       | The Last-Modified header value.    |
 | `cache_control`    | `String.t() | nil`    | `nil`       | The Cache-Control header value.    |
@@ -658,7 +658,7 @@ Response metadata extracted from HTTP headers.
 The result of a single-page scrape operation.
 
 | Field                 | Type                    | Default | Description                                                       |
-| --------------------- | ----------------------- | ------- | ----------------------------------------------------------------- |
+| --------------------- | ----------------------- | ------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
 | `status_code`         | `integer()`             | —       | The HTTP status code of the response.                             |
 | `content_type`        | `String.t()`            | —       | The Content-Type header value.                                    |
 | `html`                | `String.t()`            | —       | The HTML body of the response.                                    |
@@ -694,7 +694,7 @@ The result of a single-page scrape operation.
 A URL entry from a sitemap.
 
 | Field        | Type         | Default | Description |
-| ------------ | ------------ | ------- | ----------- |
+| ------------ | ------------ | ------- | ----------- | --------------------------------------- |
 | `url`        | `String.t()` | —       | The URL.    |
 | `lastmod`    | `String.t()  | nil`    | `nil`       | The last modification date, if present. |
 | `changefreq` | `String.t()  | nil`    | `nil`       | The change frequency, if present.       |

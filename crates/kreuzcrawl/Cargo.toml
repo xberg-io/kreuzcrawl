@@ -33,13 +33,13 @@ tracing = ["dep:tracing"]
 interact = ["browser"]
 mcp = ["dep:rmcp", "dep:schemars"]
 api = [
-    "dep:axum",
-    "dep:tower-http",
-    "dep:utoipa",
-    "dep:uuid",
-    "dep:dashmap",
-    "dep:base64",
-    "native-runtime",
+  "dep:axum",
+  "dep:tower-http",
+  "dep:utoipa",
+  "dep:uuid",
+  "dep:dashmap",
+  "dep:base64",
+  "native-runtime",
 ]
 mcp-http = ["mcp", "api"]
 warc = ["dep:uuid"]
@@ -86,12 +86,12 @@ uuid = { workspace = true, optional = true }
 # requested on wasm32-unknown-unknown.
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 tokio = { version = "1", features = [
-    "rt-multi-thread",
-    "net",
-    "fs",
-    "signal",
-    "process",
-    "io-util",
+  "rt-multi-thread",
+  "net",
+  "fs",
+  "signal",
+  "process",
+  "io-util",
 ] }
 
 # wasm32: getrandom must use the JS backend for both the v0.3 and v0.4 API

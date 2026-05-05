@@ -5,19 +5,6 @@
     "error",
     "waf"
   ],
-  "input": {
-    "config": {},
-    "mock_responses": [
-      {
-        "status_code": 403,
-        "headers": {
-          "content-type": "text/html",
-          "server": "AkamaiGHost"
-        },
-        "body_inline": "<html><body>Access Denied. Reference #18.abc123</body></html>"
-      }
-    ]
-  },
   "assertions": [
     {
       "type": "error"
@@ -27,5 +14,13 @@
       "field": "error.is_waf_blocked",
       "value": true
     }
-  ]
+  ],
+  "mock_response": {
+    "status": 403,
+    "body": "<html><body>Access Denied. Reference #18.abc123</body></html>",
+    "headers": {
+      "content-type": "text/html",
+      "server": "AkamaiGHost"
+    }
+  }
 }

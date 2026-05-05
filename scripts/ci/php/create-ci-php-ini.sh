@@ -63,6 +63,11 @@ if cat >"$INI_FILE" <<EOF; then
 ; Load the Kreuzcrawl PHP extension using full path
 ; This avoids overriding extension_dir which would prevent core extensions from loading
 extension="$DISPLAY_DIR/$EXT_FILE"
+
+; Load additional extensions that the main PHP installation provides
+; (necessary because -c option overrides php.ini, so we must explicitly load all needed extensions)
+extension_dir = /opt/homebrew/lib/php/pecl/20240924
+extension="ts_pack_core_php.so"
 EOF
   echo "✓ INI file created: $INI_FILE"
   echo ""

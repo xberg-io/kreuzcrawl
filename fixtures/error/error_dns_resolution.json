@@ -1,29 +1,24 @@
 {
-	"id": "error_dns_resolution",
-	"description": "Handles DNS resolution failure gracefully",
-	"tags": ["error", "network"],
-	"input": {
-		"mock_responses": [
-			{
-				"status_code": 302,
-				"headers": {
-					"location": "http://this-hostname-does-not-exist-kreuzcrawl-test.invalid/"
-				},
-				"body_inline": ""
-			}
-		],
-		"config": {
-			"respect_robots_txt": false,
-			"request_timeout": 5000
-		}
-	},
-	"assertions": [
-		{
-			"type": "error"
-		},
-		{
-			"type": "error",
-			"value": "dns"
-		}
-	]
+  "id": "error_dns_resolution",
+  "description": "Handles DNS resolution failure gracefully",
+  "tags": [
+    "error",
+    "network"
+  ],
+  "assertions": [
+    {
+      "type": "error"
+    },
+    {
+      "type": "error",
+      "value": "dns"
+    }
+  ],
+  "mock_response": {
+    "status": 302,
+    "body": "",
+    "headers": {
+      "location": "http://this-hostname-does-not-exist-kreuzcrawl-test.invalid/"
+    }
+  }
 }

@@ -47,7 +47,7 @@ version = "0.3.0rc19"
 source = { directory = "../../packages/python" }
 
 [[package]]
-name = "kreuzcrawl-e2e-tests"
+name = "kreuzcrawl-e2e"
 version = "0.0.0"
 source = { editable = "." }
 dependencies = [

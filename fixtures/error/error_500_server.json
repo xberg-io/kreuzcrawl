@@ -4,18 +4,6 @@
   "tags": [
     "error"
   ],
-  "input": {
-    "config": {},
-    "mock_responses": [
-      {
-        "status_code": 500,
-        "headers": {
-          "content-type": "text/html; charset=utf-8"
-        },
-        "body_inline": "<html><body><h1>Internal Server Error</h1></body></html>"
-      }
-    ]
-  },
   "assertions": [
     {
       "type": "equals",
@@ -29,5 +17,12 @@
       "type": "error",
       "value": "server_error"
     }
-  ]
+  ],
+  "mock_response": {
+    "status": 500,
+    "body": "<html><body><h1>Internal Server Error</h1></body></html>",
+    "headers": {
+      "content-type": "text/html; charset=utf-8"
+    }
+  }
 }

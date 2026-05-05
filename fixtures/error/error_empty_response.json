@@ -5,16 +5,6 @@
     "error",
     "edge-case"
   ],
-  "input": {
-    "config": {},
-    "mock_responses": [
-      {
-        "status_code": 200,
-        "headers": {},
-        "body_inline": ""
-      }
-    ]
-  },
   "assertions": [
     {
       "type": "equals",
@@ -26,5 +16,10 @@
       "field": "error.is_error",
       "value": false
     }
-  ]
+  ],
+  "mock_response": {
+    "status": 200,
+    "body": "",
+    "headers": {}
+  }
 }

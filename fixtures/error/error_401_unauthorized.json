@@ -4,19 +4,6 @@
   "tags": [
     "error"
   ],
-  "input": {
-    "config": {},
-    "mock_responses": [
-      {
-        "status_code": 401,
-        "headers": {
-          "content-type": "text/html; charset=utf-8",
-          "www-authenticate": "Basic realm=\"test\""
-        },
-        "body_inline": "<html><body><h1>401 Unauthorized</h1></body></html>"
-      }
-    ]
-  },
   "assertions": [
     {
       "type": "equals",
@@ -30,5 +17,13 @@
       "type": "error",
       "value": "unauthorized"
     }
-  ]
+  ],
+  "mock_response": {
+    "status": 401,
+    "body": "<html><body><h1>401 Unauthorized</h1></body></html>",
+    "headers": {
+      "content-type": "text/html; charset=utf-8",
+      "www-authenticate": "Basic realm=\"test\""
+    }
+  }
 }

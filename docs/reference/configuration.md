@@ -11,7 +11,7 @@ This page documents all configuration types and their defaults across all langua
 Metadata about an LLM extraction pass.
 
 | Field               | Type   | Default | Description                               |
-| ------------------- | ------ | ------- | ----------------------------------------- |
+| ------------------- | ------ | ------- | ----------------------------------------- | ----------------------------------------------- |
 | `cost`              | `float | None`   | `None`                                    | Estimated cost of the LLM call in USD.          |
 | `prompt_tokens`     | `int   | None`   | `None`                                    | Number of prompt (input) tokens consumed.       |
 | `completion_tokens` | `int   | None`   | `None`                                    | Number of completion (output) tokens generated. |
@@ -25,7 +25,7 @@ Metadata about an LLM extraction pass.
 Proxy configuration for HTTP requests.
 
 | Field      | Type  | Default | Description                                                    |
-| ---------- | ----- | ------- | -------------------------------------------------------------- |
+| ---------- | ----- | ------- | -------------------------------------------------------------- | ------------------------------------------- |
 | `url`      | `str` | —       | Proxy URL (e.g. "<http://proxy:8080",> "socks5://proxy:1080"). |
 | `username` | `str  | None`   | `None`                                                         | Optional username for proxy authentication. |
 | `password` | `str  | None`   | `None`                                                         | Optional password for proxy authentication. |
@@ -41,7 +41,7 @@ html-to-markdown-rs as the conversion engine for all formats
 (markdown, plain text, djot).
 
 | Field                        | Type        | Default      | Description                                                                                                                                                                                                                                                                                                                                         |
-| ---------------------------- | ----------- | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ---------------------------- | ----------- | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
 | `output_format`              | `str`       | `"markdown"` | Output format: `"markdown"` (default), `"plain"`, `"djot"`.                                                                                                                                                                                                                                                                                         |
 | `preprocessing_preset`       | `str`       | `"standard"` | Preprocessing aggressiveness: `"minimal"`, `"standard"` (default), `"aggressive"`. - Minimal: only scripts/styles removed. - Standard: also removes nav, nav-hinted headers/footers/asides, forms. - Aggressive: removes all footers/asides unconditionally.                                                                                        |
 | `remove_navigation`          | `bool`      | `True`       | Remove navigation elements (nav, breadcrumbs, menus). Default: `True`.                                                                                                                                                                                                                                                                              |
@@ -62,7 +62,7 @@ html-to-markdown-rs as the conversion engine for all formats
 Browser fallback configuration.
 
 | Field           | Type          | Default                    | Description                                                                    |
-| --------------- | ------------- | -------------------------- | ------------------------------------------------------------------------------ |
+| --------------- | ------------- | -------------------------- | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------- |
 | `mode`          | `BrowserMode` | `BrowserMode.AUTO`         | When to use the headless browser fallback.                                     |
 | `endpoint`      | `str          | None`                      | `None`                                                                         | CDP WebSocket endpoint for connecting to an external browser instance. |
 | `timeout`       | `float`       | `30000ms`                  | Timeout for browser page load and rendering (in milliseconds when serialized). |
@@ -77,7 +77,7 @@ Browser fallback configuration.
 Configuration for crawl, scrape, and map operations.
 
 | Field                  | Type                  | Default   | Description                                                                                      |
-| ---------------------- | --------------------- | --------- | ------------------------------------------------------------------------------------------------ |
+| ---------------------- | --------------------- | --------- | ------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
 | `max_depth`            | `int                  | None`     | `None`                                                                                           | Maximum crawl depth (number of link hops from the start URL).                                                                                 |
 | `max_pages`            | `int                  | None`     | `None`                                                                                           | Maximum number of pages to crawl.                                                                                                             |
 | `max_concurrent`       | `int                  | None`     | `None`                                                                                           | Maximum number of concurrent requests.                                                                                                        |
@@ -125,7 +125,7 @@ enabled, it downloads the raw bytes and populates this struct instead of
 skipping the resource.
 
 | Field          | Type             | Default | Description                                            |
-| -------------- | ---------------- | ------- | ------------------------------------------------------ |
+| -------------- | ---------------- | ------- | ------------------------------------------------------ | -------------------------------------------------------- |
 | `url`          | `str`            | —       | The URL the document was fetched from.                 |
 | `mime_type`    | `str`            | —       | The MIME type from the Content-Type header.            |
 | `content`      | `bytes`          | —       | Raw document bytes. Skipped during JSON serialization. |
@@ -141,7 +141,7 @@ skipping the resource.
 The result of a single-page scrape operation.
 
 | Field                 | Type                    | Default | Description                                                       |
-| --------------------- | ----------------------- | ------- | ----------------------------------------------------------------- |
+| --------------------- | ----------------------- | ------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
 | `status_code`         | `int`                   | —       | The HTTP status code of the response.                             |
 | `content_type`        | `str`                   | —       | The Content-Type header value.                                    |
 | `html`                | `str`                   | —       | The HTML body of the response.                                    |
@@ -177,7 +177,7 @@ The result of a single-page scrape operation.
 The result of crawling a single page during a crawl operation.
 
 | Field                 | Type                | Default | Description                                               |
-| --------------------- | ------------------- | ------- | --------------------------------------------------------- |
+| --------------------- | ------------------- | ------- | --------------------------------------------------------- | -------------------------------------------------------------------------- |
 | `url`                 | `str`               | —       | The original URL of the page.                             |
 | `normalized_url`      | `str`               | —       | The normalized URL of the page.                           |
 | `status_code`         | `int`               | —       | The HTTP status code of the response.                     |
@@ -206,7 +206,7 @@ The result of crawling a single page during a crawl operation.
 The result of a multi-page crawl operation.
 
 | Field             | Type                    | Default | Description                                                               |
-| ----------------- | ----------------------- | ------- | ------------------------------------------------------------------------- |
+| ----------------- | ----------------------- | ------- | ------------------------------------------------------------------------- | ---------------------------------------------------- |
 | `pages`           | `list[CrawlPageResult]` | `[]`    | The list of crawled pages.                                                |
 | `final_url`       | `str`                   | —       | The final URL after following redirects.                                  |
 | `redirect_count`  | `int`                   | —       | The number of redirects followed.                                         |
@@ -222,7 +222,7 @@ The result of a multi-page crawl operation.
 A URL entry from a sitemap.
 
 | Field        | Type  | Default | Description |
-| ------------ | ----- | ------- | ----------- |
+| ------------ | ----- | ------- | ----------- | --------------------------------------- |
 | `url`        | `str` | —       | The URL.    |
 | `lastmod`    | `str  | None`   | `None`      | The last modification date, if present. |
 | `changefreq` | `str  | None`   | `None`      | The change frequency, if present.       |
@@ -245,7 +245,7 @@ The result of a map operation, containing discovered URLs.
 Rich markdown conversion result from HTML processing.
 
 | Field                | Type                   | Default | Description                                 |
-| -------------------- | ---------------------- | ------- | ------------------------------------------- |
+| -------------------- | ---------------------- | ------- | ------------------------------------------- | -------------------------------------------------------- |
 | `content`            | `str`                  | —       | Converted markdown text.                    |
 | `document_structure` | `dict[str, Any]        | None`   | `None`                                      | Structured document tree with semantic nodes.            |
 | `tables`             | `list[dict[str, Any]]` | `[]`    | Extracted tables with structured cell data. |
@@ -260,7 +260,7 @@ Rich markdown conversion result from HTML processing.
 Information about a link found on a page.
 
 | Field       | Type       | Default             | Description                            |
-| ----------- | ---------- | ------------------- | -------------------------------------- |
+| ----------- | ---------- | ------------------- | -------------------------------------- | -------------------------------------- |
 | `url`       | `str`      | —                   | The resolved URL of the link.          |
 | `text`      | `str`      | —                   | The visible text of the link.          |
 | `link_type` | `LinkType` | `LinkType.INTERNAL` | The classification of the link.        |
@@ -274,7 +274,7 @@ Information about a link found on a page.
 Information about an image found on a page.
 
 | Field    | Type          | Default           | Description                        |
-| -------- | ------------- | ----------------- | ---------------------------------- |
+| -------- | ------------- | ----------------- | ---------------------------------- | ----------------------------------------------- |
 | `url`    | `str`         | —                 | The image URL.                     |
 | `alt`    | `str          | None`             | `None`                             | The alt text, if present.                       |
 | `width`  | `int          | None`             | `None`                             | The width attribute, if present and parseable.  |
@@ -288,7 +288,7 @@ Information about an image found on a page.
 Information about a feed link found on a page.
 
 | Field       | Type       | Default        | Description       |
-| ----------- | ---------- | -------------- | ----------------- |
+| ----------- | ---------- | -------------- | ----------------- | --------------------------- |
 | `url`       | `str`      | —              | The feed URL.     |
 | `title`     | `str       | None`          | `None`            | The feed title, if present. |
 | `feed_type` | `FeedType` | `FeedType.RSS` | The type of feed. |
@@ -300,7 +300,7 @@ Information about a feed link found on a page.
 A JSON-LD structured data entry found on a page.
 
 | Field         | Type  | Default | Description                                |
-| ------------- | ----- | ------- | ------------------------------------------ |
+| ------------- | ----- | ------- | ------------------------------------------ | ----------------------------- |
 | `schema_type` | `str` | —       | The `@type` value from the JSON-LD object. |
 | `name`        | `str  | None`   | `None`                                     | The `name` value, if present. |
 | `raw`         | `str` | —       | The raw JSON-LD string.                    |
@@ -312,7 +312,7 @@ A JSON-LD structured data entry found on a page.
 Information about an HTTP cookie received from a response.
 
 | Field    | Type  | Default | Description       |
-| -------- | ----- | ------- | ----------------- |
+| -------- | ----- | ------- | ----------------- | -------------------------------- |
 | `name`   | `str` | —       | The cookie name.  |
 | `value`  | `str` | —       | The cookie value. |
 | `domain` | `str  | None`   | `None`            | The cookie domain, if specified. |
@@ -325,7 +325,7 @@ Information about an HTTP cookie received from a response.
 A downloaded asset from a page.
 
 | Field            | Type            | Default               | Description                            |
-| ---------------- | --------------- | --------------------- | -------------------------------------- |
+| ---------------- | --------------- | --------------------- | -------------------------------------- | ------------------------------------------------------------------------ |
 | `url`            | `str`           | —                     | The original URL of the asset.         |
 | `content_hash`   | `str`           | —                     | The SHA-256 content hash of the asset. |
 | `mime_type`      | `str            | None`                 | `None`                                 | The MIME type from the Content-Type header.                              |
@@ -340,7 +340,7 @@ A downloaded asset from a page.
 Article metadata extracted from `article:*` Open Graph tags.
 
 | Field            | Type        | Default | Description       |
-| ---------------- | ----------- | ------- | ----------------- |
+| ---------------- | ----------- | ------- | ----------------- | ------------------------------ |
 | `published_time` | `str        | None`   | `None`            | The article publication time.  |
 | `modified_time`  | `str        | None`   | `None`            | The article modification time. |
 | `author`         | `str        | None`   | `None`            | The article author.            |
@@ -365,7 +365,7 @@ An hreflang alternate link entry.
 Information about a favicon or icon link.
 
 | Field       | Type  | Default | Description                                             |
-| ----------- | ----- | ------- | ------------------------------------------------------- |
+| ----------- | ----- | ------- | ------------------------------------------------------- | ---------------------------------- |
 | `url`       | `str` | —       | The icon URL.                                           |
 | `rel`       | `str` | —       | The `rel` attribute (e.g., "icon", "apple-touch-icon"). |
 | `sizes`     | `str  | None`   | `None`                                                  | The `sizes` attribute, if present. |
@@ -389,7 +389,7 @@ A heading element extracted from the page.
 Response metadata extracted from HTTP headers.
 
 | Field              | Type | Default | Description |
-| ------------------ | ---- | ------- | ----------- |
+| ------------------ | ---- | ------- | ----------- | ---------------------------------- |
 | `etag`             | `str | None`   | `None`      | The ETag header value.             |
 | `last_modified`    | `str | None`   | `None`      | The Last-Modified header value.    |
 | `cache_control`    | `str | None`   | `None`      | The Cache-Control header value.    |
@@ -405,7 +405,7 @@ Response metadata extracted from HTTP headers.
 Metadata extracted from an HTML page's `<meta>` tags and `<title>` element.
 
 | Field                  | Type                 | Default | Description |
-| ---------------------- | -------------------- | ------- | ----------- |
+| ---------------------- | -------------------- | ------- | ----------- | -------------------------------------------------- |
 | `title`                | `str                 | None`   | `None`      | The page title from the `<title>` element.         |
 | `description`          | `str                 | None`   | `None`      | The meta description.                              |
 | `canonical_url`        | `str                 | None`   | `None`      | The canonical URL from `<link rel="canonical">`.   |
@@ -478,7 +478,7 @@ Result of citation conversion.
 Result from a single URL in a batch scrape operation.
 
 | Field    | Type          | Default | Description               |
-| -------- | ------------- | ------- | ------------------------- |
+| -------- | ------------- | ------- | ------------------------- | ---------------------------------------- |
 | `url`    | `str`         | —       | The URL that was scraped. |
 | `result` | `ScrapeResult | None`   | `None`                    | The scrape result, if successful.        |
 | `error`  | `str          | None`   | `None`                    | The error message, if the scrape failed. |
@@ -490,7 +490,7 @@ Result from a single URL in a batch scrape operation.
 Result from a single URL in a batch crawl operation.
 
 | Field    | Type         | Default | Description                    |
-| -------- | ------------ | ------- | ------------------------------ |
+| -------- | ------------ | ------- | ------------------------------ | --------------------------------------- |
 | `url`    | `str`        | —       | The seed URL that was crawled. |
 | `result` | `CrawlResult | None`   | `None`                         | The crawl result, if successful.        |
 | `error`  | `str         | None`   | `None`                         | The error message, if the crawl failed. |

@@ -1,29 +1,24 @@
 {
-	"id": "error_connection_refused",
-	"description": "Handles connection refused error gracefully",
-	"tags": ["error", "network"],
-	"input": {
-		"mock_responses": [
-			{
-				"status_code": 302,
-				"headers": {
-					"location": "http://127.0.0.1:1/"
-				},
-				"body_inline": ""
-			}
-		],
-		"config": {
-			"respect_robots_txt": false,
-			"request_timeout": 5000
-		}
-	},
-	"assertions": [
-		{
-			"type": "error"
-		},
-		{
-			"type": "error",
-			"value": "connection"
-		}
-	]
+  "id": "error_connection_refused",
+  "description": "Handles connection refused error gracefully",
+  "tags": [
+    "error",
+    "network"
+  ],
+  "assertions": [
+    {
+      "type": "error"
+    },
+    {
+      "type": "error",
+      "value": "connection"
+    }
+  ],
+  "mock_response": {
+    "status": 302,
+    "body": "",
+    "headers": {
+      "location": "http://127.0.0.1:1/"
+    }
+  }
 }

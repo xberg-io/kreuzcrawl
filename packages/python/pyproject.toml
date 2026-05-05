@@ -1,14 +1,14 @@
 [build-system]
 build-backend = "maturin"
-requires = [ "maturin>=1,<2" ]
+requires = ["maturin>=1,<2"]
 
 [project]
 name = "kreuzcrawl"
 version = "0.3.0rc19"
 description = "High-performance web crawling engine"
-keywords = [ "crawl", "scrape", "spider", "web" ]
+keywords = ["crawl", "scrape", "spider", "web"]
 license = "Elastic-2.0"
-authors = [ { name = "Kreuzberg Team" } ]
+authors = [{ name = "Kreuzberg Team" }]
 requires-python = ">=3.10"
 classifiers = [
   "Programming Language :: Python :: 3 :: Only",
@@ -23,5 +23,5 @@ urls.repository = "https://github.com/kreuzberg-dev/kreuzcrawl"
 [tool.maturin]
 module-name = "kreuzcrawl._kreuzcrawl"
 manifest-path = "../../crates/kreuzcrawl-py/Cargo.toml"
-features = [ "pyo3/extension-module" ]
-python-packages = [ "kreuzcrawl" ]
+features = ["pyo3/extension-module"]
+python-packages = ["kreuzcrawl"]

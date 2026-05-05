@@ -1,29 +1,24 @@
 {
-	"id": "error_ssl_invalid_cert",
-	"description": "Handles SSL certificate validation error",
-	"tags": ["error", "ssl"],
-	"input": {
-		"mock_responses": [
-			{
-				"status_code": 302,
-				"headers": {
-					"location": "https://self-signed.badssl.com/"
-				},
-				"body_inline": ""
-			}
-		],
-		"config": {
-			"respect_robots_txt": false,
-			"request_timeout": 5000
-		}
-	},
-	"assertions": [
-		{
-			"type": "error"
-		},
-		{
-			"type": "error",
-			"value": "ssl"
-		}
-	]
+  "id": "error_ssl_invalid_cert",
+  "description": "Handles SSL certificate validation error",
+  "tags": [
+    "error",
+    "ssl"
+  ],
+  "assertions": [
+    {
+      "type": "error"
+    },
+    {
+      "type": "error",
+      "value": "ssl"
+    }
+  ],
+  "mock_response": {
+    "status": 302,
+    "body": "",
+    "headers": {
+      "location": "https://self-signed.badssl.com/"
+    }
+  }
 }

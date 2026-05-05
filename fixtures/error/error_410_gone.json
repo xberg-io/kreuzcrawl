@@ -4,18 +4,6 @@
   "tags": [
     "error"
   ],
-  "input": {
-    "config": {},
-    "mock_responses": [
-      {
-        "status_code": 410,
-        "headers": {
-          "content-type": "text/html; charset=utf-8"
-        },
-        "body_inline": "<html><body><h1>410 Gone</h1></body></html>"
-      }
-    ]
-  },
   "assertions": [
     {
       "type": "equals",
@@ -29,5 +17,12 @@
       "type": "error",
       "value": "gone"
     }
-  ]
+  ],
+  "mock_response": {
+    "status": 410,
+    "body": "<html><body><h1>410 Gone</h1></body></html>",
+    "headers": {
+      "content-type": "text/html; charset=utf-8"
+    }
+  }
 }
