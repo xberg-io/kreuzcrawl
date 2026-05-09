@@ -394,7 +394,9 @@ impl CrawlConfig {
         if let Some(ref auth) = self.auth {
             match auth {
                 AuthConfig::Basic { username, .. } if username.is_empty() => {
-                    return Err(CrawlError::InvalidConfig("auth.basic.username must not be empty".into()));
+                    return Err(CrawlError::InvalidConfig(
+                        "auth.basic.username must not be empty".into(),
+                    ));
                 }
                 AuthConfig::Bearer { token } if token.is_empty() => {
                     return Err(CrawlError::InvalidConfig("auth.bearer.token must not be empty".into()));

@@ -708,16 +708,6 @@ uint8_t *kcrawl_downloaded_document_content(const KCRAWLDownloadedDocument *ptr,
 uintptr_t kcrawl_downloaded_document_size(const KCRAWLDownloadedDocument *ptr);
 
 /**
- * Get the `mime_type` field from a `DownloadedDocument`.
- * The returned string is owned by the caller and must be freed with `kcrawl_free_string`.
- * Returns null on failure or when the field is empty.
- * # Safety
- * Caller must ensure all pointer arguments are valid or null.
- * Returned pointers must be freed with the appropriate free function.
- */
-char *kcrawl_downloaded_document_mime_type(const KCRAWLDownloadedDocument *ptr);
-
-/**
  * Get the `headers` field from a `DownloadedDocument`.
  * # Safety
  * Pointer must be a valid handle returned by this library.
