@@ -1201,7 +1201,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl-e2e-rust"
-version = "0.1.0"
+version = "0.3.0-rc.19"
 dependencies = [
  "axum",
  "kreuzcrawl",

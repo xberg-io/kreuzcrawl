@@ -35,6 +35,21 @@ importers:
         specifier: ^3.0.0
         version: 3.2.4(lightningcss@1.32.0)
 
+  e2e/wasm:
+    devDependencies:
+      '@kreuzberg/kreuzcrawl-wasm':
+        specifier: workspace:*
+        version: link:../../crates/kreuzcrawl-wasm
+      rollup:
+        specifier: ^4.53.3
+        version: 4.60.3
+      vite-plugin-wasm:
+        specifier: ^3.4.0
+        version: 3.6.0(vite@8.0.10(esbuild@0.28.0))
+      vitest:
+        specifier: ^4.1.5
+        version: 4.1.5(vite@8.0.10(esbuild@0.28.0))
+
 packages:
 
   '@emnapi/core@1.10.0':
@@ -1550,6 +1565,11 @@ packages:
     engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
     hasBin: true
 
+  vite-plugin-wasm@3.6.0:
+    resolution: {integrity: sha512-mL/QPziiIA4RAA6DkaZZzOstdwbW5jO4Vz7Zenj0wieKWBlNvIvX5L5ljum9lcUX0ShNfBgCNLKTjNkRVVqcsw==}
+    peerDependencies:
+      vite: ^2 || ^3 || ^4 || ^5 || ^6 || ^7 || ^8
+
   vite@7.3.3:
     resolution: {integrity: sha512-/4XH147Ui7OGTjg3HbdWe5arnZQSbfuRzdr9Ec7TQi5I7R+ir0Rlc9GIvD4v0XZurELqA035KVXJXpR61xhiTA==}
     engines: {node: ^20.19.0 || >=22.12.0}
@@ -2871,6 +2891,10 @@ snapshots:
       - terser
       - tsx
       - yaml
+
+  vite-plugin-wasm@3.6.0(vite@8.0.10(esbuild@0.28.0)):
+    dependencies:
+      vite: 8.0.10(esbuild@0.28.0)
 
   vite@7.3.3(lightningcss@1.32.0):
     dependencies:

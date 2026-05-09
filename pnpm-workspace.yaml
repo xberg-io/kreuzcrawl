@@ -2,3 +2,4 @@ packages:
   - "crates/kreuzcrawl-node"
   - "crates/kreuzcrawl-wasm"
   - "e2e/node"
+  - "e2e/wasm"
