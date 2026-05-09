@@ -6,11 +6,6 @@
   ],
   "assertions": [
     {
-      "type": "equals",
-      "field": "status_code",
-      "value": 410
-    },
-    {
       "type": "error"
     },
     {

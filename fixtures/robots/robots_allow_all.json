@@ -5,11 +5,20 @@
 	"input": {
 		"mock_responses": [
 			{
+				"path": "/robots.txt",
 				"status_code": 200,
 				"headers": {
 					"content-type": "text/plain"
 				},
 				"body_file": "robots/allow_all.txt"
+			},
+			{
+				"path": "/fixtures/robots_allow_all",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><body><h1>robots_allow_all</h1></body></html>"
 			}
 		],
 		"config": {

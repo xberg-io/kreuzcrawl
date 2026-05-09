@@ -1,6 +1,6 @@
 {
 	"id": "validation_invalid_auth_config",
-	"description": "auth object with no recognized variant (empty object) is rejected",
+	"description": "auth object with empty username in basic auth is rejected",
 	"tags": ["validation"],
 	"input": {
 		"mock_responses": [
@@ -10,7 +10,11 @@
 			}
 		],
 		"config": {
-			"auth": {}
+			"auth": {
+				"type": "basic",
+				"username": "",
+				"password": "secret"
+			}
 		}
 	},
 	"assertions": [

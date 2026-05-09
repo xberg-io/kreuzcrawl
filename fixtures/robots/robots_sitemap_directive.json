@@ -5,11 +5,20 @@
 	"input": {
 		"mock_responses": [
 			{
+				"path": "/robots.txt",
 				"status_code": 200,
 				"headers": {
 					"content-type": "text/plain"
 				},
 				"body_file": "robots/with_sitemap.txt"
+			},
+			{
+				"path": "/fixtures/robots_sitemap_directive",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><body><h1>robots_sitemap_directive</h1></body></html>"
 			}
 		],
 		"config": {

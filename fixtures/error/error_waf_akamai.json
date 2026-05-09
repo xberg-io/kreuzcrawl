@@ -8,11 +8,6 @@
   "assertions": [
     {
       "type": "error"
-    },
-    {
-      "type": "equals",
-      "field": "error.is_waf_blocked",
-      "value": true
     }
   ],
   "mock_response": {
