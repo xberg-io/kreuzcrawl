@@ -401,8 +401,11 @@ jobs:
         shell: bash
 
       - name: Build kreuzcrawl-cli (release, --features "api,mcp,warc,ai,tracing")
-        run: cargo build --release -p kreuzcrawl-cli --features "api,mcp,warc,ai,tracing"
-        shell: bash
+        uses: kreuzberg-dev/actions/build-rust-cli@v1
+        with:
+          package-name: kreuzcrawl-cli
+          binary-name: kreuzcrawl
+          extra-cargo-args: --features "api,mcp,warc,ai,tracing"
 
       - name: Upload FFI artifacts
         uses: actions/upload-artifact@v7
@@ -553,6 +556,13 @@ jobs:
           cache-from: type=gha,scope=ci-docker-cli
           cache-to: type=gha,mode=max,scope=ci-docker-cli
 
+      - name: Check Docker image size
+        uses: kreuzberg-dev/actions/check-docker-image-size@v1
+        with:
+          image: kreuzcrawl:${{ matrix.variant }}
+          warn-mb: ${{ matrix.variant == 'cli' && '200' || '' }}
+          label: kreuzcrawl-${{ matrix.variant }}
+
       - name: Save Docker image as artifact (core/full)
         if: matrix.variant == 'full'
         shell: bash
@@ -616,13 +626,11 @@ jobs:
 
       - name: Test Docker image size (cli)
         if: matrix.variant == 'cli'
-        shell: bash
-        run: |
-          size_mb=$(docker inspect kreuzcrawl:cli --format='{{.Size}}' | awk '{print int($1/1024/1024)}')
-          echo "CLI image size: ${size_mb}MB"
-          if [ "$size_mb" -gt 200 ]; then
-            echo "::warning::CLI image is larger than 200MB (${size_mb}MB). Expected a minimal static binary image."
-          fi
+        uses: kreuzberg-dev/actions/check-docker-image-size@v1
+        with:
+          image: kreuzcrawl:cli
+          warn-mb: "200"
+          label: kreuzcrawl-cli
 
       - name: Run comprehensive feature tests (core/full)
         if: matrix.variant == 'full'
@@ -634,17 +642,10 @@ jobs:
 
       - name: Run API contract tests with schemathesis (core/full)
         if: matrix.variant == 'full'
-        run: |
-          pip3 install schemathesis
-          container_id=$(docker run -d -p 3000:3000 kreuzcrawl:${{ matrix.variant }})
-          sleep 5
-          FAILED=0
-          schemathesis run http://localhost:3000/openapi.json \
-            --max-examples=10 \
-            --request-timeout=30000 \
-            --checks not_a_server_error,status_code_conformance,content_type_conformance,response_schema_conformance,negative_data_rejection || FAILED=1
-          docker stop "$container_id"
-          exit "$FAILED"
+        uses: kreuzberg-dev/actions/run-api-contract-tests@v1
+        with:
+          image: kreuzcrawl:${{ matrix.variant }}
+          port: "3000"
 
       - name: Run CLI feature tests
         if: matrix.variant == 'cli'
@@ -776,10 +777,15 @@ jobs:
         uses: kreuzberg-dev/actions/install-task@v1
 
       - name: Build CLI with features
+        uses: kreuzberg-dev/actions/build-rust-cli@v1
+        with:
+          package-name: kreuzcrawl-cli
+          binary-name: kreuzcrawl
+          extra-cargo-args: --features "api,mcp,warc,ai,tracing"
+
+      - name: Package CLI artifact for Python wheel
         shell: bash
         run: |
-          echo "=== Building CLI Binary with Features ==="
-          cargo build --release --package kreuzcrawl-cli --features "api,mcp,warc,ai,tracing"
           mkdir -p packages/python/kreuzcrawl
           # Copy with correct name (kreuzcrawl-cli) to match pyproject.toml include paths
           if [ "${{ runner.os }}" = "Windows" ]; then
@@ -1894,8 +1900,10 @@ jobs:
         run: scripts/ci/ruby/compile-extension.sh
 
       - name: Build kreuzcrawl CLI binary
-        shell: bash
-        run: cargo build --release --package kreuzcrawl-cli
+        uses: kreuzberg-dev/actions/build-rust-cli@v1
+        with:
+          package-name: kreuzcrawl-cli
+          binary-name: kreuzcrawl
 
       - name: Run Ruby tests
         shell: bash
@@ -1983,8 +1991,10 @@ jobs:
         run: task php:test:ci
 
       - name: Build kreuzcrawl CLI binary
-        shell: bash
-        run: cargo build --release --package kreuzcrawl-cli
+        uses: kreuzberg-dev/actions/build-rust-cli@v1
+        with:
+          package-name: kreuzcrawl-cli
+          binary-name: kreuzcrawl
 
       - name: Run E2E tests
         shell: bash
