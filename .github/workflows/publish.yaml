@@ -956,8 +956,18 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { os: ubuntu-latest, arch: x86_64, target: x86_64-unknown-linux-musl, classifier: linux-musl-x86_64 }
-          - { os: ubuntu-24.04-arm, arch: aarch64, target: aarch64-unknown-linux-musl, classifier: linux-musl-aarch64 }
+          - {
+              os: ubuntu-latest,
+              arch: x86_64,
+              target: x86_64-unknown-linux-musl,
+              classifier: linux-musl-x86_64,
+            }
+          - {
+              os: ubuntu-24.04-arm,
+              arch: aarch64,
+              target: aarch64-unknown-linux-musl,
+              classifier: linux-musl-aarch64,
+            }
     steps:
       - uses: actions/checkout@v6
         with:
@@ -1042,7 +1052,12 @@ jobs:
       matrix:
         include:
           - { os: ubuntu-latest, arch: x64, target: x86_64-unknown-linux-musl, rid: linux-musl-x64 }
-          - { os: ubuntu-24.04-arm, arch: arm64, target: aarch64-unknown-linux-musl, rid: linux-musl-arm64 }
+          - {
+              os: ubuntu-24.04-arm,
+              arch: arm64,
+              target: aarch64-unknown-linux-musl,
+              rid: linux-musl-arm64,
+            }
     steps:
       - uses: actions/checkout@v6
         with:
