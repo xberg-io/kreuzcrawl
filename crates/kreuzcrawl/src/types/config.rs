@@ -361,6 +361,13 @@ impl CrawlConfig {
                 "browser.wait_selector required when browser.wait is Selector".into(),
             ));
         }
+        if let Some(max_depth) = self.max_depth
+            && max_depth > 100
+        {
+            return Err(CrawlError::InvalidConfig(format!(
+                "max_depth must be <= 100 (got {max_depth})"
+            )));
+        }
         if let Some(max_pages) = self.max_pages
             && max_pages == 0
         {
@@ -368,6 +375,37 @@ impl CrawlConfig {
         }
         if self.max_redirects > 100 {
             return Err(CrawlError::InvalidConfig("max_redirects must be <= 100".into()));
+        }
+        if let Some(max_body_size) = self.max_body_size
+            && max_body_size == 0
+        {
+            return Err(CrawlError::InvalidConfig("max_body_size must be > 0".into()));
+        }
+        if let Some(ref proxy) = self.proxy {
+            let parsed = url::Url::parse(&proxy.url)
+                .map_err(|e| CrawlError::InvalidConfig(format!("invalid proxy URL '{}': {e}", proxy.url)))?;
+            let scheme = parsed.scheme();
+            if !matches!(scheme, "http" | "https" | "socks5" | "socks5h") {
+                return Err(CrawlError::InvalidConfig(format!(
+                    "invalid proxy URL scheme '{scheme}' (expected http, https, socks5, or socks5h)"
+                )));
+            }
+        }
+        if let Some(ref auth) = self.auth {
+            match auth {
+                AuthConfig::Basic { username, .. } if username.is_empty() => {
+                    return Err(CrawlError::InvalidConfig("auth.basic.username must not be empty".into()));
+                }
+                AuthConfig::Bearer { token } if token.is_empty() => {
+                    return Err(CrawlError::InvalidConfig("auth.bearer.token must not be empty".into()));
+                }
+                AuthConfig::Header { name, value } if name.is_empty() || value.is_empty() => {
+                    return Err(CrawlError::InvalidConfig(
+                        "auth.header.name and auth.header.value must not be empty".into(),
+                    ));
+                }
+                _ => {}
+            }
         }
         for pattern in &self.include_paths {
             regex::Regex::new(pattern)
