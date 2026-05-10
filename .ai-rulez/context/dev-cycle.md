@@ -1,8 +1,6 @@
 ---
 priority: high
 ---
-## dev-cycle
-
 Iteration loops are codified as Taskfile tasks. Prefer them over ad-hoc commands.
 
 ### After alef changes
