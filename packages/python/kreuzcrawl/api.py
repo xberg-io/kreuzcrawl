@@ -6,11 +6,23 @@
 """Public API for conversion."""
 
 import kreuzcrawl._kreuzcrawl as _rust
-from ._kreuzcrawl import BatchCrawlResult, BatchScrapeResult, BrowserConfig, ContentConfig, CrawlConfig, CrawlEngineHandle, CrawlResult, MapResult, ProxyConfig, ScrapeResult
+from ._kreuzcrawl import (
+    BatchCrawlResult,
+    BatchScrapeResult,
+    BrowserConfig,
+    ContentConfig,
+    CrawlConfig,
+    CrawlEngineHandle,
+    CrawlResult,
+    MapResult,
+    ProxyConfig,
+    ScrapeResult,
+)
 
 from typing import Any, TypeVar
 
 _E = TypeVar("_E")
+
 
 def _coerce_enum(enum_cls: type[_E], value: object) -> _E:
     """Coerce a string/alias value into the matching pyclass enum instance."""
@@ -121,7 +133,9 @@ def _to_rust_crawl_config(value: CrawlConfig | dict[str, Any] | None) -> _rust.C
         retry_count=value.retry_count,
         retry_codes=value.retry_codes,
         cookies_enabled=value.cookies_enabled,
-        auth=(value.auth if isinstance(value.auth, _rust.AuthConfig) else _rust.AuthConfig(value.auth)) if value.auth is not None else None,
+        auth=(value.auth if isinstance(value.auth, _rust.AuthConfig) else _rust.AuthConfig(value.auth))
+        if value.auth is not None
+        else None,
         max_body_size=value.max_body_size,
         remove_tags=value.remove_tags,
         content=_to_rust_content_config(value.content),
@@ -147,18 +161,28 @@ def create_engine(config: CrawlConfig | None = None) -> CrawlEngineHandle:
     """Create a new crawl engine with the given configuration."""
     _rust_config = _to_rust_crawl_config(config) if config is not None else _rust.CrawlConfig()
     return _rust.create_engine(config=_rust_config)
+
+
 async def scrape(engine: CrawlEngineHandle, url: str) -> ScrapeResult:
     """Scrape a single URL, returning extracted page data."""
     return await _rust.scrape(engine=engine, url=url)
+
+
 async def crawl(engine: CrawlEngineHandle, url: str) -> CrawlResult:
     """Crawl a website starting from `url`, following links up to the configured depth."""
     return await _rust.crawl(engine=engine, url=url)
+
+
 async def map_urls(engine: CrawlEngineHandle, url: str) -> MapResult:
     """Discover all pages on a website by following links and sitemaps."""
     return await _rust.map_urls(engine=engine, url=url)
+
+
 async def batch_scrape(engine: CrawlEngineHandle, urls: list[str]) -> list[BatchScrapeResult]:
     """Scrape multiple URLs concurrently."""
     return await _rust.batch_scrape(engine=engine, urls=urls)
+
+
 async def batch_crawl(engine: CrawlEngineHandle, urls: list[str]) -> list[BatchCrawlResult]:
     """Crawl multiple seed URLs concurrently, each following links to configured depth."""
     return await _rust.batch_crawl(engine=engine, urls=urls)

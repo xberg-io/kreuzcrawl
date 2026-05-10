@@ -4,7 +4,7 @@
 # To verify freshness: alef verify --exit-code
 # Issues & docs: https://github.com/kreuzberg-dev/alef
 
-from typing import Any, Literal, TypeAlias, TypedDict
+from typing import Any, Literal, TypedDict
 
 class ExtractionMeta:
     cost: float | None
@@ -14,11 +14,11 @@ class ExtractionMeta:
     chunks_processed: int
     def __init__(
         self,
-    cost: float | None = None,
-    prompt_tokens: int | None = None,
-    completion_tokens: int | None = None,
-    model: str | None = None,
-    chunks_processed: int | None = None,
+        cost: float | None = None,
+        prompt_tokens: int | None = None,
+        completion_tokens: int | None = None,
+        model: str | None = None,
+        chunks_processed: int | None = None,
     ) -> None: ...
 
 class ProxyConfig:
@@ -27,9 +27,9 @@ class ProxyConfig:
     password: str | None
     def __init__(
         self,
-    url: str | None = None,
-    username: str | None = None,
-    password: str | None = None,
+        url: str | None = None,
+        username: str | None = None,
+        password: str | None = None,
     ) -> None: ...
 
 class ContentConfig:
@@ -47,18 +47,18 @@ class ContentConfig:
     include_document_structure: bool
     def __init__(
         self,
-    output_format: str | None = None,
-    preprocessing_preset: str | None = None,
-    remove_navigation: bool | None = None,
-    remove_forms: bool | None = None,
-    strip_tags: list[str] | None = None,
-    preserve_tags: list[str] | None = None,
-    exclude_selectors: list[str] | None = None,
-    skip_images: bool | None = None,
-    max_depth: int | None = None,
-    wrap: bool | None = None,
-    wrap_width: int | None = None,
-    include_document_structure: bool | None = None,
+        output_format: str | None = None,
+        preprocessing_preset: str | None = None,
+        remove_navigation: bool | None = None,
+        remove_forms: bool | None = None,
+        strip_tags: list[str] | None = None,
+        preserve_tags: list[str] | None = None,
+        exclude_selectors: list[str] | None = None,
+        skip_images: bool | None = None,
+        max_depth: int | None = None,
+        wrap: bool | None = None,
+        wrap_width: int | None = None,
+        include_document_structure: bool | None = None,
     ) -> None: ...
     @staticmethod
     def default() -> ContentConfig: ...
@@ -72,12 +72,12 @@ class BrowserConfig:
     extra_wait: int | None
     def __init__(
         self,
-    mode: BrowserMode | str | None = None,
-    endpoint: str | None = None,
-    timeout: int | None = None,
-    wait: BrowserWait | str | None = None,
-    wait_selector: str | None = None,
-    extra_wait: int | None = None,
+        mode: BrowserMode | str | None = None,
+        endpoint: str | None = None,
+        timeout: int | None = None,
+        wait: BrowserWait | str | None = None,
+        wait_selector: str | None = None,
+        extra_wait: int | None = None,
     ) -> None: ...
     @staticmethod
     def default() -> BrowserConfig: ...
@@ -121,42 +121,42 @@ class CrawlConfig:
     save_browser_profile: bool
     def __init__(
         self,
-    max_depth: int | None = None,
-    max_pages: int | None = None,
-    max_concurrent: int | None = None,
-    respect_robots_txt: bool | None = None,
-    soft_http_errors: bool | None = None,
-    user_agent: str | None = None,
-    stay_on_domain: bool | None = None,
-    allow_subdomains: bool | None = None,
-    include_paths: list[str] | None = None,
-    exclude_paths: list[str] | None = None,
-    custom_headers: dict[str, str] | None = None,
-    request_timeout: int | None = None,
-    rate_limit_ms: int | None = None,
-    max_redirects: int | None = None,
-    retry_count: int | None = None,
-    retry_codes: list[int] | None = None,
-    cookies_enabled: bool | None = None,
-    auth: AuthConfig | None = None,
-    max_body_size: int | None = None,
-    remove_tags: list[str] | None = None,
-    content: ContentConfig | None = None,
-    map_limit: int | None = None,
-    map_search: str | None = None,
-    download_assets: bool | None = None,
-    asset_types: list[AssetCategory] | None = None,
-    max_asset_size: int | None = None,
-    browser: BrowserConfig | None = None,
-    proxy: ProxyConfig | None = None,
-    user_agents: list[str] | None = None,
-    capture_screenshot: bool | None = None,
-    download_documents: bool | None = None,
-    document_max_size: int | None = None,
-    document_mime_types: list[str] | None = None,
-    warc_output: str | None = None,
-    browser_profile: str | None = None,
-    save_browser_profile: bool | None = None,
+        max_depth: int | None = None,
+        max_pages: int | None = None,
+        max_concurrent: int | None = None,
+        respect_robots_txt: bool | None = None,
+        soft_http_errors: bool | None = None,
+        user_agent: str | None = None,
+        stay_on_domain: bool | None = None,
+        allow_subdomains: bool | None = None,
+        include_paths: list[str] | None = None,
+        exclude_paths: list[str] | None = None,
+        custom_headers: dict[str, str] | None = None,
+        request_timeout: int | None = None,
+        rate_limit_ms: int | None = None,
+        max_redirects: int | None = None,
+        retry_count: int | None = None,
+        retry_codes: list[int] | None = None,
+        cookies_enabled: bool | None = None,
+        auth: AuthConfig | None = None,
+        max_body_size: int | None = None,
+        remove_tags: list[str] | None = None,
+        content: ContentConfig | None = None,
+        map_limit: int | None = None,
+        map_search: str | None = None,
+        download_assets: bool | None = None,
+        asset_types: list[AssetCategory] | None = None,
+        max_asset_size: int | None = None,
+        browser: BrowserConfig | None = None,
+        proxy: ProxyConfig | None = None,
+        user_agents: list[str] | None = None,
+        capture_screenshot: bool | None = None,
+        download_documents: bool | None = None,
+        document_max_size: int | None = None,
+        document_mime_types: list[str] | None = None,
+        warc_output: str | None = None,
+        browser_profile: str | None = None,
+        save_browser_profile: bool | None = None,
     ) -> None: ...
     def validate(self) -> None: ...
     @staticmethod
@@ -172,13 +172,13 @@ class DownloadedDocument:
     headers: dict[str, str]
     def __init__(
         self,
-    url: str | None = None,
-    mime_type: str | None = None,
-    content: bytes | None = None,
-    size: int | None = None,
-    filename: str | None = None,
-    content_hash: str | None = None,
-    headers: dict[str, str] | None = None,
+        url: str | None = None,
+        mime_type: str | None = None,
+        content: bytes | None = None,
+        size: int | None = None,
+        filename: str | None = None,
+        content_hash: str | None = None,
+        headers: dict[str, str] | None = None,
     ) -> None: ...
 
 class ScrapeResult:
@@ -211,33 +211,33 @@ class ScrapeResult:
     downloaded_document: DownloadedDocument | None
     def __init__(
         self,
-    status_code: int | None = None,
-    content_type: str | None = None,
-    html: str | None = None,
-    body_size: int | None = None,
-    metadata: PageMetadata | None = None,
-    links: list[LinkInfo] | None = None,
-    images: list[ImageInfo] | None = None,
-    feeds: list[FeedInfo] | None = None,
-    json_ld: list[JsonLdEntry] | None = None,
-    is_allowed: bool | None = None,
-    crawl_delay: int | None = None,
-    noindex_detected: bool | None = None,
-    nofollow_detected: bool | None = None,
-    x_robots_tag: str | None = None,
-    is_pdf: bool | None = None,
-    was_skipped: bool | None = None,
-    detected_charset: str | None = None,
-    auth_header_sent: bool | None = None,
-    response_meta: ResponseMeta | None = None,
-    assets: list[DownloadedAsset] | None = None,
-    js_render_hint: bool | None = None,
-    browser_used: bool | None = None,
-    markdown: MarkdownResult | None = None,
-    extracted_data: dict[str, Any] | None = None,
-    extraction_meta: ExtractionMeta | None = None,
-    screenshot: bytes | None = None,
-    downloaded_document: DownloadedDocument | None = None,
+        status_code: int | None = None,
+        content_type: str | None = None,
+        html: str | None = None,
+        body_size: int | None = None,
+        metadata: PageMetadata | None = None,
+        links: list[LinkInfo] | None = None,
+        images: list[ImageInfo] | None = None,
+        feeds: list[FeedInfo] | None = None,
+        json_ld: list[JsonLdEntry] | None = None,
+        is_allowed: bool | None = None,
+        crawl_delay: int | None = None,
+        noindex_detected: bool | None = None,
+        nofollow_detected: bool | None = None,
+        x_robots_tag: str | None = None,
+        is_pdf: bool | None = None,
+        was_skipped: bool | None = None,
+        detected_charset: str | None = None,
+        auth_header_sent: bool | None = None,
+        response_meta: ResponseMeta | None = None,
+        assets: list[DownloadedAsset] | None = None,
+        js_render_hint: bool | None = None,
+        browser_used: bool | None = None,
+        markdown: MarkdownResult | None = None,
+        extracted_data: dict[str, Any] | None = None,
+        extraction_meta: ExtractionMeta | None = None,
+        screenshot: bytes | None = None,
+        downloaded_document: DownloadedDocument | None = None,
     ) -> None: ...
 
 class CrawlPageResult:
@@ -263,26 +263,26 @@ class CrawlPageResult:
     downloaded_document: DownloadedDocument | None
     def __init__(
         self,
-    url: str | None = None,
-    normalized_url: str | None = None,
-    status_code: int | None = None,
-    content_type: str | None = None,
-    html: str | None = None,
-    body_size: int | None = None,
-    metadata: PageMetadata | None = None,
-    links: list[LinkInfo] | None = None,
-    images: list[ImageInfo] | None = None,
-    feeds: list[FeedInfo] | None = None,
-    json_ld: list[JsonLdEntry] | None = None,
-    depth: int | None = None,
-    stayed_on_domain: bool | None = None,
-    was_skipped: bool | None = None,
-    is_pdf: bool | None = None,
-    detected_charset: str | None = None,
-    markdown: MarkdownResult | None = None,
-    extracted_data: dict[str, Any] | None = None,
-    extraction_meta: ExtractionMeta | None = None,
-    downloaded_document: DownloadedDocument | None = None,
+        url: str | None = None,
+        normalized_url: str | None = None,
+        status_code: int | None = None,
+        content_type: str | None = None,
+        html: str | None = None,
+        body_size: int | None = None,
+        metadata: PageMetadata | None = None,
+        links: list[LinkInfo] | None = None,
+        images: list[ImageInfo] | None = None,
+        feeds: list[FeedInfo] | None = None,
+        json_ld: list[JsonLdEntry] | None = None,
+        depth: int | None = None,
+        stayed_on_domain: bool | None = None,
+        was_skipped: bool | None = None,
+        is_pdf: bool | None = None,
+        detected_charset: str | None = None,
+        markdown: MarkdownResult | None = None,
+        extracted_data: dict[str, Any] | None = None,
+        extraction_meta: ExtractionMeta | None = None,
+        downloaded_document: DownloadedDocument | None = None,
     ) -> None: ...
 
 class CrawlResult:
@@ -295,13 +295,13 @@ class CrawlResult:
     normalized_urls: list[str]
     def __init__(
         self,
-    pages: list[CrawlPageResult] | None = None,
-    final_url: str | None = None,
-    redirect_count: int | None = None,
-    was_skipped: bool | None = None,
-    error: str | None = None,
-    cookies: list[CookieInfo] | None = None,
-    normalized_urls: list[str] | None = None,
+        pages: list[CrawlPageResult] | None = None,
+        final_url: str | None = None,
+        redirect_count: int | None = None,
+        was_skipped: bool | None = None,
+        error: str | None = None,
+        cookies: list[CookieInfo] | None = None,
+        normalized_urls: list[str] | None = None,
     ) -> None: ...
     def unique_normalized_urls(self) -> int: ...
 
@@ -312,10 +312,10 @@ class SitemapUrl:
     priority: str | None
     def __init__(
         self,
-    url: str | None = None,
-    lastmod: str | None = None,
-    changefreq: str | None = None,
-    priority: str | None = None,
+        url: str | None = None,
+        lastmod: str | None = None,
+        changefreq: str | None = None,
+        priority: str | None = None,
     ) -> None: ...
 
 class MapResult:
@@ -331,12 +331,12 @@ class MarkdownResult:
     fit_content: str | None
     def __init__(
         self,
-    content: str | None = None,
-    document_structure: dict[str, Any] | None = None,
-    tables: list[dict[str, Any]] | None = None,
-    warnings: list[str] | None = None,
-    citations: CitationResult | None = None,
-    fit_content: str | None = None,
+        content: str | None = None,
+        document_structure: dict[str, Any] | None = None,
+        tables: list[dict[str, Any]] | None = None,
+        warnings: list[str] | None = None,
+        citations: CitationResult | None = None,
+        fit_content: str | None = None,
     ) -> None: ...
 
 class LinkInfo:
@@ -347,11 +347,11 @@ class LinkInfo:
     nofollow: bool
     def __init__(
         self,
-    url: str | None = None,
-    text: str | None = None,
-    link_type: LinkType | str | None = None,
-    rel: str | None = None,
-    nofollow: bool | None = None,
+        url: str | None = None,
+        text: str | None = None,
+        link_type: LinkType | str | None = None,
+        rel: str | None = None,
+        nofollow: bool | None = None,
     ) -> None: ...
 
 class ImageInfo:
@@ -362,11 +362,11 @@ class ImageInfo:
     source: ImageSource
     def __init__(
         self,
-    url: str | None = None,
-    alt: str | None = None,
-    width: int | None = None,
-    height: int | None = None,
-    source: ImageSource | str | None = None,
+        url: str | None = None,
+        alt: str | None = None,
+        width: int | None = None,
+        height: int | None = None,
+        source: ImageSource | str | None = None,
     ) -> None: ...
 
 class FeedInfo:
@@ -375,9 +375,9 @@ class FeedInfo:
     feed_type: FeedType
     def __init__(
         self,
-    url: str | None = None,
-    title: str | None = None,
-    feed_type: FeedType | str | None = None,
+        url: str | None = None,
+        title: str | None = None,
+        feed_type: FeedType | str | None = None,
     ) -> None: ...
 
 class JsonLdEntry:
@@ -386,9 +386,9 @@ class JsonLdEntry:
     raw: str
     def __init__(
         self,
-    schema_type: str | None = None,
-    name: str | None = None,
-    raw: str | None = None,
+        schema_type: str | None = None,
+        name: str | None = None,
+        raw: str | None = None,
     ) -> None: ...
 
 class CookieInfo:
@@ -398,10 +398,10 @@ class CookieInfo:
     path: str | None
     def __init__(
         self,
-    name: str | None = None,
-    value: str | None = None,
-    domain: str | None = None,
-    path: str | None = None,
+        name: str | None = None,
+        value: str | None = None,
+        domain: str | None = None,
+        path: str | None = None,
     ) -> None: ...
 
 class DownloadedAsset:
@@ -413,12 +413,12 @@ class DownloadedAsset:
     html_tag: str | None
     def __init__(
         self,
-    url: str | None = None,
-    content_hash: str | None = None,
-    mime_type: str | None = None,
-    size: int | None = None,
-    asset_category: AssetCategory | str | None = None,
-    html_tag: str | None = None,
+        url: str | None = None,
+        content_hash: str | None = None,
+        mime_type: str | None = None,
+        size: int | None = None,
+        asset_category: AssetCategory | str | None = None,
+        html_tag: str | None = None,
     ) -> None: ...
 
 class ArticleMetadata:
@@ -429,11 +429,11 @@ class ArticleMetadata:
     tags: list[str]
     def __init__(
         self,
-    published_time: str | None = None,
-    modified_time: str | None = None,
-    author: str | None = None,
-    section: str | None = None,
-    tags: list[str] | None = None,
+        published_time: str | None = None,
+        modified_time: str | None = None,
+        author: str | None = None,
+        section: str | None = None,
+        tags: list[str] | None = None,
     ) -> None: ...
 
 class HreflangEntry:
@@ -448,10 +448,10 @@ class FaviconInfo:
     mime_type: str | None
     def __init__(
         self,
-    url: str | None = None,
-    rel: str | None = None,
-    sizes: str | None = None,
-    mime_type: str | None = None,
+        url: str | None = None,
+        rel: str | None = None,
+        sizes: str | None = None,
+        mime_type: str | None = None,
     ) -> None: ...
 
 class HeadingInfo:
@@ -469,13 +469,13 @@ class ResponseMeta:
     content_encoding: str | None
     def __init__(
         self,
-    etag: str | None = None,
-    last_modified: str | None = None,
-    cache_control: str | None = None,
-    server: str | None = None,
-    x_powered_by: str | None = None,
-    content_language: str | None = None,
-    content_encoding: str | None = None,
+        etag: str | None = None,
+        last_modified: str | None = None,
+        cache_control: str | None = None,
+        server: str | None = None,
+        x_powered_by: str | None = None,
+        content_language: str | None = None,
+        content_encoding: str | None = None,
     ) -> None: ...
 
 class PageMetadata:
@@ -524,49 +524,49 @@ class PageMetadata:
     word_count: int | None
     def __init__(
         self,
-    title: str | None = None,
-    description: str | None = None,
-    canonical_url: str | None = None,
-    keywords: str | None = None,
-    author: str | None = None,
-    viewport: str | None = None,
-    theme_color: str | None = None,
-    generator: str | None = None,
-    robots: str | None = None,
-    html_lang: str | None = None,
-    html_dir: str | None = None,
-    og_title: str | None = None,
-    og_type: str | None = None,
-    og_image: str | None = None,
-    og_description: str | None = None,
-    og_url: str | None = None,
-    og_site_name: str | None = None,
-    og_locale: str | None = None,
-    og_video: str | None = None,
-    og_audio: str | None = None,
-    og_locale_alternates: list[str] | None = None,
-    twitter_card: str | None = None,
-    twitter_title: str | None = None,
-    twitter_description: str | None = None,
-    twitter_image: str | None = None,
-    twitter_site: str | None = None,
-    twitter_creator: str | None = None,
-    dc_title: str | None = None,
-    dc_creator: str | None = None,
-    dc_subject: str | None = None,
-    dc_description: str | None = None,
-    dc_publisher: str | None = None,
-    dc_date: str | None = None,
-    dc_type: str | None = None,
-    dc_format: str | None = None,
-    dc_identifier: str | None = None,
-    dc_language: str | None = None,
-    dc_rights: str | None = None,
-    article: ArticleMetadata | None = None,
-    hreflangs: list[HreflangEntry] | None = None,
-    favicons: list[FaviconInfo] | None = None,
-    headings: list[HeadingInfo] | None = None,
-    word_count: int | None = None,
+        title: str | None = None,
+        description: str | None = None,
+        canonical_url: str | None = None,
+        keywords: str | None = None,
+        author: str | None = None,
+        viewport: str | None = None,
+        theme_color: str | None = None,
+        generator: str | None = None,
+        robots: str | None = None,
+        html_lang: str | None = None,
+        html_dir: str | None = None,
+        og_title: str | None = None,
+        og_type: str | None = None,
+        og_image: str | None = None,
+        og_description: str | None = None,
+        og_url: str | None = None,
+        og_site_name: str | None = None,
+        og_locale: str | None = None,
+        og_video: str | None = None,
+        og_audio: str | None = None,
+        og_locale_alternates: list[str] | None = None,
+        twitter_card: str | None = None,
+        twitter_title: str | None = None,
+        twitter_description: str | None = None,
+        twitter_image: str | None = None,
+        twitter_site: str | None = None,
+        twitter_creator: str | None = None,
+        dc_title: str | None = None,
+        dc_creator: str | None = None,
+        dc_subject: str | None = None,
+        dc_description: str | None = None,
+        dc_publisher: str | None = None,
+        dc_date: str | None = None,
+        dc_type: str | None = None,
+        dc_format: str | None = None,
+        dc_identifier: str | None = None,
+        dc_language: str | None = None,
+        dc_rights: str | None = None,
+        article: ArticleMetadata | None = None,
+        hreflangs: list[HreflangEntry] | None = None,
+        favicons: list[FaviconInfo] | None = None,
+        headings: list[HeadingInfo] | None = None,
+        word_count: int | None = None,
     ) -> None: ...
 
 class CitationResult:
@@ -574,8 +574,8 @@ class CitationResult:
     references: list[CitationReference]
     def __init__(
         self,
-    content: str | None = None,
-    references: list[CitationReference] | None = None,
+        content: str | None = None,
+        references: list[CitationReference] | None = None,
     ) -> None: ...
 
 class CitationReference:
@@ -584,9 +584,9 @@ class CitationReference:
     text: str
     def __init__(
         self,
-    index: int | None = None,
-    url: str | None = None,
-    text: str | None = None,
+        index: int | None = None,
+        url: str | None = None,
+        text: str | None = None,
     ) -> None: ...
 
 class BatchScrapeResult:
@@ -595,9 +595,9 @@ class BatchScrapeResult:
     error: str | None
     def __init__(
         self,
-    url: str | None = None,
-    result: ScrapeResult | None = None,
-    error: str | None = None,
+        url: str | None = None,
+        result: ScrapeResult | None = None,
+        error: str | None = None,
     ) -> None: ...
 
 class BatchCrawlResult:
@@ -606,9 +606,9 @@ class BatchCrawlResult:
     error: str | None
     def __init__(
         self,
-    url: str | None = None,
-    result: CrawlResult | None = None,
-    error: str | None = None,
+        url: str | None = None,
+        result: CrawlResult | None = None,
+        error: str | None = None,
     ) -> None: ...
 
 class CrawlEngineHandle: ...
@@ -647,8 +647,6 @@ class AuthConfigHeaderVariant(TypedDict):
 
 class AuthConfig:
     type: str
-    def __str__(self) -> str: ...
-    def __repr__(self) -> str: ...
 
 class LinkType:
     Internal: LinkType = ...
