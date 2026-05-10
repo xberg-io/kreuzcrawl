@@ -1,10 +1,2 @@
 User-agent: *
-Allow: /
-Disallow: /admin/
-Disallow: /private/
-Disallow: /api/
-
-User-agent: Googlebot
-Allow: /api/public/
-
-Sitemap: https://example.com/sitemap.xml
+Disallow: /

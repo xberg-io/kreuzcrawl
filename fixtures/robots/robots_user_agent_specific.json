@@ -1,45 +1,36 @@
 {
-  "id": "robots_user_agent_specific",
-  "description": "Matches user-agent specific rules in robots.txt",
-  "tags": [
-    "robots",
-    "user-agent"
-  ],
-  "input": {
-    "mock_responses": [
-      {
-        "path": "/robots.txt",
-        "status_code": 200,
-        "headers": {
-          "content-type": "text/plain"
-        },
-        "body_file": "robots/user_agent_specific.txt"
-      },
-      {
-        "path": "/fixtures/robots_user_agent_specific",
-        "status_code": 200,
-        "headers": {
-          "content-type": "text/html; charset=utf-8"
-        },
-        "body_inline": "<html><body><h1>robots_user_agent_specific</h1></body></html>"
-      }
-    ],
-    "config": {
-      "respect_robots_txt": true,
-      "user_agent": "KreuzcrawlBot"
-    }
-  },
-  "assertions": [
-    {
-      "type": "equals",
-      "field": "robots.is_allowed",
-      "value": false
-    }
-  ],
-  "skip": {
-    "languages": [
-      "c"
-    ],
-    "reason": "mock server serves robots.txt namespaced under /fixtures/{id}/robots.txt; engine fetches /robots.txt from host root which returns 404, so is_allowed always returns true (default-allow)"
-  }
+	"id": "robots_user_agent_specific",
+	"description": "Matches user-agent specific rules in robots.txt",
+	"tags": ["robots", "user-agent"],
+	"input": {
+		"mock_responses": [
+			{
+				"path": "/robots.txt",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/plain"
+				},
+				"body_file": "robots/user_agent_specific.txt"
+			},
+			{
+				"path": "/",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><body><h1>robots_user_agent_specific</h1></body></html>"
+			}
+		],
+		"config": {
+			"respect_robots_txt": true,
+			"user_agent": "KreuzcrawlBot"
+		}
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "robots.is_allowed",
+			"value": false
+		}
+	]
 }

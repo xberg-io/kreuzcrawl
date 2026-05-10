@@ -13,7 +13,7 @@
 				"body_file": "robots/with_comments.txt"
 			},
 			{
-				"path": "/fixtures/robots_comments_handling",
+				"path": "/",
 				"status_code": 200,
 				"headers": {
 					"content-type": "text/html; charset=utf-8"

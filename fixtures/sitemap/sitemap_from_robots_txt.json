@@ -21,6 +21,15 @@
 					"content-type": "application/xml"
 				},
 				"body_file": "xml/sitemap_basic.xml"
+			},
+			{
+				"path": "/",
+				"method": "GET",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><body><h1>sitemap_from_robots_txt</h1></body></html>"
 			}
 		],
 		"config": {

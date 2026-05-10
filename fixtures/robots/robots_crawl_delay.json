@@ -13,7 +13,7 @@
 				"body_file": "robots/crawl_delay.txt"
 			},
 			{
-				"path": "/fixtures/robots_crawl_delay",
+				"path": "/",
 				"status_code": 200,
 				"headers": {
 					"content-type": "text/html; charset=utf-8"

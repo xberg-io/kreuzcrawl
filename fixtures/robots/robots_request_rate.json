@@ -13,7 +13,7 @@
 				"body_file": "robots/request_rate.txt"
 			},
 			{
-				"path": "/fixtures/robots_request_rate",
+				"path": "/",
 				"status_code": 200,
 				"headers": {
 					"content-type": "text/html; charset=utf-8"

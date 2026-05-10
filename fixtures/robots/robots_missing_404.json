@@ -13,7 +13,7 @@
 				"body_inline": "Not Found"
 			},
 			{
-				"path": "/fixtures/robots_missing_404",
+				"path": "/",
 				"status_code": 200,
 				"headers": {
 					"content-type": "text/html; charset=utf-8"

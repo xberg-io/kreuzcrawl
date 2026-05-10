@@ -1,5 +1,2 @@
 User-agent: *
-Disallow: /admin*
-Disallow: /private*
-Disallow: /*.json$
-Allow: /
+Disallow: /*

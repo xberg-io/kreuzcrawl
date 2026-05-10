@@ -13,7 +13,7 @@
 				"body_file": "robots/allow_all.txt"
 			},
 			{
-				"path": "/fixtures/robots_allow_all",
+				"path": "/",
 				"status_code": 200,
 				"headers": {
 					"content-type": "text/html; charset=utf-8"
