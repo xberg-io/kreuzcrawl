@@ -1,5 +1,5 @@
 [workspace]
-alef_version = "0.15.19"
+alef_version = "0.15.24"
 languages = ["python", "node", "ruby", "php", "ffi", "go", "java", "csharp", "elixir", "wasm"]
 
 # ---------------------------------------------------------------------------
@@ -487,6 +487,45 @@ cli_args = ["--format", "json", "--browser-mode", "never"]
 function = "scrape"
 result_type = "ScrapeResult"
 c_engine_factory = "CrawlConfig"
+
+# Named call config for batch_scrape — auto-selected when fixture input contains "batch_urls".
+[crates.e2e.calls.batch_scrape]
+function = "batch_scrape"
+module = "kreuzcrawl"
+result_var = "result"
+async = true
+returns_result = true
+result_is_array = true
+select_when = { input_has = "batch_urls" }
+# Elixir binding does not expose batch functions (unsafe NIF tuple marshalling with mixed-type arrays).
+skip_languages = ["elixir"]
+
+[[crates.e2e.calls.batch_scrape.args]]
+name = "engine"
+field = "config"
+type = "handle"
+optional = false
+
+[[crates.e2e.calls.batch_scrape.args]]
+name = "urls"
+field = "batch_urls"
+type = "json_object"
+optional = false
+
+[crates.e2e.calls.batch_scrape.overrides.python]
+function = "batch_scrape"
+module = "kreuzcrawl"
+
+[crates.e2e.calls.batch_scrape.overrides.node]
+function = "batchScrape"
+module = "@kreuzberg/kreuzcrawl"
+
+[crates.e2e.calls.batch_scrape.overrides.go]
+function = "BatchScrape"
+module = "github.com/kreuzberg-dev/kreuzcrawl/packages/go"
+
+[crates.e2e.calls.batch_scrape.overrides.php]
+function = "batchScrape"
 
 [crates.e2e.fields]
 title = "metadata.title"
