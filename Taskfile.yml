@@ -42,6 +42,9 @@ includes:
   _e2e_wf:
     taskfile: .task/workflows/e2e.yml
     internal: true
+  _dev_wf:
+    taskfile: .task/workflows/dev-cycle.yml
+    internal: true
 
   version:
     taskfile: .task/tools/version-sync.yml
@@ -118,7 +121,7 @@ tasks:
       - prek autoupdate
 
   clean:
-    desc: Clean all build artifacts
+    desc: Clean all build artifacts (per-language only; see `clean:full` for cargo + e2e)
     cmds:
       - task: rust:clean
       - task: python:clean
@@ -131,6 +134,66 @@ tasks:
       - task: elixir:clean
       - task: wasm:clean
       - task: c:clean
+
+  clean:e2e:
+    desc: Remove per-language e2e test deps (venvs, node_modules, lockfiles, _build, etc.)
+    cmds:
+      - task: _dev_wf:clean:e2e
+
+  clean:workspace:
+    desc: Clean Rust workspace target + alef IR cache + legacy mock-server binaries
+    cmds:
+      - task: _dev_wf:clean:workspace
+
+  clean:full:
+    desc: 'Total cleanup: per-language clean + cargo workspace target + e2e test deps'
+    cmds:
+      - task: _dev_wf:clean:full
+
+  alef:install:
+    desc: Install the alef CLI from the sibling repo (../alef) at HEAD
+    cmds:
+      - task: _dev_wf:alef:install
+
+  alef:regen:
+    desc: 'Regenerate bindings, packages, and e2e tests (alef all && alef e2e generate)'
+    cmds:
+      - task: _dev_wf:alef:regen
+
+  alef:bump:
+    desc: 'Bump alef pin in alef.toml + reinstall + regen (usage: VERSION=0.15.30 task alef:bump)'
+    cmds:
+      - task: _dev_wf:alef:bump
+
+  rebuild:
+    desc: Rebuild all language bindings + the alef-generated e2e mock-server binary
+    cmds:
+      - task: _dev_wf:rebuild:bindings
+
+  rebuild:fast:
+    desc: 'Fast rebuild: Rust core + Python + Node + mock-server only'
+    cmds:
+      - task: _dev_wf:rebuild:fast
+
+  e2e:reset:
+    desc: 'Full e2e reset: clean + alef regen + rebuild all bindings + run all e2e'
+    cmds:
+      - task: _dev_wf:e2e:reset
+
+  e2e:refresh:
+    desc: 'Quick e2e refresh: alef regen + rebuild + run all e2e (no clean)'
+    cmds:
+      - task: _dev_wf:e2e:refresh
+
+  e2e:refresh:fast:
+    desc: 'Fast e2e feedback: alef regen + rebuild Rust/Python/Node + run their e2e'
+    cmds:
+      - task: _dev_wf:e2e:refresh:fast
+
+  python:cycle:
+    desc: 'Python: rebuild binding + force-refresh e2e venv + run e2e (avoids stale .so)'
+    cmds:
+      - task: _dev_wf:python:cycle
 
   build:all:
     desc: Build all bindings across all languages
