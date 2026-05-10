@@ -511,6 +511,7 @@ name = "urls"
 field = "batch_urls"
 type = "json_object"
 optional = false
+owned = true
 
 [crates.e2e.calls.batch_scrape.overrides.python]
 function = "batch_scrape"
