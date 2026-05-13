@@ -8,54 +8,54 @@
 set -euo pipefail
 
 test_encoding_double_encoded() {
-  # Handles double-encoded URL characters (%25C3%25B6)
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_ENCODING_DOUBLE_ENCODED:-${MOCK_SERVER_URL}/fixtures/encoding_double_encoded}" --config '{}' --format json --browser-mode never)
+    # Handles double-encoded URL characters (%25C3%25B6)
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_ENCODING_DOUBLE_ENCODED:-${MOCK_SERVER_URL}/fixtures/encoding_double_encoded}" --config '{}' --format json --browser-mode never)
 
-  local val_html
-  val_html=$(echo "$output" | jq -r '.html')
-  assert_not_empty "$val_html" 'html'
-  local val_links_length
-  val_links_length=$(echo "$output" | jq -r '.links | length')
-  assert_greater_than_or_equal "$val_links_length" '1' 'links.length'
+    local val_html
+    val_html=$(echo "$output" | jq -r '.html')
+    assert_not_empty "$val_html" 'html'
+    local val_links_length
+    val_links_length=$(echo "$output" | jq -r '.links | length')
+    assert_greater_than_or_equal "$val_links_length" '1' 'links.length'
 }
 
 test_encoding_mixed_charset_page() {
-  # Handles charset mismatch between HTTP header and HTML meta tag
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_ENCODING_MIXED_CHARSET_PAGE:-${MOCK_SERVER_URL}/fixtures/encoding_mixed_charset_page}" --config '{}' --format json --browser-mode never)
+    # Handles charset mismatch between HTTP header and HTML meta tag
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_ENCODING_MIXED_CHARSET_PAGE:-${MOCK_SERVER_URL}/fixtures/encoding_mixed_charset_page}" --config '{}' --format json --browser-mode never)
 
-  local val_html
-  val_html=$(echo "$output" | jq -r '.html')
-  assert_not_empty "$val_html" 'html'
+    local val_html
+    val_html=$(echo "$output" | jq -r '.html')
+    assert_not_empty "$val_html" 'html'
 }
 
 test_encoding_percent_encoded_path() {
-  # Handles percent-encoded spaces and characters in URL paths
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_ENCODING_PERCENT_ENCODED_PATH:-${MOCK_SERVER_URL}/fixtures/encoding_percent_encoded_path}" --config '{}' --format json --browser-mode never)
+    # Handles percent-encoded spaces and characters in URL paths
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_ENCODING_PERCENT_ENCODED_PATH:-${MOCK_SERVER_URL}/fixtures/encoding_percent_encoded_path}" --config '{}' --format json --browser-mode never)
 
-  local val_html
-  val_html=$(echo "$output" | jq -r '.html')
-  assert_not_empty "$val_html" 'html'
-  local val_links_length
-  val_links_length=$(echo "$output" | jq -r '.links | length')
-  assert_greater_than_or_equal "$val_links_length" '2' 'links.length'
+    local val_html
+    val_html=$(echo "$output" | jq -r '.html')
+    assert_not_empty "$val_html" 'html'
+    local val_links_length
+    val_links_length=$(echo "$output" | jq -r '.links | length')
+    assert_greater_than_or_equal "$val_links_length" '2' 'links.length'
 }
 
 test_encoding_unicode_url() {
-  # Handles Unicode characters in URLs (Hebrew, Japanese, Cyrillic)
-  local output
-  output=$(kreuzcrawl scrape "${MOCK_SERVER_ENCODING_UNICODE_URL:-${MOCK_SERVER_URL}/fixtures/encoding_unicode_url}" --config '{}' --format json --browser-mode never)
+    # Handles Unicode characters in URLs (Hebrew, Japanese, Cyrillic)
+    local output
+    output=$(kreuzcrawl scrape "${MOCK_SERVER_ENCODING_UNICODE_URL:-${MOCK_SERVER_URL}/fixtures/encoding_unicode_url}" --config '{}' --format json --browser-mode never)
 
-  local val_html
-  val_html=$(echo "$output" | jq -r '.html')
-  assert_not_empty "$val_html" 'html'
+    local val_html
+    val_html=$(echo "$output" | jq -r '.html')
+    assert_not_empty "$val_html" 'html'
 }
 
 run_tests_encoding() {
-  run_test test_encoding_double_encoded
-  run_test test_encoding_mixed_charset_page
-  run_test test_encoding_percent_encoded_path
-  run_test test_encoding_unicode_url
+    run_test test_encoding_double_encoded
+    run_test test_encoding_mixed_charset_page
+    run_test test_encoding_percent_encoded_path
+    run_test test_encoding_unicode_url
 }

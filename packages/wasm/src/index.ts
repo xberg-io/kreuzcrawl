@@ -47,5 +47,5 @@ export {
   crawl,
   createEngine,
   mapUrls,
-  scrape,
-} from "./wasm";
+  scrape
+} from './wasm';
