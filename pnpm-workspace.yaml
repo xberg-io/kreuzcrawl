@@ -3,3 +3,5 @@ packages:
   - "crates/kreuzcrawl-wasm"
   - "e2e/node"
   - "e2e/wasm"
+allowBuilds:
+  esbuild: true
