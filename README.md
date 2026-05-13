@@ -53,14 +53,14 @@
   </a>
 </div>
 
-High-performance Rust web crawling engine for structured data extraction. Scrape, crawl, and map websites with native bindings for 10 languages — same engine, identical results across every runtime.
+High-performance Rust web crawling engine for structured data extraction. Scrape, crawl, and map websites with native bindings for 14 languages — same engine, identical results across every runtime.
 
 ## Key Features
 
 - **Structured extraction** — Text, metadata, links, images, assets, JSON-LD, Open Graph, hreflang, favicons, headings, and response headers
 - **Markdown conversion** — Clean Markdown output with citations, document structure, and fit-content mode
 - **Concurrent crawling** — Depth-first, breadth-first, or best-first traversal with configurable depth, page limits, and concurrency
-- **10 language bindings** — Rust, Python, Node.js, Ruby, Go, Java, C#, PHP, Elixir, and WebAssembly
+- **14 language bindings** — Rust, Python, Node.js, TypeScript, Ruby, Go, Java, Kotlin, C#, PHP, Elixir, Dart, Swift, Zig, and WebAssembly
 - **Smart filtering** — BM25 relevance scoring, URL include/exclude patterns, robots.txt compliance, and sitemap discovery
 - **Browser rendering** — Optional headless browser for JavaScript-heavy SPAs with WAF detection and bypass
 - **Batch operations** — Scrape or crawl hundreds of URLs concurrently with partial failure handling
@@ -260,6 +260,15 @@ Rust Core Engine (async, concurrent, SIMD-optimized)
 ## Contributing
 
 Contributions are welcome! See our [Contributing Guide](https://github.com/kreuzberg-dev/kreuzcrawl/blob/main/CONTRIBUTING.md).
+
+## Part of Kreuzberg, Inc.
+
+- [Kreuzberg](https://docs.kreuzberg.dev) — document intelligence: text, tables, metadata from 91+ formats with optional OCR.
+- [Kreuzberg Cloud](https://docs.kreuzberg.cloud) — managed extraction API with SDKs, dashboards, and observability.
+- [html-to-markdown](https://docs.html-to-markdown.kreuzberg.dev) — fast, lossless HTML→Markdown engine.
+- [liter-llm](https://docs.liter-llm.kreuzberg.dev) — universal LLM API client with native bindings for 14 languages and 143 providers.
+- [tree-sitter-language-pack](https://docs.tree-sitter-language-pack.kreuzberg.dev) — tree-sitter grammars and code-intelligence primitives.
+- [Discord](https://discord.gg/xt9WY3GnKR) — community, roadmap, announcements.
 
 ## License
 

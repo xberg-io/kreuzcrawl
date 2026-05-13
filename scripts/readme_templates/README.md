@@ -6,7 +6,7 @@ The README generation system is an automated solution that generates consistent,
 
 ### Why This System Exists
 
-Kreuzcrawl supports **10+ language bindings** (Python, TypeScript, Go, Java, PHP, Ruby, C#, Elixir, WebAssembly, and more). Maintaining separate, manually-written READMEs for each language is:
+Kreuzcrawl supports **14+ language bindings** (Python, TypeScript, Go, Java, Kotlin, PHP, Ruby, C#, Elixir, Dart, Swift, Zig, WebAssembly, and more). Maintaining separate, manually-written READMEs for each language is:
 
 - **Time-consuming** - Changes must be replicated across all language docs
 - **Error-prone** - Inconsistencies arise between language versions

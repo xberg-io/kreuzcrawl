@@ -3,7 +3,7 @@ title: Kreuzcrawl
 description: "Kreuzcrawl – High-performance Rust web crawling engine with always-on HTML→Markdown, headless-Chrome fallback for WAF-protected pages, and native bindings for 14 languages."
 ---
 
-## Kreuzcrawl
+# kreuzcrawl
 
 High-performance web crawling and scraping with a Rust core and native bindings for 14 languages. Always-on HTML→Markdown conversion, structured metadata, and a headless-Chrome fallback for WAF-protected pages — usable as a library, CLI, REST API, MCP server, or Docker image.
 
@@ -18,7 +18,7 @@ High-performance web crawling and scraping with a Rust core and native bindings 
 
 ---
 
-### Why Kreuzcrawl
+## Why Kreuzcrawl
 
 <div class="grid cards" markdown>
 
@@ -56,7 +56,7 @@ High-performance web crawling and scraping with a Rust core and native bindings 
 
 ---
 
-### Language Support
+## Language Support
 
 | Language              | Package                                                    | Docs                                         |
 | :-------------------- | :--------------------------------------------------------- | :------------------------------------------- |
@@ -86,7 +86,7 @@ High-performance web crawling and scraping with a Rust core and native bindings 
 
 ---
 
-### Quick Example
+## Quick Example
 
 === "Rust"
 
@@ -142,7 +142,7 @@ High-performance web crawling and scraping with a Rust core and native bindings 
 
 ---
 
-### Part of kreuzberg.dev
+## Part of kreuzberg.dev
 
 <div class="grid cards" markdown>
 
@@ -174,7 +174,7 @@ High-performance web crawling and scraping with a Rust core and native bindings 
 
 ---
 
-### Explore the Docs
+## Explore the Docs
 
 <div class="grid cards" markdown>
 
@@ -218,7 +218,7 @@ High-performance web crawling and scraping with a Rust core and native bindings 
 
 ---
 
-### Getting Help
+## Getting Help
 
 - **Bugs & feature requests** — [Open an issue on GitHub](https://github.com/kreuzberg-dev/kreuzcrawl/issues)
 - **Community chat** — [Join the Discord](https://discord.gg/xt9WY3GnKR)

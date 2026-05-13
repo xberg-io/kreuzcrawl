@@ -1,10 +1,72 @@
 # Kreuzcrawl
 
-{% include 'partials/badges.html.jinja' %}
+<div align="center" style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 20px 0;">
+  <!-- Language Bindings -->
+  <a href="https://crates.io/crates/kreuzcrawl">
+    <img src="https://img.shields.io/crates/v/kreuzcrawl?label=Rust&color=007ec6" alt="Rust">
+  </a>
+  <a href="https://hex.pm/packages/kreuzcrawl">
+    <img src="https://img.shields.io/hexpm/v/kreuzcrawl?label=Elixir&color=007ec6" alt="Elixir">
+  </a>
+  <a href="https://pypi.org/project/kreuzcrawl/">
+    <img src="https://img.shields.io/pypi/v/kreuzcrawl?label=Python&color=007ec6" alt="Python">
+  </a>
+  <a href="https://www.npmjs.com/package/@kreuzberg/kreuzcrawl">
+    <img src="https://img.shields.io/npm/v/@kreuzberg/kreuzcrawl?label=Node.js&color=007ec6" alt="Node.js">
+  </a>
+  <a href="https://www.npmjs.com/package/@kreuzberg/kreuzcrawl-wasm">
+    <img src="https://img.shields.io/npm/v/@kreuzberg/kreuzcrawl-wasm?label=WASM&color=007ec6" alt="WASM">
+  </a>
+
+  <a href="https://central.sonatype.com/artifact/dev.kreuzcrawl/kreuzcrawl">
+    <img src="https://img.shields.io/maven-central/v/dev.kreuzcrawl/kreuzcrawl?label=Java&color=007ec6" alt="Java">
+  </a>
+  <a href="https://github.com/kreuzberg-dev/kreuzcrawl/releases">
+    <img src="https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzcrawl?label=Go&color=007ec6&filter=v4.0.0" alt="Go">
+  </a>
+  <a href="https://www.nuget.org/packages/Kreuzcrawl/">
+    <img src="https://img.shields.io/nuget/v/Kreuzcrawl?label=C%23&color=007ec6" alt="C#">
+  </a>
+  <a href="https://packagist.org/packages/kreuzberg-dev/kreuzcrawl">
+    <img src="https://img.shields.io/packagist/v/kreuzberg-dev/kreuzcrawl?label=PHP&color=007ec6" alt="PHP">
+  </a>
+  <a href="https://rubygems.org/gems/kreuzcrawl">
+    <img src="https://img.shields.io/gem/v/kreuzcrawl?label=Ruby&color=007ec6" alt="Ruby">
+  </a>
+  <a href="https://kreuzberg-dev.r-universe.dev/kreuzcrawl">
+    <img src="https://img.shields.io/badge/R-kreuzcrawl-007ec6" alt="R">
+  </a>
+  <a href="https://github.com/kreuzberg-dev/kreuzcrawl/pkgs/container/kreuzcrawl">
+    <img src="https://img.shields.io/badge/Docker-007ec6?logo=docker&logoColor=white" alt="Docker">
+  </a>
+
+  <!-- Project Info -->
+  <a href="https://github.com/kreuzberg-dev/kreuzcrawl/blob/main/LICENSE">
+    <img src="https://img.shields.io/badge/License-MIT-007ec6" alt="License">
+  </a>
+  <a href="https://docs.kreuzcrawl.dev">
+    <img src="https://img.shields.io/badge/docs-kreuzcrawl.dev-007ec6" alt="Documentation">
+  </a>
+  <a href="https://docs.kreuzcrawl.dev/demo.html">
+    <img src="https://img.shields.io/badge/%E2%96%B6%EF%B8%8F_Live_Demo-007ec6" alt="Live Demo">
+  </a>
+  <a href="https://huggingface.co/Kreuzcrawl">
+    <img src="https://img.shields.io/badge/%F0%9F%A4%97_Hugging_Face-007ec6" alt="Hugging Face">
+  </a>
+</div>
+
+<img width="1128" height="191" alt="Banner2" src="https://github.com/user-attachments/assets/419fc06c-8313-4324-b159-4b4d3cfce5c0" />
+
+<div align="center" style="margin-top: 20px;">
+  <a href="https://discord.gg/xt9WY3GnKR">
+      <img height="22" src="https://img.shields.io/badge/Discord-Join%20our%20community-7289da?logo=discord&logoColor=white" alt="Discord">
+  </a>
+</div>
+
 
 High-performance document intelligence for Go backed by the Rust core that powers every Kreuzcrawl binding.
 
-> **Version {{ version }}**
+> **Version 0.1.0-rc.1**
 > Report issues at [github.com/kreuzberg-dev/kreuzcrawl](https://github.com/kreuzberg-dev/kreuzcrawl/issues).
 
 ## Install
@@ -36,10 +98,10 @@ To use this package via `go get`:
 
 ```bash
 # Get the latest release
-go get {{ package_name }}@latest
+go get github.com/kreuzberg-dev/kreuzcrawl/packages/go/v4@latest
 
 # Or a specific version
-go get {{ package_name }}@v{{ version }}
+go get github.com/kreuzberg-dev/kreuzcrawl/packages/go/v4@v0.1.0-rc.1
 ```
 
 You'll need to provide the static library at build time. See [Building with Static Libraries](#building-with-static-libraries) below.
@@ -54,7 +116,7 @@ Download the static library for your platform from [GitHub Releases](https://git
 
 ```bash
 # Example: Linux x86_64
-curl -LO https://github.com/kreuzberg-dev/kreuzcrawl/releases/download/v{{ version }}/go-ffi-linux-x86_64.tar.gz
+curl -LO https://github.com/kreuzberg-dev/kreuzcrawl/releases/download/v0.1.0-rc.1/go-ffi-linux-x86_64.tar.gz
 tar -xzf go-ffi-linux-x86_64.tar.gz
 
 # Copy to a permanent location
@@ -126,7 +188,7 @@ import (
 	"fmt"
 	"log"
 
-	"{{ package_name }}"
+	"github.com/kreuzberg-dev/kreuzcrawl/packages/go/v4"
 )
 
 func main() {
@@ -232,7 +294,7 @@ func init() {
 
 ## API Reference
 
-- **GoDoc**: [pkg.go.dev/{{ package_name }}](https://pkg.go.dev/{{ package_name }})
+- **GoDoc**: [pkg.go.dev/github.com/kreuzberg-dev/kreuzcrawl/packages/go/v4](https://pkg.go.dev/github.com/kreuzberg-dev/kreuzcrawl/packages/go/v4)
 - **Full documentation**: [kreuzcrawl.dev](https://kreuzcrawl.dev) (configuration, formats, OCR backends)
 
 ## Troubleshooting
