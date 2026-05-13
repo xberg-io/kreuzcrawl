@@ -64,17 +64,27 @@ pnpm add @kreuzberg/kreuzcrawl
 
 ## Quick Start
 
-```typescript
-import { createEngine, scrape } from "@kreuzberg/kreuzcrawl";
+```typescript title="TypeScript"
+import { crawl, createEngine, scrape } from "@kreuzberg/kreuzcrawl";
 
-// Create engine with default settings
-const engine = createEngine();
+async function main(): Promise<void> {
+  // Simplest case: scrape a single page with default settings.
+  const engine = createEngine();
+  const result = await scrape(engine, "https://example.com/");
+  console.log(`Title: ${result.metadata?.title ?? ""}`);
+  console.log(`Status: ${result.statusCode}`);
+  console.log(`Links found: ${result.links?.length ?? 0}`);
 
-// Scrape a single page
-const result = await scrape(engine, "https://example.com");
-console.log(`Title: ${result.metadata.title}`);
-console.log(`Status: ${result.statusCode}`);
-console.log(`Links: ${result.links.length}`);
+  // Crawl from a seed URL, limited to one hop and a handful of pages.
+  const crawlEngine = createEngine({ maxDepth: 1, maxPages: 5 });
+  const crawlResult = await crawl(crawlEngine, "https://en.wikipedia.org/wiki/Web_scraping");
+  console.log(`Pages crawled: ${crawlResult.pages?.length ?? 0}`);
+}
+
+main().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});
 ```
 
 ## API Reference

@@ -3,6 +3,15 @@ name = "kreuzcrawl-node"
 version = "0.3.0-rc.19"
 edition = "2024"
 license = "Elastic-2.0"
+description = "High-performance web crawling engine"
+readme = false
+keywords = ["crawl", "scrape", "web", "spider"]
+categories = ["text-processing"]
+
+[package.metadata.cargo-machete]
+# serde_bytes is used via #[serde(with = "serde_bytes")] string-reference
+# attribute, which cargo-machete cannot statically detect.
+ignored = ["serde", "serde_bytes"]
 
 [lib]
 crate-type = ["cdylib"]
@@ -12,11 +21,8 @@ kreuzcrawl = { path = "../kreuzcrawl" }
 napi = { version = "3", features = ["async", "serde-json"] }
 napi-derive = "3"
 serde = { version = "1", features = ["derive"] }
+serde_bytes = "0.11"
 serde_json = "1"
 
 [build-dependencies]
 napi-build = "2"
-
-[lints.clippy]
-duplicated_attributes = "allow"
-unwrap_used = "allow"

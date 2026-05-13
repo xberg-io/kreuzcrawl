@@ -64,29 +64,49 @@ go get github.com/kreuzberg-dev/kreuzcrawl/packages/go
 
 ## Quick Start
 
-```go
+```go title="Go"
 package main
 
 import (
     "fmt"
-    kcrawl "github.com/kreuzberg-dev/kreuzcrawl/packages/go"
+    "log"
+
+    kreuzcrawl "github.com/kreuzberg-dev/kreuzcrawl/packages/go"
 )
 
 func main() {
-    // Create engine with default settings
-    engine, err := kcrawl.CreateEngine()
+    // Simplest case: scrape a single page with default settings.
+    engine, err := kreuzcrawl.CreateEngine(nil)
     if err != nil {
-        panic(err)
+        log.Fatalf("create engine: %v", err)
     }
 
-    // Scrape a single page
-    result, err := kcrawl.Scrape(engine, "https://example.com")
+    result, err := kreuzcrawl.Scrape(engine, "https://example.com/")
     if err != nil {
-        panic(err)
+        log.Fatalf("scrape: %v", err)
     }
-    fmt.Printf("Title: %s\n", result.Metadata.Title)
+    title := ""
+    if result.Metadata.Title != nil {
+        title = *result.Metadata.Title
+    }
+    fmt.Printf("Title: %s\n", title)
     fmt.Printf("Status: %d\n", result.StatusCode)
-    fmt.Printf("Links: %d\n", len(result.Links))
+    fmt.Printf("Links found: %d\n", len(result.Links))
+
+    // Crawl from a seed URL, limited to one hop and a handful of pages.
+    config := kreuzcrawl.NewCrawlConfig(
+        kreuzcrawl.WithCrawlConfigMaxDepth(1),
+        kreuzcrawl.WithCrawlConfigMaxPages(5),
+    )
+    crawlEngine, err := kreuzcrawl.CreateEngine(config)
+    if err != nil {
+        log.Fatalf("create crawl engine: %v", err)
+    }
+    crawlResult, err := kreuzcrawl.Crawl(crawlEngine, "https://en.wikipedia.org/wiki/Web_scraping")
+    if err != nil {
+        log.Fatalf("crawl: %v", err)
+    }
+    fmt.Printf("Pages crawled: %d\n", len(crawlResult.Pages))
 }
 ```
 

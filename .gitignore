@@ -49,6 +49,19 @@ crates/kreuzcrawl-node/index.js
 .wrangler/
 .pnpm-store/
 
+# Zig build cache (transient artefacts in e2e/zig and elsewhere)
+.zig-cache/
+zig-out/
+
+# Dart pub / build cache
+.dart_tool/
+
+# Gradle / Kotlin build cache
+.gradle/
+
+# PHPStan / PHP runtime cache
+packages/php/var/
+
 # Ruby
 packages/ruby/.bundle/
 packages/ruby/vendor/

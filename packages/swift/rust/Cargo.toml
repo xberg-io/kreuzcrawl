@@ -5,6 +5,11 @@ version = "0.3.0-rc.19"
 edition = "2024"
 license = "Elastic-2.0"
 
+[package.metadata.cargo-machete]
+# serde is consumed via derive macros and async-trait is part of the
+# swift-bridge public surface — neither is statically detectable.
+ignored = ["async-trait", "serde"]
+
 [lib]
 crate-type = ["cdylib", "staticlib"]
 

@@ -1,23 +1,27 @@
 ---
 priority: high
 ---
+
 Iteration loops are codified as Taskfile tasks. Prefer them over ad-hoc commands.
 
 ### After alef changes
-```
+
+```text
 task alef:install              # cargo install --path ../alef/crates/alef-cli
 task alef:regen                # alef all && alef e2e generate
 VERSION=0.15.30 task alef:bump # bump pin in alef.toml + reinstall + regen
 ```
 
 ### After kreuzcrawl-core changes
-```
+
+```text
 task rebuild        # all bindings + e2e mock-server
 task rebuild:fast   # rust + python + node + mock-server only
 ```
 
 ### E2E cycles
-```
+
+```text
 task e2e:reset           # clean + regen + rebuild + run all e2e
 task e2e:refresh         # regen + rebuild + run all e2e (no clean)
 task e2e:refresh:fast    # regen + rebuild rust/python/node + run their e2e
@@ -25,7 +29,8 @@ task python:cycle        # rebuild py + uv sync --reinstall + run e2e
 ```
 
 ### Cleanup
-```
+
+```text
 task clean           # per-language artifacts
 task clean:workspace # cargo target + alef IR cache + legacy mock-server bins
 task clean:e2e       # venvs, node_modules, _build, lockfiles, vendor/

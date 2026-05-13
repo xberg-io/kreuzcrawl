@@ -1,37 +1,34 @@
 {
   "name": "@kreuzberg/kreuzcrawl",
   "version": "0.3.0-rc.19",
+  "description": "High-performance web crawling engine",
   "license": "Elastic-2.0",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/kreuzberg-dev/kreuzcrawl.git"
-  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "*.node"
+  ],
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
-    "artifacts": "napi artifacts",
     "build": "napi build --platform --release",
-    "build:debug": "napi build --platform",
-    "build:ts": "echo 'No TypeScript wrapper layer — using NAPI-RS generated bindings directly'",
-    "prepublishOnly": "napi prepublish -t npm",
-    "universal": "napi universal",
-    "version": "napi version"
+    "artifacts": "napi artifacts",
+    "prepublishOnly": "napi prepublish -t npm --skip-optional-publish"
   },
   "devDependencies": {
     "@napi-rs/cli": "^3.6.2"
   },
   "napi": {
     "binaryName": "kreuzcrawl-node",
-    "package": {
-      "name": "@kreuzberg/kreuzcrawl"
-    },
     "targets": [
-      "aarch64-apple-darwin",
-      "aarch64-unknown-linux-gnu",
-      "aarch64-unknown-linux-musl",
-      "x86_64-pc-windows-msvc",
       "x86_64-unknown-linux-gnu",
-      "x86_64-unknown-linux-musl"
+      "aarch64-unknown-linux-gnu",
+      "x86_64-apple-darwin",
+      "aarch64-apple-darwin",
+      "x86_64-pc-windows-msvc"
     ]
+  },
+  "engines": {
+    "node": ">= 18"
   }
 }

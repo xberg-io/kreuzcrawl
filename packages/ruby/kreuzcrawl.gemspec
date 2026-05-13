@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.metadata['keywords'] = %w[crawl scrape web spider].join(',')
   spec.metadata['rubygems_mfa_required'] = 'true'
 
-  spec.files         = Dir.glob(['lib/**/*', 'ext/**/*'])
+  spec.files         = Dir.glob(%w[lib/**/* ext/**/* sig/**/* Steepfile])
   spec.require_paths = ['lib']
   spec.extensions    = ['ext/kreuzcrawl_rb/extconf.rb']
 

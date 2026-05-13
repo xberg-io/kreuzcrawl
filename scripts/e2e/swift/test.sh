@@ -35,7 +35,7 @@ MOCK_PID=$!
 exec 9>"$MOCK_FIFO"
 
 # Wait up to 5 s for the server to emit MOCK_SERVERS= (the second startup line).
-for i in $(seq 1 50); do
+for _ in $(seq 1 50); do
   if grep -q "^MOCK_SERVERS=" "$MOCK_OUT" 2>/dev/null; then
     break
   fi

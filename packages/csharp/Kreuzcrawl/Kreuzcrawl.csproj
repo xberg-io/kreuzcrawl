@@ -10,8 +10,6 @@
     <Authors>Kreuzberg Team</Authors>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Nullable>enable</Nullable>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,6 +18,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="*.cs" />
+    <Compile Include="../src/**/*.cs" />
   </ItemGroup>
 </Project>

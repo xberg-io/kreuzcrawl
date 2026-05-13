@@ -1,3 +1,6 @@
+includes:
+    - phpstan-baseline.neon
+
 parameters:
     level: max
     paths:
@@ -5,3 +8,5 @@ parameters:
     scanFiles:
         - stubs/kreuzcrawl_extension.php
     treatPhpDocTypesAsCertain: false
+    reportUnmatchedIgnoredErrors: false
+    tmpDir: var/cache/phpstan

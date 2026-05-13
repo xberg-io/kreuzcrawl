@@ -154,7 +154,7 @@ tasks:
       - task: _dev_wf:clean:workspace
 
   clean:full:
-    desc: 'Total cleanup: per-language clean + cargo workspace target + e2e test deps'
+    desc: "Total cleanup: per-language clean + cargo workspace target + e2e test deps"
     cmds:
       - task: _dev_wf:clean:full
 
@@ -164,12 +164,12 @@ tasks:
       - task: _dev_wf:alef:install
 
   alef:regen:
-    desc: 'Regenerate bindings, packages, and e2e tests (alef all && alef e2e generate)'
+    desc: "Regenerate bindings, packages, and e2e tests (alef all && alef e2e generate)"
     cmds:
       - task: _dev_wf:alef:regen
 
   alef:bump:
-    desc: 'Bump alef pin in alef.toml + reinstall + regen (usage: VERSION=0.15.30 task alef:bump)'
+    desc: "Bump alef pin in alef.toml + reinstall + regen (usage: VERSION=0.15.30 task alef:bump)"
     cmds:
       - task: _dev_wf:alef:bump
 
@@ -179,27 +179,27 @@ tasks:
       - task: _dev_wf:rebuild:bindings
 
   rebuild:fast:
-    desc: 'Fast rebuild: Rust core + Python + Node + mock-server only'
+    desc: "Fast rebuild: Rust core + Python + Node + mock-server only"
     cmds:
       - task: _dev_wf:rebuild:fast
 
   e2e:reset:
-    desc: 'Full e2e reset: clean + alef regen + rebuild all bindings + run all e2e'
+    desc: "Full e2e reset: clean + alef regen + rebuild all bindings + run all e2e"
     cmds:
       - task: _dev_wf:e2e:reset
 
   e2e:refresh:
-    desc: 'Quick e2e refresh: alef regen + rebuild + run all e2e (no clean)'
+    desc: "Quick e2e refresh: alef regen + rebuild + run all e2e (no clean)"
     cmds:
       - task: _dev_wf:e2e:refresh
 
   e2e:refresh:fast:
-    desc: 'Fast e2e feedback: alef regen + rebuild Rust/Python/Node + run their e2e'
+    desc: "Fast e2e feedback: alef regen + rebuild Rust/Python/Node + run their e2e"
     cmds:
       - task: _dev_wf:e2e:refresh:fast
 
   python:cycle:
-    desc: 'Python: rebuild binding + force-refresh e2e venv + run e2e (avoids stale .so)'
+    desc: "Python: rebuild binding + force-refresh e2e venv + run e2e (avoids stale .so)"
     cmds:
       - task: _dev_wf:python:cycle
 

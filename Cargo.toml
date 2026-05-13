@@ -1,14 +1,9 @@
 [workspace]
-members = [
-    "crates/*",
-    "packages/dart/rust",
-    "packages/elixir/native/kreuzcrawl_nif",
-    "packages/swift/rust",
-    "tools/*",
-]
+members = ["crates/*", "packages/dart/rust", "packages/swift/rust", "tools/*"]
 exclude = [
     ".claude",
     "e2e/rust",
+    "packages/elixir/native/kreuzcrawl_nif",
     "packages/ruby/ext/kreuzcrawl_rb",
     "packages/ruby/ext/src_rb",
     "packages/ruby/tmp",

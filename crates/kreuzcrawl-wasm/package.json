@@ -2,7 +2,7 @@
   "name": "@kreuzberg/kreuzcrawl-wasm",
   "version": "0.3.0-rc.19",
   "private": false,
-  "description": "Kreuzcrawl WASM bindings for document intelligence",
+  "description": "High-performance web crawling engine",
   "license": "Elastic-2.0",
   "repository": {
     "type": "git",
@@ -16,24 +16,20 @@
     "README.md"
   ],
   "type": "module",
-  "main": "pkg/kreuzcrawl_wasm.js",
-  "module": "pkg/kreuzcrawl_wasm.js",
-  "types": "pkg/kreuzcrawl_wasm.d.ts",
+  "main": "pkg/nodejs/kreuzcrawl_wasm.js",
+  "module": "pkg/web/kreuzcrawl_wasm.js",
+  "types": "pkg/nodejs/kreuzcrawl_wasm.d.ts",
   "scripts": {
-    "build": "wasm-pack build --target nodejs --out-dir pkg",
-    "build:ci": "wasm-pack build --release --target nodejs --out-dir pkg",
+    "build": "wasm-pack build --target nodejs --out-dir pkg/nodejs",
+    "build:ci": "wasm-pack build --release --target nodejs --out-dir pkg/nodejs",
     "build:wasm:web": "wasm-pack build --release --target web --out-dir pkg/web",
     "build:wasm:bundler": "wasm-pack build --release --target bundler --out-dir pkg/bundler",
-    "build:wasm:nodejs": "wasm-pack build --release --target nodejs --out-dir pkg",
+    "build:wasm:nodejs": "wasm-pack build --release --target nodejs --out-dir pkg/nodejs",
     "build:wasm:deno": "wasm-pack build --release --target deno --out-dir pkg/deno",
     "build:all": "npm run build:wasm:web && npm run build:wasm:bundler && npm run build:wasm:nodejs && npm run build:wasm:deno && find pkg -name .gitignore -delete",
     "test": "vitest run",
     "test:watch": "vitest watch",
     "test:coverage": "vitest run --coverage",
-    "lint": "cd ../.. && prek run oxlint --all-files",
-    "lint:fix": "cd ../.. && prek run oxlint --all-files",
-    "format": "cd ../.. && prek run oxfmt --all-files",
-    "typecheck": "tsc --noEmit",
     "clean": "rm -rf pkg dist"
   }
 }

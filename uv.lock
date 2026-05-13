@@ -133,6 +133,20 @@ name = "kreuzcrawl"
 version = "0.3.0rc19"
 source = { editable = "packages/python" }
 
+[package.dev-dependencies]
+dev = [
+    { name = "mypy" },
+    { name = "ruff" },
+]
+
+[package.metadata]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "mypy", specifier = ">=1.19" },
+    { name = "ruff", specifier = ">=0.14.8" },
+]
+
 [[package]]
 name = "librt"
 version = "0.9.0"

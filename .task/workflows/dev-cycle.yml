@@ -25,11 +25,13 @@ tasks:
   alef:regen:
     desc: Regenerate bindings, packages, and e2e tests against the installed alef
     cmds:
-      - alef all
+      # --format invokes alef.toml [workspace.format_overrides] entries so
+      # generated output passes prek's per-language formatters (mix format, etc).
+      - alef all --format
       - alef e2e generate
 
   alef:bump:
-    desc: 'Bump alef version pin in alef.toml + reinstall + regen (usage: VERSION=0.15.30 task alef:bump)'
+    desc: "Bump alef version pin in alef.toml + reinstall + regen (usage: VERSION=0.15.30 task alef:bump)"
     requires:
       vars: [VERSION]
     cmds:
@@ -80,7 +82,7 @@ tasks:
       - rm -f target/release/mock-server target/debug/mock-server
 
   clean:full:
-    desc: 'Total cleanup: per-language clean + workspace + e2e deps'
+    desc: "Total cleanup: per-language clean + workspace + e2e deps"
     cmds:
       - task: :clean
       - task: clean:workspace
@@ -106,7 +108,7 @@ tasks:
       - task: mock-server:rebuild
 
   rebuild:fast:
-    desc: 'Fast rebuild: Rust core + Python + Node + mock-server (skip JVM/CLR/etc.)'
+    desc: "Fast rebuild: Rust core + Python + Node + mock-server (skip JVM/CLR/etc.)"
     cmds:
       - task: :rust:ffi:build:dev
       - task: :python:build:dev
@@ -118,7 +120,7 @@ tasks:
   # ============================================================
 
   python:cycle:
-    desc: 'Python: rebuild binding + force-refresh e2e venv + run e2e'
+    desc: "Python: rebuild binding + force-refresh e2e venv + run e2e"
     cmds:
       - task: :python:build:dev
       - cmd: cd e2e/python && uv sync --reinstall --quiet
@@ -129,7 +131,7 @@ tasks:
   # ============================================================
 
   e2e:reset:
-    desc: 'Full reset: clean + alef regen + rebuild all bindings + run all e2e'
+    desc: "Full reset: clean + alef regen + rebuild all bindings + run all e2e"
     cmds:
       - task: clean:full
       - task: alef:regen
@@ -137,14 +139,14 @@ tasks:
       - task: :e2e:test:all
 
   e2e:refresh:
-    desc: 'Quick refresh: alef regen + rebuild all bindings + run all e2e (no clean)'
+    desc: "Quick refresh: alef regen + rebuild all bindings + run all e2e (no clean)"
     cmds:
       - task: alef:regen
       - task: rebuild:bindings
       - task: :e2e:test:all
 
   e2e:refresh:fast:
-    desc: 'Fast feedback: alef regen + rebuild Rust/Python/Node + run their e2e suites'
+    desc: "Fast feedback: alef regen + rebuild Rust/Python/Node + run their e2e suites"
     cmds:
       - task: alef:regen
       - task: rebuild:fast

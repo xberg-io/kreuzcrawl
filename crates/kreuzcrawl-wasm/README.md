@@ -65,19 +65,29 @@ pnpm add @kreuzberg/kreuzcrawl-wasm
 
 ## Quick Start
 
-```javascript
-import init, { createEngine, scrape } from "@kreuzberg/kreuzcrawl-wasm";
+```javascript title="WASM"
+import init, { WasmCrawlConfig, crawl, createEngine, scrape } from "@kreuzberg/kreuzcrawl-wasm";
 
-await init();
+async function main() {
+  await init();
 
-// Create engine with default settings
-const engine = createEngine();
+  // Simplest case: scrape a single page with default settings.
+  const engine = createEngine();
+  const result = await scrape(engine, "https://example.com/");
+  console.log(`Title: ${result.metadata?.title ?? ""}`);
+  console.log(`Status: ${result.statusCode}`);
+  console.log(`Links found: ${result.links?.length ?? 0}`);
 
-// Scrape a single page
-const result = await scrape(engine, "https://example.com");
-console.log(`Title: ${result.metadata.title}`);
-console.log(`Status: ${result.statusCode}`);
-console.log(`Links: ${result.links.length}`);
+  // Crawl from a seed URL, limited to one hop and a handful of pages.
+  const config = new WasmCrawlConfig();
+  config.maxDepth = 1;
+  config.maxPages = 5;
+  const crawlEngine = createEngine(config);
+  const crawlResult = await crawl(crawlEngine, "https://en.wikipedia.org/wiki/Web_scraping");
+  console.log(`Pages crawled: ${crawlResult.pages?.length ?? 0}`);
+}
+
+main().catch((error) => console.error(error));
 ```
 
 ## API Reference

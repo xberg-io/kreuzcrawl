@@ -135,8 +135,8 @@ PLATFORMS
 
 DEPENDENCIES
   kreuzcrawl!
-  rake (~> 13.0)
   rake-compiler (~> 1.2)
+  rb_sys (~> 0.9)
   rspec (~> 3.0)
   rubocop (~> 1.0)
   rubocop-performance (~> 1.0)

@@ -84,10 +84,10 @@ mod ffi {
             wait_selector: Option<String>,
             extra_wait: Option<u64>,
         ) -> BrowserConfig;
-        fn mode(&self) -> BrowserMode;
+        fn mode(&self) -> String;
         fn endpoint(&self) -> Option<String>;
         fn timeout(&self) -> u64;
-        fn wait(&self) -> BrowserWait;
+        fn wait(&self) -> String;
         fn wait_selector(&self) -> Option<String>;
         fn extra_wait(&self) -> Option<u64>;
     }
@@ -150,14 +150,14 @@ mod ffi {
         fn retry_count(&self) -> usize;
         fn retry_codes(&self) -> Vec<u16>;
         fn cookies_enabled(&self) -> bool;
-        fn auth(&self) -> Option<AuthConfig>;
+        fn auth(&self) -> Option<String>;
         fn max_body_size(&self) -> Option<usize>;
         fn remove_tags(&self) -> Vec<String>;
         fn content(&self) -> ContentConfig;
         fn map_limit(&self) -> Option<usize>;
         fn map_search(&self) -> Option<String>;
         fn download_assets(&self) -> bool;
-        fn asset_types(&self) -> Vec<AssetCategory>;
+        fn asset_types(&self) -> Vec<String>;
         fn max_asset_size(&self) -> Option<usize>;
         fn browser(&self) -> BrowserConfig;
         fn proxy(&self) -> Option<ProxyConfig>;
@@ -368,7 +368,7 @@ mod ffi {
         fn new(url: String, text: String, link_type: LinkType, rel: Option<String>, nofollow: bool) -> LinkInfo;
         fn url(&self) -> String;
         fn text(&self) -> String;
-        fn link_type(&self) -> LinkType;
+        fn link_type(&self) -> String;
         fn rel(&self) -> Option<String>;
         fn nofollow(&self) -> bool;
     }
@@ -387,7 +387,7 @@ mod ffi {
         fn alt(&self) -> Option<String>;
         fn width(&self) -> Option<u32>;
         fn height(&self) -> Option<u32>;
-        fn source(&self) -> ImageSource;
+        fn source(&self) -> String;
     }
 
     extern "Rust" {
@@ -396,7 +396,7 @@ mod ffi {
         fn new(url: String, title: Option<String>, feed_type: FeedType) -> FeedInfo;
         fn url(&self) -> String;
         fn title(&self) -> Option<String>;
-        fn feed_type(&self) -> FeedType;
+        fn feed_type(&self) -> String;
     }
 
     extern "Rust" {
@@ -433,7 +433,7 @@ mod ffi {
         fn content_hash(&self) -> String;
         fn mime_type(&self) -> Option<String>;
         fn size(&self) -> usize;
-        fn asset_category(&self) -> AssetCategory;
+        fn asset_category(&self) -> String;
         fn html_tag(&self) -> Option<String>;
     }
 
@@ -930,8 +930,8 @@ impl BrowserConfig {
         __target.extra_wait = extra_wait.map(std::time::Duration::from_millis);
         BrowserConfig(__target)
     }
-    pub fn mode(&self) -> BrowserMode {
-        BrowserMode::from(self.0.mode.clone())
+    pub fn mode(&self) -> String {
+        BrowserMode::from(self.0.mode.clone()).to_string()
     }
     pub fn endpoint(&self) -> Option<String> {
         self.0.endpoint.clone()
@@ -939,8 +939,8 @@ impl BrowserConfig {
     pub fn timeout(&self) -> u64 {
         self.0.timeout.as_millis() as u64
     }
-    pub fn wait(&self) -> BrowserWait {
-        BrowserWait::from(self.0.wait.clone())
+    pub fn wait(&self) -> String {
+        BrowserWait::from(self.0.wait.clone()).to_string()
     }
     pub fn wait_selector(&self) -> Option<String> {
         self.0.wait_selector.clone()
@@ -1180,8 +1180,8 @@ impl CrawlConfig {
             .and_then(|j| ::serde_json::from_value(j).ok())
             .unwrap_or_default()
     }
-    pub fn auth(&self) -> Option<AuthConfig> {
-        self.0.auth.clone().map(AuthConfig::from)
+    pub fn auth(&self) -> Option<String> {
+        self.0.auth.clone().map(|w| AuthConfig::from(w).to_string())
     }
     pub fn max_body_size(&self) -> Option<usize> {
         self.0.max_body_size.as_ref().and_then(|v| {
@@ -1215,11 +1215,11 @@ impl CrawlConfig {
             .and_then(|j| ::serde_json::from_value(j).ok())
             .unwrap_or_default()
     }
-    pub fn asset_types(&self) -> Vec<AssetCategory> {
+    pub fn asset_types(&self) -> Vec<String> {
         self.0
             .asset_types
             .iter()
-            .map(|elem| AssetCategory::from(elem.clone()))
+            .map(|elem| AssetCategory::from(elem.clone()).to_string())
             .collect()
     }
     pub fn max_asset_size(&self) -> Option<usize> {
@@ -1963,8 +1963,8 @@ impl LinkInfo {
     pub fn text(&self) -> String {
         self.0.text.clone()
     }
-    pub fn link_type(&self) -> LinkType {
-        LinkType::from(self.0.link_type.clone())
+    pub fn link_type(&self) -> String {
+        LinkType::from(self.0.link_type.clone()).to_string()
     }
     pub fn rel(&self) -> Option<String> {
         self.0.rel.clone()
@@ -2024,8 +2024,8 @@ impl ImageInfo {
                 .and_then(|j| ::serde_json::from_value(j).ok())
         })
     }
-    pub fn source(&self) -> ImageSource {
-        ImageSource::from(self.0.source.clone())
+    pub fn source(&self) -> String {
+        ImageSource::from(self.0.source.clone()).to_string()
     }
 }
 
@@ -2054,8 +2054,8 @@ impl FeedInfo {
     pub fn title(&self) -> Option<String> {
         self.0.title.clone()
     }
-    pub fn feed_type(&self) -> FeedType {
-        FeedType::from(self.0.feed_type.clone())
+    pub fn feed_type(&self) -> String {
+        FeedType::from(self.0.feed_type.clone()).to_string()
     }
 }
 
@@ -2191,8 +2191,8 @@ impl DownloadedAsset {
             .and_then(|j| ::serde_json::from_value(j).ok())
             .unwrap_or_default()
     }
-    pub fn asset_category(&self) -> AssetCategory {
-        AssetCategory::from(self.0.asset_category.clone())
+    pub fn asset_category(&self) -> String {
+        AssetCategory::from(self.0.asset_category.clone()).to_string()
     }
     pub fn html_tag(&self) -> Option<String> {
         self.0.html_tag.clone()

@@ -23,7 +23,7 @@ tracing = ["kreuzcrawl/tracing"]
 
 [dependencies]
 clap = { workspace = true }
-kreuzcrawl = { path = "../kreuzcrawl", version = "=0.3.0-rc.19", features = [
+kreuzcrawl = { path = "../kreuzcrawl", version = "0.3.0-rc.19", features = [
     "native-runtime",
     "browser",
 ] }

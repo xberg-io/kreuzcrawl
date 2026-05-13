@@ -22,10 +22,17 @@
 		"build": "napi build --release",
 		"build:debug": "napi build",
 		"build:ts": "echo 'No TypeScript wrapper to build'",
-		"test": "node -e \"console.log('Add test command')\""
+		"test": "node -e \"console.log('Add test command')\"",
+		"format": "oxfmt",
+		"format:check": "oxfmt --check",
+		"lint": "oxlint",
+		"lint:fix": "oxlint --fix"
 	},
 	"devDependencies": {
-		"@napi-rs/cli": "^3.0.0"
+		"@napi-rs/cli": "^3.0.0",
+		"oxfmt": "latest",
+		"oxlint": "latest",
+		"typescript": "^6.0.3"
 	},
 	"napi": {
 		"name": "kreuzcrawl",

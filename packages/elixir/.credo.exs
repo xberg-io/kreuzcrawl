@@ -2,16 +2,30 @@
   configs: [
     %{
       name: "default",
+      strict: true,
+      parse_timeout: 5000,
       files: %{
-        included: ["lib/", "test/"],
-        excluded: [~r"/_build/", ~r"/deps/"]
+        included: [
+          "lib/",
+          "src/",
+          "test/",
+          "web/",
+          "apps/*/lib/",
+          "apps/*/src/",
+          "apps/*/test/",
+          "apps/*/web/"
+        ],
+        excluded: [
+          ~r"/_build/",
+          ~r"/deps/",
+          ~r"/node_modules/"
+        ]
       },
-      strict: false,
-      color: true,
-      checks: [
-        # Generated structs mirror Rust core types and may have many fields
-        {Credo.Check.Warning.StructFieldAmount, false}
-      ]
+      checks: %{
+        enabled: [
+          {Credo.Check.Refactor.CyclomaticComplexity, max_complexity: 16}
+        ]
+      }
     }
   ]
 }

@@ -102,128 +102,128 @@ public typealias BatchCrawlResult = RustBridge.BatchCrawlResult
 
 /// When to use the headless browser fallback.
 public enum BrowserMode {
-    /// Automatically detect when JS rendering is needed and fall back to browser.
-    case auto
-    /// Always use the browser for every request.
-    case always
-    /// Never use the browser fallback.
-    case never
+  /// Automatically detect when JS rendering is needed and fall back to browser.
+  case auto
+  /// Always use the browser for every request.
+  case always
+  /// Never use the browser fallback.
+  case never
 }
 
 /// Wait strategy for browser page rendering.
 public enum BrowserWait {
-    /// Wait until network activity is idle.
-    case networkIdle
-    /// Wait for a specific CSS selector to appear in the DOM.
-    case selector
-    /// Wait for a fixed duration after navigation.
-    case fixed
+  /// Wait until network activity is idle.
+  case networkIdle
+  /// Wait for a specific CSS selector to appear in the DOM.
+  case selector
+  /// Wait for a fixed duration after navigation.
+  case fixed
 }
 
 /// Authentication configuration.
 public enum AuthConfig {
-    /// HTTP Basic authentication.
-    case basic(username: String, password: String)
-    /// Bearer token authentication.
-    case bearer(token: String)
-    /// Custom authentication header.
-    case header(name: String, value: String)
+  /// HTTP Basic authentication.
+  case basic(username: String, password: String)
+  /// Bearer token authentication.
+  case bearer(token: String)
+  /// Custom authentication header.
+  case header(name: String, value: String)
 }
 
 /// The classification of a link.
 public enum LinkType {
-    /// A link to the same domain.
-    case internal_
-    /// A link to a different domain.
-    case external
-    /// A fragment-only link (e.g., `#section`).
-    case anchor
-    /// A link to a downloadable document (PDF, DOC, etc.).
-    case document
+  /// A link to the same domain.
+  case internal_
+  /// A link to a different domain.
+  case external
+  /// A fragment-only link (e.g., `#section`).
+  case anchor
+  /// A link to a downloadable document (PDF, DOC, etc.).
+  case document
 }
 
 /// The source of an image reference.
 public enum ImageSource {
-    /// An `<img>` tag.
-    case img
-    /// A `<source>` tag inside `<picture>`.
-    case pictureSource
-    /// An `og:image` meta tag.
-    case ogImage
-    /// A `twitter:image` meta tag.
-    case twitterImage
+  /// An `<img>` tag.
+  case img
+  /// A `<source>` tag inside `<picture>`.
+  case pictureSource
+  /// An `og:image` meta tag.
+  case ogImage
+  /// A `twitter:image` meta tag.
+  case twitterImage
 }
 
 /// The type of a feed (RSS, Atom, or JSON Feed).
 public enum FeedType {
-    /// RSS feed.
-    case rss
-    /// Atom feed.
-    case atom
-    /// JSON Feed.
-    case jsonFeed
+  /// RSS feed.
+  case rss
+  /// Atom feed.
+  case atom
+  /// JSON Feed.
+  case jsonFeed
 }
 
 /// The category of a downloaded asset.
 public enum AssetCategory {
-    /// A document file (PDF, DOC, etc.).
-    case document
-    /// An image file.
-    case image
-    /// An audio file.
-    case audio
-    /// A video file.
-    case video
-    /// A font file.
-    case font
-    /// A CSS stylesheet.
-    case stylesheet
-    /// A JavaScript file.
-    case script
-    /// An archive file (ZIP, TAR, etc.).
-    case archive
-    /// A data file (JSON, XML, CSV, etc.).
-    case data
-    /// An unrecognized asset type.
-    case other
+  /// A document file (PDF, DOC, etc.).
+  case document
+  /// An image file.
+  case image
+  /// An audio file.
+  case audio
+  /// A video file.
+  case video
+  /// A font file.
+  case font
+  /// A CSS stylesheet.
+  case stylesheet
+  /// A JavaScript file.
+  case script
+  /// An archive file (ZIP, TAR, etc.).
+  case archive
+  /// A data file (JSON, XML, CSV, etc.).
+  case data
+  /// An unrecognized asset type.
+  case other
 }
 
 /// Errors that can occur during crawling, scraping, or mapping operations.
 public enum CrawlError: Error {
-    /// The requested page was not found (HTTP 404).
-    case notFound(message: String, field0: String)
-    /// The request was unauthorized (HTTP 401).
-    case unauthorized(message: String, field0: String)
-    /// The request was forbidden (HTTP 403).
-    case forbidden(message: String, field0: String)
-    /// The request was blocked by a WAF or bot protection (HTTP 403 with WAF indicators).
-    case wafBlocked(message: String, field0: String)
-    /// The request timed out.
-    case timeout(message: String, field0: String)
-    /// The request was rate-limited (HTTP 429).
-    case rateLimited(message: String, field0: String)
-    /// A server error occurred (HTTP 5xx).
-    case serverError(message: String, field0: String)
-    /// A bad gateway error occurred (HTTP 502).
-    case badGateway(message: String, field0: String)
-    /// The resource is permanently gone (HTTP 410).
-    case gone(message: String, field0: String)
-    /// A connection error occurred.
-    case connection(message: String, field0: String)
-    /// A DNS resolution error occurred.
-    case dns(message: String, field0: String)
-    /// An SSL/TLS error occurred.
-    case ssl(message: String, field0: String)
-    /// Data was lost or truncated during transfer.
-    case dataLoss(message: String, field0: String)
-    /// The browser failed to launch, connect, or navigate.
-    case browserError(message: String, field0: String)
-    /// The browser page load or rendering timed out.
-    case browserTimeout(message: String, field0: String)
-    /// The provided configuration is invalid.
-    case invalidConfig(message: String, field0: String)
-    /// An unclassified error occurred.
-    case other(message: String, field0: String)
+  /// The requested page was not found (HTTP 404).
+  case notFound(message: String, field0: String)
+  /// The request was unauthorized (HTTP 401).
+  case unauthorized(message: String, field0: String)
+  /// The request was forbidden (HTTP 403).
+  case forbidden(message: String, field0: String)
+  /// The request was blocked by a WAF or bot protection (HTTP 403 with WAF indicators).
+  case wafBlocked(message: String, field0: String)
+  /// The request timed out.
+  case timeout(message: String, field0: String)
+  /// The request was rate-limited (HTTP 429).
+  case rateLimited(message: String, field0: String)
+  /// A server error occurred (HTTP 5xx).
+  case serverError(message: String, field0: String)
+  /// A bad gateway error occurred (HTTP 502).
+  case badGateway(message: String, field0: String)
+  /// The resource is permanently gone (HTTP 410).
+  case gone(message: String, field0: String)
+  /// A connection error occurred.
+  case connection(message: String, field0: String)
+  /// A DNS resolution error occurred.
+  case dns(message: String, field0: String)
+  /// An SSL/TLS error occurred.
+  case ssl(message: String, field0: String)
+  /// Data was lost or truncated during transfer.
+  case dataLoss(message: String, field0: String)
+  /// The browser failed to launch, connect, or navigate.
+  case browserError(message: String, field0: String)
+  /// The browser page load or rendering timed out.
+  case browserTimeout(message: String, field0: String)
+  /// The provided configuration is invalid.
+  case invalidConfig(message: String, field0: String)
+  /// An unclassified error occurred.
+  case other(message: String, field0: String)
 }
 
 // MARK: - From-JSON Helpers
@@ -231,5 +231,5 @@ public enum CrawlError: Error {
 // `{TypeName}FromJson` helpers into this module's namespace.
 
 public func crawlConfigFromJson(_ json: String) throws -> CrawlConfig {
-    return try RustBridge.crawlConfigFromJson(json)
+  return try RustBridge.crawlConfigFromJson(json)
 }

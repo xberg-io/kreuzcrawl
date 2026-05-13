@@ -19,7 +19,11 @@ jobs:
         run: cargo build -p kreuzcrawl-swift
       - name: Copy swift-bridge generated sources
         run: |
-          OUT=$(ls -dt target/debug/build/kreuzcrawl-swift-*/out 2>/dev/null | head -1)
+          OUT=$(find target/debug/build -maxdepth 2 -type d -path 'target/debug/build/kreuzcrawl-swift-*/out' -print0 2>/dev/null \
+            | xargs -0 stat -f '%m %N' 2>/dev/null \
+            | sort -rn \
+            | head -1 \
+            | cut -d' ' -f2-)
           cat "$OUT/SwiftBridgeCore.h" "$OUT/kreuzcrawl-swift/kreuzcrawl-swift.h" \
               > packages/swift/Sources/RustBridgeC/RustBridgeC.h
           { echo "import RustBridgeC"; cat "$OUT/SwiftBridgeCore.swift"; } \

@@ -102,6 +102,9 @@ mis = "mis"
 tre = "tre"
 ist = "ist"
 ein = "ein"
+# Jackson serializer/deserializer package path (com.fasterxml.jackson.databind.ser, .deser)
+ser = "ser"
+deser = "deser"
 
 [default.extend-identifiers]
 # Allow these identifiers in code

@@ -4,7 +4,15 @@ version = "0.3.0-rc.19"
 edition = "2021"
 license = "Elastic-2.0"
 description = "High-performance web crawling engine"
+readme = false
+keywords = ["crawl", "scrape", "web", "spider"]
+categories = ["text-processing"]
 repository = "https://github.com/kreuzberg-dev/kreuzcrawl"
+
+[package.metadata.cargo-machete]
+# tokio is pulled in for its runtime/macros at link time but the generated
+# FFI source never `use`s it directly — cargo-machete would otherwise flag it.
+ignored = ["tokio"]
 
 [lib]
 crate-type = ["cdylib", "staticlib"]
@@ -20,13 +28,5 @@ tokio = { version = "1", features = ["full"] }
 [build-dependencies]
 cbindgen = "0.29"
 
-[lints.rust]
-unsafe_code = "allow"
-renamed_and_removed_lints = "allow"
-
-[lints.clippy]
-all = { level = "warn", priority = -1 }
-no_mangle_with_rust_abi = "allow"
-duplicated_attributes = "allow"
-let_and_return = "allow"
-unwrap_used = "allow"
+[dev-dependencies]
+tempfile = "3"

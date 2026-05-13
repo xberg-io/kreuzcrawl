@@ -34,7 +34,7 @@ mod robots;
 mod scrape;
 mod sitemap;
 pub(crate) mod tower;
-pub(crate) mod traits;
+pub mod traits;
 mod types;
 #[cfg(feature = "warc")]
 pub(crate) mod warc;

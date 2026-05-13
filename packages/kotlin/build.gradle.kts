@@ -43,8 +43,10 @@ sourceSets {
   main {
     java {
       // Pull in the Java facade emitted by the alef Java backend so the
-      // Kotlin module compiles against the same on-disk sources.
-      srcDir("../java/src/main/java")
+      // Kotlin module compiles against the same on-disk sources. The alef
+      // Java backend writes to `packages/java/` (package-root layout), not
+      // the Maven `src/main/java/` convention.
+      srcDir("../java")
     }
   }
 }
@@ -69,6 +71,14 @@ ktlint {
     exclude("**/build/**")
     exclude("**/generated/**")
   }
+}
+
+// Gradle 9.x flags an output-overlap validation error between
+// :ktlintKotlinScriptCheck / :ktlintMainSourceSetCheck and :compileKotlin.
+// Declare the explicit dependency so Gradle accepts the task graph.
+tasks.matching { it.name == "compileKotlin" }.configureEach {
+  mustRunAfter("ktlintKotlinScriptCheck")
+  mustRunAfter("ktlintMainSourceSetCheck")
 }
 
 // JNA needs the native lib on java.library.path; default to the workspace

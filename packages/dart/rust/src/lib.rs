@@ -525,7 +525,7 @@ impl From<kreuzcrawl::DownloadedDocument> for DownloadedDocument {
     fn from(v: kreuzcrawl::DownloadedDocument) -> Self {
         DownloadedDocument {
             url: v.url,
-            mime_type: Default::default(),
+            mime_type: v.mime_type.into_owned(),
             content: v.content,
             size: v.size as _,
             filename: Default::default(),
