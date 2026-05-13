@@ -130,15 +130,16 @@ tasks:
 
   e2e:lint:
     desc: Lint TypeScript E2E code
-    dir: e2e/typescript
+    dir: e2e/node
     cmds:
       - pnpm exec biome check .
-      - pnpm exec oxlint --fix typescript
+      - pnpm exec oxlint --fix .
 
   e2e:test:
     desc: Run TypeScript E2E tests
-    dir: e2e/typescript
+    dir: e2e/node
     cmds:
+      - pnpm install --silent
       - pnpm test
 
   e2e:verify:
