@@ -163,11 +163,11 @@ ProxyConfig {
 
 ### Content processing
 
-| Field                       | Type            | Default      | Description                                                                                                      |
-| --------------------------- | --------------- | ------------ | ---------------------------------------------------------------------------------------------------------------- |
-| `content.preprocessing_preset` | `String`     | `"standard"` | HTML preprocessing strength: `"minimal"`, `"standard"`, or `"aggressive"` (aggressive strips chrome/boilerplate). |
-| `remove_tags`               | `Vec<String>`   | `[]`         | CSS selectors for elements to remove before processing (e.g., `"nav"`, `".sidebar"`).                            |
-| `max_body_size`             | `Option<usize>` | `None`       | Truncate HTML bodies beyond this size in bytes. `None` keeps the full body.                                      |
+| Field                          | Type            | Default      | Description                                                                                                       |
+| ------------------------------ | --------------- | ------------ | ----------------------------------------------------------------------------------------------------------------- |
+| `content.preprocessing_preset` | `String`        | `"standard"` | HTML preprocessing strength: `"minimal"`, `"standard"`, or `"aggressive"` (aggressive strips chrome/boilerplate). |
+| `remove_tags`                  | `Vec<String>`   | `[]`         | CSS selectors for elements to remove before processing (e.g., `"nav"`, `".sidebar"`).                             |
+| `max_body_size`                | `Option<usize>` | `None`       | Truncate HTML bodies beyond this size in bytes. `None` keeps the full body.                                       |
 
 ### URL discovery (map)
 
@@ -259,26 +259,25 @@ Since `CrawlConfig` implements `Deserialize`, you can load it from JSON, TOML, o
 
 ## Default values summary
 
-| Field                  | Default                 |
-| ---------------------- | ----------------------- |
-| `max_depth`            | `None` (0 -- seed only) |
-| `max_pages`            | `None` (unlimited)      |
-| `max_concurrent`       | `None` (10)             |
-| `respect_robots_txt`   | `false`                 |
-| `user_agent`           | `None`                  |
-| `stay_on_domain`       | `false`                 |
-| `allow_subdomains`     | `false`                 |
-| `request_timeout`      | 30 seconds              |
-| `max_redirects`        | `10`                    |
-| `retry_count`          | `0`                     |
-| `cookies_enabled`      | `false`                 |
-| `content.preprocessing_preset` | `"standard"`    |
-| `download_assets`      | `false`                 |
-| `download_documents`   | `true`                  |
-| `document_max_size`    | 50 MB                   |
-| `capture_screenshot`   | `false`                 |
-| `save_browser_profile` | `false`                 |
-| `browser.mode`         | `Auto`                  |
-| `browser.timeout`      | 30 seconds              |
-| `browser.wait`         | `NetworkIdle`           |
-
+| Field                          | Default                 |
+| ------------------------------ | ----------------------- |
+| `max_depth`                    | `None` (0 -- seed only) |
+| `max_pages`                    | `None` (unlimited)      |
+| `max_concurrent`               | `None` (10)             |
+| `respect_robots_txt`           | `false`                 |
+| `user_agent`                   | `None`                  |
+| `stay_on_domain`               | `false`                 |
+| `allow_subdomains`             | `false`                 |
+| `request_timeout`              | 30 seconds              |
+| `max_redirects`                | `10`                    |
+| `retry_count`                  | `0`                     |
+| `cookies_enabled`              | `false`                 |
+| `content.preprocessing_preset` | `"standard"`            |
+| `download_assets`              | `false`                 |
+| `download_documents`           | `true`                  |
+| `document_max_size`            | 50 MB                   |
+| `capture_screenshot`           | `false`                 |
+| `save_browser_profile`         | `false`                 |
+| `browser.mode`                 | `Auto`                  |
+| `browser.timeout`              | 30 seconds              |
+| `browser.wait`                 | `NetworkIdle`           |

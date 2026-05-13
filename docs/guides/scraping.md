@@ -25,15 +25,15 @@ The `ScrapeResult` struct contains everything extracted from a single page:
 
 ### Core response data
 
-| Field              | Type             | Description                                                                                   |
-| ------------------ | ---------------- | --------------------------------------------------------------------------------------------- |
-| `status_code`      | `u16`            | HTTP response status code.                                                                    |
-| `content_type`     | `String`         | The Content-Type header value.                                                                |
-| `html`             | `String`         | The response body (possibly truncated by `content.max_body_size`).                            |
-| `body_size`        | `usize`          | Size of the response body in bytes.                                                           |
-| `detected_charset` | `Option<String>` | Character encoding detected from Content-Type header or HTML meta tags.                       |
-| `is_pdf`           | `bool`           | Whether the content was detected as PDF.                                                      |
-| `was_skipped`      | `bool`           | Whether extraction was skipped (binary or PDF content).                                       |
+| Field              | Type             | Description                                                             |
+| ------------------ | ---------------- | ----------------------------------------------------------------------- |
+| `status_code`      | `u16`            | HTTP response status code.                                              |
+| `content_type`     | `String`         | The Content-Type header value.                                          |
+| `html`             | `String`         | The response body (possibly truncated by `content.max_body_size`).      |
+| `body_size`        | `usize`          | Size of the response body in bytes.                                     |
+| `detected_charset` | `Option<String>` | Character encoding detected from Content-Type header or HTML meta tags. |
+| `is_pdf`           | `bool`           | Whether the content was detected as PDF.                                |
+| `was_skipped`      | `bool`           | Whether extraction was skipped (binary or PDF content).                 |
 
 ### Robots and directives
 

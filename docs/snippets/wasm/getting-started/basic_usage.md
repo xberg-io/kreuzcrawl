@@ -1,10 +1,5 @@
 ```javascript title="WASM"
-import init, {
-  WasmCrawlConfig,
-  crawl,
-  createEngine,
-  scrape,
-} from "@kreuzberg/kreuzcrawl-wasm";
+import init, { WasmCrawlConfig, crawl, createEngine, scrape } from "@kreuzberg/kreuzcrawl-wasm";
 
 async function main() {
   await init();
@@ -21,10 +16,7 @@ async function main() {
   config.maxDepth = 1;
   config.maxPages = 5;
   const crawlEngine = createEngine(config);
-  const crawlResult = await crawl(
-    crawlEngine,
-    "https://en.wikipedia.org/wiki/Web_scraping",
-  );
+  const crawlResult = await crawl(crawlEngine, "https://en.wikipedia.org/wiki/Web_scraping");
   console.log(`Pages crawled: ${crawlResult.pages?.length ?? 0}`);
 }
 

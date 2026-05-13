@@ -22,11 +22,10 @@ function createEngine(config?: CrawlConfig): CrawlEngineHandle;
 **Parameters:**
 
 | Name     | Type         | Required | Description |
-| -------- | ------------ | -------- | ----------- | ------------------------- |
+| -------- | ------------ | -------- | ----------- |
 | `config` | `CrawlConfig | null`    | No          | The configuration options |
 
 **Returns:** `CrawlEngineHandle`
-
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -49,7 +48,6 @@ function scrape(engine: CrawlEngineHandle, url: string): Promise<ScrapeResult>;
 | `url`    | `string`            | Yes      | The URL to fetch        |
 
 **Returns:** `ScrapeResult`
-
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -72,7 +70,6 @@ function crawl(engine: CrawlEngineHandle, url: string): Promise<CrawlResult>;
 | `url`    | `string`            | Yes      | The URL to fetch        |
 
 **Returns:** `CrawlResult`
-
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -95,7 +92,6 @@ function mapUrls(engine: CrawlEngineHandle, url: string): Promise<MapResult>;
 | `url`    | `string`            | Yes      | The URL to fetch        |
 
 **Returns:** `MapResult`
-
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -121,6 +117,7 @@ function batchScrape(
 | `urls`   | `Array<string>`     | Yes      | The urls                |
 
 **Returns:** `Array<BatchScrapeResult>`
+**Errors:** Throws `Error` with a descriptive message.
 
 ---
 
@@ -145,6 +142,7 @@ function batchCrawl(
 | `urls`   | `Array<string>`     | Yes      | The urls                |
 
 **Returns:** `Array<BatchCrawlResult>`
+**Errors:** Throws `Error` with a descriptive message.
 
 ---
 
@@ -155,7 +153,7 @@ function batchCrawl(
 Article metadata extracted from `article:*` Open Graph tags.
 
 | Field           | Type            | Default | Description       |
-| --------------- | --------------- | ------- | ----------------- | ------------------------------ |
+| --------------- | --------------- | ------- | ----------------- |
 | `publishedTime` | `string         | null`   | `null`            | The article publication time.  |
 | `modifiedTime`  | `string         | null`   | `null`            | The article modification time. |
 | `author`        | `string         | null`   | `null`            | The article author.            |
@@ -169,7 +167,7 @@ Article metadata extracted from `article:*` Open Graph tags.
 Result from a single URL in a batch crawl operation.
 
 | Field    | Type         | Default | Description                    |
-| -------- | ------------ | ------- | ------------------------------ | --------------------------------------- |
+| -------- | ------------ | ------- | ------------------------------ |
 | `url`    | `string`     | —       | The seed URL that was crawled. |
 | `result` | `CrawlResult | null`   | `null`                         | The crawl result, if successful.        |
 | `error`  | `string      | null`   | `null`                         | The error message, if the crawl failed. |
@@ -181,7 +179,7 @@ Result from a single URL in a batch crawl operation.
 Result from a single URL in a batch scrape operation.
 
 | Field    | Type          | Default | Description               |
-| -------- | ------------- | ------- | ------------------------- | ---------------------------------------- |
+| -------- | ------------- | ------- | ------------------------- |
 | `url`    | `string`      | —       | The URL that was scraped. |
 | `result` | `ScrapeResult | null`   | `null`                    | The scrape result, if successful.        |
 | `error`  | `string       | null`   | `null`                    | The error message, if the scrape failed. |
@@ -193,7 +191,7 @@ Result from a single URL in a batch scrape operation.
 Browser fallback configuration.
 
 | Field          | Type          | Default                   | Description                                                                    |
-| -------------- | ------------- | ------------------------- | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------- |
+| -------------- | ------------- | ------------------------- | ------------------------------------------------------------------------------ |
 | `mode`         | `BrowserMode` | `BrowserMode.Auto`        | When to use the headless browser fallback.                                     |
 | `endpoint`     | `string       | null`                     | `null`                                                                         | CDP WebSocket endpoint for connecting to an external browser instance. |
 | `timeout`      | `number`      | `30000ms`                 | Timeout for browser page load and rendering (in milliseconds when serialized). |
@@ -243,7 +241,7 @@ html-to-markdown-rs as the conversion engine for all formats
 (markdown, plain text, djot).
 
 | Field                      | Type            | Default      | Description                                                                                                                                                                                                                                                                                                                                         |
-| -------------------------- | --------------- | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| -------------------------- | --------------- | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `outputFormat`             | `string`        | `"markdown"` | Output format: `"markdown"` (default), `"plain"`, `"djot"`.                                                                                                                                                                                                                                                                                         |
 | `preprocessingPreset`      | `string`        | `"standard"` | Preprocessing aggressiveness: `"minimal"`, `"standard"` (default), `"aggressive"`. - Minimal: only scripts/styles removed. - Standard: also removes nav, nav-hinted headers/footers/asides, forms. - Aggressive: removes all footers/asides unconditionally.                                                                                        |
 | `removeNavigation`         | `boolean`       | `true`       | Remove navigation elements (nav, breadcrumbs, menus). Default: `true`.                                                                                                                                                                                                                                                                              |
@@ -274,7 +272,7 @@ static default(): ContentConfig
 Information about an HTTP cookie received from a response.
 
 | Field    | Type     | Default | Description       |
-| -------- | -------- | ------- | ----------------- | -------------------------------- |
+| -------- | -------- | ------- | ----------------- |
 | `name`   | `string` | —       | The cookie name.  |
 | `value`  | `string` | —       | The cookie value. |
 | `domain` | `string  | null`   | `null`            | The cookie domain, if specified. |
@@ -286,43 +284,44 @@ Information about an HTTP cookie received from a response.
 
 Configuration for crawl, scrape, and map operations.
 
-| Field                | Type                     | Default   | Description                                                                                      |
-| -------------------- | ------------------------ | --------- | ------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `maxDepth`           | `number                  | null`     | `null`                                                                                           | Maximum crawl depth (number of link hops from the start URL).                                                                                 |
-| `maxPages`           | `number                  | null`     | `null`                                                                                           | Maximum number of pages to crawl.                                                                                                             |
-| `maxConcurrent`      | `number                  | null`     | `null`                                                                                           | Maximum number of concurrent requests.                                                                                                        |
-| `respectRobotsTxt`   | `boolean`                | `false`   | Whether to respect robots.txt directives.                                                        |
-| `userAgent`          | `string                  | null`     | `null`                                                                                           | Custom user-agent string.                                                                                                                     |
-| `stayOnDomain`       | `boolean`                | `false`   | Whether to restrict crawling to the same domain.                                                 |
-| `allowSubdomains`    | `boolean`                | `false`   | Whether to allow subdomains when `stay_on_domain` is true.                                       |
-| `includePaths`       | `Array<string>`          | `[]`      | Regex patterns for paths to include during crawling.                                             |
-| `excludePaths`       | `Array<string>`          | `[]`      | Regex patterns for paths to exclude during crawling.                                             |
-| `customHeaders`      | `Record<string, string>` | `{}`      | Custom HTTP headers to send with each request.                                                   |
-| `requestTimeout`     | `number`                 | `30000ms` | Timeout for individual HTTP requests (in milliseconds when serialized).                          |
-| `rateLimitMs`        | `number                  | null`     | `null`                                                                                           | Per-domain rate limit in milliseconds. When set, enforces a minimum delay between requests to the same domain. Defaults to 200ms when `null`. |
-| `maxRedirects`       | `number`                 | `10`      | Maximum number of redirects to follow.                                                           |
-| `retryCount`         | `number`                 | `0`       | Number of retry attempts for failed requests.                                                    |
-| `retryCodes`         | `Array<number>`          | `[]`      | HTTP status codes that should trigger a retry.                                                   |
-| `cookiesEnabled`     | `boolean`                | `false`   | Whether to enable cookie handling.                                                               |
-| `auth`               | `AuthConfig              | null`     | `null`                                                                                           | Authentication configuration.                                                                                                                 |
-| `maxBodySize`        | `number                  | null`     | `null`                                                                                           | Maximum response body size in bytes.                                                                                                          |
-| `removeTags`         | `Array<string>`          | `[]`      | CSS selectors for tags to remove from HTML before processing.                                    |
-| `content`            | `ContentConfig`          | —         | Content extraction and conversion configuration.                                                 |
-| `mapLimit`           | `number                  | null`     | `null`                                                                                           | Maximum number of URLs to return from a map operation.                                                                                        |
-| `mapSearch`          | `string                  | null`     | `null`                                                                                           | Search filter for map results (case-insensitive substring match on URLs).                                                                     |
-| `downloadAssets`     | `boolean`                | `false`   | Whether to download assets (CSS, JS, images, etc.) from the page.                                |
-| `assetTypes`         | `Array<AssetCategory>`   | `[]`      | Filter for asset categories to download.                                                         |
-| `maxAssetSize`       | `number                  | null`     | `null`                                                                                           | Maximum size in bytes for individual asset downloads.                                                                                         |
-| `browser`            | `BrowserConfig`          | —         | Browser configuration.                                                                           |
-| `proxy`              | `ProxyConfig             | null`     | `null`                                                                                           | Proxy configuration for HTTP requests.                                                                                                        |
-| `userAgents`         | `Array<string>`          | `[]`      | List of user-agent strings for rotation. If non-empty, overrides `user_agent`.                   |
-| `captureScreenshot`  | `boolean`                | `false`   | Whether to capture a screenshot when using the browser.                                          |
-| `downloadDocuments`  | `boolean`                | `true`    | Whether to download non-HTML documents (PDF, DOCX, images, code, etc.) instead of skipping them. |
-| `documentMaxSize`    | `number                  | null`     | `null`                                                                                           | Maximum size in bytes for document downloads. Defaults to 50 MB.                                                                              |
-| `documentMimeTypes`  | `Array<string>`          | `[]`      | Allowlist of MIME types to download. If empty, uses built-in defaults.                           |
-| `warcOutput`         | `string                  | null`     | `null`                                                                                           | Path to write WARC output. If `null`, WARC output is disabled.                                                                                |
-| `browserProfile`     | `string                  | null`     | `null`                                                                                           | Named browser profile for persistent sessions (cookies, localStorage).                                                                        |
-| `saveBrowserProfile` | `boolean`                | `false`   | Whether to save changes back to the browser profile on exit.                                     |
+| Field                | Type                     | Default   | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| -------------------- | ------------------------ | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `maxDepth`           | `number                  | null`     | `null`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Maximum crawl depth (number of link hops from the start URL).                                                                                 |
+| `maxPages`           | `number                  | null`     | `null`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Maximum number of pages to crawl.                                                                                                             |
+| `maxConcurrent`      | `number                  | null`     | `null`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Maximum number of concurrent requests.                                                                                                        |
+| `respectRobotsTxt`   | `boolean`                | `false`   | Whether to respect robots.txt directives.                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `softHttpErrors`     | `boolean`                | `false`   | When true, HTTP-level error responses (404 NotFound, 403 Forbidden, WAF blocks) are surfaced as `ScrapeResult` records with the matching `status_code` rather than raised as `CrawlError`. Default `false` preserves the historical throw-on-error contract for direct fetches. Independently of this flag, 404s reached at the end of a redirect chain are _always_ surfaced softly — the user opted into redirect-following, so receiving a 404 there is part of the normal flow rather than an unexpected error. |
+| `userAgent`          | `string                  | null`     | `null`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Custom user-agent string.                                                                                                                     |
+| `stayOnDomain`       | `boolean`                | `false`   | Whether to restrict crawling to the same domain.                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `allowSubdomains`    | `boolean`                | `false`   | Whether to allow subdomains when `stay_on_domain` is true.                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `includePaths`       | `Array<string>`          | `[]`      | Regex patterns for paths to include during crawling.                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `excludePaths`       | `Array<string>`          | `[]`      | Regex patterns for paths to exclude during crawling.                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `customHeaders`      | `Record<string, string>` | `{}`      | Custom HTTP headers to send with each request.                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `requestTimeout`     | `number`                 | `30000ms` | Timeout for individual HTTP requests (in milliseconds when serialized).                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `rateLimitMs`        | `number                  | null`     | `null`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Per-domain rate limit in milliseconds. When set, enforces a minimum delay between requests to the same domain. Defaults to 200ms when `null`. |
+| `maxRedirects`       | `number`                 | `10`      | Maximum number of redirects to follow.                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `retryCount`         | `number`                 | `0`       | Number of retry attempts for failed requests.                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `retryCodes`         | `Array<number>`          | `[]`      | HTTP status codes that should trigger a retry.                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `cookiesEnabled`     | `boolean`                | `false`   | Whether to enable cookie handling.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `auth`               | `AuthConfig              | null`     | `null`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Authentication configuration.                                                                                                                 |
+| `maxBodySize`        | `number                  | null`     | `null`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Maximum response body size in bytes.                                                                                                          |
+| `removeTags`         | `Array<string>`          | `[]`      | CSS selectors for tags to remove from HTML before processing.                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `content`            | `ContentConfig`          | —         | Content extraction and conversion configuration.                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `mapLimit`           | `number                  | null`     | `null`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Maximum number of URLs to return from a map operation.                                                                                        |
+| `mapSearch`          | `string                  | null`     | `null`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Search filter for map results (case-insensitive substring match on URLs).                                                                     |
+| `downloadAssets`     | `boolean`                | `false`   | Whether to download assets (CSS, JS, images, etc.) from the page.                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `assetTypes`         | `Array<AssetCategory>`   | `[]`      | Filter for asset categories to download.                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| `maxAssetSize`       | `number                  | null`     | `null`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Maximum size in bytes for individual asset downloads.                                                                                         |
+| `browser`            | `BrowserConfig`          | —         | Browser configuration.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `proxy`              | `ProxyConfig             | null`     | `null`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Proxy configuration for HTTP requests.                                                                                                        |
+| `userAgents`         | `Array<string>`          | `[]`      | List of user-agent strings for rotation. If non-empty, overrides `user_agent`.                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `captureScreenshot`  | `boolean`                | `false`   | Whether to capture a screenshot when using the browser.                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `downloadDocuments`  | `boolean`                | `true`    | Whether to download non-HTML documents (PDF, DOCX, images, code, etc.) instead of skipping them.                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `documentMaxSize`    | `number                  | null`     | `null`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Maximum size in bytes for document downloads. Defaults to 50 MB.                                                                              |
+| `documentMimeTypes`  | `Array<string>`          | `[]`      | Allowlist of MIME types to download. If empty, uses built-in defaults.                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `warcOutput`         | `string                  | null`     | `null`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Path to write WARC output. If `null`, WARC output is disabled.                                                                                |
+| `browserProfile`     | `string                  | null`     | `null`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Named browser profile for persistent sessions (cookies, localStorage).                                                                        |
+| `saveBrowserProfile` | `boolean`                | `false`   | Whether to save changes back to the browser profile on exit.                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 
 ##### Methods
 
@@ -360,7 +359,7 @@ Default implementations for all pluggable components are used internally.
 The result of crawling a single page during a crawl operation.
 
 | Field                | Type                 | Default | Description                                               |
-| -------------------- | -------------------- | ------- | --------------------------------------------------------- | -------------------------------------------------------------------------- |
+| -------------------- | -------------------- | ------- | --------------------------------------------------------- |
 | `url`                | `string`             | —       | The original URL of the page.                             |
 | `normalizedUrl`      | `string`             | —       | The normalized URL of the page.                           |
 | `statusCode`         | `number`             | —       | The HTTP status code of the response.                     |
@@ -389,7 +388,7 @@ The result of crawling a single page during a crawl operation.
 The result of a multi-page crawl operation.
 
 | Field            | Type                     | Default | Description                                                               |
-| ---------------- | ------------------------ | ------- | ------------------------------------------------------------------------- | ---------------------------------------------------- |
+| ---------------- | ------------------------ | ------- | ------------------------------------------------------------------------- |
 | `pages`          | `Array<CrawlPageResult>` | `[]`    | The list of crawled pages.                                                |
 | `finalUrl`       | `string`                 | —       | The final URL after following redirects.                                  |
 | `redirectCount`  | `number`                 | —       | The number of redirects followed.                                         |
@@ -417,7 +416,7 @@ uniqueNormalizedUrls(): number
 A downloaded asset from a page.
 
 | Field           | Type            | Default               | Description                            |
-| --------------- | --------------- | --------------------- | -------------------------------------- | ------------------------------------------------------------------------ |
+| --------------- | --------------- | --------------------- | -------------------------------------- |
 | `url`           | `string`        | —                     | The original URL of the asset.         |
 | `contentHash`   | `string`        | —                     | The SHA-256 content hash of the asset. |
 | `mimeType`      | `string         | null`                 | `null`                                 | The MIME type from the Content-Type header.                              |
@@ -436,7 +435,7 @@ enabled, it downloads the raw bytes and populates this struct instead of
 skipping the resource.
 
 | Field         | Type                     | Default | Description                                            |
-| ------------- | ------------------------ | ------- | ------------------------------------------------------ | -------------------------------------------------------- |
+| ------------- | ------------------------ | ------- | ------------------------------------------------------ |
 | `url`         | `string`                 | —       | The URL the document was fetched from.                 |
 | `mimeType`    | `string`                 | —       | The MIME type from the Content-Type header.            |
 | `content`     | `Buffer`                 | —       | Raw document bytes. Skipped during JSON serialization. |
@@ -452,7 +451,7 @@ skipping the resource.
 Metadata about an LLM extraction pass.
 
 | Field              | Type     | Default | Description                               |
-| ------------------ | -------- | ------- | ----------------------------------------- | ----------------------------------------------- |
+| ------------------ | -------- | ------- | ----------------------------------------- |
 | `cost`             | `number  | null`   | `null`                                    | Estimated cost of the LLM call in USD.          |
 | `promptTokens`     | `number  | null`   | `null`                                    | Number of prompt (input) tokens consumed.       |
 | `completionTokens` | `number  | null`   | `null`                                    | Number of completion (output) tokens generated. |
@@ -466,7 +465,7 @@ Metadata about an LLM extraction pass.
 Information about a favicon or icon link.
 
 | Field      | Type     | Default | Description                                             |
-| ---------- | -------- | ------- | ------------------------------------------------------- | ---------------------------------- |
+| ---------- | -------- | ------- | ------------------------------------------------------- |
 | `url`      | `string` | —       | The icon URL.                                           |
 | `rel`      | `string` | —       | The `rel` attribute (e.g., "icon", "apple-touch-icon"). |
 | `sizes`    | `string  | null`   | `null`                                                  | The `sizes` attribute, if present. |
@@ -479,7 +478,7 @@ Information about a favicon or icon link.
 Information about a feed link found on a page.
 
 | Field      | Type       | Default        | Description       |
-| ---------- | ---------- | -------------- | ----------------- | --------------------------- |
+| ---------- | ---------- | -------------- | ----------------- |
 | `url`      | `string`   | —              | The feed URL.     |
 | `title`    | `string    | null`          | `null`            | The feed title, if present. |
 | `feedType` | `FeedType` | `FeedType.Rss` | The type of feed. |
@@ -513,7 +512,7 @@ An hreflang alternate link entry.
 Information about an image found on a page.
 
 | Field    | Type          | Default           | Description                        |
-| -------- | ------------- | ----------------- | ---------------------------------- | ----------------------------------------------- |
+| -------- | ------------- | ----------------- | ---------------------------------- |
 | `url`    | `string`      | —                 | The image URL.                     |
 | `alt`    | `string       | null`             | `null`                             | The alt text, if present.                       |
 | `width`  | `number       | null`             | `null`                             | The width attribute, if present and parseable.  |
@@ -527,7 +526,7 @@ Information about an image found on a page.
 A JSON-LD structured data entry found on a page.
 
 | Field        | Type     | Default | Description                                |
-| ------------ | -------- | ------- | ------------------------------------------ | ----------------------------- |
+| ------------ | -------- | ------- | ------------------------------------------ |
 | `schemaType` | `string` | —       | The `@type` value from the JSON-LD object. |
 | `name`       | `string  | null`   | `null`                                     | The `name` value, if present. |
 | `raw`        | `string` | —       | The raw JSON-LD string.                    |
@@ -539,7 +538,7 @@ A JSON-LD structured data entry found on a page.
 Information about a link found on a page.
 
 | Field      | Type       | Default             | Description                            |
-| ---------- | ---------- | ------------------- | -------------------------------------- | -------------------------------------- |
+| ---------- | ---------- | ------------------- | -------------------------------------- |
 | `url`      | `string`   | —                   | The resolved URL of the link.          |
 | `text`     | `string`   | —                   | The visible text of the link.          |
 | `linkType` | `LinkType` | `LinkType.Internal` | The classification of the link.        |
@@ -563,7 +562,7 @@ The result of a map operation, containing discovered URLs.
 Rich markdown conversion result from HTML processing.
 
 | Field               | Type             | Default | Description                                 |
-| ------------------- | ---------------- | ------- | ------------------------------------------- | -------------------------------------------------------- |
+| ------------------- | ---------------- | ------- | ------------------------------------------- |
 | `content`           | `string`         | —       | Converted markdown text.                    |
 | `documentStructure` | `unknown         | null`   | `null`                                      | Structured document tree with semantic nodes.            |
 | `tables`            | `Array<unknown>` | `[]`    | Extracted tables with structured cell data. |
@@ -578,7 +577,7 @@ Rich markdown conversion result from HTML processing.
 Metadata extracted from an HTML page's `<meta>` tags and `<title>` element.
 
 | Field                | Type                  | Default | Description |
-| -------------------- | --------------------- | ------- | ----------- | -------------------------------------------------- |
+| -------------------- | --------------------- | ------- | ----------- |
 | `title`              | `string               | null`   | `null`      | The page title from the `<title>` element.         |
 | `description`        | `string               | null`   | `null`      | The meta description.                              |
 | `canonicalUrl`       | `string               | null`   | `null`      | The canonical URL from `<link rel="canonical">`.   |
@@ -630,7 +629,7 @@ Metadata extracted from an HTML page's `<meta>` tags and `<title>` element.
 Proxy configuration for HTTP requests.
 
 | Field      | Type     | Default | Description                                                    |
-| ---------- | -------- | ------- | -------------------------------------------------------------- | ------------------------------------------- |
+| ---------- | -------- | ------- | -------------------------------------------------------------- |
 | `url`      | `string` | —       | Proxy URL (e.g. "<http://proxy:8080",> "socks5://proxy:1080"). |
 | `username` | `string  | null`   | `null`                                                         | Optional username for proxy authentication. |
 | `password` | `string  | null`   | `null`                                                         | Optional password for proxy authentication. |
@@ -642,7 +641,7 @@ Proxy configuration for HTTP requests.
 Response metadata extracted from HTTP headers.
 
 | Field             | Type    | Default | Description |
-| ----------------- | ------- | ------- | ----------- | ---------------------------------- |
+| ----------------- | ------- | ------- | ----------- |
 | `etag`            | `string | null`   | `null`      | The ETag header value.             |
 | `lastModified`    | `string | null`   | `null`      | The Last-Modified header value.    |
 | `cacheControl`    | `string | null`   | `null`      | The Cache-Control header value.    |
@@ -658,7 +657,7 @@ Response metadata extracted from HTTP headers.
 The result of a single-page scrape operation.
 
 | Field                | Type                     | Default | Description                                                       |
-| -------------------- | ------------------------ | ------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| -------------------- | ------------------------ | ------- | ----------------------------------------------------------------- |
 | `statusCode`         | `number`                 | —       | The HTTP status code of the response.                             |
 | `contentType`        | `string`                 | —       | The Content-Type header value.                                    |
 | `html`               | `string`                 | —       | The HTML body of the response.                                    |
@@ -694,7 +693,7 @@ The result of a single-page scrape operation.
 A URL entry from a sitemap.
 
 | Field        | Type     | Default | Description |
-| ------------ | -------- | ------- | ----------- | --------------------------------------- |
+| ------------ | -------- | ------- | ----------- |
 | `url`        | `string` | —       | The URL.    |
 | `lastmod`    | `string  | null`   | `null`      | The last modification date, if present. |
 | `changefreq` | `string  | null`   | `null`      | The change frequency, if present.       |

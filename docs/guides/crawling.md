@@ -153,21 +153,21 @@ The engine resolves redirects before starting the crawl loop, following HTTP 3xx
 
 Each page in the crawl result contains:
 
-| Field              | Type                     | Description                                                |
-| ------------------ | ------------------------ | ---------------------------------------------------------- |
-| `url`              | `String`                 | The original fetched URL.                                  |
-| `normalized_url`   | `String`                 | URL after normalization (for deduplication).               |
-| `status_code`      | `u16`                    | HTTP response status code.                                 |
-| `content_type`     | `String`                 | The Content-Type header value.                             |
-| `html`             | `String`                 | The response body.                                         |
-| `body_size`        | `usize`                  | Size of the response body in bytes.                        |
-| `metadata`         | `PageMetadata`           | Extracted metadata (title, description, OG tags, etc.).    |
-| `links`            | `Vec<LinkInfo>`          | Links found on the page.                                   |
-| `images`           | `Vec<ImageInfo>`         | Images found on the page.                                  |
-| `feeds`            | `Vec<FeedInfo>`          | RSS/Atom/JSON feed links.                                  |
-| `json_ld`          | `Vec<JsonLdEntry>`       | JSON-LD structured data entries.                           |
-| `depth`            | `usize`                  | Distance from the seed URL in link hops.                   |
-| `stayed_on_domain` | `bool`                   | Whether this page is on the same domain as the seed.       |
-| `markdown`         | `Option<MarkdownResult>` | Markdown conversion (always populated for HTML pages).     |
+| Field              | Type                     | Description                                                   |
+| ------------------ | ------------------------ | ------------------------------------------------------------- |
+| `url`              | `String`                 | The original fetched URL.                                     |
+| `normalized_url`   | `String`                 | URL after normalization (for deduplication).                  |
+| `status_code`      | `u16`                    | HTTP response status code.                                    |
+| `content_type`     | `String`                 | The Content-Type header value.                                |
+| `html`             | `String`                 | The response body.                                            |
+| `body_size`        | `usize`                  | Size of the response body in bytes.                           |
+| `metadata`         | `PageMetadata`           | Extracted metadata (title, description, OG tags, etc.).       |
+| `links`            | `Vec<LinkInfo>`          | Links found on the page.                                      |
+| `images`           | `Vec<ImageInfo>`         | Images found on the page.                                     |
+| `feeds`            | `Vec<FeedInfo>`          | RSS/Atom/JSON feed links.                                     |
+| `json_ld`          | `Vec<JsonLdEntry>`       | JSON-LD structured data entries.                              |
+| `depth`            | `usize`                  | Distance from the seed URL in link hops.                      |
+| `stayed_on_domain` | `bool`                   | Whether this page is on the same domain as the seed.          |
+| `markdown`         | `Option<MarkdownResult>` | Markdown conversion (always populated for HTML pages).        |
 | `extracted_data`   | `Option<Value>`          | LLM-extracted structured data, when extraction is configured. |
-| `extraction_meta`  | `Option<ExtractionMeta>` | LLM extraction cost and token metadata.                    |
+| `extraction_meta`  | `Option<ExtractionMeta>` | LLM extraction cost and token metadata.                       |

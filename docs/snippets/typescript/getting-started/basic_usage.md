@@ -11,10 +11,7 @@ async function main(): Promise<void> {
 
   // Crawl from a seed URL, limited to one hop and a handful of pages.
   const crawlEngine = createEngine({ maxDepth: 1, maxPages: 5 });
-  const crawlResult = await crawl(
-    crawlEngine,
-    "https://en.wikipedia.org/wiki/Web_scraping",
-  );
+  const crawlResult = await crawl(crawlEngine, "https://en.wikipedia.org/wiki/Web_scraping");
   console.log(`Pages crawled: ${crawlResult.pages?.length ?? 0}`);
 }
 

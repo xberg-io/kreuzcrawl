@@ -3,11 +3,11 @@ title: Installation
 description: Install Kreuzcrawl for Rust, Python, TypeScript, Go, Java, Kotlin, C#, Ruby, PHP, Elixir, Dart, Swift, Zig, WebAssembly, or Docker
 ---
 
-# Installation
+## Installation
 
 <div class="cli-hero" markdown>
 
-## CLI
+### CLI
 
 The fastest way to get started. No Rust toolchain needed if you use Homebrew.
 
@@ -39,7 +39,7 @@ kreuzcrawl --version
 
 ---
 
-## Language Bindings
+### Language Bindings
 
 === "Rust"
 
@@ -232,7 +232,7 @@ kreuzcrawl --version
 
 ---
 
-## Docker
+### Docker
 
 Pull the official image:
 
@@ -256,7 +256,7 @@ docker run --rm -v $(pwd)/output:/output \
 
 ---
 
-## Where to go next
+### Where to go next
 
 - **[Quick start](quickstart.md)** — Scrape a page, run a crawl, and map a site in under five minutes. Covers the CLI and the Rust API side by side.
 - **[Configuration guide](../guides/configuration.md)** — Every `CrawlConfig` field with its default and validation rules. Start here if you need to tune depth, concurrency, or content filtering.
