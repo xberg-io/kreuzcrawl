@@ -7,6 +7,7 @@ title: "Error Reference"
 All error types thrown by the library across all languages.
 
 ### CrawlError
+
 Errors that can occur during crawling, scraping, or mapping operations.
 
 | Variant | Message | Description |

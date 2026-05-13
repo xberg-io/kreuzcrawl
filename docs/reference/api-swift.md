@@ -1,10 +1,13 @@
 ---
 title: "Swift API Reference"
 ---
+
 ## Swift API Reference <span class="version-badge">v0.3.0-rc.19</span>
+
 ### Functions
 
 #### createEngine()
+
 Create a new crawl engine with the given configuration.
 
 If `config` is `null`, uses `CrawlConfig.default()`.
@@ -15,6 +18,7 @@ Returns an error if the configuration is invalid.
 ```swift
 // Phase 1: swift backend signature generation
 ```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -27,6 +31,7 @@ Returns an error if the configuration is invalid.
 ---
 
 #### scrape()
+
 Scrape a single URL, returning extracted page data.
 
 **Signature:**
@@ -34,6 +39,7 @@ Scrape a single URL, returning extracted page data.
 ```swift
 // Phase 1: swift backend signature generation
 ```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -47,6 +53,7 @@ Scrape a single URL, returning extracted page data.
 ---
 
 #### crawl()
+
 Crawl a website starting from `url`, following links up to the configured depth.
 
 **Signature:**
@@ -54,6 +61,7 @@ Crawl a website starting from `url`, following links up to the configured depth.
 ```swift
 // Phase 1: swift backend signature generation
 ```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -67,6 +75,7 @@ Crawl a website starting from `url`, following links up to the configured depth.
 ---
 
 #### mapUrls()
+
 Discover all pages on a website by following links and sitemaps.
 
 **Signature:**
@@ -74,6 +83,7 @@ Discover all pages on a website by following links and sitemaps.
 ```swift
 // Phase 1: swift backend signature generation
 ```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -87,6 +97,7 @@ Discover all pages on a website by following links and sitemaps.
 ---
 
 #### batchScrape()
+
 Scrape multiple URLs concurrently.
 
 **Signature:**
@@ -94,6 +105,7 @@ Scrape multiple URLs concurrently.
 ```swift
 // Phase 1: swift backend signature generation
 ```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -107,6 +119,7 @@ Scrape multiple URLs concurrently.
 ---
 
 #### batchCrawl()
+
 Crawl multiple seed URLs concurrently, each following links to configured depth.
 
 **Signature:**
@@ -114,6 +127,7 @@ Crawl multiple seed URLs concurrently, each following links to configured depth.
 ```swift
 // Phase 1: swift backend signature generation
 ```
+
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -129,6 +143,7 @@ Crawl multiple seed URLs concurrently, each following links to configured depth.
 ### Types
 
 #### ArticleMetadata
+
 Article metadata extracted from `article:*` Open Graph tags.
 
 | Field | Type | Default | Description |
@@ -143,6 +158,7 @@ Article metadata extracted from `article:*` Open Graph tags.
 ---
 
 #### BatchCrawlResult
+
 Result from a single URL in a batch crawl operation.
 
 | Field | Type | Default | Description |
@@ -155,6 +171,7 @@ Result from a single URL in a batch crawl operation.
 ---
 
 #### BatchScrapeResult
+
 Result from a single URL in a batch scrape operation.
 
 | Field | Type | Default | Description |
@@ -167,6 +184,7 @@ Result from a single URL in a batch scrape operation.
 ---
 
 #### BrowserConfig
+
 Browser fallback configuration.
 
 | Field | Type | Default | Description |
@@ -179,7 +197,9 @@ Browser fallback configuration.
 | `extraWait` | `Duration?` | `null` | Extra time to wait after the wait condition is met. |
 
 ##### Methods
+
 ###### default()
+
 **Signature:**
 
 ```swift
@@ -189,6 +209,7 @@ Browser fallback configuration.
 ---
 
 #### CitationReference
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `index` | `UInt64` | — | Index |
@@ -199,6 +220,7 @@ Browser fallback configuration.
 ---
 
 #### CitationResult
+
 Result of citation conversion.
 
 | Field | Type | Default | Description |
@@ -210,6 +232,7 @@ Result of citation conversion.
 ---
 
 #### ContentConfig
+
 Content extraction and conversion configuration.
 
 Controls how HTML is converted to the output format. Uses
@@ -232,7 +255,9 @@ html-to-markdown-rs as the conversion engine for all formats
 | `includeDocumentStructure` | `Bool` | `true` | Include document structure tree in output. Default: `true`. |
 
 ##### Methods
+
 ###### default()
+
 **Signature:**
 
 ```swift
@@ -242,6 +267,7 @@ html-to-markdown-rs as the conversion engine for all formats
 ---
 
 #### CookieInfo
+
 Information about an HTTP cookie received from a response.
 
 | Field | Type | Default | Description |
@@ -255,6 +281,7 @@ Information about an HTTP cookie received from a response.
 ---
 
 #### CrawlConfig
+
 Configuration for crawl, scrape, and map operations.
 
 | Field | Type | Default | Description |
@@ -297,13 +324,17 @@ Configuration for crawl, scrape, and map operations.
 | `saveBrowserProfile` | `Bool` | `false` | Whether to save changes back to the browser profile on exit. |
 
 ##### Methods
+
 ###### default()
+
 **Signature:**
 
 ```swift
 // Phase 1: swift backend method signature generation
 ```
+
 ###### validate()
+
 Validate the configuration, returning an error if any values are invalid.
 
 **Signature:**
@@ -315,6 +346,7 @@ Validate the configuration, returning an error if any values are invalid.
 ---
 
 #### CrawlEngineHandle
+
 Opaque handle to a configured crawl engine.
 
 Constructed via `create_engine` with an optional `CrawlConfig`.
@@ -324,6 +356,7 @@ Default implementations for all pluggable components are used internally.
 ---
 
 #### CrawlPageResult
+
 The result of crawling a single page during a crawl operation.
 
 | Field | Type | Default | Description |
@@ -353,6 +386,7 @@ The result of crawling a single page during a crawl operation.
 ---
 
 #### CrawlResult
+
 The result of a multi-page crawl operation.
 
 | Field | Type | Default | Description |
@@ -366,7 +400,9 @@ The result of a multi-page crawl operation.
 | `normalizedUrls` | `[String]` | `[]` | Normalized URLs encountered during crawling (for deduplication counting). |
 
 ##### Methods
+
 ###### uniqueNormalizedUrls()
+
 Returns the count of unique normalized URLs encountered during crawling.
 
 **Signature:**
@@ -378,6 +414,7 @@ Returns the count of unique normalized URLs encountered during crawling.
 ---
 
 #### DownloadedAsset
+
 A downloaded asset from a page.
 
 | Field | Type | Default | Description |
@@ -393,6 +430,7 @@ A downloaded asset from a page.
 ---
 
 #### DownloadedDocument
+
 A downloaded non-HTML document (PDF, DOCX, image, code file, etc.).
 
 When the crawler encounters non-HTML content and `download_documents` is
@@ -413,6 +451,7 @@ skipping the resource.
 ---
 
 #### ExtractionMeta
+
 Metadata about an LLM extraction pass.
 
 | Field | Type | Default | Description |
@@ -427,6 +466,7 @@ Metadata about an LLM extraction pass.
 ---
 
 #### FaviconInfo
+
 Information about a favicon or icon link.
 
 | Field | Type | Default | Description |
@@ -440,6 +480,7 @@ Information about a favicon or icon link.
 ---
 
 #### FeedInfo
+
 Information about a feed link found on a page.
 
 | Field | Type | Default | Description |
@@ -452,6 +493,7 @@ Information about a feed link found on a page.
 ---
 
 #### HeadingInfo
+
 A heading element extracted from the page.
 
 | Field | Type | Default | Description |
@@ -463,6 +505,7 @@ A heading element extracted from the page.
 ---
 
 #### HreflangEntry
+
 An hreflang alternate link entry.
 
 | Field | Type | Default | Description |
@@ -474,6 +517,7 @@ An hreflang alternate link entry.
 ---
 
 #### ImageInfo
+
 Information about an image found on a page.
 
 | Field | Type | Default | Description |
@@ -488,6 +532,7 @@ Information about an image found on a page.
 ---
 
 #### JsonLdEntry
+
 A JSON-LD structured data entry found on a page.
 
 | Field | Type | Default | Description |
@@ -500,6 +545,7 @@ A JSON-LD structured data entry found on a page.
 ---
 
 #### LinkInfo
+
 Information about a link found on a page.
 
 | Field | Type | Default | Description |
@@ -514,6 +560,7 @@ Information about a link found on a page.
 ---
 
 #### MapResult
+
 The result of a map operation, containing discovered URLs.
 
 | Field | Type | Default | Description |
@@ -524,6 +571,7 @@ The result of a map operation, containing discovered URLs.
 ---
 
 #### MarkdownResult
+
 Rich markdown conversion result from HTML processing.
 
 | Field | Type | Default | Description |
@@ -539,6 +587,7 @@ Rich markdown conversion result from HTML processing.
 ---
 
 #### PageMetadata
+
 Metadata extracted from an HTML page's `<meta>` tags and `<title>` element.
 
 | Field | Type | Default | Description |
@@ -591,6 +640,7 @@ Metadata extracted from an HTML page's `<meta>` tags and `<title>` element.
 ---
 
 #### ProxyConfig
+
 Proxy configuration for HTTP requests.
 
 | Field | Type | Default | Description |
@@ -603,6 +653,7 @@ Proxy configuration for HTTP requests.
 ---
 
 #### ResponseMeta
+
 Response metadata extracted from HTTP headers.
 
 | Field | Type | Default | Description |
@@ -619,6 +670,7 @@ Response metadata extracted from HTTP headers.
 ---
 
 #### ScrapeResult
+
 The result of a single-page scrape operation.
 
 | Field | Type | Default | Description |
@@ -655,6 +707,7 @@ The result of a single-page scrape operation.
 ---
 
 #### SitemapUrl
+
 A URL entry from a sitemap.
 
 | Field | Type | Default | Description |
@@ -670,6 +723,7 @@ A URL entry from a sitemap.
 ### Enums
 
 #### BrowserMode
+
 When to use the headless browser fallback.
 
 | Value | Description |
@@ -682,6 +736,7 @@ When to use the headless browser fallback.
 ---
 
 #### BrowserWait
+
 Wait strategy for browser page rendering.
 
 | Value | Description |
@@ -694,6 +749,7 @@ Wait strategy for browser page rendering.
 ---
 
 #### AuthConfig
+
 Authentication configuration.
 
 | Value | Description |
@@ -706,6 +762,7 @@ Authentication configuration.
 ---
 
 #### LinkType
+
 The classification of a link.
 
 | Value | Description |
@@ -719,6 +776,7 @@ The classification of a link.
 ---
 
 #### ImageSource
+
 The source of an image reference.
 
 | Value | Description |
@@ -732,6 +790,7 @@ The source of an image reference.
 ---
 
 #### FeedType
+
 The type of a feed (RSS, Atom, or JSON Feed).
 
 | Value | Description |
@@ -744,6 +803,7 @@ The type of a feed (RSS, Atom, or JSON Feed).
 ---
 
 #### AssetCategory
+
 The category of a downloaded asset.
 
 | Value | Description |
@@ -765,6 +825,7 @@ The category of a downloaded asset.
 ### Errors
 
 #### CrawlError
+
 Errors that can occur during crawling, scraping, or mapping operations.
 
 | Variant | Description |

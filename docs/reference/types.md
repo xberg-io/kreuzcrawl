@@ -7,7 +7,9 @@ title: "Types Reference"
 All types defined by the library, grouped by category. Types are shown using Rust as the canonical representation.
 
 ### Result Types
+
 #### ScrapeResult
+
 The result of a single-page scrape operation.
 
 | Field | Type | Default | Description |
@@ -43,6 +45,7 @@ The result of a single-page scrape operation.
 ---
 
 #### CrawlPageResult
+
 The result of crawling a single page during a crawl operation.
 
 | Field | Type | Default | Description |
@@ -71,6 +74,7 @@ The result of crawling a single page during a crawl operation.
 ---
 
 #### CrawlResult
+
 The result of a multi-page crawl operation.
 
 | Field | Type | Default | Description |
@@ -86,6 +90,7 @@ The result of a multi-page crawl operation.
 ---
 
 #### MapResult
+
 The result of a map operation, containing discovered URLs.
 
 | Field | Type | Default | Description |
@@ -95,6 +100,7 @@ The result of a map operation, containing discovered URLs.
 ---
 
 #### MarkdownResult
+
 Rich markdown conversion result from HTML processing.
 
 | Field | Type | Default | Description |
@@ -109,6 +115,7 @@ Rich markdown conversion result from HTML processing.
 ---
 
 #### CitationResult
+
 Result of citation conversion.
 
 | Field | Type | Default | Description |
@@ -119,6 +126,7 @@ Result of citation conversion.
 ---
 
 #### BatchScrapeResult
+
 Result from a single URL in a batch scrape operation.
 
 | Field | Type | Default | Description |
@@ -130,6 +138,7 @@ Result from a single URL in a batch scrape operation.
 ---
 
 #### BatchCrawlResult
+
 Result from a single URL in a batch crawl operation.
 
 | Field | Type | Default | Description |
@@ -141,9 +150,11 @@ Result from a single URL in a batch crawl operation.
 ---
 
 ### Configuration Types
+
 See [Configuration Reference](configuration.md) for detailed defaults and language-specific representations.
 
 #### ProxyConfig
+
 Proxy configuration for HTTP requests.
 
 | Field | Type | Default | Description |
@@ -155,6 +166,7 @@ Proxy configuration for HTTP requests.
 ---
 
 #### ContentConfig
+
 Content extraction and conversion configuration.
 
 Controls how HTML is converted to the output format. Uses
@@ -179,6 +191,7 @@ html-to-markdown-rs as the conversion engine for all formats
 ---
 
 #### BrowserConfig
+
 Browser fallback configuration.
 
 | Field | Type | Default | Description |
@@ -193,6 +206,7 @@ Browser fallback configuration.
 ---
 
 #### CrawlConfig
+
 Configuration for crawl, scrape, and map operations.
 
 | Field | Type | Default | Description |
@@ -237,6 +251,7 @@ Configuration for crawl, scrape, and map operations.
 ---
 
 #### DownloadedDocument
+
 A downloaded non-HTML document (PDF, DOCX, image, code file, etc.).
 
 When the crawler encounters non-HTML content and `download_documents` is
@@ -256,6 +271,7 @@ skipping the resource.
 ---
 
 #### SitemapUrl
+
 A URL entry from a sitemap.
 
 | Field | Type | Default | Description |
@@ -268,6 +284,7 @@ A URL entry from a sitemap.
 ---
 
 #### LinkInfo
+
 Information about a link found on a page.
 
 | Field | Type | Default | Description |
@@ -281,6 +298,7 @@ Information about a link found on a page.
 ---
 
 #### ImageInfo
+
 Information about an image found on a page.
 
 | Field | Type | Default | Description |
@@ -294,6 +312,7 @@ Information about an image found on a page.
 ---
 
 #### FeedInfo
+
 Information about a feed link found on a page.
 
 | Field | Type | Default | Description |
@@ -305,6 +324,7 @@ Information about a feed link found on a page.
 ---
 
 #### JsonLdEntry
+
 A JSON-LD structured data entry found on a page.
 
 | Field | Type | Default | Description |
@@ -316,6 +336,7 @@ A JSON-LD structured data entry found on a page.
 ---
 
 #### CookieInfo
+
 Information about an HTTP cookie received from a response.
 
 | Field | Type | Default | Description |
@@ -328,6 +349,7 @@ Information about an HTTP cookie received from a response.
 ---
 
 #### DownloadedAsset
+
 A downloaded asset from a page.
 
 | Field | Type | Default | Description |
@@ -342,6 +364,7 @@ A downloaded asset from a page.
 ---
 
 #### HreflangEntry
+
 An hreflang alternate link entry.
 
 | Field | Type | Default | Description |
@@ -352,6 +375,7 @@ An hreflang alternate link entry.
 ---
 
 #### FaviconInfo
+
 Information about a favicon or icon link.
 
 | Field | Type | Default | Description |
@@ -364,6 +388,7 @@ Information about a favicon or icon link.
 ---
 
 #### HeadingInfo
+
 A heading element extracted from the page.
 
 | Field | Type | Default | Description |
@@ -374,6 +399,7 @@ A heading element extracted from the page.
 ---
 
 #### CitationReference
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `index` | `usize` | — | Index |
@@ -383,7 +409,9 @@ A heading element extracted from the page.
 ---
 
 ### Metadata Types
+
 #### ExtractionMeta
+
 Metadata about an LLM extraction pass.
 
 | Field | Type | Default | Description |
@@ -397,6 +425,7 @@ Metadata about an LLM extraction pass.
 ---
 
 #### ArticleMetadata
+
 Article metadata extracted from `article:*` Open Graph tags.
 
 | Field | Type | Default | Description |
@@ -410,6 +439,7 @@ Article metadata extracted from `article:*` Open Graph tags.
 ---
 
 #### ResponseMeta
+
 Response metadata extracted from HTTP headers.
 
 | Field | Type | Default | Description |
@@ -425,6 +455,7 @@ Response metadata extracted from HTTP headers.
 ---
 
 #### PageMetadata
+
 Metadata extracted from an HTML page's `<meta>` tags and `<title>` element.
 
 | Field | Type | Default | Description |
@@ -476,7 +507,9 @@ Metadata extracted from an HTML page's `<meta>` tags and `<title>` element.
 ---
 
 ### Other Types
+
 #### CrawlEngineHandle
+
 Opaque handle to a configured crawl engine.
 
 Constructed via `create_engine` with an optional `CrawlConfig`.
@@ -489,6 +522,7 @@ Default implementations for all pluggable components are used internally.
 ### Enums
 
 #### AssetCategory
+
 The category of a downloaded asset.
 
 | Variant | Wire value | Description |
@@ -507,6 +541,7 @@ The category of a downloaded asset.
 ---
 
 #### AuthConfig
+
 Authentication configuration.
 
 | Variant | Wire value | Description |
@@ -518,6 +553,7 @@ Authentication configuration.
 ---
 
 #### BrowserMode
+
 When to use the headless browser fallback.
 
 | Variant | Wire value | Description |
@@ -529,6 +565,7 @@ When to use the headless browser fallback.
 ---
 
 #### BrowserWait
+
 Wait strategy for browser page rendering.
 
 | Variant | Wire value | Description |
@@ -540,6 +577,7 @@ Wait strategy for browser page rendering.
 ---
 
 #### FeedType
+
 The type of a feed (RSS, Atom, or JSON Feed).
 
 | Variant | Wire value | Description |
@@ -551,6 +589,7 @@ The type of a feed (RSS, Atom, or JSON Feed).
 ---
 
 #### ImageSource
+
 The source of an image reference.
 
 | Variant | Wire value | Description |
@@ -563,6 +602,7 @@ The source of an image reference.
 ---
 
 #### LinkType
+
 The classification of a link.
 
 | Variant | Wire value | Description |
