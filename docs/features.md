@@ -1,207 +1,162 @@
 ---
 title: Features
-description: Comprehensive feature breakdown for Kreuzcrawl
+description: Feature breakdown for Kreuzcrawl 0.3
 ---
 
-## Features
+# Features
 
-Kreuzcrawl is a Rust-native web crawling engine with deep extraction capabilities. This page covers every major feature area and includes a competitive comparison with other tools in the space.
+Kreuzcrawl is a Rust-native web crawling engine. Every feature below is wired through the public surface of the Rust crate (`pub use` from the crate root) or the equivalent surface in the native bindings, unless explicitly marked as an internal preview.
+
+Native bindings ship for **14 languages** — Rust, Python, TypeScript (Node + WebAssembly), Go, Java, Kotlin, C#, Ruby, PHP, Elixir, Dart, Swift, Zig — plus a stable C FFI surface for everything else.
+
+The public Rust surface from `kreuzcrawl::*` is six free functions over an opaque `CrawlEngineHandle`: `create_engine`, `scrape`, `crawl`, `map_urls`, `batch_scrape`, `batch_crawl`. The same six operations are exposed by every binding, plus `serve_api` and `start_mcp_server` under the `api` and `mcp` cargo features.
 
 ---
 
 ## Core Crawling
 
-The `CrawlEngine` is built with the builder pattern and validates all configuration at construction time. Invalid configs fail fast before any network requests are made.
+| Feature                 | Description                                                                                              |
+| ----------------------- | -------------------------------------------------------------------------------------------------------- |
+| **Engine construction** | `create_engine(config)` — opaque `CrawlEngineHandle`; all configuration validated up front via `serde`.  |
+| **Concurrent fetching** | Tokio `JoinSet` + `Semaphore` for parallel requests, bounded by `CrawlConfig::max_concurrent`.           |
+| **Sequential crawl**    | `crawl(&engine, url)` follows links from a seed up to `max_depth` / `max_pages`.                         |
+| **Batch operations**    | `batch_crawl(&engine, urls)` and `batch_scrape(&engine, urls)` for multi-seed processing.                |
+| **URL discovery**       | `map_urls(&engine, url)` returns a `MapResult` from sitemap parsing and link extraction.                 |
+| **Redirect handling**   | HTTP 3xx, `Refresh` header, and meta-refresh detection with loop detection (`max_redirects`, default 10). |
 
-| Feature                 | Description                                                                    |
-| ----------------------- | ------------------------------------------------------------------------------ |
-| **CrawlEngine builder** | Fluent `.builder().config(...).build()` pattern with strict `serde` validation |
-| **Concurrent fetching** | `JoinSet` + `Semaphore` for parallel requests (default: 10 concurrent)         |
-| **Multiple strategies** | BFS, DFS, BestFirst, and Adaptive traversal via the `CrawlStrategy` trait      |
-| **Batch crawling**      | Multi-seed `batch_crawl()` and `batch_scrape()` for processing URL lists       |
-| **Streaming events**    | Real-time `crawl_stream()` returning `CrawlEvent` items as pages are processed |
-| **URL discovery**       | Sitemap parsing (XML, gzip, sitemap index) combined with link extraction       |
-| **Redirect handling**   | HTTP 3xx, Refresh header, and meta refresh detection with loop detection       |
+Four traversal strategies — BFS (default), DFS, BestFirst, and Adaptive — are implemented internally; the public surface always uses BFS. A configuration knob for strategy selection is on the roadmap.
 
 ---
 
 ## Metadata Extraction
 
-Every scraped page yields a `PageMetadata` struct with 40+ fields, plus separate collections for links, images, feeds, and structured data.
+Every scraped page yields a `PageMetadata` struct alongside separate collections for links, images, feeds, and structured data.
 
 | Feature               | Description                                                               |
 | --------------------- | ------------------------------------------------------------------------- |
-| **Open Graph**        | `og:title`, `og:description`, `og:image`, `og:type`, `og:url`, and more   |
-| **Twitter Card**      | `twitter:card`, `twitter:title`, `twitter:description`, `twitter:image`   |
-| **Dublin Core**       | `dc.title`, `dc.creator`, `dc.date`, `dc.subject`                         |
-| **Article metadata**  | `article:published_time`, `article:author`, `article:section`             |
-| **JSON-LD**           | Full JSON-LD extraction from `<script type="application/ld+json">` blocks |
-| **Link extraction**   | 4 link types: `Internal`, `External`, `Anchor`, `Document`                |
-| **Image extraction**  | All sources: `<img>`, `<picture>`, `og:image`, `srcset`                   |
-| **Feed discovery**    | RSS, Atom, and JSON Feed detection from `<link>` elements                 |
-| **Favicons**          | Extraction and canonicalization of site icons                             |
-| **hreflang**          | Language and region variant links for internationalized pages             |
-| **Headings**          | H1-H6 extraction with hierarchy preservation                              |
-| **Response metadata** | HTTP headers, content type, charset detection, body size                  |
+| **Open Graph**        | `og:title`, `og:description`, `og:image`, `og:type`, `og:url`, and more.  |
+| **Twitter Card**      | `twitter:card`, `twitter:title`, `twitter:description`, `twitter:image`.  |
+| **Dublin Core**       | `dc.title`, `dc.creator`, `dc.date`, `dc.subject`.                        |
+| **Article metadata**  | `article:published_time`, `article:author`, `article:section`.            |
+| **JSON-LD**           | Full extraction from `<script type="application/ld+json">` blocks.        |
+| **Link extraction**   | 4 categories: `Internal`, `External`, `Anchor`, `Document`.               |
+| **Image extraction**  | `<img>`, `<picture>`, `og:image`, and `srcset` sources.                   |
+| **Feed discovery**    | RSS, Atom, and JSON Feed `<link>` elements.                               |
+| **Favicons**          | Extraction and canonicalisation of site icons.                            |
+| **hreflang**          | Language and region variants for internationalised pages.                 |
+| **Headings**          | H1–H6 with hierarchy preservation.                                        |
+| **Response metadata** | HTTP headers, content type, charset detection, body size.                 |
 
 ---
 
 ## Markdown Conversion
 
-HTML-to-markdown conversion runs automatically on every page via `html-to-markdown-rs`. Results are available in the `MarkdownResult` struct.
+HTML→Markdown conversion runs automatically on every page via [html-to-markdown](https://docs.html-to-markdown.kreuzberg.dev). Results land in the `MarkdownResult` struct attached to every page.
 
-| Feature                  | Description                                                                                          |
-| ------------------------ | ---------------------------------------------------------------------------------------------------- |
-| **Always-on conversion** | Every page includes a `markdown` field with converted content                                        |
-| **Document structure**   | Optional structured document tree with semantic nodes                                                |
-| **Table extraction**     | Structured table data preserved alongside markdown output                                            |
-| **Link-to-citations**    | Numbered reference conversion (e.g., `[1]`, `[2]`) with a `CitationResult` containing all references |
-| **Fit markdown**         | Content pruning and heuristic-based truncation optimized for LLM consumption                         |
-| **Warnings**             | Non-fatal processing warnings surfaced in `MarkdownResult.warnings`                                  |
-
----
-
-## AI and LLM Integration
-
-!!! info "Feature gate"
-Requires the `ai` feature: `kreuzcrawl = { version = "0.3", features = ["ai"] }`
-
-| Feature                    | Description                                                                        |
-| -------------------------- | ---------------------------------------------------------------------------------- |
-| **LlmExtractor**           | Multi-provider LLM extraction powered by `liter-llm`                               |
-| **JSON schema extraction** | Pass a JSON schema and receive structured data matching it                         |
-| **Cost tracking**          | `ExtractionMeta` includes estimated USD cost, prompt tokens, and completion tokens |
-| **Model metadata**         | The model identifier used for each extraction is recorded                          |
-| **Chunk tracking**         | Number of content chunks processed by the LLM                                      |
+| Feature                  | Description                                                                                         |
+| ------------------------ | --------------------------------------------------------------------------------------------------- |
+| **Always-on conversion** | Every page result includes a `markdown` field with converted content.                               |
+| **Document structure**   | Optional structured tree of semantic nodes alongside the rendered Markdown.                         |
+| **Table extraction**     | Structured table data preserved alongside Markdown output.                                          |
+| **Link-to-citations**    | Numbered references (`[1]`, `[2]`) with a `CitationResult` carrying every reference.                |
+| **Fit Markdown**         | Heuristic-based pruning and truncation optimised for LLM consumption (`MarkdownResult.fit_content`). |
+| **Warnings**             | Non-fatal processing warnings surfaced in `MarkdownResult.warnings`.                                |
 
 ---
 
-## Anti-Bot and Browser Automation
+## Browser Fallback
 
 !!! info "Feature gate"
-Requires the `browser` feature: `kreuzcrawl = { version = "0.3", features = ["browser"] }`
+    Requires the `browser` feature: `kreuzcrawl = { version = "0.3", features = ["browser"] }`
 
-| Feature                     | Description                                                                                   |
-| --------------------------- | --------------------------------------------------------------------------------------------- |
-| **WAF detection**           | 8 vendors: Cloudflare, Akamai, AWS WAF, Imperva, DataDome, PerimeterX, Sucuri, F5             |
-| **Browser fallback**        | Headless Chrome via chromiumoxide with configurable `BrowserMode` (`Auto`, `Always`, `Never`) |
-| **BrowserPool**             | Multi-browser management with health checks and crash recovery                                |
-| **Browser wait strategies** | `NetworkIdle`, `Selector` (wait for CSS selector), and `Fixed` duration                       |
-| **Browser profiles**        | Named persistent sessions preserving cookies and localStorage                                 |
-| **JS rendering detection**  | Heuristic-based detection of pages requiring JavaScript rendering                             |
-| **Screenshot capture**      | PNG screenshot capture when using the browser (via `capture_screenshot`)                      |
-| **User-Agent rotation**     | `UaRotationLayer` Tower middleware for UA header diversity                                    |
+| Feature                     | Description                                                                                                                                 |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Headless Chrome**         | chromiumoxide-driven Chrome with `BrowserMode::Auto` / `Always` / `Never`.                                                                  |
+| **WAF detection**           | 8 vendors auto-detected on HTTP and browser responses: Cloudflare, Akamai, AWS WAF, Imperva, DataDome, PerimeterX, Sucuri, F5.              |
+| **Auto fallback**           | In `Auto` mode, WAF-blocked or JS-render-required responses retry through Chrome with a legitimate browser fingerprint.                     |
+| **Wait strategies**         | `NetworkIdle` (default), `Selector` (wait for CSS selector), `Fixed` (fixed duration); plus optional `extra_wait` after the wait condition. |
+| **CDP endpoint**            | Point at an already-running browser via `BrowserConfig::endpoint` instead of launching one locally.                                         |
+| **Persistent profiles**     | Named profiles via `CrawlConfig::browser_profile` / `save_browser_profile`. Profile names validated against path-traversal.                 |
+| **Screenshot capture**      | PNG screenshot captured when `capture_screenshot` is enabled and the browser is used.                                                       |
+| **JS-render detection**     | SPA-shell and noscript-warning heuristics flag pages that need browser rendering.                                                           |
 
 ---
 
 ## Network and Caching
 
-| Feature                      | Description                                                                          |
-| ---------------------------- | ------------------------------------------------------------------------------------ |
-| **Per-domain rate limiting** | `PerDomainRateLimitLayer` Tower middleware with configurable delays (default: 200ms) |
-| **HTTP caching**             | ETag and Last-Modified conditional requests via `CrawlCacheLayer`                    |
-| **Disk cache**               | blake3-hashed file storage with TTL and automatic eviction                           |
-| **Proxy support**            | HTTP, HTTPS, and SOCKS5 proxies via `ProxyConfig`                                    |
-| **User-Agent rotation**      | Configurable list of UA strings rotated across requests                              |
-| **Cookie handling**          | Cookie tracking with deduplication and persistence                                   |
-| **Authentication**           | Basic, Bearer, and custom header authentication via `AuthConfig`                     |
-| **Configurable timeouts**    | Per-request timeout (default: 30s), max redirects (default: 10, max: 100)            |
-| **Retry logic**              | Configurable retry count with specific HTTP status code triggers                     |
-| **Body size limits**         | Optional `max_body_size` to cap response payloads                                    |
+| Feature                      | Description                                                                                          |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **Per-domain rate limiting** | Default 200 ms delay per origin; configurable in `CrawlConfig`.                                      |
+| **HTTP caching**             | ETag and Last-Modified conditional requests with an on-disk cache.                                   |
+| **Proxy support**            | HTTP, HTTPS, and SOCKS5 via `ProxyConfig`.                                                           |
+| **User-Agent rotation**      | Configurable list rotated across requests.                                                           |
+| **Cookie handling**          | Tracking, deduplication, and persistence across requests.                                            |
+| **Authentication**           | Basic, Bearer, and custom-header authentication via `AuthConfig`.                                    |
+| **Timeouts**                 | Per-request timeout (default 30 s); `max_redirects` default 10 (cap 100).                            |
+| **Retry logic**              | Configurable retry count with explicit status-code triggers (`retry_codes`).                         |
+| **Body-size limits**         | Optional `CrawlConfig::max_body_size` to cap response payloads.                                      |
 
 ---
 
-## Content Filtering and Relevance
+## Content Processing
 
-| Feature                     | Description                                                                 |
-| --------------------------- | --------------------------------------------------------------------------- |
-| **BM25 scoring**            | `Bm25Filter` for adaptive relevance evaluation of crawled pages             |
-| **Adaptive crawling**       | `AdaptiveStrategy` with term saturation detection for early termination     |
-| **Main content extraction** | `main_content_only` strips boilerplate, leaving primary page content        |
-| **Tag removal**             | `remove_tags` accepts CSS selectors for elements to strip before processing |
-| **Path filtering**          | `include_paths` and `exclude_paths` with regex pattern matching             |
-| **Domain scoping**          | `stay_on_domain` with optional `allow_subdomains`                           |
+| Feature                  | Description                                                                                                            |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| **Preprocessing presets** | `content.preprocessing_preset` accepts `"minimal"`, `"standard"` (default), or `"aggressive"` (boilerplate-stripping). |
+| **Tag removal**           | `remove_tags` takes CSS selectors stripped before extraction.                                                          |
+| **Path filtering**        | `include_paths` and `exclude_paths` accept regex patterns; excludes take priority.                                     |
+| **Domain scoping**        | `stay_on_domain` with optional `allow_subdomains`.                                                                     |
 
 ---
 
 ## Document Downloads
 
-| Feature                 | Description                                                                           |
-| ----------------------- | ------------------------------------------------------------------------------------- |
-| **Non-HTML documents**  | Download PDFs, DOCX, images, code files via `download_documents` (enabled by default) |
-| **Asset downloads**     | CSS, JS, images via `download_assets` with category filtering                         |
-| **Size limits**         | `document_max_size` (default: 50 MB) and `max_asset_size` caps                        |
-| **MIME filtering**      | `document_mime_types` allowlist for controlling which document types to download      |
-| **Content hashing**     | SHA-256 digest computed for every downloaded document                                 |
-| **Filename extraction** | Parsed from Content-Disposition headers or URL path                                   |
+| Feature                 | Description                                                                                  |
+| ----------------------- | -------------------------------------------------------------------------------------------- |
+| **Non-HTML documents**  | Download PDFs, DOCX, images, and code files via `download_documents` (enabled by default).   |
+| **Asset downloads**     | CSS, JS, images via `download_assets` with `asset_types` category filtering.                 |
+| **Size limits**         | `document_max_size` (default 50 MB) and `max_asset_size` caps.                               |
+| **MIME filtering**      | `document_mime_types` allowlist for permitted document types.                                |
+| **Content hashing**     | SHA-256 digest computed for every downloaded document.                                       |
+| **Filename extraction** | Parsed from `Content-Disposition` or the URL path.                                           |
 
 ---
 
 ## Compliance and Standards
 
-| Feature                 | Description                                                                                      |
-| ----------------------- | ------------------------------------------------------------------------------------------------ |
-| **robots.txt**          | RFC 9309 compliant with user-agent prefix matching and crawl-delay support                       |
-| **Sitemap parsing**     | XML, gzip-compressed, and sitemap index file support                                             |
-| **noindex / nofollow**  | Detection of `<meta>` robots directives and `X-Robots-Tag` headers                               |
-| **Charset detection**   | Automatic encoding detection from HTTP headers and HTML meta tags                                |
-| **Binary/PDF skipping** | Content-type aware filtering to avoid processing non-HTML content                                |
-| **Config validation**   | `serde` with `deny_unknown_fields` -- typos in config keys are compile-time or parse-time errors |
+| Feature                 | Description                                                                                            |
+| ----------------------- | ------------------------------------------------------------------------------------------------------ |
+| **robots.txt**          | RFC 9309 compliant with user-agent prefix matching and `Crawl-delay` support.                          |
+| **Sitemap parsing**     | XML, gzip-compressed, and sitemap-index files.                                                         |
+| **noindex / nofollow**  | Detection of `<meta>` robots directives and `X-Robots-Tag` headers.                                    |
+| **Charset detection**   | Automatic from HTTP headers and HTML meta tags.                                                        |
+| **Config validation**   | `serde` with `deny_unknown_fields` — typos in config keys fail at parse time.                          |
 
 ---
 
 ## WARC Output
 
 !!! info "Feature gate"
-Requires the `warc` feature: `kreuzcrawl = { version = "0.3", features = ["warc"] }`
+    Requires the `warc` feature: `kreuzcrawl = { version = "0.3", features = ["warc"] }`
 
-| Feature            | Description                                                         |
-| ------------------ | ------------------------------------------------------------------- |
-| **WARC output**    | Standards-compliant WARC archiving for entire crawl sessions        |
-| **Archive format** | Web ARChive (WARC) format with complete HTTP request/response pairs |
-| **File storage**   | Write to disk via `warc_output` configuration path                  |
-
----
-
-## MCP and REST API
-
-!!! info "Feature gates"
-MCP server: `features = ["mcp"]` -- REST API: `features = ["api"]`
-
-| Feature              | Description                                                           |
-| -------------------- | --------------------------------------------------------------------- |
-| **MCP server**       | Model Context Protocol server for AI agent integration                |
-| **REST API**         | Axum-based HTTP API with OpenAPI documentation via `utoipa`           |
-| **Page interaction** | Execute action sequences on browser pages (feature-gated: `interact`) |
+| Feature            | Description                                                                                              |
+| ------------------ | -------------------------------------------------------------------------------------------------------- |
+| **WARC 1.1**       | Standards-compliant `warcinfo` + per-page `response` records, written to `CrawlConfig::warc_output`.     |
+| **Header safety**  | Header names and values validated against CR/LF injection before being written.                          |
 
 ---
 
-## Extensibility
+## REST API, MCP, and CLI
 
-Kreuzcrawl exposes **7 pluggable traits** that let you replace any component of the crawl pipeline:
-
-| Trait           | Purpose                             | Default Implementation                     |
-| --------------- | ----------------------------------- | ------------------------------------------ |
-| `Frontier`      | URL queue and deduplication         | `InMemoryFrontier` (VecDeque + HashSet)    |
-| `RateLimiter`   | Per-domain request throttling       | `PerDomainThrottle` (200ms delay)          |
-| `CrawlStore`    | Result storage backend              | `NoopStore` (results returned, not stored) |
-| `EventEmitter`  | Lifecycle event callbacks           | `NoopEmitter`                              |
-| `CrawlStrategy` | Traversal algorithm and URL scoring | `BfsStrategy`                              |
-| `ContentFilter` | Page relevance evaluation           | `NoopFilter` (accept all)                  |
-| `CrawlCache`    | HTTP response caching               | `NoopCache`                                |
-
-The Tower service stack composes these traits into a layered pipeline:
-
-```text
-CrawlStrategy --> Frontier --> CrawlTracingLayer --> UaRotationLayer
-    --> CrawlCacheLayer --> PerDomainRateLimitLayer --> HttpFetchService
-```
+| Feature              | Description                                                                                                            |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| **REST API**         | `serve_api(config).await` starts an Axum-based, [Firecrawl v1-compatible](reference/rest-api.md) HTTP API (feature `api`). OpenAPI schema is generated by `utoipa`. |
+| **MCP server**       | `start_mcp_server(...)` starts a Model Context Protocol server for AI-agent integration (feature `mcp`).               |
+| **CLI**              | The `kreuzcrawl` binary exposes `scrape`, `crawl`, `map`, and `serve` subcommands.                                     |
 
 ---
 
-## CLI
-
-The `kreuzcrawl` CLI provides three core commands:
+## CLI quickstart
 
 ```bash
 # Scrape a single page
@@ -210,66 +165,8 @@ kreuzcrawl scrape https://example.com
 # Crawl with depth limiting
 kreuzcrawl crawl https://example.com --depth 2 --max-pages 50 --format markdown
 
-# Discover URLs via sitemap + crawling
+# Discover URLs via sitemap and link extraction
 kreuzcrawl map https://example.com --respect-robots-txt
 ```
 
-Output formats: `json` (full `CrawlResult` with all metadata) and `markdown` (`MarkdownResult` with citations).
-
----
-
-## Competitive Comparison
-
-### Overview
-
-|                      | kreuzcrawl    | spider               | firecrawl          | crawl4ai            | webclaw                | ScrapeGraphAI      | CRW                 |
-| -------------------- | ------------- | -------------------- | ------------------ | ------------------- | ---------------------- | ------------------ | ------------------- |
-| **Language**         | Rust          | Rust                 | TypeScript         | Python              | Rust                   | Python             | Rust                |
-| **License**          | Elastic-2.0   | MIT                  | AGPL-3.0           | Apache-2.0          | AGPL-3.0               | MIT                | AGPL-3.0            |
-| **Distribution**     | Library + CLI | Library + CLI + SaaS | SaaS + Self-hosted | Library + CLI + API | Library + CLI + MCP    | Library + SaaS API | CLI + MCP + API     |
-| **Headless browser** | chromiumoxide | chromey / WebDriver  | Playwright         | Playwright          | None (TLS fingerprint) | Playwright         | LightPanda / Chrome |
-
-### Crawling
-
-|                          | kreuzcrawl                    | spider                    | firecrawl          | crawl4ai             | webclaw | ScrapeGraphAI    | CRW   |
-| ------------------------ | ----------------------------- | ------------------------- | ------------------ | -------------------- | ------- | ---------------- | ----- |
-| **Traversal strategies** | BFS, DFS, BestFirst, Adaptive | BFS                       | BFS                | BFS, DFS, BestFirst  | BFS     | LLM-driven graph | BFS   |
-| **Concurrent fetching**  | JoinSet + Semaphore           | Tokio multi-thread + AIMD | Bull queue workers | asyncio browser pool | Tokio   | asyncio          | Tokio |
-| **Streaming events**     | Real-time                     | Subscriber channels       | SSE / polling      | Yes                  | --      | --               | --    |
-| **Batch operations**     | `batch_crawl()`               | --                        | Async API          | Deep crawl           | Yes     | --               | Yes   |
-| **Sitemap parsing**      | XML, gzip, index              | Yes                       | Yes                | --                   | Yes     | --               | Yes   |
-| **robots.txt**           | RFC 9309                      | With caching              | Yes                | Basic                | Yes     | --               | Yes   |
-
-### Extraction and Content
-
-|                               | kreuzcrawl                              | spider         | firecrawl      | crawl4ai       | webclaw         | ScrapeGraphAI    | CRW            |
-| ----------------------------- | --------------------------------------- | -------------- | -------------- | -------------- | --------------- | ---------------- | -------------- |
-| **Markdown conversion**       | Always-on + structure                   | Yes            | Primary output | Yes            | Yes             | Yes              | Yes            |
-| **Fit markdown (LLM-pruned)** | BM25 + heuristic                        | --             | --             | BM25/LLM-based | Token-optimized | --               | --             |
-| **Metadata fields**           | 40+ (OG, DC, Twitter, Article, JSON-LD) | Basic          | Basic          | Basic          | Moderate        | --               | Basic          |
-| **JSON-LD extraction**        | Full                                    | --             | --             | --             | Data islands    | --               | --             |
-| **Feed discovery**            | RSS, Atom, JSON Feed                    | --             | --             | --             | --              | --               | --             |
-| **Link-to-citations**         | Numbered refs                           | --             | --             | Yes            | --              | --               | --             |
-| **LLM extraction**            | Multi-provider (liter-llm)              | OpenAI, Gemini | 10+ providers  | litellm        | Ollama (local)  | LangChain (core) | Claude, OpenAI |
-| **Cost tracking**             | USD + tokens                            | --             | Yes            | Yes            | --              | Token counting   | --             |
-
-### Architecture and Extensibility
-
-|                            | kreuzcrawl      | spider                | firecrawl                          | crawl4ai             | webclaw | ScrapeGraphAI   | CRW  |
-| -------------------------- | --------------- | --------------------- | ---------------------------------- | -------------------- | ------- | --------------- | ---- |
-| **Pluggable traits**       | 7 traits        | --                    | --                                 | Partial (strategies) | --      | Graph nodes     | --   |
-| **Middleware stack**       | Tower services  | --                    | --                                 | --                   | --      | --              | --   |
-| **Config validation**      | serde strict    | --                    | --                                 | --                   | --      | --              | --   |
-| **BM25 relevance scoring** | Yes             | --                    | --                                 | Yes                  | --      | --              | --   |
-| **Adaptive crawling**      | Term saturation | --                    | --                                 | Pattern learning     | --      | --              | --   |
-| **Asset download + dedup** | SHA-256         | --                    | --                                 | --                   | --      | --              | --   |
-| **Language SDKs**          | 11 languages    | Rust, Python, Node.js | Python, JS, Go, Java, Elixir, Rust | Python               | Rust    | Python, Node.js | Rust |
-
-### License Details
-
-| License         | Tools                   | Commercial use | Hosting restriction                       |
-| --------------- | ----------------------- | -------------- | ----------------------------------------- |
-| **Elastic-2.0** | kreuzcrawl              | Yes            | Cannot provide as managed service         |
-| **MIT**         | spider, ScrapeGraphAI   | Yes            | None                                      |
-| **Apache-2.0**  | crawl4ai                | Yes            | None                                      |
-| **AGPL-3.0**    | firecrawl, webclaw, CRW | Yes            | Must open-source modifications if hosting |
+Output formats: `json` (full `CrawlResult` / `ScrapeResult` / `MapResult`) and `markdown` (`MarkdownResult` content with citations).
