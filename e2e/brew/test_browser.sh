@@ -8,209 +8,209 @@
 set -euo pipefail
 
 test_browser_config_auto_no_feature() {
-    # Browser mode 'auto' without browser feature enabled does not use browser
-    local output
-    output=$(kreuzcrawl scrape "${MOCK_SERVER_BROWSER_CONFIG_AUTO_NO_FEATURE:-${MOCK_SERVER_URL}/fixtures/browser_config_auto_no_feature}" --config '{"browser":{"mode":"auto"}}' --format json --browser-mode never)
+  # Browser mode 'auto' without browser feature enabled does not use browser
+  local output
+  output=$(kreuzcrawl scrape "${MOCK_SERVER_BROWSER_CONFIG_AUTO_NO_FEATURE:-${MOCK_SERVER_URL}/fixtures/browser_config_auto_no_feature}" --config '{"browser":{"mode":"auto"}}' --format json --browser-mode never)
 
-    local val_status_code
-    val_status_code=$(echo "$output" | jq -r '.status_code')
-    assert_equals "$val_status_code" '200' 'status_code'
-    # skipped: field 'browser.js_render_hint' not available on result type
-    # skipped: field 'browser.browser_used' not available on result type
+  local val_status_code
+  val_status_code=$(echo "$output" | jq -r '.status_code')
+  assert_equals "$val_status_code" '200' 'status_code'
+  # skipped: field 'browser.js_render_hint' not available on result type
+  # skipped: field 'browser.browser_used' not available on result type
 }
 
 test_browser_config_never_mode() {
-    # Browser mode 'never' prevents browser fallback even for SPA shell content
-    local output
-    output=$(kreuzcrawl scrape "${MOCK_SERVER_BROWSER_CONFIG_NEVER_MODE:-${MOCK_SERVER_URL}/fixtures/browser_config_never_mode}" --config '{"browser":{"mode":"never"}}' --format json --browser-mode never)
+  # Browser mode 'never' prevents browser fallback even for SPA shell content
+  local output
+  output=$(kreuzcrawl scrape "${MOCK_SERVER_BROWSER_CONFIG_NEVER_MODE:-${MOCK_SERVER_URL}/fixtures/browser_config_never_mode}" --config '{"browser":{"mode":"never"}}' --format json --browser-mode never)
 
-    local val_status_code
-    val_status_code=$(echo "$output" | jq -r '.status_code')
-    assert_equals "$val_status_code" '200' 'status_code'
-    # skipped: field 'browser.js_render_hint' not available on result type
-    # skipped: field 'browser.browser_used' not available on result type
+  local val_status_code
+  val_status_code=$(echo "$output" | jq -r '.status_code')
+  assert_equals "$val_status_code" '200' 'status_code'
+  # skipped: field 'browser.js_render_hint' not available on result type
+  # skipped: field 'browser.browser_used' not available on result type
 }
 
 test_browser_crawl_mode_always() {
-    # Crawl with browser mode 'always' follows links using browser rendering
-    kreuzcrawl scrape "${MOCK_SERVER_BROWSER_CRAWL_MODE_ALWAYS:-${MOCK_SERVER_URL}/fixtures/browser_crawl_mode_always}" --config '{"browser":{"mode":"always"},"max_depth":1,"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
+  # Crawl with browser mode 'always' follows links using browser rendering
+  kreuzcrawl scrape "${MOCK_SERVER_BROWSER_CRAWL_MODE_ALWAYS:-${MOCK_SERVER_URL}/fixtures/browser_crawl_mode_always}" --config '{"browser":{"mode":"always"},"max_depth":1,"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
 
-    # skipped: field 'pages.length' not available on result type
-    # skipped: field 'browser.browser_used' not available on result type
+  # skipped: field 'pages.length' not available on result type
+  # skipped: field 'browser.browser_used' not available on result type
 }
 
 test_browser_crawl_waf_fallback() {
-    # Crawl with browser mode 'auto' falls back to browser when encountering WAF 403
-    kreuzcrawl scrape "${MOCK_SERVER_BROWSER_CRAWL_WAF_FALLBACK:-${MOCK_SERVER_URL}/fixtures/browser_crawl_waf_fallback}" --config '{"browser":{"mode":"auto"},"max_depth":1,"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
+  # Crawl with browser mode 'auto' falls back to browser when encountering WAF 403
+  kreuzcrawl scrape "${MOCK_SERVER_BROWSER_CRAWL_WAF_FALLBACK:-${MOCK_SERVER_URL}/fixtures/browser_crawl_waf_fallback}" --config '{"browser":{"mode":"auto"},"max_depth":1,"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
 
-    # skipped: field 'pages.length' not available on result type
+  # skipped: field 'pages.length' not available on result type
 }
 
 test_browser_detect_minimal_page() {
-    # Does NOT flag a short but real content page as needing JS rendering
-    local output
-    output=$(kreuzcrawl scrape "${MOCK_SERVER_BROWSER_DETECT_MINIMAL_PAGE:-${MOCK_SERVER_URL}/fixtures/browser_detect_minimal_page}" --config '{}' --format json --browser-mode never)
+  # Does NOT flag a short but real content page as needing JS rendering
+  local output
+  output=$(kreuzcrawl scrape "${MOCK_SERVER_BROWSER_DETECT_MINIMAL_PAGE:-${MOCK_SERVER_URL}/fixtures/browser_detect_minimal_page}" --config '{}' --format json --browser-mode never)
 
-    local val_status_code
-    val_status_code=$(echo "$output" | jq -r '.status_code')
-    assert_equals "$val_status_code" '200' 'status_code'
-    # skipped: field 'browser.js_render_hint' not available on result type
-    # skipped: field 'browser.browser_used' not available on result type
+  local val_status_code
+  val_status_code=$(echo "$output" | jq -r '.status_code')
+  assert_equals "$val_status_code" '200' 'status_code'
+  # skipped: field 'browser.js_render_hint' not available on result type
+  # skipped: field 'browser.browser_used' not available on result type
 }
 
 test_browser_detect_next_empty() {
-    # Detects Next.js page with __NEXT_DATA__ but no rendered content as needing JS rendering
-    local output
-    output=$(kreuzcrawl scrape "${MOCK_SERVER_BROWSER_DETECT_NEXT_EMPTY:-${MOCK_SERVER_URL}/fixtures/browser_detect_next_empty}" --config '{}' --format json --browser-mode never)
+  # Detects Next.js page with __NEXT_DATA__ but no rendered content as needing JS rendering
+  local output
+  output=$(kreuzcrawl scrape "${MOCK_SERVER_BROWSER_DETECT_NEXT_EMPTY:-${MOCK_SERVER_URL}/fixtures/browser_detect_next_empty}" --config '{}' --format json --browser-mode never)
 
-    local val_status_code
-    val_status_code=$(echo "$output" | jq -r '.status_code')
-    assert_equals "$val_status_code" '200' 'status_code'
-    # skipped: field 'browser.js_render_hint' not available on result type
-    # skipped: field 'browser.browser_used' not available on result type
+  local val_status_code
+  val_status_code=$(echo "$output" | jq -r '.status_code')
+  assert_equals "$val_status_code" '200' 'status_code'
+  # skipped: field 'browser.js_render_hint' not available on result type
+  # skipped: field 'browser.browser_used' not available on result type
 }
 
 test_browser_detect_next_rendered() {
-    # Does NOT flag Next.js page with full SSR content as needing JS rendering
-    local output
-    output=$(kreuzcrawl scrape "${MOCK_SERVER_BROWSER_DETECT_NEXT_RENDERED:-${MOCK_SERVER_URL}/fixtures/browser_detect_next_rendered}" --config '{}' --format json --browser-mode never)
+  # Does NOT flag Next.js page with full SSR content as needing JS rendering
+  local output
+  output=$(kreuzcrawl scrape "${MOCK_SERVER_BROWSER_DETECT_NEXT_RENDERED:-${MOCK_SERVER_URL}/fixtures/browser_detect_next_rendered}" --config '{}' --format json --browser-mode never)
 
-    local val_status_code
-    val_status_code=$(echo "$output" | jq -r '.status_code')
-    assert_equals "$val_status_code" '200' 'status_code'
-    # skipped: field 'html_not_empty' not available on result type
-    # skipped: field 'browser.js_render_hint' not available on result type
-    # skipped: field 'browser.browser_used' not available on result type
+  local val_status_code
+  val_status_code=$(echo "$output" | jq -r '.status_code')
+  assert_equals "$val_status_code" '200' 'status_code'
+  # skipped: field 'html_not_empty' not available on result type
+  # skipped: field 'browser.js_render_hint' not available on result type
+  # skipped: field 'browser.browser_used' not available on result type
 }
 
 test_browser_detect_normal_page() {
-    # Does NOT flag a normal server-rendered page as needing JS rendering
-    local output
-    output=$(kreuzcrawl scrape "${MOCK_SERVER_BROWSER_DETECT_NORMAL_PAGE:-${MOCK_SERVER_URL}/fixtures/browser_detect_normal_page}" --config '{}' --format json --browser-mode never)
+  # Does NOT flag a normal server-rendered page as needing JS rendering
+  local output
+  output=$(kreuzcrawl scrape "${MOCK_SERVER_BROWSER_DETECT_NORMAL_PAGE:-${MOCK_SERVER_URL}/fixtures/browser_detect_normal_page}" --config '{}' --format json --browser-mode never)
 
-    local val_status_code
-    val_status_code=$(echo "$output" | jq -r '.status_code')
-    assert_equals "$val_status_code" '200' 'status_code'
-    # skipped: field 'browser.js_render_hint' not available on result type
-    # skipped: field 'browser.browser_used' not available on result type
+  local val_status_code
+  val_status_code=$(echo "$output" | jq -r '.status_code')
+  assert_equals "$val_status_code" '200' 'status_code'
+  # skipped: field 'browser.js_render_hint' not available on result type
+  # skipped: field 'browser.browser_used' not available on result type
 }
 
 test_browser_detect_nuxt_shell() {
-    # Detects Nuxt SPA shell with empty #__nuxt div as needing JS rendering
-    local output
-    output=$(kreuzcrawl scrape "${MOCK_SERVER_BROWSER_DETECT_NUXT_SHELL:-${MOCK_SERVER_URL}/fixtures/browser_detect_nuxt_shell}" --config '{}' --format json --browser-mode never)
+  # Detects Nuxt SPA shell with empty #__nuxt div as needing JS rendering
+  local output
+  output=$(kreuzcrawl scrape "${MOCK_SERVER_BROWSER_DETECT_NUXT_SHELL:-${MOCK_SERVER_URL}/fixtures/browser_detect_nuxt_shell}" --config '{}' --format json --browser-mode never)
 
-    local val_status_code
-    val_status_code=$(echo "$output" | jq -r '.status_code')
-    assert_equals "$val_status_code" '200' 'status_code'
-    # skipped: field 'browser.js_render_hint' not available on result type
-    # skipped: field 'browser.browser_used' not available on result type
+  local val_status_code
+  val_status_code=$(echo "$output" | jq -r '.status_code')
+  assert_equals "$val_status_code" '200' 'status_code'
+  # skipped: field 'browser.js_render_hint' not available on result type
+  # skipped: field 'browser.browser_used' not available on result type
 }
 
 test_browser_detect_react_shell() {
-    # Detects React SPA shell with empty #root div as needing JS rendering
-    local output
-    output=$(kreuzcrawl scrape "${MOCK_SERVER_BROWSER_DETECT_REACT_SHELL:-${MOCK_SERVER_URL}/fixtures/browser_detect_react_shell}" --config '{}' --format json --browser-mode never)
+  # Detects React SPA shell with empty #root div as needing JS rendering
+  local output
+  output=$(kreuzcrawl scrape "${MOCK_SERVER_BROWSER_DETECT_REACT_SHELL:-${MOCK_SERVER_URL}/fixtures/browser_detect_react_shell}" --config '{}' --format json --browser-mode never)
 
-    local val_status_code
-    val_status_code=$(echo "$output" | jq -r '.status_code')
-    assert_equals "$val_status_code" '200' 'status_code'
-    # skipped: field 'html_not_empty' not available on result type
-    # skipped: field 'browser.js_render_hint' not available on result type
-    # skipped: field 'browser.browser_used' not available on result type
+  local val_status_code
+  val_status_code=$(echo "$output" | jq -r '.status_code')
+  assert_equals "$val_status_code" '200' 'status_code'
+  # skipped: field 'html_not_empty' not available on result type
+  # skipped: field 'browser.js_render_hint' not available on result type
+  # skipped: field 'browser.browser_used' not available on result type
 }
 
 test_browser_detect_vue_shell() {
-    # Detects Vue SPA shell with empty #app div as needing JS rendering
-    local output
-    output=$(kreuzcrawl scrape "${MOCK_SERVER_BROWSER_DETECT_VUE_SHELL:-${MOCK_SERVER_URL}/fixtures/browser_detect_vue_shell}" --config '{}' --format json --browser-mode never)
+  # Detects Vue SPA shell with empty #app div as needing JS rendering
+  local output
+  output=$(kreuzcrawl scrape "${MOCK_SERVER_BROWSER_DETECT_VUE_SHELL:-${MOCK_SERVER_URL}/fixtures/browser_detect_vue_shell}" --config '{}' --format json --browser-mode never)
 
-    local val_status_code
-    val_status_code=$(echo "$output" | jq -r '.status_code')
-    assert_equals "$val_status_code" '200' 'status_code'
-    # skipped: field 'browser.js_render_hint' not available on result type
-    # skipped: field 'browser.browser_used' not available on result type
+  local val_status_code
+  val_status_code=$(echo "$output" | jq -r '.status_code')
+  assert_equals "$val_status_code" '200' 'status_code'
+  # skipped: field 'browser.js_render_hint' not available on result type
+  # skipped: field 'browser.browser_used' not available on result type
 }
 
 test_browser_extra_wait() {
-    # Browser extra_wait adds additional time after network_idle to ensure all async operations complete
-    kreuzcrawl scrape "${MOCK_SERVER_BROWSER_EXTRA_WAIT:-${MOCK_SERVER_URL}/fixtures/browser_extra_wait}" --config '{"browser":{"extra_wait":200,"mode":"always","wait":"network_idle"}}' --format json --browser-mode never >/dev/null
+  # Browser extra_wait adds additional time after network_idle to ensure all async operations complete
+  kreuzcrawl scrape "${MOCK_SERVER_BROWSER_EXTRA_WAIT:-${MOCK_SERVER_URL}/fixtures/browser_extra_wait}" --config '{"browser":{"extra_wait":200,"mode":"always","wait":"network_idle"}}' --format json --browser-mode never >/dev/null
 
-    # skipped: field 'browser.browser_used' not available on result type
+  # skipped: field 'browser.browser_used' not available on result type
 }
 
 test_browser_fallback_spa_render() {
-    # Browser auto re-fetches SPA shell when JS rendering is detected
-    kreuzcrawl scrape "${MOCK_SERVER_BROWSER_FALLBACK_SPA_RENDER:-${MOCK_SERVER_URL}/fixtures/browser_fallback_spa_render}" --config '{"browser":{"mode":"auto"}}' --format json --browser-mode never >/dev/null
+  # Browser auto re-fetches SPA shell when JS rendering is detected
+  kreuzcrawl scrape "${MOCK_SERVER_BROWSER_FALLBACK_SPA_RENDER:-${MOCK_SERVER_URL}/fixtures/browser_fallback_spa_render}" --config '{"browser":{"mode":"auto"}}' --format json --browser-mode never >/dev/null
 
-    # skipped: field 'browser.js_render_hint' not available on result type
-    # skipped: field 'browser.browser_used' not available on result type
+  # skipped: field 'browser.js_render_hint' not available on result type
+  # skipped: field 'browser.browser_used' not available on result type
 }
 
 test_browser_fallback_waf_blocked() {
-    # Browser fallback triggers when WAF blocks the HTTP request (Cloudflare 403)
-    kreuzcrawl scrape "${MOCK_SERVER_BROWSER_FALLBACK_WAF_BLOCKED:-${MOCK_SERVER_URL}/fixtures/browser_fallback_waf_blocked}" --config '{"browser":{"mode":"auto"}}' --format json --browser-mode never >/dev/null
+  # Browser fallback triggers when WAF blocks the HTTP request (Cloudflare 403)
+  kreuzcrawl scrape "${MOCK_SERVER_BROWSER_FALLBACK_WAF_BLOCKED:-${MOCK_SERVER_URL}/fixtures/browser_fallback_waf_blocked}" --config '{"browser":{"mode":"auto"}}' --format json --browser-mode never >/dev/null
 
-    # skipped: field 'browser.browser_used' not available on result type
+  # skipped: field 'browser.browser_used' not available on result type
 }
 
 test_browser_mode_always() {
-    # Browser mode 'always' uses browser even for normal server-rendered pages
-    kreuzcrawl scrape "${MOCK_SERVER_BROWSER_MODE_ALWAYS:-${MOCK_SERVER_URL}/fixtures/browser_mode_always}" --config '{"browser":{"mode":"always"}}' --format json --browser-mode never >/dev/null
+  # Browser mode 'always' uses browser even for normal server-rendered pages
+  kreuzcrawl scrape "${MOCK_SERVER_BROWSER_MODE_ALWAYS:-${MOCK_SERVER_URL}/fixtures/browser_mode_always}" --config '{"browser":{"mode":"always"}}' --format json --browser-mode never >/dev/null
 
-    # skipped: field 'browser.browser_used' not available on result type
+  # skipped: field 'browser.browser_used' not available on result type
 }
 
 test_browser_profile_basic() {
-    # Browser profile configuration persists and reuses browser state across crawl sessions
-    local output
-    output=$(kreuzcrawl scrape "${MOCK_SERVER_BROWSER_PROFILE_BASIC:-${MOCK_SERVER_URL}/fixtures/browser_profile_basic}" --config '{"browser":{"mode":"always"},"browser_profile":"test-profile"}' --format json --browser-mode never)
+  # Browser profile configuration persists and reuses browser state across crawl sessions
+  local output
+  output=$(kreuzcrawl scrape "${MOCK_SERVER_BROWSER_PROFILE_BASIC:-${MOCK_SERVER_URL}/fixtures/browser_profile_basic}" --config '{"browser":{"mode":"always"},"browser_profile":"test-profile"}' --format json --browser-mode never)
 
-    # skipped: field 'browser.browser_used' not available on result type
-    local val_status_code
-    val_status_code=$(echo "$output" | jq -r '.status_code')
-    assert_equals "$val_status_code" '200' 'status_code'
+  # skipped: field 'browser.browser_used' not available on result type
+  local val_status_code
+  val_status_code=$(echo "$output" | jq -r '.status_code')
+  assert_equals "$val_status_code" '200' 'status_code'
 }
 
 test_browser_wait_fixed() {
-    # Browser wait strategy 'fixed' waits for a specific duration after page navigation
-    local output
-    output=$(kreuzcrawl scrape "${MOCK_SERVER_BROWSER_WAIT_FIXED:-${MOCK_SERVER_URL}/fixtures/browser_wait_fixed}" --config '{"browser":{"extra_wait":100,"mode":"always","wait":"fixed"}}' --format json --browser-mode never)
+  # Browser wait strategy 'fixed' waits for a specific duration after page navigation
+  local output
+  output=$(kreuzcrawl scrape "${MOCK_SERVER_BROWSER_WAIT_FIXED:-${MOCK_SERVER_URL}/fixtures/browser_wait_fixed}" --config '{"browser":{"extra_wait":100,"mode":"always","wait":"fixed"}}' --format json --browser-mode never)
 
-    # skipped: field 'browser.browser_used' not available on result type
-    local val_status_code
-    val_status_code=$(echo "$output" | jq -r '.status_code')
-    assert_equals "$val_status_code" '200' 'status_code'
+  # skipped: field 'browser.browser_used' not available on result type
+  local val_status_code
+  val_status_code=$(echo "$output" | jq -r '.status_code')
+  assert_equals "$val_status_code" '200' 'status_code'
 }
 
 test_browser_wait_selector() {
-    # Browser wait strategy 'selector' waits for specific CSS selector before considering page loaded
-    local output
-    output=$(kreuzcrawl scrape "${MOCK_SERVER_BROWSER_WAIT_SELECTOR:-${MOCK_SERVER_URL}/fixtures/browser_wait_selector}" --config '{"browser":{"mode":"always","wait":"selector","wait_selector":"#content"}}' --format json --browser-mode never)
+  # Browser wait strategy 'selector' waits for specific CSS selector before considering page loaded
+  local output
+  output=$(kreuzcrawl scrape "${MOCK_SERVER_BROWSER_WAIT_SELECTOR:-${MOCK_SERVER_URL}/fixtures/browser_wait_selector}" --config '{"browser":{"mode":"always","wait":"selector","wait_selector":"#content"}}' --format json --browser-mode never)
 
-    # skipped: field 'browser.browser_used' not available on result type
-    local val_status_code
-    val_status_code=$(echo "$output" | jq -r '.status_code')
-    assert_equals "$val_status_code" '200' 'status_code'
+  # skipped: field 'browser.browser_used' not available on result type
+  local val_status_code
+  val_status_code=$(echo "$output" | jq -r '.status_code')
+  assert_equals "$val_status_code" '200' 'status_code'
 }
 
 run_tests_browser() {
-    run_test test_browser_config_auto_no_feature
-    run_test test_browser_config_never_mode
-    run_test test_browser_crawl_mode_always
-    run_test test_browser_crawl_waf_fallback
-    run_test test_browser_detect_minimal_page
-    run_test test_browser_detect_next_empty
-    run_test test_browser_detect_next_rendered
-    run_test test_browser_detect_normal_page
-    run_test test_browser_detect_nuxt_shell
-    run_test test_browser_detect_react_shell
-    run_test test_browser_detect_vue_shell
-    run_test test_browser_extra_wait
-    run_test test_browser_fallback_spa_render
-    run_test test_browser_fallback_waf_blocked
-    run_test test_browser_mode_always
-    run_test test_browser_profile_basic
-    run_test test_browser_wait_fixed
-    run_test test_browser_wait_selector
+  run_test test_browser_config_auto_no_feature
+  run_test test_browser_config_never_mode
+  run_test test_browser_crawl_mode_always
+  run_test test_browser_crawl_waf_fallback
+  run_test test_browser_detect_minimal_page
+  run_test test_browser_detect_next_empty
+  run_test test_browser_detect_next_rendered
+  run_test test_browser_detect_normal_page
+  run_test test_browser_detect_nuxt_shell
+  run_test test_browser_detect_react_shell
+  run_test test_browser_detect_vue_shell
+  run_test test_browser_extra_wait
+  run_test test_browser_fallback_spa_render
+  run_test test_browser_fallback_waf_blocked
+  run_test test_browser_mode_always
+  run_test test_browser_profile_basic
+  run_test test_browser_wait_fixed
+  run_test test_browser_wait_selector
 }

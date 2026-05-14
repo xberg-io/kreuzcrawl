@@ -8,111 +8,111 @@
 set -euo pipefail
 
 test_redirect_301_permanent() {
-    # Follows 301 permanent redirect and returns final page content
-    kreuzcrawl scrape "${MOCK_SERVER_REDIRECT_301_PERMANENT:-${MOCK_SERVER_URL}/fixtures/redirect_301_permanent}" --config '{"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
+  # Follows 301 permanent redirect and returns final page content
+  kreuzcrawl scrape "${MOCK_SERVER_REDIRECT_301_PERMANENT:-${MOCK_SERVER_URL}/fixtures/redirect_301_permanent}" --config '{"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
 
-    # skipped: field 'final_url' not available on result type
-    # skipped: field 'redirect_count' not available on result type
+  # skipped: field 'final_url' not available on result type
+  # skipped: field 'redirect_count' not available on result type
 }
 
 test_redirect_302_found() {
-    # Follows 302 Found redirect correctly
-    kreuzcrawl scrape "${MOCK_SERVER_REDIRECT_302_FOUND:-${MOCK_SERVER_URL}/fixtures/redirect_302_found}" --config '{"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
+  # Follows 302 Found redirect correctly
+  kreuzcrawl scrape "${MOCK_SERVER_REDIRECT_302_FOUND:-${MOCK_SERVER_URL}/fixtures/redirect_302_found}" --config '{"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
 
-    # skipped: field 'final_url' not available on result type
-    # skipped: field 'redirect_count' not available on result type
+  # skipped: field 'final_url' not available on result type
+  # skipped: field 'redirect_count' not available on result type
 }
 
 test_redirect_303_see_other() {
-    # Follows 303 See Other redirect (method changes to GET)
-    kreuzcrawl scrape "${MOCK_SERVER_REDIRECT_303_SEE_OTHER:-${MOCK_SERVER_URL}/fixtures/redirect_303_see_other}" --config '{"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
+  # Follows 303 See Other redirect (method changes to GET)
+  kreuzcrawl scrape "${MOCK_SERVER_REDIRECT_303_SEE_OTHER:-${MOCK_SERVER_URL}/fixtures/redirect_303_see_other}" --config '{"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
 
-    # skipped: field 'final_url' not available on result type
-    # skipped: field 'redirect_count' not available on result type
+  # skipped: field 'final_url' not available on result type
+  # skipped: field 'redirect_count' not available on result type
 }
 
 test_redirect_307_temporary() {
-    # Follows 307 Temporary Redirect (preserves method)
-    kreuzcrawl scrape "${MOCK_SERVER_REDIRECT_307_TEMPORARY:-${MOCK_SERVER_URL}/fixtures/redirect_307_temporary}" --config '{"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
+  # Follows 307 Temporary Redirect (preserves method)
+  kreuzcrawl scrape "${MOCK_SERVER_REDIRECT_307_TEMPORARY:-${MOCK_SERVER_URL}/fixtures/redirect_307_temporary}" --config '{"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
 
-    # skipped: field 'final_url' not available on result type
-    # skipped: field 'redirect_count' not available on result type
+  # skipped: field 'final_url' not available on result type
+  # skipped: field 'redirect_count' not available on result type
 }
 
 test_redirect_308_permanent() {
-    # Follows 308 Permanent Redirect (preserves method)
-    kreuzcrawl scrape "${MOCK_SERVER_REDIRECT_308_PERMANENT:-${MOCK_SERVER_URL}/fixtures/redirect_308_permanent}" --config '{"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
+  # Follows 308 Permanent Redirect (preserves method)
+  kreuzcrawl scrape "${MOCK_SERVER_REDIRECT_308_PERMANENT:-${MOCK_SERVER_URL}/fixtures/redirect_308_permanent}" --config '{"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
 
-    # skipped: field 'final_url' not available on result type
-    # skipped: field 'redirect_count' not available on result type
+  # skipped: field 'final_url' not available on result type
+  # skipped: field 'redirect_count' not available on result type
 }
 
 test_redirect_chain() {
-    # Follows a chain of redirects (301 -> 302 -> 200)
-    kreuzcrawl scrape "${MOCK_SERVER_REDIRECT_CHAIN:-${MOCK_SERVER_URL}/fixtures/redirect_chain}" --config '{"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
+  # Follows a chain of redirects (301 -> 302 -> 200)
+  kreuzcrawl scrape "${MOCK_SERVER_REDIRECT_CHAIN:-${MOCK_SERVER_URL}/fixtures/redirect_chain}" --config '{"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
 
-    # skipped: field 'final_url' not available on result type
-    # skipped: field 'redirect_count' not available on result type
+  # skipped: field 'final_url' not available on result type
+  # skipped: field 'redirect_count' not available on result type
 }
 
 test_redirect_cross_domain() {
-    # Reports cross-domain redirect target without following to external domain
-    kreuzcrawl scrape "${MOCK_SERVER_REDIRECT_CROSS_DOMAIN:-${MOCK_SERVER_URL}/fixtures/redirect_cross_domain}" --config '{"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
+  # Reports cross-domain redirect target without following to external domain
+  kreuzcrawl scrape "${MOCK_SERVER_REDIRECT_CROSS_DOMAIN:-${MOCK_SERVER_URL}/fixtures/redirect_cross_domain}" --config '{"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
 
-    # skipped: field 'final_url' not available on result type
-    # skipped: field 'redirect_count' not available on result type
+  # skipped: field 'final_url' not available on result type
+  # skipped: field 'redirect_count' not available on result type
 }
 
 test_redirect_loop() {
-    # Detects redirect loop (A -> B -> A) and returns error
-    kreuzcrawl scrape "${MOCK_SERVER_REDIRECT_LOOP:-${MOCK_SERVER_URL}/fixtures/redirect_loop}" --config '{"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
+  # Detects redirect loop (A -> B -> A) and returns error
+  kreuzcrawl scrape "${MOCK_SERVER_REDIRECT_LOOP:-${MOCK_SERVER_URL}/fixtures/redirect_loop}" --config '{"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
 
-    # skipped: field 'is_error' not available on result type
+  # skipped: field 'is_error' not available on result type
 }
 
 test_redirect_max_exceeded() {
-    # Aborts when redirect count exceeds max_redirects limit
-    kreuzcrawl scrape "${MOCK_SERVER_REDIRECT_MAX_EXCEEDED:-${MOCK_SERVER_URL}/fixtures/redirect_max_exceeded}" --config '{"max_redirects":2,"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
+  # Aborts when redirect count exceeds max_redirects limit
+  kreuzcrawl scrape "${MOCK_SERVER_REDIRECT_MAX_EXCEEDED:-${MOCK_SERVER_URL}/fixtures/redirect_max_exceeded}" --config '{"max_redirects":2,"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
 
-    # skipped: field 'is_error' not available on result type
+  # skipped: field 'is_error' not available on result type
 }
 
 test_redirect_meta_refresh() {
-    # Follows HTML meta-refresh redirect to target page
-    kreuzcrawl scrape "${MOCK_SERVER_REDIRECT_META_REFRESH:-${MOCK_SERVER_URL}/fixtures/redirect_meta_refresh}" --config '{"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
+  # Follows HTML meta-refresh redirect to target page
+  kreuzcrawl scrape "${MOCK_SERVER_REDIRECT_META_REFRESH:-${MOCK_SERVER_URL}/fixtures/redirect_meta_refresh}" --config '{"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
 
-    # skipped: field 'final_url' not available on result type
-    # skipped: field 'redirect_count' not available on result type
+  # skipped: field 'final_url' not available on result type
+  # skipped: field 'redirect_count' not available on result type
 }
 
 test_redirect_refresh_header() {
-    # Handles HTTP Refresh header redirect
-    kreuzcrawl scrape "${MOCK_SERVER_REDIRECT_REFRESH_HEADER:-${MOCK_SERVER_URL}/fixtures/redirect_refresh_header}" --config '{"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
+  # Handles HTTP Refresh header redirect
+  kreuzcrawl scrape "${MOCK_SERVER_REDIRECT_REFRESH_HEADER:-${MOCK_SERVER_URL}/fixtures/redirect_refresh_header}" --config '{"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
 
-    # skipped: field 'final_url' not available on result type
-    # skipped: field 'redirect_count' not available on result type
+  # skipped: field 'final_url' not available on result type
+  # skipped: field 'redirect_count' not available on result type
 }
 
 test_redirect_to_404() {
-    # Redirect target returns 404 Not Found
-    kreuzcrawl scrape "${MOCK_SERVER_REDIRECT_TO_404:-${MOCK_SERVER_URL}/fixtures/redirect_to_404}" --config '{"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
+  # Redirect target returns 404 Not Found
+  kreuzcrawl scrape "${MOCK_SERVER_REDIRECT_TO_404:-${MOCK_SERVER_URL}/fixtures/redirect_to_404}" --config '{"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
 
-    # skipped: field 'final_url' not available on result type
-    # skipped: field 'redirect_count' not available on result type
-    # skipped: field 'is_error' not available on result type
+  # skipped: field 'final_url' not available on result type
+  # skipped: field 'redirect_count' not available on result type
+  # skipped: field 'is_error' not available on result type
 }
 
 run_tests_redirect() {
-    run_test test_redirect_301_permanent
-    run_test test_redirect_302_found
-    run_test test_redirect_303_see_other
-    run_test test_redirect_307_temporary
-    run_test test_redirect_308_permanent
-    run_test test_redirect_chain
-    run_test test_redirect_cross_domain
-    run_test test_redirect_loop
-    run_test test_redirect_max_exceeded
-    run_test test_redirect_meta_refresh
-    run_test test_redirect_refresh_header
-    run_test test_redirect_to_404
+  run_test test_redirect_301_permanent
+  run_test test_redirect_302_found
+  run_test test_redirect_303_see_other
+  run_test test_redirect_307_temporary
+  run_test test_redirect_308_permanent
+  run_test test_redirect_chain
+  run_test test_redirect_cross_domain
+  run_test test_redirect_loop
+  run_test test_redirect_max_exceeded
+  run_test test_redirect_meta_refresh
+  run_test test_redirect_refresh_header
+  run_test test_redirect_to_404
 }
