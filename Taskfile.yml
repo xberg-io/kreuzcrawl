@@ -31,8 +31,8 @@ includes:
     taskfile: .task/languages/brew.yml
   dart:
     taskfile: .task/languages/dart.yml
-  kotlin:
-    taskfile: .task/languages/kotlin.yml
+  kotlin-android:
+    taskfile: .task/languages/kotlin-android.yml
   swift:
     taskfile: .task/languages/swift.yml
   zig:

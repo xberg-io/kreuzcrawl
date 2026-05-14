@@ -422,7 +422,7 @@ pub enum AssetCategory {
     Other,
 }
 
-// From<kreuzberg::T> conversions for bridge return types.
+// From<SourceT> conversions for bridge return types.
 
 impl From<kreuzcrawl::ExtractionMeta> for ExtractionMeta {
     fn from(v: kreuzcrawl::ExtractionMeta) -> Self {
@@ -941,7 +941,7 @@ impl From<kreuzcrawl::AssetCategory> for AssetCategory {
     }
 }
 
-// From<T> for kreuzberg::T conversions (mirror-to-core direction).
+// From<T> for SourceT conversions (mirror-to-core direction).
 // Used in bridge functions for types with sanitized fields, and by
 // nested conversions within those types.
 

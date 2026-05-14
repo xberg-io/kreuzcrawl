@@ -90,6 +90,13 @@ repos:
         exclude: ^(\.mvn/wrapper/|e2e/|test_apps/|packages/java/src/)
       - id: java-verify
         files: ^packages/java/
+      - id: ktfmt
+        files: ^packages/kotlin-android/.*\.kts?$
+        # packages/kotlin-android/ is alef-emitted. ktfmt's kotlinlang-style
+        # reformat must match alef's emitted shape; if alef ever diverges,
+        # alef-verify will flag the hash drift here.
+      - id: detekt
+        files: ^packages/kotlin-android/.*\.kts?$
       - id: mypy
         exclude: "e2e/|tests/|scripts/|^packages/r/"
       - id: go-fmt

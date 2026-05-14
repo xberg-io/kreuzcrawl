@@ -1,5 +1,5 @@
 [workspace]
-alef_version = "0.15.71"
+alef_version = "0.16.0"
 languages = [
   "python",
   "node",
@@ -12,7 +12,7 @@ languages = [
   "elixir",
   "wasm",
   "dart",
-  "kotlin",
+  "kotlin_android",
   "swift",
   "zig",
 ]
@@ -38,7 +38,7 @@ go = "struct"
 java = "record"
 csharp = "record"
 dart = "dataclass"
-kotlin = "data-class"
+kotlin_android = "data-class"
 
 # Java is formatted by Spotless (Eclipse 4.31) via maven verify in prek's
 # `java-verify` hook. alef's default `google-java-format` produces different
@@ -128,9 +128,12 @@ pubspec_name = "kreuzcrawl"
 lib_name = "kreuzcrawl"
 style = "frb"
 
-[crates.kotlin]
-package = "dev.kreuzberg.kreuzcrawl"
-target = "jvm"
+[crates.kotlin_android]
+# Android library (AAR) only — Kotlin/JVM users consume the canonical Java
+# package directly (Kotlin/Java interop is total). Panama FFM is unavailable
+# on Android (max JDK 17), which is why Android needs its own JNI-based
+# package with bundled .so files.
+package = "dev.kreuzberg.kreuzcrawl.android"
 
 [crates.swift]
 module_name = "Kreuzcrawl"
@@ -151,7 +154,7 @@ java = "packages/java/src/main/java/"
 elixir = "packages/elixir/native/kreuzcrawl_nif/src/"
 wasm = "crates/kreuzcrawl-wasm/src/"
 dart = "packages/dart/lib/src/"
-kotlin = "packages/kotlin/src/main/kotlin/dev/kreuzberg/kreuzcrawl/"
+kotlin_android = "packages/kotlin-android/src/main/kotlin/dev/kreuzberg/kreuzcrawl/android/"
 swift = "packages/swift/Sources/Kreuzcrawl/"
 zig = "packages/zig/src/"
 
@@ -256,10 +259,10 @@ precondition = "command -v dart >/dev/null 2>&1"
 format = "cd packages/dart && dart format ."
 check = "cd packages/dart && dart analyze"
 
-[crates.lint.kotlin]
+[crates.lint.kotlin_android]
 precondition = "command -v gradle >/dev/null 2>&1"
-format = "cd packages/kotlin && gradle ktlintFormat --no-daemon"
-check = "cd packages/kotlin && gradle ktlintCheck --no-daemon"
+format = "cd packages/kotlin-android && gradle ktlintFormat --no-daemon"
+check = "cd packages/kotlin-android && gradle ktlintCheck --no-daemon"
 
 [crates.lint.swift]
 precondition = "command -v swift >/dev/null 2>&1"
@@ -319,11 +322,12 @@ e2e = "cd e2e/rust && cargo test"
 precondition = "command -v make >/dev/null 2>&1"
 e2e = "cd e2e/c && make clean && make && DYLD_LIBRARY_PATH=../../target/release ./test_runner"
 
-[crates.test.kotlin]
+[crates.test.kotlin_android]
+# Android-only AAR — no JVM JAR to run `gradle test` against. E2E excluded
+# because Android tests require an emulator runner (out of scope until a
+# kreuzberg-dev/actions/setup-android-emulator action exists).
 precondition = "command -v gradle >/dev/null 2>&1"
 before = "cargo build --release -p kreuzcrawl-ffi"
-command = "cd packages/kotlin && gradle test --no-daemon"
-e2e = "cd e2e/kotlin && gradle test --no-daemon"
 
 [crates.test.swift]
 precondition = "command -v swift >/dev/null 2>&1"
@@ -593,9 +597,6 @@ c_engine_factory = "CrawlConfig"
 module = "kreuzcrawl"
 function = "scrape"
 
-[crates.e2e.call.overrides.kotlin]
-class = "dev.kreuzberg.kreuzcrawl.Kreuzcrawl"
-
 [crates.e2e.call.overrides.swift]
 module = "Kreuzcrawl"
 function = "scrape"
@@ -658,10 +659,6 @@ function = "batchScrape"
 [crates.e2e.calls.batch_scrape.overrides.dart]
 function = "batchScrape"
 module = "kreuzcrawl"
-
-[crates.e2e.calls.batch_scrape.overrides.kotlin]
-class = "dev.kreuzberg.kreuzcrawl.Kreuzcrawl"
-function = "batchScrape"
 
 # batch_scrape returns char* (JSON string) in C; caller frees with kcrawl_free_string.
 # c_engine_factory is inherited from the default call override but must be explicit here
@@ -771,10 +768,6 @@ path = "../../packages/go"
 [crates.e2e.packages.dart]
 name = "kreuzcrawl"
 path = "../../packages/dart"
-
-[crates.e2e.packages.kotlin]
-name = "dev.kreuzberg.kreuzcrawl:kreuzcrawl-kotlin"
-path = "../../packages/kotlin"
 
 [crates.e2e.packages.zig]
 path = "../../packages/zig"
@@ -1009,21 +1002,22 @@ Built with flutter_rust_bridge for isolate-safe Future APIs and Flutter-native t
 [crates.readme.languages.dart.snippets]
 basic_usage = "getting-started/basic_usage.md"
 
-[crates.readme.languages.kotlin]
-name = "Kotlin"
+[crates.readme.languages.kotlin_android]
+name = "Kotlin (Android)"
 template = "language_package.md"
-output_path = "packages/kotlin/README.md"
+output_path = "packages/kotlin-android/README.md"
 package_manager = ["gradle", "maven"]
-package_name = "dev.kreuzberg.kreuzcrawl:kreuzcrawl-kotlin"
+package_name = "dev.kreuzberg.kreuzcrawl:kreuzcrawl-android"
 install_command = """
-implementation("dev.kreuzberg.kreuzcrawl:kreuzcrawl-kotlin:{{ version }}")
+implementation("dev.kreuzberg.kreuzcrawl:kreuzcrawl-android:{{ version }}")
 """
 description = """
-Kotlin/JVM bindings for **kreuzcrawl** — a high-performance Rust web crawling engine.
-Idiomatic Kotlin wrapper over the Java Panama FFM facade, with data classes and coroutines.
+Android (AAR) bindings for **kreuzcrawl** — a high-performance Rust web crawling engine.
+JNI-based with bundled per-ABI native libraries and a coroutine-friendly Kotlin facade.
+JVM consumers should use the canonical `dev.kreuzberg.kreuzcrawl:kreuzcrawl-java` artifact directly.
 """
 
-[crates.readme.languages.kotlin.snippets]
+[crates.readme.languages.kotlin_android.snippets]
 basic_usage = "getting-started/basic_usage.md"
 
 [crates.readme.languages.swift]

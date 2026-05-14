@@ -1,0 +1,75 @@
+version: "3"
+
+includes:
+  _cfg:
+    taskfile: ../config/vars.yml
+    internal: true
+  _platforms:
+    taskfile: ../config/platforms.yml
+    internal: true
+
+tasks:
+  install:
+    desc: Resolve kotlin-android gradle dependencies
+    dir: packages/kotlin-android
+    cmds:
+      - gradle dependencies --no-daemon
+
+  setup:
+    desc: Setup kotlin-android (alias for install)
+    cmds:
+      - task: install
+
+  build:
+    desc: Build kotlin-android AAR (uses {{.BUILD_PROFILE}})
+    cmds:
+      - task: build:{{.BUILD_PROFILE | default "release"}}
+
+  build:dev:
+    desc: Build kotlin-android AAR in debug mode
+    dir: packages/kotlin-android
+    cmds:
+      - gradle assembleDebug --no-daemon
+
+  build:release:
+    desc: Build kotlin-android AAR in release mode
+    dir: packages/kotlin-android
+    cmds:
+      - gradle assembleRelease --no-daemon
+
+  build:ci:
+    desc: Build kotlin-android AAR in CI mode
+    dir: packages/kotlin-android
+    cmds:
+      - gradle assembleRelease --no-daemon
+
+  lint:
+    desc: Run ktlint with autocorrect
+    dir: packages/kotlin-android
+    cmds:
+      - gradle ktlintFormat --no-daemon
+
+  lint:check:
+    desc: Run ktlint in check-only mode
+    dir: packages/kotlin-android
+    cmds:
+      - gradle ktlintCheck --no-daemon
+
+  format:
+    desc: Run ktlint format (alias for lint)
+    cmds:
+      - task: lint
+
+  format:check:
+    desc: Run ktlint check (alias for lint:check)
+    cmds:
+      - task: lint:check
+
+  clean:
+    desc: Clean kotlin-android build artefacts
+    dir: packages/kotlin-android
+    cmds:
+      - cmd: gradle clean --no-daemon
+        ignore_error: true
+      - cmd: rm -rf build .gradle
+        platforms: [linux, darwin]

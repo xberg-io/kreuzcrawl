@@ -161,11 +161,6 @@ jobs:
             # packages/dart/pubspec depends on lints>=6.0.0 which requires Dart >=3.8.0
             dart-version: "3.11.6"
             test-cmd: "task dart:e2e:test"
-          - lang: kotlin
-            # Kotlin Gradle Plugin 2.3.21 doesn't grok class-file major version 69
-            # (Java 25). Pin to Java 21 LTS for kotlin matrix entry only.
-            java-version: "21"
-            test-cmd: "task kotlin:e2e:test"
           - lang: swift
             swift-version: "6.0"
             test-cmd: "task swift:e2e:test"
@@ -292,10 +287,6 @@ jobs:
         with:
           version: ${{ matrix.zig-version }}
 
-      - name: Setup Gradle
-        if: matrix.lang == 'kotlin'
-        uses: kreuzberg-dev/actions/setup-gradle@v1
-
       - name: Setup wasm-pack
         if: matrix.lang == 'wasm'
         uses: kreuzberg-dev/actions/setup-wasm-pack@v1
@@ -308,8 +299,8 @@ jobs:
         if: |
           matrix.lang == 'go' || matrix.lang == 'java' ||
           matrix.lang == 'csharp' || matrix.lang == 'elixir' ||
-          matrix.lang == 'c' || matrix.lang == 'kotlin' ||
-          matrix.lang == 'swift' || matrix.lang == 'zig'
+          matrix.lang == 'c' || matrix.lang == 'swift' ||
+          matrix.lang == 'zig'
         shell: bash
         run: |
           export PKG_CONFIG_PATH="${PWD}/crates/kreuzcrawl-ffi:${PKG_CONFIG_PATH}"
@@ -332,9 +323,9 @@ jobs:
       - name: Build language binding
         if: |
           matrix.lang == 'node' || matrix.lang == 'java' ||
-          matrix.lang == 'kotlin' || matrix.lang == 'wasm' ||
-          matrix.lang == 'php' || matrix.lang == 'csharp' ||
-          matrix.lang == 'dart' || matrix.lang == 'swift'
+          matrix.lang == 'wasm' || matrix.lang == 'php' ||
+          matrix.lang == 'csharp' || matrix.lang == 'dart' ||
+          matrix.lang == 'swift'
         shell: bash
         run: task ${{ matrix.lang }}:build:dev
 

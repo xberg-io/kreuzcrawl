@@ -16,7 +16,7 @@ Returns an error if the configuration is invalid.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin backend signature generation
+// Phase 1: kotlin_android backend signature generation
 ```
 
 **Parameters:**
@@ -37,7 +37,7 @@ Scrape a single URL, returning extracted page data.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin backend signature generation
+// Phase 1: kotlin_android backend signature generation
 ```
 
 **Parameters:**
@@ -59,7 +59,7 @@ Crawl a website starting from `url`, following links up to the configured depth.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin backend signature generation
+// Phase 1: kotlin_android backend signature generation
 ```
 
 **Parameters:**
@@ -81,7 +81,7 @@ Discover all pages on a website by following links and sitemaps.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin backend signature generation
+// Phase 1: kotlin_android backend signature generation
 ```
 
 **Parameters:**
@@ -103,7 +103,7 @@ Scrape multiple URLs concurrently.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin backend signature generation
+// Phase 1: kotlin_android backend signature generation
 ```
 
 **Parameters:**
@@ -125,7 +125,7 @@ Crawl multiple seed URLs concurrently, each following links to configured depth.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin backend signature generation
+// Phase 1: kotlin_android backend signature generation
 ```
 
 **Parameters:**
@@ -200,7 +200,7 @@ Browser fallback configuration.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin backend method signature generation
+// Phase 1: kotlin_android backend method signature generation
 ```
 
 ---
@@ -256,7 +256,7 @@ html-to-markdown-rs as the conversion engine for all formats
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin backend method signature generation
+// Phase 1: kotlin_android backend method signature generation
 ```
 
 ---
@@ -324,7 +324,7 @@ Configuration for crawl, scrape, and map operations.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin backend method signature generation
+// Phase 1: kotlin_android backend method signature generation
 ```
 
 ###### validate()
@@ -334,7 +334,7 @@ Validate the configuration, returning an error if any values are invalid.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin backend method signature generation
+// Phase 1: kotlin_android backend method signature generation
 ```
 
 ---
@@ -400,7 +400,7 @@ Returns the count of unique normalized URLs encountered during crawling.
 **Signature:**
 
 ```kotlin
-// Phase 1: kotlin backend method signature generation
+// Phase 1: kotlin_android backend method signature generation
 ```
 
 ---
