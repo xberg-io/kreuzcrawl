@@ -117,6 +117,12 @@ repos:
         files: ^packages/csharp/.*\.cs$
       - id: php-cs-fixer
         files: ^packages/php/.*\.php$
+        # packages/php/src/ is entirely alef-generated. cs-fixer's PSR-12 rules
+        # add blank lines around <?php/declare/namespace that alef's emitter
+        # doesn't produce; touching them invalidates the alef:hash header and
+        # makes alef-verify fail every commit. Until alef emits PSR-12-shaped
+        # PHP, skip the alef-owned src/ dir here.
+        exclude: ^packages/php/src/
       - id: phpstan
         # stubs/ deliberately excluded — alef-generated kreuzcrawl_extension.php has
         # constructor-promoted readonly fields phpstan flags as 'unused', which only
