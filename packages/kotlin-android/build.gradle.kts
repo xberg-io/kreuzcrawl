@@ -54,11 +54,6 @@ dependencies {
     // Generated Kotlin facade uses suspend functions and Flow wrappers, both of
     // which require kotlinx-coroutines-android (transitively pulls -core).
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
-    // alef-generated Java DTOs use Jackson + JSpecify annotations — match
-    // canonical Java package (packages/java/pom.xml).
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.21.3")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.21.3")
-    implementation("org.jspecify:jspecify:1.0.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.3.0")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
