@@ -2,5 +2,10 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/** Result of citation conversion. */
-data class CitationResult(val content: String, val references: List<CitationReference>)
+/**
+ * Result of citation conversion.
+ */
+data class CitationResult(
+    val content: String,
+    val references: List<CitationReference>,
+)

@@ -5,8 +5,9 @@ package dev.kreuzberg.kreuzcrawl.android
 /**
  * Content extraction and conversion configuration.
  *
- * Controls how HTML is converted to the output format. Uses html-to-markdown-rs as the conversion
- * engine for all formats (markdown, plain text, djot).
+ * Controls how HTML is converted to the output format. Uses
+ * html-to-markdown-rs as the conversion engine for all formats
+ * (markdown, plain text, djot).
  */
 data class ContentConfig(
     val outputFormat: String,

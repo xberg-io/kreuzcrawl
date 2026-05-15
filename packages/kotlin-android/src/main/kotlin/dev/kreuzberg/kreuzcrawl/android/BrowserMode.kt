@@ -2,7 +2,9 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/** When to use the headless browser fallback. */
+/**
+ * When to use the headless browser fallback.
+ */
 enum class BrowserMode {
     AUTO,
     ALWAYS,

@@ -2,7 +2,9 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/** The result of crawling a single page during a crawl operation. */
+/**
+ * The result of crawling a single page during a crawl operation.
+ */
 data class CrawlPageResult(
     val url: String,
     val normalizedUrl: String,

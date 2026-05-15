@@ -2,7 +2,9 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/** A URL entry from a sitemap. */
+/**
+ * A URL entry from a sitemap.
+ */
 data class SitemapUrl(
     val url: String,
     val lastmod: String?,

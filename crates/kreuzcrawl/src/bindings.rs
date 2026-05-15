@@ -19,41 +19,6 @@ pub struct CrawlEngineHandle {
     inner: CrawlEngine,
 }
 
-/// Serialize the handle as `{"handle": <ptr>}` for JNI marshalling.
-///
-/// The pointer is the address of `self`; the receiver must keep the handle
-/// alive (e.g. via `Box::leak`) for the duration of any cross-FFI use.
-impl Serialize for CrawlEngineHandle {
-    fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
-        use serde::ser::SerializeStruct;
-        let ptr = self as *const Self as u64;
-        let mut state = serializer.serialize_struct("CrawlEngineHandle", 1)?;
-        state.serialize_field("handle", &ptr)?;
-        state.end()
-    }
-}
-
-/// Deserialize the handle from `{"handle": <ptr>}` by dereferencing the
-/// pointer and cloning. Used by the alef-generated JNI bridge.
-///
-/// # Safety
-///
-/// The pointer must reference a live `CrawlEngineHandle` (typically the box
-/// leaked by the JNI `nativeCreateEngine` shim). The Kotlin `AutoCloseable.close()`
-/// contract guarantees this lifetime.
-impl<'de> Deserialize<'de> for CrawlEngineHandle {
-    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-        #[derive(Deserialize)]
-        struct Handle {
-            handle: u64,
-        }
-        let h = Handle::deserialize(deserializer)?;
-        // SAFETY: see type-level docs — pointer kept alive by the FFI caller.
-        let engine = unsafe { &*(h.handle as *const Self) };
-        Ok(engine.clone())
-    }
-}
-
 /// Result from a single URL in a batch scrape operation.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct BatchScrapeResult {

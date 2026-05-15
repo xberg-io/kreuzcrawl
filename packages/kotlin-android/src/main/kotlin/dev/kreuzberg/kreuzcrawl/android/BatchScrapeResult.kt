@@ -2,5 +2,11 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/** Result from a single URL in a batch scrape operation. */
-data class BatchScrapeResult(val url: String, val result: ScrapeResult?, val error: String?)
+/**
+ * Result from a single URL in a batch scrape operation.
+ */
+data class BatchScrapeResult(
+    val url: String,
+    val result: ScrapeResult?,
+    val error: String?,
+)

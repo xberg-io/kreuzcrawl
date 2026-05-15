@@ -2,11 +2,21 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/** Authentication configuration. */
+/**
+ * Authentication configuration.
+ */
 sealed class AuthConfig {
-    data class Basic(val username: String, val password: String) : AuthConfig()
+    data class Basic(
+        val username: String,
+        val password: String,
+    ) : AuthConfig()
 
-    data class Bearer(val token: String) : AuthConfig()
+    data class Bearer(
+        val token: String,
+    ) : AuthConfig()
 
-    data class Header(val name: String, val value: String) : AuthConfig()
+    data class Header(
+        val name: String,
+        val value: String,
+    ) : AuthConfig()
 }

@@ -2,7 +2,9 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/** The result of a multi-page crawl operation. */
+/**
+ * The result of a multi-page crawl operation.
+ */
 data class CrawlResult(
     val pages: List<CrawlPageResult>,
     val finalUrl: String,

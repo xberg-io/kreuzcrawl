@@ -2,5 +2,11 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/** Proxy configuration for HTTP requests. */
-data class ProxyConfig(val url: String, val username: String?, val password: String?)
+/**
+ * Proxy configuration for HTTP requests.
+ */
+data class ProxyConfig(
+    val url: String,
+    val username: String?,
+    val password: String?,
+)

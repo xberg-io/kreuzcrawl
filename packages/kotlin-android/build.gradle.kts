@@ -24,12 +24,24 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 
-    sourceSets { getByName("main") { jniLibs.srcDirs("src/main/jniLibs") } }
+    sourceSets {
+        getByName("main") {
+            jniLibs.srcDirs("src/main/jniLibs")
+        }
+    }
 
-    publishing { singleVariant("release") { withSourcesJar() } }
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+        }
+    }
 }
 
-kotlin { compilerOptions { jvmTarget.set(JvmTarget.JVM_11) } }
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_11)
+    }
+}
 
 ktlint {
     version.set("1.8.0")
@@ -50,7 +62,9 @@ dependencies {
 publishing {
     publications {
         register<MavenPublication>("release") {
-            afterEvaluate { from(components["release"]) }
+            afterEvaluate {
+                from(components["release"])
+            }
             groupId = "dev.kreuzberg.kreuzcrawl.android"
             artifactId = "kreuzcrawl-android"
             version = "0.0.0"

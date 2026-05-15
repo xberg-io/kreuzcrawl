@@ -2,7 +2,9 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/** A downloaded asset from a page. */
+/**
+ * A downloaded asset from a page.
+ */
 data class DownloadedAsset(
     val url: String,
     val contentHash: String,

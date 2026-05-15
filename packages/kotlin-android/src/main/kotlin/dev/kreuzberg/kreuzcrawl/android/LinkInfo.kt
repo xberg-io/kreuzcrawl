@@ -2,7 +2,9 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/** Information about a link found on a page. */
+/**
+ * Information about a link found on a page.
+ */
 data class LinkInfo(
     val url: String,
     val text: String,

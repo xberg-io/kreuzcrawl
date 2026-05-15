@@ -11,9 +11,7 @@ object Kreuzcrawl {
 
     fun mapUrls(engine: String, url: String): String = KreuzcrawlBridge.nativeMapUrls(engine, url)
 
-    fun batchScrape(engine: String, urls: String): String =
-        KreuzcrawlBridge.nativeBatchScrape(engine, urls)
+    fun batchScrape(engine: String, urls: String): String = KreuzcrawlBridge.nativeBatchScrape(engine, urls)
 
-    fun batchCrawl(engine: String, urls: String): String =
-        KreuzcrawlBridge.nativeBatchCrawl(engine, urls)
+    fun batchCrawl(engine: String, urls: String): String = KreuzcrawlBridge.nativeBatchCrawl(engine, urls)
 }

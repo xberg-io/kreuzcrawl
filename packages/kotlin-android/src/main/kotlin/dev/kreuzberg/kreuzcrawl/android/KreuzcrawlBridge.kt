@@ -7,15 +7,18 @@ object KreuzcrawlBridge {
         System.loadLibrary("kcrawl_jni")
     }
 
-    external fun nativeCreateEngine(config: String): String
+    external fun nativeCreateEngine(config: String): Long
 
-    external fun nativeScrape(engine: String, url: String): String
+    external fun nativeScrape(engine: Long, url: String): String
 
-    external fun nativeCrawl(engine: String, url: String): String
+    external fun nativeCrawl(engine: Long, url: String): String
 
-    external fun nativeMapUrls(engine: String, url: String): String
+    external fun nativeMapUrls(engine: Long, url: String): String
 
-    external fun nativeBatchScrape(engine: String, urls: String): String
+    external fun nativeBatchScrape(engine: Long, urls: String): String
 
-    external fun nativeBatchCrawl(engine: String, urls: String): String
+    external fun nativeBatchCrawl(engine: Long, urls: String): String
+
+    // Destructor external funs for opaque handle types.
+    external fun nativeFreeCrawlEngineHandle(handle: Long)
 }

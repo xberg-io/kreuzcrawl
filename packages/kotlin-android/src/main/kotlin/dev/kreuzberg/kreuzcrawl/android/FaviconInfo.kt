@@ -2,5 +2,12 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/** Information about a favicon or icon link. */
-data class FaviconInfo(val url: String, val rel: String, val sizes: String?, val mimeType: String?)
+/**
+ * Information about a favicon or icon link.
+ */
+data class FaviconInfo(
+    val url: String,
+    val rel: String,
+    val sizes: String?,
+    val mimeType: String?,
+)

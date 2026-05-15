@@ -2,7 +2,9 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/** Metadata about an LLM extraction pass. */
+/**
+ * Metadata about an LLM extraction pass.
+ */
 data class ExtractionMeta(
     val cost: Double?,
     val promptTokens: Long?,

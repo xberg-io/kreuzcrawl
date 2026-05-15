@@ -49,32 +49,28 @@ pub unsafe extern "system" fn Java_dev_kreuzberg_kreuzcrawl_android_KreuzcrawlBr
     mut env: JNIEnv,
     _class: JClass,
     config: JString,
-) -> jstring {
+) -> jlong {
     let config_str = match jstring_to_string(&mut env, config) {
         Ok(s) => s,
         Err(e) => {
             throw_jni_error(&mut env, &format!("{e}"));
-            return std::ptr::null_mut();
+            return 0;
         }
     };
     let config: core_crate::CrawlConfig = match serde_json::from_str(&config_str) {
         Ok(v) => v,
         Err(e) => {
             throw_jni_error(&mut env, &format!("deserialize: {e}"));
-            return std::ptr::null_mut();
+            return 0;
         }
     };
     let result = core_crate::create_engine(Some(config));
     match result {
         Err(e) => {
             throw_jni_error(&mut env, &format!("{e}"));
-            std::ptr::null_mut()
+            0
         }
-        Ok(v) => {
-            let handle_raw = Box::into_raw(Box::new(v)) as jlong;
-            let json = format!("{{\"handle\": {}}}", handle_raw);
-            string_to_jstring(&mut env, &json)
-        }
+        Ok(v) => Box::into_raw(Box::new(v)) as jlong,
     }
 }
 
@@ -82,23 +78,12 @@ pub unsafe extern "system" fn Java_dev_kreuzberg_kreuzcrawl_android_KreuzcrawlBr
 pub unsafe extern "system" fn Java_dev_kreuzberg_kreuzcrawl_android_KreuzcrawlBridge_nativeScrape(
     mut env: JNIEnv,
     _class: JClass,
-    engine: JString,
+    engine: jlong,
     url: JString,
 ) -> jstring {
-    let engine_str = match jstring_to_string(&mut env, engine) {
-        Ok(s) => s,
-        Err(e) => {
-            throw_jni_error(&mut env, &format!("{e}"));
-            return std::ptr::null_mut();
-        }
-    };
-    let engine: core_crate::CrawlEngineHandle = match serde_json::from_str(&engine_str) {
-        Ok(v) => v,
-        Err(e) => {
-            throw_jni_error(&mut env, &format!("deserialize: {e}"));
-            return std::ptr::null_mut();
-        }
-    };
+    // SAFETY: engine was allocated by the matching constructor shim and
+    // remains valid until the destructor shim is called.
+    let engine: &core_crate::CrawlEngineHandle = unsafe { &*(engine as *const core_crate::CrawlEngineHandle) };
     let url = match jstring_to_string(&mut env, url) {
         Ok(s) => s,
         Err(e) => {
@@ -106,16 +91,15 @@ pub unsafe extern "system" fn Java_dev_kreuzberg_kreuzcrawl_android_KreuzcrawlBr
             return std::ptr::null_mut();
         }
     };
-    let result = runtime().block_on(core_crate::scrape(&engine, &url));
+    let result = runtime().block_on(core_crate::scrape(engine, &url));
     match result {
         Err(e) => {
             throw_jni_error(&mut env, &format!("{e}"));
             std::ptr::null_mut()
         }
         Ok(v) => {
-            let handle_raw = Box::into_raw(Box::new(v)) as jlong;
-            let json = format!("{{\"handle\": {}}}", handle_raw);
-            string_to_jstring(&mut env, &json)
+            let s = serde_json::to_string(&v).unwrap_or_default();
+            string_to_jstring(&mut env, &s)
         }
     }
 }
@@ -124,23 +108,12 @@ pub unsafe extern "system" fn Java_dev_kreuzberg_kreuzcrawl_android_KreuzcrawlBr
 pub unsafe extern "system" fn Java_dev_kreuzberg_kreuzcrawl_android_KreuzcrawlBridge_nativeCrawl(
     mut env: JNIEnv,
     _class: JClass,
-    engine: JString,
+    engine: jlong,
     url: JString,
 ) -> jstring {
-    let engine_str = match jstring_to_string(&mut env, engine) {
-        Ok(s) => s,
-        Err(e) => {
-            throw_jni_error(&mut env, &format!("{e}"));
-            return std::ptr::null_mut();
-        }
-    };
-    let engine: core_crate::CrawlEngineHandle = match serde_json::from_str(&engine_str) {
-        Ok(v) => v,
-        Err(e) => {
-            throw_jni_error(&mut env, &format!("deserialize: {e}"));
-            return std::ptr::null_mut();
-        }
-    };
+    // SAFETY: engine was allocated by the matching constructor shim and
+    // remains valid until the destructor shim is called.
+    let engine: &core_crate::CrawlEngineHandle = unsafe { &*(engine as *const core_crate::CrawlEngineHandle) };
     let url = match jstring_to_string(&mut env, url) {
         Ok(s) => s,
         Err(e) => {
@@ -148,16 +121,15 @@ pub unsafe extern "system" fn Java_dev_kreuzberg_kreuzcrawl_android_KreuzcrawlBr
             return std::ptr::null_mut();
         }
     };
-    let result = runtime().block_on(core_crate::crawl(&engine, &url));
+    let result = runtime().block_on(core_crate::crawl(engine, &url));
     match result {
         Err(e) => {
             throw_jni_error(&mut env, &format!("{e}"));
             std::ptr::null_mut()
         }
         Ok(v) => {
-            let handle_raw = Box::into_raw(Box::new(v)) as jlong;
-            let json = format!("{{\"handle\": {}}}", handle_raw);
-            string_to_jstring(&mut env, &json)
+            let s = serde_json::to_string(&v).unwrap_or_default();
+            string_to_jstring(&mut env, &s)
         }
     }
 }
@@ -166,23 +138,12 @@ pub unsafe extern "system" fn Java_dev_kreuzberg_kreuzcrawl_android_KreuzcrawlBr
 pub unsafe extern "system" fn Java_dev_kreuzberg_kreuzcrawl_android_KreuzcrawlBridge_nativeMapUrls(
     mut env: JNIEnv,
     _class: JClass,
-    engine: JString,
+    engine: jlong,
     url: JString,
 ) -> jstring {
-    let engine_str = match jstring_to_string(&mut env, engine) {
-        Ok(s) => s,
-        Err(e) => {
-            throw_jni_error(&mut env, &format!("{e}"));
-            return std::ptr::null_mut();
-        }
-    };
-    let engine: core_crate::CrawlEngineHandle = match serde_json::from_str(&engine_str) {
-        Ok(v) => v,
-        Err(e) => {
-            throw_jni_error(&mut env, &format!("deserialize: {e}"));
-            return std::ptr::null_mut();
-        }
-    };
+    // SAFETY: engine was allocated by the matching constructor shim and
+    // remains valid until the destructor shim is called.
+    let engine: &core_crate::CrawlEngineHandle = unsafe { &*(engine as *const core_crate::CrawlEngineHandle) };
     let url = match jstring_to_string(&mut env, url) {
         Ok(s) => s,
         Err(e) => {
@@ -190,16 +151,15 @@ pub unsafe extern "system" fn Java_dev_kreuzberg_kreuzcrawl_android_KreuzcrawlBr
             return std::ptr::null_mut();
         }
     };
-    let result = runtime().block_on(core_crate::map_urls(&engine, &url));
+    let result = runtime().block_on(core_crate::map_urls(engine, &url));
     match result {
         Err(e) => {
             throw_jni_error(&mut env, &format!("{e}"));
             std::ptr::null_mut()
         }
         Ok(v) => {
-            let handle_raw = Box::into_raw(Box::new(v)) as jlong;
-            let json = format!("{{\"handle\": {}}}", handle_raw);
-            string_to_jstring(&mut env, &json)
+            let s = serde_json::to_string(&v).unwrap_or_default();
+            string_to_jstring(&mut env, &s)
         }
     }
 }
@@ -208,23 +168,12 @@ pub unsafe extern "system" fn Java_dev_kreuzberg_kreuzcrawl_android_KreuzcrawlBr
 pub unsafe extern "system" fn Java_dev_kreuzberg_kreuzcrawl_android_KreuzcrawlBridge_nativeBatchScrape(
     mut env: JNIEnv,
     _class: JClass,
-    engine: JString,
+    engine: jlong,
     urls: JString,
 ) -> jstring {
-    let engine_str = match jstring_to_string(&mut env, engine) {
-        Ok(s) => s,
-        Err(e) => {
-            throw_jni_error(&mut env, &format!("{e}"));
-            return std::ptr::null_mut();
-        }
-    };
-    let engine: core_crate::CrawlEngineHandle = match serde_json::from_str(&engine_str) {
-        Ok(v) => v,
-        Err(e) => {
-            throw_jni_error(&mut env, &format!("deserialize: {e}"));
-            return std::ptr::null_mut();
-        }
-    };
+    // SAFETY: engine was allocated by the matching constructor shim and
+    // remains valid until the destructor shim is called.
+    let engine: &core_crate::CrawlEngineHandle = unsafe { &*(engine as *const core_crate::CrawlEngineHandle) };
     let urls_str = match jstring_to_string(&mut env, urls) {
         Ok(s) => s,
         Err(e) => {
@@ -239,7 +188,7 @@ pub unsafe extern "system" fn Java_dev_kreuzberg_kreuzcrawl_android_KreuzcrawlBr
             return std::ptr::null_mut();
         }
     };
-    let result = runtime().block_on(core_crate::batch_scrape(&engine, urls));
+    let result = runtime().block_on(core_crate::batch_scrape(engine, urls));
     match result {
         Err(e) => {
             throw_jni_error(&mut env, &format!("{e}"));
@@ -256,23 +205,12 @@ pub unsafe extern "system" fn Java_dev_kreuzberg_kreuzcrawl_android_KreuzcrawlBr
 pub unsafe extern "system" fn Java_dev_kreuzberg_kreuzcrawl_android_KreuzcrawlBridge_nativeBatchCrawl(
     mut env: JNIEnv,
     _class: JClass,
-    engine: JString,
+    engine: jlong,
     urls: JString,
 ) -> jstring {
-    let engine_str = match jstring_to_string(&mut env, engine) {
-        Ok(s) => s,
-        Err(e) => {
-            throw_jni_error(&mut env, &format!("{e}"));
-            return std::ptr::null_mut();
-        }
-    };
-    let engine: core_crate::CrawlEngineHandle = match serde_json::from_str(&engine_str) {
-        Ok(v) => v,
-        Err(e) => {
-            throw_jni_error(&mut env, &format!("deserialize: {e}"));
-            return std::ptr::null_mut();
-        }
-    };
+    // SAFETY: engine was allocated by the matching constructor shim and
+    // remains valid until the destructor shim is called.
+    let engine: &core_crate::CrawlEngineHandle = unsafe { &*(engine as *const core_crate::CrawlEngineHandle) };
     let urls_str = match jstring_to_string(&mut env, urls) {
         Ok(s) => s,
         Err(e) => {
@@ -287,7 +225,7 @@ pub unsafe extern "system" fn Java_dev_kreuzberg_kreuzcrawl_android_KreuzcrawlBr
             return std::ptr::null_mut();
         }
     };
-    let result = runtime().block_on(core_crate::batch_crawl(&engine, urls));
+    let result = runtime().block_on(core_crate::batch_crawl(engine, urls));
     match result {
         Err(e) => {
             throw_jni_error(&mut env, &format!("{e}"));
@@ -297,5 +235,21 @@ pub unsafe extern "system" fn Java_dev_kreuzberg_kreuzcrawl_android_KreuzcrawlBr
             let s = serde_json::to_string(&v).unwrap_or_default();
             string_to_jstring(&mut env, &s)
         }
+    }
+}
+
+#[unsafe(no_mangle)]
+pub unsafe extern "system" fn Java_dev_kreuzberg_kreuzcrawl_android_KreuzcrawlBridge_nativeFreeCrawlEngineHandle(
+    _env: JNIEnv,
+    _class: JClass,
+    handle: jlong,
+) {
+    if handle == 0 {
+        return;
+    }
+    // SAFETY: `handle` was allocated by the matching constructor shim and
+    // ownership is transferred back here for drop via Box::from_raw.
+    unsafe {
+        let _ = Box::from_raw(handle as *mut core_crate::CrawlEngineHandle);
     }
 }
