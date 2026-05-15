@@ -378,7 +378,6 @@ languages = [
   "brew",
   "c",
   "dart",
-  "kotlin",
   "swift",
   "zig",
 ]
