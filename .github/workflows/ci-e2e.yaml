@@ -300,11 +300,14 @@ jobs:
           matrix.lang == 'go' || matrix.lang == 'java' ||
           matrix.lang == 'csharp' || matrix.lang == 'elixir' ||
           matrix.lang == 'c' || matrix.lang == 'swift' ||
-          matrix.lang == 'zig'
+          matrix.lang == 'zig' || matrix.lang == 'dart'
         shell: bash
         run: |
           export PKG_CONFIG_PATH="${PWD}/crates/kreuzcrawl-ffi:${PKG_CONFIG_PATH}"
-          export LD_LIBRARY_PATH="${PWD}/target/release:${LD_LIBRARY_PATH}"
+          # Both target/release (release-built FFI/swift/zig/etc.) and
+          # target/debug (dart:build:dev / debug-built bindings) need to be
+          # on the load path; the runner doesn't know which mode each lang built.
+          export LD_LIBRARY_PATH="${PWD}/target/release:${PWD}/target/debug:${LD_LIBRARY_PATH}"
           echo "PKG_CONFIG_PATH=${PKG_CONFIG_PATH}" >> "$GITHUB_ENV"
           echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}" >> "$GITHUB_ENV"
 
