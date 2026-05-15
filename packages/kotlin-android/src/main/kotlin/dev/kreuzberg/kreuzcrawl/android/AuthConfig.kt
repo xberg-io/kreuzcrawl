@@ -5,6 +5,7 @@ package dev.kreuzberg.kreuzcrawl.android
 /**
  * Authentication configuration.
  */
+@com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = AuthConfigDeserializer::class)
 sealed class AuthConfig {
     data class Basic(
         val username: String,
@@ -19,4 +20,27 @@ sealed class AuthConfig {
         val name: String,
         val value: String,
     ) : AuthConfig()
+}
+
+private class AuthConfigDeserializer : com.fasterxml.jackson.databind.deser.std.StdDeserializer<AuthConfig>(AuthConfig::class.java) {
+    override fun deserialize(
+        parser: com.fasterxml.jackson.core.JsonParser,
+        ctx: com.fasterxml.jackson.databind.DeserializationContext,
+    ): AuthConfig {
+        val node = parser.codec.readTree<com.fasterxml.jackson.databind.node.ObjectNode>(parser)
+        return when (node.get("type")?.asText()) {
+            "basic" -> ctx.readTreeAsValue(node, AuthConfig.Basic::class.java)
+
+            "bearer" -> ctx.readTreeAsValue(node, AuthConfig.Bearer::class.java)
+
+            "header" -> ctx.readTreeAsValue(node, AuthConfig.Header::class.java)
+
+            else -> throw com.fasterxml.jackson.databind.exc.InvalidFormatException(
+                parser,
+                "Unknown AuthConfig tag",
+                node.get("type")?.asText(),
+                AuthConfig::class.java,
+            )
+        }
+    }
 }
