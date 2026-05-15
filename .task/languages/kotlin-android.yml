@@ -90,8 +90,8 @@ tasks:
           `sdkmanager "platform-tools" "emulator" "platforms;android-34"
           "system-images;android-34;google_apis;arm64-v8a"`) and export
           ANDROID_HOME before invoking this task.
-      - sh: 'command -v adb >/dev/null'
-        msg: 'adb not on PATH — add $ANDROID_HOME/platform-tools to PATH'
+      - sh: "command -v adb >/dev/null"
+        msg: "adb not on PATH — add $ANDROID_HOME/platform-tools to PATH"
     cmds:
       - adb wait-for-device
       - gradle connectedDebugAndroidTest --no-daemon -Pmock_server_url={{.MOCK_SERVER_URL | default "http://10.0.2.2:8765"}}

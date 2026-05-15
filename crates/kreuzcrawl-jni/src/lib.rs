@@ -8,6 +8,8 @@
 #![allow(clippy::missing_safety_doc)]
 #![allow(unused_imports)]
 #![allow(unused_variables)]
+#![allow(unused_mut)]
+#![allow(dead_code)]
 
 use futures_util::StreamExt;
 use futures_util::stream::BoxStream;
