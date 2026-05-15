@@ -54,6 +54,11 @@ dependencies {
     // Generated Kotlin facade uses suspend functions and Flow wrappers, both of
     // which require kotlinx-coroutines-android (transitively pulls -core).
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
+    // Generated sealed-class DTOs use Jackson @JsonDeserialize for polymorphic
+    // serde-tagged unions; jackson-module-kotlin is required for Kotlin
+    // data-class deserialization (handles nullable, default values, etc.).
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.21.3")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.21.3")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.3.0")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")

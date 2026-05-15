@@ -29,11 +29,11 @@ private class AuthConfigDeserializer : com.fasterxml.jackson.databind.deser.std.
     ): AuthConfig {
         val node = parser.codec.readTree<com.fasterxml.jackson.databind.node.ObjectNode>(parser)
         return when (node.get("type")?.asText()) {
-            "basic" -> ctx.readTreeAsValue(node, AuthConfig.Basic::class.java)
+            "basic" -> ctx.readTreeAsValue<AuthConfig.Basic>(node, AuthConfig.Basic::class.java)
 
-            "bearer" -> ctx.readTreeAsValue(node, AuthConfig.Bearer::class.java)
+            "bearer" -> ctx.readTreeAsValue<AuthConfig.Bearer>(node, AuthConfig.Bearer::class.java)
 
-            "header" -> ctx.readTreeAsValue(node, AuthConfig.Header::class.java)
+            "header" -> ctx.readTreeAsValue<AuthConfig.Header>(node, AuthConfig.Header::class.java)
 
             else -> throw com.fasterxml.jackson.databind.exc.InvalidFormatException(
                 parser,
