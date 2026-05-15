@@ -46,6 +46,11 @@ pub use bindings::{
     scrape,
 };
 pub use citations::{CitationReference, CitationResult};
+pub use defaults::{
+    AdaptiveStrategy, BestFirstStrategy, BfsStrategy, DfsStrategy, InMemoryFrontier, NoopCache, NoopEmitter,
+    NoopFilter, NoopStore, PerDomainThrottle,
+};
+pub use engine::{CrawlEngine, CrawlEngineBuilder};
 pub use error::CrawlError;
 #[cfg(feature = "mcp")]
 pub use mcp::{start_mcp_server, start_mcp_server_with_config};

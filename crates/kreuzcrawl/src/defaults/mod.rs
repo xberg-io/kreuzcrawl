@@ -17,4 +17,4 @@ pub use frontier::InMemoryFrontier;
 pub use rate_limiter::NoopRateLimiter;
 pub use rate_limiter::PerDomainThrottle;
 pub use store::NoopStore;
-pub use strategy::BfsStrategy;
+pub use strategy::{AdaptiveStrategy, BestFirstStrategy, BfsStrategy, DfsStrategy};
