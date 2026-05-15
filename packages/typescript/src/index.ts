@@ -8,7 +8,7 @@ export {
   createEngine,
   mapUrls,
   scrape,
-} from "@kreuzberg/kreuzcrawl";
+} from '@kreuzberg/kreuzcrawl';
 
 export type {
   JsArticleMetadata,
@@ -47,4 +47,4 @@ export type {
   JsResponseMeta,
   JsScrapeResult,
   JsSitemapUrl,
-} from "@kreuzberg/kreuzcrawl";
+} from '@kreuzberg/kreuzcrawl';

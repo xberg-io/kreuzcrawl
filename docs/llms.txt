@@ -38,7 +38,7 @@ Kreuzcrawl is built around a trait-based crawl engine and a Tower middleware sta
 - [TypeScript API](https://docs.kreuzcrawl.kreuzberg.dev/reference/api-typescript/): NAPI-RS bindings for Node.js
 - [Go API](https://docs.kreuzcrawl.kreuzberg.dev/reference/api-go/): cgo bindings over the C FFI surface
 - [Java API](https://docs.kreuzcrawl.kreuzberg.dev/reference/api-java/): Panama FFM bindings
-- [Kotlin (Android) API](https://docs.kreuzcrawl.kreuzberg.dev/reference/api-kotlin/): Android AAR with JNA + bundled JNI .so files
+- [Kotlin (Android) API](https://docs.kreuzcrawl.kreuzberg.dev/reference/api-kotlin-android/): Android AAR with JNA + bundled JNI .so files
 - [C# API](https://docs.kreuzcrawl.kreuzberg.dev/reference/api-csharp/): P/Invoke bindings for .NET
 - [Ruby API](https://docs.kreuzcrawl.kreuzberg.dev/reference/api-ruby/): Magnus bindings
 - [PHP API](https://docs.kreuzcrawl.kreuzberg.dev/reference/api-php/): ext-php-rs bindings
