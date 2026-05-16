@@ -8,5 +8,5 @@ package dev.kreuzberg.kreuzcrawl.android
 enum class FeedType {
     RSS,
     ATOM,
-    JSON_FEED,
+    JSON_FEED;
 }

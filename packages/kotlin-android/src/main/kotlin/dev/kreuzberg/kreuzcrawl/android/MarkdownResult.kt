@@ -11,5 +11,5 @@ data class MarkdownResult(
     val tables: List<String>,
     val warnings: List<String>,
     val citations: CitationResult?,
-    val fitContent: String?,
+    val fitContent: String?
 )

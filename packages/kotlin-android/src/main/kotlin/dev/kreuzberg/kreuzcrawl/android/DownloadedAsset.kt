@@ -11,5 +11,5 @@ data class DownloadedAsset(
     val mimeType: String?,
     val size: Long,
     val assetCategory: AssetCategory,
-    val htmlTag: String?,
+    val htmlTag: String?
 )

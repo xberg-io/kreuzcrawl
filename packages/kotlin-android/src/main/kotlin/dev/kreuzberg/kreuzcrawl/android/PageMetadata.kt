@@ -48,5 +48,5 @@ data class PageMetadata(
     val hreflangs: List<HreflangEntry>?,
     val favicons: List<FaviconInfo>?,
     val headings: List<HeadingInfo>?,
-    val wordCount: Long?,
+    val wordCount: Long?
 )

@@ -21,5 +21,5 @@ data class ContentConfig(
     val maxDepth: Long?,
     val wrap: Boolean,
     val wrapWidth: Long,
-    val includeDocumentStructure: Boolean,
+    val includeDocumentStructure: Boolean
 )

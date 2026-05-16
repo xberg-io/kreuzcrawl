@@ -10,5 +10,5 @@ data class ExtractionMeta(
     val promptTokens: Long?,
     val completionTokens: Long?,
     val model: String?,
-    val chunksProcessed: Long,
+    val chunksProcessed: Long
 )

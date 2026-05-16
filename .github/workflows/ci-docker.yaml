@@ -24,7 +24,7 @@ jobs:
       matrix:
         variant: [full, cli]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.2
 
       - name: Free disk space
         uses: kreuzberg-dev/actions/free-disk-space-linux@v1
@@ -33,7 +33,7 @@ jobs:
         uses: docker/setup-buildx-action@v4
 
       - name: Build Docker image
-        uses: docker/build-push-action@v7
+        uses: docker/build-push-action@v7.1.0
         with:
           context: .
           file: docker/Dockerfile${{ matrix.variant == 'cli' && '.cli' || '' }}

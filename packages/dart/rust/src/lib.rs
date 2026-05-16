@@ -14,600 +14,326 @@ mod frb_generated;
 pub use flutter_rust_bridge::DartFnFuture;
 use flutter_rust_bridge::frb;
 
-/// Metadata about an LLM extraction pass.
 #[frb(mirror(ExtractionMeta))]
 pub struct ExtractionMeta {
-    /// Estimated cost of the LLM call in USD.
     pub cost: Option<f64>,
-    /// Number of prompt (input) tokens consumed.
     pub prompt_tokens: Option<i64>,
-    /// Number of completion (output) tokens generated.
     pub completion_tokens: Option<i64>,
-    /// The model identifier used for extraction.
     pub model: Option<String>,
-    /// Number of content chunks sent to the LLM.
     pub chunks_processed: i64,
 }
 
-/// Proxy configuration for HTTP requests.
 #[frb(mirror(ProxyConfig))]
 pub struct ProxyConfig {
-    /// Proxy URL (e.g. "http://proxy:8080", "socks5://proxy:1080").
     pub url: String,
-    /// Optional username for proxy authentication.
     pub username: Option<String>,
-    /// Optional password for proxy authentication.
     pub password: Option<String>,
 }
 
-/// Content extraction and conversion configuration.
-///
-/// Controls how HTML is converted to the output format. Uses
-/// html-to-markdown-rs as the conversion engine for all formats
-/// (markdown, plain text, djot).
 #[frb(mirror(ContentConfig))]
 pub struct ContentConfig {
-    /// Output format: `"markdown"` (default), `"plain"`, `"djot"`.
     pub output_format: String,
-    /// Preprocessing aggressiveness: `"minimal"`, `"standard"` (default), `"aggressive"`.
-    ///
-    /// - Minimal: only scripts/styles removed.
-    /// - Standard: also removes nav, nav-hinted headers/footers/asides, forms.
-    /// - Aggressive: removes all footers/asides unconditionally.
     pub preprocessing_preset: String,
-    /// Remove navigation elements (nav, breadcrumbs, menus). Default: `true`.
     pub remove_navigation: bool,
-    /// Remove form elements. Default: `true`.
     pub remove_forms: bool,
-    /// HTML tag names to strip (render children only, remove the tag wrapper).
-    /// Default: `["noscript"]`.
     pub strip_tags: Vec<String>,
-    /// HTML tag names to preserve as raw HTML in output.
     pub preserve_tags: Vec<String>,
-    /// CSS selectors for elements to exclude entirely (element + all content).
-    ///
-    /// Unlike `strip_tags` (which removes the wrapper but keeps children),
-    /// excluded elements and all descendants are dropped. Supports CSS selectors:
-    /// `.class`, `#id`, `[attribute]`, compound selectors.
-    ///
-    /// Example: `[".cookie-banner", "#ad-container", "[role='complementary']"]`
     pub exclude_selectors: Vec<String>,
-    /// Skip image elements in output. Default: `false`.
     pub skip_images: bool,
-    /// Max DOM traversal depth. Prevents stack overflow on deeply nested HTML.
     pub max_depth: Option<i64>,
-    /// Enable line wrapping. Default: `false`.
     pub wrap: bool,
-    /// Wrap width when `wrap` is enabled. Default: `80`.
     pub wrap_width: i64,
-    /// Include document structure tree in output. Default: `true`.
     pub include_document_structure: bool,
 }
 
-/// Browser fallback configuration.
 #[frb(mirror(BrowserConfig))]
 pub struct BrowserConfig {
-    /// When to use the headless browser fallback.
     pub mode: BrowserMode,
-    /// CDP WebSocket endpoint for connecting to an external browser instance.
     pub endpoint: Option<String>,
-    /// Timeout for browser page load and rendering (in milliseconds when serialized).
     pub timeout: i64,
-    /// Wait strategy after browser navigation.
     pub wait: BrowserWait,
-    /// CSS selector to wait for when `wait` is `Selector`.
     pub wait_selector: Option<String>,
-    /// Extra time to wait after the wait condition is met.
     pub extra_wait: Option<i64>,
 }
 
-/// Configuration for crawl, scrape, and map operations.
 #[frb(mirror(CrawlConfig))]
 pub struct CrawlConfig {
-    /// Maximum crawl depth (number of link hops from the start URL).
     pub max_depth: Option<i64>,
-    /// Maximum number of pages to crawl.
     pub max_pages: Option<i64>,
-    /// Maximum number of concurrent requests.
     pub max_concurrent: Option<i64>,
-    /// Whether to respect robots.txt directives.
     pub respect_robots_txt: bool,
-    /// When true, HTTP-level error responses (404 NotFound, 403 Forbidden, WAF blocks)
-    /// are surfaced as `ScrapeResult` records with the matching `status_code` rather
-    /// than raised as `CrawlError`. Default `false` preserves the historical
-    /// throw-on-error contract for direct fetches. Independently of this flag,
-    /// 404s reached at the end of a redirect chain are *always* surfaced softly —
-    /// the user opted into redirect-following, so receiving a 404 there is part of
-    /// the normal flow rather than an unexpected error.
     pub soft_http_errors: bool,
-    /// Custom user-agent string.
     pub user_agent: Option<String>,
-    /// Whether to restrict crawling to the same domain.
     pub stay_on_domain: bool,
-    /// Whether to allow subdomains when `stay_on_domain` is true.
     pub allow_subdomains: bool,
-    /// Regex patterns for paths to include during crawling.
     pub include_paths: Vec<String>,
-    /// Regex patterns for paths to exclude during crawling.
     pub exclude_paths: Vec<String>,
-    /// Custom HTTP headers to send with each request.
     pub custom_headers: std::collections::HashMap<String, String>,
-    /// Timeout for individual HTTP requests (in milliseconds when serialized).
     pub request_timeout: i64,
-    /// Per-domain rate limit in milliseconds. When set, enforces a minimum delay
-    /// between requests to the same domain. Defaults to 200ms when `None`.
     pub rate_limit_ms: Option<i64>,
-    /// Maximum number of redirects to follow.
     pub max_redirects: i64,
-    /// Number of retry attempts for failed requests.
     pub retry_count: i64,
-    /// HTTP status codes that should trigger a retry.
     pub retry_codes: Vec<i64>,
-    /// Whether to enable cookie handling.
     pub cookies_enabled: bool,
-    /// Authentication configuration.
     pub auth: Option<AuthConfig>,
-    /// Maximum response body size in bytes.
     pub max_body_size: Option<i64>,
-    /// CSS selectors for tags to remove from HTML before processing.
     pub remove_tags: Vec<String>,
-    /// Content extraction and conversion configuration.
     pub content: ContentConfig,
-    /// Maximum number of URLs to return from a map operation.
     pub map_limit: Option<i64>,
-    /// Search filter for map results (case-insensitive substring match on URLs).
     pub map_search: Option<String>,
-    /// Whether to download assets (CSS, JS, images, etc.) from the page.
     pub download_assets: bool,
-    /// Filter for asset categories to download.
     pub asset_types: Vec<AssetCategory>,
-    /// Maximum size in bytes for individual asset downloads.
     pub max_asset_size: Option<i64>,
-    /// Browser configuration.
     pub browser: BrowserConfig,
-    /// Proxy configuration for HTTP requests.
     pub proxy: Option<ProxyConfig>,
-    /// List of user-agent strings for rotation. If non-empty, overrides `user_agent`.
     pub user_agents: Vec<String>,
-    /// Whether to capture a screenshot when using the browser.
     pub capture_screenshot: bool,
-    /// Whether to download non-HTML documents (PDF, DOCX, images, code, etc.) instead of skipping them.
     pub download_documents: bool,
-    /// Maximum size in bytes for document downloads. Defaults to 50 MB.
     pub document_max_size: Option<i64>,
-    /// Allowlist of MIME types to download. If empty, uses built-in defaults.
     pub document_mime_types: Vec<String>,
-    /// Path to write WARC output. If `None`, WARC output is disabled.
     pub warc_output: Option<String>,
-    /// Named browser profile for persistent sessions (cookies, localStorage).
     pub browser_profile: Option<String>,
-    /// Whether to save changes back to the browser profile on exit.
     pub save_browser_profile: bool,
 }
 
-/// A downloaded non-HTML document (PDF, DOCX, image, code file, etc.).
-///
-/// When the crawler encounters non-HTML content and `download_documents` is
-/// enabled, it downloads the raw bytes and populates this struct instead of
-/// skipping the resource.
 #[frb(mirror(DownloadedDocument))]
 pub struct DownloadedDocument {
-    /// The URL the document was fetched from.
     pub url: String,
-    /// The MIME type from the Content-Type header.
     pub mime_type: String,
-    /// Size of the document in bytes.
     pub size: i64,
-    /// Filename extracted from Content-Disposition or URL path.
     pub filename: Option<String>,
-    /// SHA-256 hex digest of the content.
     pub content_hash: String,
-    /// Selected response headers.
     pub headers: std::collections::HashMap<String, String>,
 }
 
-/// The result of a single-page scrape operation.
 #[frb(mirror(ScrapeResult))]
 pub struct ScrapeResult {
-    /// The HTTP status code of the response.
     pub status_code: i64,
-    /// The Content-Type header value.
     pub content_type: String,
-    /// The HTML body of the response.
     pub html: String,
-    /// The size of the response body in bytes.
     pub body_size: i64,
-    /// Extracted metadata from the page.
     pub metadata: PageMetadata,
-    /// Links found on the page.
     pub links: Vec<LinkInfo>,
-    /// Images found on the page.
     pub images: Vec<ImageInfo>,
-    /// Feed links found on the page.
     pub feeds: Vec<FeedInfo>,
-    /// JSON-LD entries found on the page.
     pub json_ld: Vec<JsonLdEntry>,
-    /// Whether the URL is allowed by robots.txt.
     pub is_allowed: bool,
-    /// The crawl delay from robots.txt, in seconds.
     pub crawl_delay: Option<i64>,
-    /// Whether a noindex directive was detected.
     pub noindex_detected: bool,
-    /// Whether a nofollow directive was detected.
     pub nofollow_detected: bool,
-    /// The X-Robots-Tag header value, if present.
     pub x_robots_tag: Option<String>,
-    /// Whether the content is a PDF.
     pub is_pdf: bool,
-    /// Whether the page was skipped (binary or PDF content).
     pub was_skipped: bool,
-    /// The detected character set encoding.
     pub detected_charset: Option<String>,
-    /// Whether an authentication header was sent with the request.
     pub auth_header_sent: bool,
-    /// Response metadata extracted from HTTP headers.
     pub response_meta: Option<ResponseMeta>,
-    /// Downloaded assets from the page.
     pub assets: Vec<DownloadedAsset>,
-    /// Whether the page content suggests JavaScript rendering is needed.
     pub js_render_hint: bool,
-    /// Whether the browser fallback was used to fetch this page.
     pub browser_used: bool,
-    /// Markdown conversion of the page content.
     pub markdown: Option<MarkdownResult>,
-    /// Structured data extracted by LLM. Populated when extraction is configured.
     pub extracted_data: Option<String>,
-    /// Metadata about the LLM extraction pass (cost, tokens, model).
     pub extraction_meta: Option<ExtractionMeta>,
-    /// Downloaded non-HTML document (PDF, DOCX, image, code, etc.).
     pub downloaded_document: Option<DownloadedDocument>,
 }
 
-/// The result of crawling a single page during a crawl operation.
 #[frb(mirror(CrawlPageResult))]
 pub struct CrawlPageResult {
-    /// The original URL of the page.
     pub url: String,
-    /// The normalized URL of the page.
     pub normalized_url: String,
-    /// The HTTP status code of the response.
     pub status_code: i64,
-    /// The Content-Type header value.
     pub content_type: String,
-    /// The HTML body of the response.
     pub html: String,
-    /// The size of the response body in bytes.
     pub body_size: i64,
-    /// Extracted metadata from the page.
     pub metadata: PageMetadata,
-    /// Links found on the page.
     pub links: Vec<LinkInfo>,
-    /// Images found on the page.
     pub images: Vec<ImageInfo>,
-    /// Feed links found on the page.
     pub feeds: Vec<FeedInfo>,
-    /// JSON-LD entries found on the page.
     pub json_ld: Vec<JsonLdEntry>,
-    /// The depth of this page from the start URL.
     pub depth: i64,
-    /// Whether this page is on the same domain as the start URL.
     pub stayed_on_domain: bool,
-    /// Whether this page was skipped (binary or PDF content).
     pub was_skipped: bool,
-    /// Whether the content is a PDF.
     pub is_pdf: bool,
-    /// The detected character set encoding.
     pub detected_charset: Option<String>,
-    /// Markdown conversion of the page content.
     pub markdown: Option<MarkdownResult>,
-    /// Structured data extracted by LLM. Populated when extraction is configured.
     pub extracted_data: Option<String>,
-    /// Metadata about the LLM extraction pass (cost, tokens, model).
     pub extraction_meta: Option<ExtractionMeta>,
-    /// Downloaded non-HTML document (PDF, DOCX, image, code, etc.).
     pub downloaded_document: Option<DownloadedDocument>,
 }
 
-/// The result of a multi-page crawl operation.
 #[frb(mirror(CrawlResult))]
 pub struct CrawlResult {
-    /// The list of crawled pages.
     pub pages: Vec<CrawlPageResult>,
-    /// The final URL after following redirects.
     pub final_url: String,
-    /// The number of redirects followed.
     pub redirect_count: i64,
-    /// Whether any page was skipped during crawling.
     pub was_skipped: bool,
-    /// An error message, if the crawl encountered an issue.
     pub error: Option<String>,
-    /// Cookies collected during the crawl.
     pub cookies: Vec<CookieInfo>,
-    /// Normalized URLs encountered during crawling (for deduplication counting).
     pub normalized_urls: Vec<String>,
 }
 
-/// A URL entry from a sitemap.
 #[frb(mirror(SitemapUrl))]
 pub struct SitemapUrl {
-    /// The URL.
     pub url: String,
-    /// The last modification date, if present.
     pub lastmod: Option<String>,
-    /// The change frequency, if present.
     pub changefreq: Option<String>,
-    /// The priority, if present.
     pub priority: Option<String>,
 }
 
-/// The result of a map operation, containing discovered URLs.
 #[frb(mirror(MapResult))]
 pub struct MapResult {
-    /// The list of discovered URLs.
     pub urls: Vec<SitemapUrl>,
 }
 
-/// Rich markdown conversion result from HTML processing.
 #[frb(mirror(MarkdownResult))]
 pub struct MarkdownResult {
-    /// Converted markdown text.
     pub content: String,
-    /// Structured document tree with semantic nodes.
     pub document_structure: Option<String>,
-    /// Extracted tables with structured cell data.
     pub tables: Vec<String>,
-    /// Non-fatal processing warnings.
     pub warnings: Vec<String>,
-    /// Content with links replaced by numbered citations.
     pub citations: Option<CitationResult>,
-    /// Content-filtered markdown optimized for LLM consumption.
     pub fit_content: Option<String>,
 }
 
-/// Information about a link found on a page.
 #[frb(mirror(LinkInfo))]
 pub struct LinkInfo {
-    /// The resolved URL of the link.
     pub url: String,
-    /// The visible text of the link.
     pub text: String,
-    /// The classification of the link.
     pub link_type: LinkType,
-    /// The `rel` attribute value, if present.
     pub rel: Option<String>,
-    /// Whether the link has `rel="nofollow"`.
     pub nofollow: bool,
 }
 
-/// Information about an image found on a page.
 #[frb(mirror(ImageInfo))]
 pub struct ImageInfo {
-    /// The image URL.
     pub url: String,
-    /// The alt text, if present.
     pub alt: Option<String>,
-    /// The width attribute, if present and parseable.
     pub width: Option<i64>,
-    /// The height attribute, if present and parseable.
     pub height: Option<i64>,
-    /// The source of the image reference.
     pub source: ImageSource,
 }
 
-/// Information about a feed link found on a page.
 #[frb(mirror(FeedInfo))]
 pub struct FeedInfo {
-    /// The feed URL.
     pub url: String,
-    /// The feed title, if present.
     pub title: Option<String>,
-    /// The type of feed.
     pub feed_type: FeedType,
 }
 
-/// A JSON-LD structured data entry found on a page.
 #[frb(mirror(JsonLdEntry))]
 pub struct JsonLdEntry {
-    /// The `@type` value from the JSON-LD object.
     pub schema_type: String,
-    /// The `name` value, if present.
     pub name: Option<String>,
-    /// The raw JSON-LD string.
     pub raw: String,
 }
 
-/// Information about an HTTP cookie received from a response.
 #[frb(mirror(CookieInfo))]
 pub struct CookieInfo {
-    /// The cookie name.
     pub name: String,
-    /// The cookie value.
     pub value: String,
-    /// The cookie domain, if specified.
     pub domain: Option<String>,
-    /// The cookie path, if specified.
     pub path: Option<String>,
 }
 
-/// A downloaded asset from a page.
 #[frb(mirror(DownloadedAsset))]
 pub struct DownloadedAsset {
-    /// The original URL of the asset.
     pub url: String,
-    /// The SHA-256 content hash of the asset.
     pub content_hash: String,
-    /// The MIME type from the Content-Type header.
     pub mime_type: Option<String>,
-    /// The size of the asset in bytes.
     pub size: i64,
-    /// The category of the asset.
     pub asset_category: AssetCategory,
-    /// The HTML tag that referenced this asset (e.g., "link", "script", "img").
     pub html_tag: Option<String>,
 }
 
-/// Article metadata extracted from `article:*` Open Graph tags.
 #[frb(mirror(ArticleMetadata))]
 pub struct ArticleMetadata {
-    /// The article publication time.
     pub published_time: Option<String>,
-    /// The article modification time.
     pub modified_time: Option<String>,
-    /// The article author.
     pub author: Option<String>,
-    /// The article section.
     pub section: Option<String>,
-    /// The article tags.
     pub tags: Vec<String>,
 }
 
-/// An hreflang alternate link entry.
 #[frb(mirror(HreflangEntry))]
 pub struct HreflangEntry {
-    /// The language code (e.g., "en", "fr", "x-default").
     pub lang: String,
-    /// The URL for this language variant.
     pub url: String,
 }
 
-/// Information about a favicon or icon link.
 #[frb(mirror(FaviconInfo))]
 pub struct FaviconInfo {
-    /// The icon URL.
     pub url: String,
-    /// The `rel` attribute (e.g., "icon", "apple-touch-icon").
     pub rel: String,
-    /// The `sizes` attribute, if present.
     pub sizes: Option<String>,
-    /// The MIME type, if present.
     pub mime_type: Option<String>,
 }
 
-/// A heading element extracted from the page.
 #[frb(mirror(HeadingInfo))]
 pub struct HeadingInfo {
-    /// The heading level (1-6).
     pub level: i64,
-    /// The heading text content.
     pub text: String,
 }
 
-/// Response metadata extracted from HTTP headers.
 #[frb(mirror(ResponseMeta))]
 pub struct ResponseMeta {
-    /// The ETag header value.
     pub etag: Option<String>,
-    /// The Last-Modified header value.
     pub last_modified: Option<String>,
-    /// The Cache-Control header value.
     pub cache_control: Option<String>,
-    /// The Server header value.
     pub server: Option<String>,
-    /// The X-Powered-By header value.
     pub x_powered_by: Option<String>,
-    /// The Content-Language header value.
     pub content_language: Option<String>,
-    /// The Content-Encoding header value.
     pub content_encoding: Option<String>,
 }
 
-/// Metadata extracted from an HTML page's `<meta>` tags and `<title>` element.
 #[frb(mirror(PageMetadata))]
 pub struct PageMetadata {
-    /// The page title from the `<title>` element.
     pub title: Option<String>,
-    /// The meta description.
     pub description: Option<String>,
-    /// The canonical URL from `<link rel="canonical">`.
     pub canonical_url: Option<String>,
-    /// Keywords from `<meta name="keywords">`.
     pub keywords: Option<String>,
-    /// Author from `<meta name="author">`.
     pub author: Option<String>,
-    /// Viewport content from `<meta name="viewport">`.
     pub viewport: Option<String>,
-    /// Theme color from `<meta name="theme-color">`.
     pub theme_color: Option<String>,
-    /// Generator from `<meta name="generator">`.
     pub generator: Option<String>,
-    /// Robots content from `<meta name="robots">`.
     pub robots: Option<String>,
-    /// The `lang` attribute from the `<html>` element.
     pub html_lang: Option<String>,
-    /// The `dir` attribute from the `<html>` element.
     pub html_dir: Option<String>,
-    /// Open Graph title.
     pub og_title: Option<String>,
-    /// Open Graph type.
     pub og_type: Option<String>,
-    /// Open Graph image URL.
     pub og_image: Option<String>,
-    /// Open Graph description.
     pub og_description: Option<String>,
-    /// Open Graph URL.
     pub og_url: Option<String>,
-    /// Open Graph site name.
     pub og_site_name: Option<String>,
-    /// Open Graph locale.
     pub og_locale: Option<String>,
-    /// Open Graph video URL.
     pub og_video: Option<String>,
-    /// Open Graph audio URL.
     pub og_audio: Option<String>,
-    /// Open Graph locale alternates.
     pub og_locale_alternates: Option<Vec<String>>,
-    /// Twitter card type.
     pub twitter_card: Option<String>,
-    /// Twitter title.
     pub twitter_title: Option<String>,
-    /// Twitter description.
     pub twitter_description: Option<String>,
-    /// Twitter image URL.
     pub twitter_image: Option<String>,
-    /// Twitter site handle.
     pub twitter_site: Option<String>,
-    /// Twitter creator handle.
     pub twitter_creator: Option<String>,
-    /// Dublin Core title.
     pub dc_title: Option<String>,
-    /// Dublin Core creator.
     pub dc_creator: Option<String>,
-    /// Dublin Core subject.
     pub dc_subject: Option<String>,
-    /// Dublin Core description.
     pub dc_description: Option<String>,
-    /// Dublin Core publisher.
     pub dc_publisher: Option<String>,
-    /// Dublin Core date.
     pub dc_date: Option<String>,
-    /// Dublin Core type.
     pub dc_type: Option<String>,
-    /// Dublin Core format.
     pub dc_format: Option<String>,
-    /// Dublin Core identifier.
     pub dc_identifier: Option<String>,
-    /// Dublin Core language.
     pub dc_language: Option<String>,
-    /// Dublin Core rights.
     pub dc_rights: Option<String>,
-    /// Article metadata from `article:*` Open Graph tags.
     pub article: Option<ArticleMetadata>,
-    /// Hreflang alternate links.
     pub hreflangs: Option<Vec<HreflangEntry>>,
-    /// Favicon and icon links.
     pub favicons: Option<Vec<FaviconInfo>>,
-    /// Heading elements (h1-h6).
     pub headings: Option<Vec<HeadingInfo>>,
-    /// Computed word count of the page body text.
     pub word_count: Option<i64>,
 }
 
-/// Result of citation conversion.
 #[frb(mirror(CitationResult))]
 pub struct CitationResult {
-    /// Markdown with links replaced by numbered citations.
     pub content: String,
-    /// Numbered reference list: (index, url, text).
     pub references: Vec<CitationReference>,
 }
 
@@ -618,10 +344,6 @@ pub struct CitationReference {
     pub text: String,
 }
 
-/// Opaque handle to a configured crawl engine.
-///
-/// Constructed via [`create_engine`] with an optional [`CrawlConfig`].
-/// Default implementations for all pluggable components are used internally.
 #[frb(opaque)]
 pub struct CrawlEngineHandle {
     pub(crate) inner: kreuzcrawl::CrawlEngineHandle,
@@ -639,120 +361,75 @@ impl From<CrawlEngineHandle> for kreuzcrawl::CrawlEngineHandle {
     }
 }
 
-/// Result from a single URL in a batch scrape operation.
 #[frb(mirror(BatchScrapeResult))]
 pub struct BatchScrapeResult {
-    /// The URL that was scraped.
     pub url: String,
-    /// The scrape result, if successful.
     pub result: Option<ScrapeResult>,
-    /// The error message, if the scrape failed.
     pub error: Option<String>,
 }
 
-/// Result from a single URL in a batch crawl operation.
 #[frb(mirror(BatchCrawlResult))]
 pub struct BatchCrawlResult {
-    /// The seed URL that was crawled.
     pub url: String,
-    /// The crawl result, if successful.
     pub result: Option<CrawlResult>,
-    /// The error message, if the crawl failed.
     pub error: Option<String>,
 }
 
-/// When to use the headless browser fallback.
 #[frb(mirror(BrowserMode))]
 pub enum BrowserMode {
-    /// Automatically detect when JS rendering is needed and fall back to browser.
     Auto,
-    /// Always use the browser for every request.
     Always,
-    /// Never use the browser fallback.
     Never,
 }
 
-/// Wait strategy for browser page rendering.
 #[frb(mirror(BrowserWait))]
 pub enum BrowserWait {
-    /// Wait until network activity is idle.
     NetworkIdle,
-    /// Wait for a specific CSS selector to appear in the DOM.
     Selector,
-    /// Wait for a fixed duration after navigation.
     Fixed,
 }
 
-/// Authentication configuration.
 #[frb(mirror(AuthConfig))]
 pub enum AuthConfig {
-    /// HTTP Basic authentication.
     Basic { username: String, password: String },
-    /// Bearer token authentication.
     Bearer { token: String },
-    /// Custom authentication header.
     Header { name: String, value: String },
 }
 
-/// The classification of a link.
 #[frb(mirror(LinkType))]
 pub enum LinkType {
-    /// A link to the same domain.
     Internal,
-    /// A link to a different domain.
     External,
-    /// A fragment-only link (e.g., `#section`).
     Anchor,
-    /// A link to a downloadable document (PDF, DOC, etc.).
     Document,
 }
 
-/// The source of an image reference.
 #[frb(mirror(ImageSource))]
 pub enum ImageSource {
-    /// An `<img>` tag.
     Img,
-    /// A `<source>` tag inside `<picture>`.
     PictureSource,
-    /// An `og:image` meta tag.
     OgImage,
-    /// A `twitter:image` meta tag.
     TwitterImage,
 }
 
-/// The type of a feed (RSS, Atom, or JSON Feed).
 #[frb(mirror(FeedType))]
 pub enum FeedType {
-    /// RSS feed.
     Rss,
-    /// Atom feed.
     Atom,
-    /// JSON Feed.
     JsonFeed,
 }
 
-/// The category of a downloaded asset.
 #[frb(mirror(AssetCategory))]
 pub enum AssetCategory {
-    /// A document file (PDF, DOC, etc.).
     Document,
-    /// An image file.
     Image,
-    /// An audio file.
     Audio,
-    /// A video file.
     Video,
-    /// A font file.
     Font,
-    /// A CSS stylesheet.
     Stylesheet,
-    /// A JavaScript file.
     Script,
-    /// An archive file (ZIP, TAR, etc.).
     Archive,
-    /// A data file (JSON, XML, CSV, etc.).
     Data,
-    /// An unrecognized asset type.
     Other,
 }
 

@@ -8,5 +8,5 @@ package dev.kreuzberg.kreuzcrawl.android
 data class JsonLdEntry(
     val schemaType: String,
     val name: String?,
-    val raw: String,
+    val raw: String
 )

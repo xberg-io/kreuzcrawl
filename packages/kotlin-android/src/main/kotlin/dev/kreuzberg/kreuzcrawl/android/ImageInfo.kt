@@ -10,5 +10,5 @@ data class ImageInfo(
     val alt: String?,
     val width: Int?,
     val height: Int?,
-    val source: ImageSource,
+    val source: ImageSource
 )

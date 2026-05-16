@@ -8,5 +8,5 @@ package dev.kreuzberg.kreuzcrawl.android
 data class FeedInfo(
     val url: String,
     val title: String?,
-    val feedType: FeedType,
+    val feedType: FeedType
 )

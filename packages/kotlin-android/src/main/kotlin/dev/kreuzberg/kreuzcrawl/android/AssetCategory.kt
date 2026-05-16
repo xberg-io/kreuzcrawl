@@ -15,5 +15,5 @@ enum class AssetCategory {
     SCRIPT,
     ARCHIVE,
     DATA,
-    OTHER,
+    OTHER;
 }

@@ -8,5 +8,5 @@ package dev.kreuzberg.kreuzcrawl.android
 enum class BrowserMode {
     AUTO,
     ALWAYS,
-    NEVER,
+    NEVER;
 }

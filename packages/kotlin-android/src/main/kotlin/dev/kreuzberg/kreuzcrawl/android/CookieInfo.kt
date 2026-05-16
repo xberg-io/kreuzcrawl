@@ -9,5 +9,5 @@ data class CookieInfo(
     val name: String,
     val value: String,
     val domain: String?,
-    val path: String?,
+    val path: String?
 )

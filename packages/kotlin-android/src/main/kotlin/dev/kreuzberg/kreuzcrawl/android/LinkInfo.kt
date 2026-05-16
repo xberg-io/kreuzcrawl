@@ -10,5 +10,5 @@ data class LinkInfo(
     val text: String,
     val linkType: LinkType,
     val rel: String?,
-    val nofollow: Boolean,
+    val nofollow: Boolean
 )

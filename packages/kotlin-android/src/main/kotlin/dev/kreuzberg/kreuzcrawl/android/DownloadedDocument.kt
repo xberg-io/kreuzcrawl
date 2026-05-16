@@ -16,5 +16,5 @@ data class DownloadedDocument(
     val size: Long,
     val filename: String?,
     val contentHash: String,
-    val headers: Map<String, String>,
+    val headers: Map<String, String>
 )

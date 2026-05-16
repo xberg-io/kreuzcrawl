@@ -8,5 +8,5 @@ package dev.kreuzberg.kreuzcrawl.android
 data class BatchScrapeResult(
     val url: String,
     val result: ScrapeResult?,
-    val error: String?,
+    val error: String?
 )

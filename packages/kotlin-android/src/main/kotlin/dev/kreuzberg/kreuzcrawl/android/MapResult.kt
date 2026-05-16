@@ -6,5 +6,5 @@ package dev.kreuzberg.kreuzcrawl.android
  * The result of a map operation, containing discovered URLs.
  */
 data class MapResult(
-    val urls: List<SitemapUrl>,
+    val urls: List<SitemapUrl>
 )

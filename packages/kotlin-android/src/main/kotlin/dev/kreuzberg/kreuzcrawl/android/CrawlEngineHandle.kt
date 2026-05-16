@@ -9,7 +9,5 @@ package dev.kreuzberg.kreuzcrawl.android
  * Default implementations for all pluggable components are used internally.
  */
 class CrawlEngineHandle internal constructor(internal val handle: Long) : AutoCloseable {
-    override fun close() {
-        KreuzcrawlBridge.nativeFreeCrawlEngineHandle(handle)
-    }
+    override fun close() { KreuzcrawlBridge.nativeFreeCrawlEngineHandle(handle) }
 }

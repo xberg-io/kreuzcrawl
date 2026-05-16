@@ -9,5 +9,5 @@ enum class ImageSource {
     IMG,
     PICTURE_SOURCE,
     OG_IMAGE,
-    TWITTER_IMAGE,
+    TWITTER_IMAGE;
 }

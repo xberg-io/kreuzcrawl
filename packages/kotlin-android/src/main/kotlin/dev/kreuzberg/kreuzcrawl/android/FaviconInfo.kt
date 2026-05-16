@@ -9,5 +9,5 @@ data class FaviconInfo(
     val url: String,
     val rel: String,
     val sizes: String?,
-    val mimeType: String?,
+    val mimeType: String?
 )

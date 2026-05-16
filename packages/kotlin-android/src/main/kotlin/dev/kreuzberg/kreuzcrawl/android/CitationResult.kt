@@ -7,5 +7,5 @@ package dev.kreuzberg.kreuzcrawl.android
  */
 data class CitationResult(
     val content: String,
-    val references: List<CitationReference>,
+    val references: List<CitationReference>
 )

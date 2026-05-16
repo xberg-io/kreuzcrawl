@@ -12,20 +12,18 @@ sealed class AuthConfig {
     @com.fasterxml.jackson.databind.annotation.JsonSerialize
     data class Basic(
         val username: String,
-        val password: String,
+        val password: String
     ) : AuthConfig()
-
     @com.fasterxml.jackson.databind.annotation.JsonDeserialize
     @com.fasterxml.jackson.databind.annotation.JsonSerialize
     data class Bearer(
-        val token: String,
+        val token: String
     ) : AuthConfig()
-
     @com.fasterxml.jackson.databind.annotation.JsonDeserialize
     @com.fasterxml.jackson.databind.annotation.JsonSerialize
     data class Header(
         val name: String,
-        val value: String,
+        val value: String
     ) : AuthConfig()
 }
 
@@ -37,21 +35,14 @@ private class AuthConfigDeserializer : com.fasterxml.jackson.databind.deser.std.
     ): AuthConfig {
         val node = parser.codec.readTree<com.fasterxml.jackson.databind.node.ObjectNode>(parser)
         val tag = node.get("type")?.asText()
-
         @Suppress("UNCHECKED_CAST")
         val payload = (node.deepCopy() as com.fasterxml.jackson.databind.node.ObjectNode).apply { remove("type") }
         return when (tag) {
             "basic" -> ctx.readTreeAsValue<AuthConfig.Basic>(payload, AuthConfig.Basic::class.java)
-
             "bearer" -> ctx.readTreeAsValue<AuthConfig.Bearer>(payload, AuthConfig.Bearer::class.java)
-
             "header" -> ctx.readTreeAsValue<AuthConfig.Header>(payload, AuthConfig.Header::class.java)
-
             else -> throw com.fasterxml.jackson.databind.exc.InvalidFormatException(
-                parser,
-                "Unknown AuthConfig tag",
-                tag,
-                AuthConfig::class.java,
+                parser, "Unknown AuthConfig tag", tag, AuthConfig::class.java,
             )
         }
     }
@@ -65,39 +56,23 @@ private class AuthConfigSerializer : com.fasterxml.jackson.databind.ser.std.StdS
         provider: com.fasterxml.jackson.databind.SerializerProvider,
     ) {
         @Suppress("UNCHECKED_CAST")
-        val mapper =
-            (gen.codec as? com.fasterxml.jackson.databind.ObjectMapper)
-                ?: com.fasterxml.jackson.databind
-                    .ObjectMapper()
-                    .findAndRegisterModules()
-        val node: com.fasterxml.jackson.databind.node.ObjectNode =
-            when (value) {
+        val mapper = (gen.codec as? com.fasterxml.jackson.databind.ObjectMapper) ?: com.fasterxml.jackson.databind.ObjectMapper().findAndRegisterModules()
+        val node: com.fasterxml.jackson.databind.node.ObjectNode = when (value) {
             is AuthConfig.Basic -> {
                 @Suppress("UNCHECKED_CAST")
-                val n =
-                    mapper.valueToTree<com.fasterxml.jackson.databind.node.ObjectNode>(
-                    value as AuthConfig.Basic,
-                ) as com.fasterxml.jackson.databind.node.ObjectNode
+                val n = mapper.valueToTree<com.fasterxml.jackson.databind.node.ObjectNode>(value as AuthConfig.Basic) as com.fasterxml.jackson.databind.node.ObjectNode
                 n.put("type", "basic")
                 n
             }
-
             is AuthConfig.Bearer -> {
                 @Suppress("UNCHECKED_CAST")
-                val n =
-                    mapper.valueToTree<com.fasterxml.jackson.databind.node.ObjectNode>(
-                    value as AuthConfig.Bearer,
-                ) as com.fasterxml.jackson.databind.node.ObjectNode
+                val n = mapper.valueToTree<com.fasterxml.jackson.databind.node.ObjectNode>(value as AuthConfig.Bearer) as com.fasterxml.jackson.databind.node.ObjectNode
                 n.put("type", "bearer")
                 n
             }
-
             is AuthConfig.Header -> {
                 @Suppress("UNCHECKED_CAST")
-                val n =
-                    mapper.valueToTree<com.fasterxml.jackson.databind.node.ObjectNode>(
-                    value as AuthConfig.Header,
-                ) as com.fasterxml.jackson.databind.node.ObjectNode
+                val n = mapper.valueToTree<com.fasterxml.jackson.databind.node.ObjectNode>(value as AuthConfig.Header) as com.fasterxml.jackson.databind.node.ObjectNode
                 n.put("type", "header")
                 n
             }

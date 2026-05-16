@@ -9,5 +9,5 @@ enum class LinkType {
     INTERNAL,
     EXTERNAL,
     ANCHOR,
-    DOCUMENT,
+    DOCUMENT;
 }

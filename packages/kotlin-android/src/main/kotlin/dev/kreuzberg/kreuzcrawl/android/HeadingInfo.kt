@@ -7,5 +7,5 @@ package dev.kreuzberg.kreuzcrawl.android
  */
 data class HeadingInfo(
     val level: Byte,
-    val text: String,
+    val text: String
 )

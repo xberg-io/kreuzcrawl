@@ -7,5 +7,5 @@ package dev.kreuzberg.kreuzcrawl.android
  */
 data class HreflangEntry(
     val lang: String,
-    val url: String,
+    val url: String
 )

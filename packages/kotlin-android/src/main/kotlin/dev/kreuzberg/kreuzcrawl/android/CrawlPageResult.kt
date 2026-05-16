@@ -25,5 +25,5 @@ data class CrawlPageResult(
     val markdown: MarkdownResult?,
     val extractedData: String?,
     val extractionMeta: ExtractionMeta?,
-    val downloadedDocument: DownloadedDocument?,
+    val downloadedDocument: DownloadedDocument?
 )

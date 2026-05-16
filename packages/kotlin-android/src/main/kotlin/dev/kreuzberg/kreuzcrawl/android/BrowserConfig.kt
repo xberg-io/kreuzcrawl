@@ -13,5 +13,5 @@ data class BrowserConfig(
     val timeout: Duration,
     val wait: BrowserWait,
     val waitSelector: String?,
-    val extraWait: Duration?,
+    val extraWait: Duration?
 )

@@ -12,5 +12,5 @@ data class CrawlResult(
     val wasSkipped: Boolean,
     val error: String?,
     val cookies: List<CookieInfo>,
-    val normalizedUrls: List<String>,
+    val normalizedUrls: List<String>
 )

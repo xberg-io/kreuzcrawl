@@ -4,9 +4,7 @@ package dev.kreuzberg.kreuzcrawl.android
 
 @Suppress("TooManyFunctions")
 object KreuzcrawlBridge {
-    init {
-        System.loadLibrary("kcrawl_jni")
-    }
+    init { System.loadLibrary("kcrawl_jni") }
 
     external fun nativeCreateEngine(config: String): Long
 

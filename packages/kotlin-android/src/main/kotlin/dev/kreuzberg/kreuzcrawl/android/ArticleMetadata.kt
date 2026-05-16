@@ -10,5 +10,5 @@ data class ArticleMetadata(
     val modifiedTime: String?,
     val author: String?,
     val section: String?,
-    val tags: List<String>,
+    val tags: List<String>
 )

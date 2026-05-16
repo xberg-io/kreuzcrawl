@@ -32,5 +32,5 @@ data class ScrapeResult(
     val extractedData: String?,
     val extractionMeta: ExtractionMeta?,
     val screenshot: ByteArray?,
-    val downloadedDocument: DownloadedDocument?,
+    val downloadedDocument: DownloadedDocument?
 )

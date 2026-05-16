@@ -44,5 +44,5 @@ data class CrawlConfig(
     val documentMimeTypes: List<String>,
     val warcOutput: Path?,
     val browserProfile: String?,
-    val saveBrowserProfile: Boolean,
+    val saveBrowserProfile: Boolean
 )

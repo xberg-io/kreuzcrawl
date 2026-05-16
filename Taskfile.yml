@@ -121,12 +121,16 @@ tasks:
     cmds:
       - alef update
       - prek autoupdate
+      - cargo update
+      - npx --yes actions-up@latest --yes --style preserve
 
   upgrade:
     desc: Upgrade all dependencies to latest versions including cross-major bumps
     cmds:
       - alef update --latest
       - prek autoupdate
+      - cargo upgrade --incompatible
+      - npx --yes actions-up@latest --yes --style preserve
 
   clean:
     desc: Clean all build artifacts (per-language only; see `clean:full` for cargo + e2e)

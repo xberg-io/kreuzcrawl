@@ -8,5 +8,5 @@ package dev.kreuzberg.kreuzcrawl.android
 enum class BrowserWait {
     NETWORK_IDLE,
     SELECTOR,
-    FIXED,
+    FIXED;
 }

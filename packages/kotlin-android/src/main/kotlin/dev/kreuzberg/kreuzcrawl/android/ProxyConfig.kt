@@ -8,5 +8,5 @@ package dev.kreuzberg.kreuzcrawl.android
 data class ProxyConfig(
     val url: String,
     val username: String?,
-    val password: String?,
+    val password: String?
 )

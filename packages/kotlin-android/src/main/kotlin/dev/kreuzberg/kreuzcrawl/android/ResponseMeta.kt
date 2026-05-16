@@ -12,5 +12,5 @@ data class ResponseMeta(
     val server: String?,
     val xPoweredBy: String?,
     val contentLanguage: String?,
-    val contentEncoding: String?,
+    val contentEncoding: String?
 )

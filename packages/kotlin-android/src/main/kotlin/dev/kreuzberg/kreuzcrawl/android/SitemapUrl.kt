@@ -9,5 +9,5 @@ data class SitemapUrl(
     val url: String,
     val lastmod: String?,
     val changefreq: String?,
-    val priority: String?,
+    val priority: String?
 )
