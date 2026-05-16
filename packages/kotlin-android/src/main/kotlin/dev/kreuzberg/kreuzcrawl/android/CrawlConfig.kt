@@ -5,9 +5,7 @@ package dev.kreuzberg.kreuzcrawl.android
 import java.nio.file.Path
 import kotlin.time.Duration
 
-/**
- * Configuration for crawl, scrape, and map operations.
- */
+/** Configuration for crawl, scrape, and map operations. */
 data class CrawlConfig(
     val maxDepth: Long?,
     val maxPages: Long?,

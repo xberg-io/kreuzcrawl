@@ -2,9 +2,7 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/**
- * The category of a downloaded asset.
- */
+/** The category of a downloaded asset. */
 enum class AssetCategory {
     DOCUMENT,
     IMAGE,

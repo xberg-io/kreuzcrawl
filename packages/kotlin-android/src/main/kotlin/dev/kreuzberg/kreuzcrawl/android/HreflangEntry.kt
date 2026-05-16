@@ -2,10 +2,5 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/**
- * An hreflang alternate link entry.
- */
-data class HreflangEntry(
-    val lang: String,
-    val url: String,
-)
+/** An hreflang alternate link entry. */
+data class HreflangEntry(val lang: String, val url: String)

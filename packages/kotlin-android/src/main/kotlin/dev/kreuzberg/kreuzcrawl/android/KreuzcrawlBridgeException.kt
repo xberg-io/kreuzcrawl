@@ -2,6 +2,7 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-class KreuzcrawlBridgeException(message: String?, cause: Throwable?) : RuntimeException(message, cause) {
+class KreuzcrawlBridgeException(message: String?, cause: Throwable?) :
+    RuntimeException(message, cause) {
     constructor(message: String?) : this(message, null)
 }

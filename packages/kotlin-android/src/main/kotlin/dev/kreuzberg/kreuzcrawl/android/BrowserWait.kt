@@ -2,9 +2,7 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/**
- * Wait strategy for browser page rendering.
- */
+/** Wait strategy for browser page rendering. */
 enum class BrowserWait {
     NETWORK_IDLE,
     SELECTOR,

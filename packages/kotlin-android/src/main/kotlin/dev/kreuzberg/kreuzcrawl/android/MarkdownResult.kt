@@ -2,9 +2,7 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/**
- * Rich markdown conversion result from HTML processing.
- */
+/** Rich markdown conversion result from HTML processing. */
 data class MarkdownResult(
     val content: String,
     val documentStructure: String?,

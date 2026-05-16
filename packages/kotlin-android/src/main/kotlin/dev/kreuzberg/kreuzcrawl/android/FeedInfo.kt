@@ -2,11 +2,5 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/**
- * Information about a feed link found on a page.
- */
-data class FeedInfo(
-    val url: String,
-    val title: String?,
-    val feedType: FeedType,
-)
+/** Information about a feed link found on a page. */
+data class FeedInfo(val url: String, val title: String?, val feedType: FeedType)

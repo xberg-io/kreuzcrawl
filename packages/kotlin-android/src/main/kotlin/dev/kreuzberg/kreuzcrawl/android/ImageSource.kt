@@ -2,9 +2,7 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/**
- * The source of an image reference.
- */
+/** The source of an image reference. */
 enum class ImageSource {
     IMG,
     PICTURE_SOURCE,

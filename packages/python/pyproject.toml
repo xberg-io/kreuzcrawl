@@ -1,68 +1,68 @@
 [build-system]
 build-backend = "maturin"
-requires = ["maturin>=1,<2"]
+requires = [ "maturin>=1,<2" ]
 
 [project]
 name = "kreuzcrawl"
 version = "0.3.0rc20"
 description = "High-performance web crawling engine"
-keywords = ["crawl", "scrape", "spider", "web"]
+keywords = [ "crawl", "scrape", "spider", "web" ]
 license = "Elastic-2.0"
-authors = [{ name = "Kreuzberg Team" }]
+authors = [ { name = "Kreuzberg Team" } ]
 requires-python = ">=3.10"
 classifiers = [
-    "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
-    "Programming Language :: Python :: 3.14",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
 ]
 urls.repository = "https://github.com/kreuzberg-dev/kreuzcrawl"
 
 [dependency-groups]
-dev = ["mypy>=1.19", "ruff>=0.14.8"]
+dev = [ "mypy>=1.19", "ruff>=0.14.8" ]
 
 [tool.maturin]
 module-name = "kreuzcrawl._kreuzcrawl"
 manifest-path = "../../crates/kreuzcrawl-py/Cargo.toml"
 # abi3-py310 produces a single wheel per platform that loads on Python 3.10+,
 # avoiding a per-Python-version build matrix.
-features = ["pyo3/extension-module", "pyo3/abi3-py310"]
-python-packages = ["kreuzcrawl"]
+features = [ "pyo3/extension-module", "pyo3/abi3-py310" ]
+python-packages = [ "kreuzcrawl" ]
 
 [tool.ruff]
 target-version = "py310"
 line-length = 120
 format.docstring-code-line-length = 120
 format.docstring-code-format = true
-lint.select = ["ALL"]
+lint.select = [ "ALL" ]
 lint.ignore = [
-    "ANN401",
-    "ASYNC109",
-    "ASYNC110",
-    "BLE001",
-    "COM812",
-    "D100",
-    "D104",
-    "D107",
-    "D205",
-    "E501",
-    "EM",
-    "FBT",
-    "FIX",
-    "ISC001",
-    "PD011",
-    "PGH003",
-    "PLR2004",
-    "PLW0603",
-    "S104",
-    "S110",
-    "S603",
-    "TD",
-    "TRY",
+  "ANN401",
+  "ASYNC109",
+  "ASYNC110",
+  "BLE001",
+  "COM812",
+  "D100",
+  "D104",
+  "D107",
+  "D205",
+  "E501",
+  "EM",
+  "FBT",
+  "FIX",
+  "ISC001",
+  "PD011",
+  "PGH003",
+  "PLR2004",
+  "PLW0603",
+  "S104",
+  "S110",
+  "S603",
+  "TD",
+  "TRY",
 ]
-lint.per-file-ignores."tests/**" = ["ANN", "D103", "PLR2004", "S101"]
+lint.per-file-ignores."tests/**" = [ "ANN", "D103", "PLR2004", "S101" ]
 lint.mccabe.max-complexity = 15
 lint.pydocstyle.convention = "google"
 lint.pylint.max-args = 10

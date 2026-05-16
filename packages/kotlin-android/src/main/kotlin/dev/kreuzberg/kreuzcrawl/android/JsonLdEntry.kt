@@ -2,11 +2,5 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/**
- * A JSON-LD structured data entry found on a page.
- */
-data class JsonLdEntry(
-    val schemaType: String,
-    val name: String?,
-    val raw: String,
-)
+/** A JSON-LD structured data entry found on a page. */
+data class JsonLdEntry(val schemaType: String, val name: String?, val raw: String)

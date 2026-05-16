@@ -2,9 +2,7 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/**
- * The result of a single-page scrape operation.
- */
+/** The result of a single-page scrape operation. */
 data class ScrapeResult(
     val statusCode: Short,
     val contentType: String,

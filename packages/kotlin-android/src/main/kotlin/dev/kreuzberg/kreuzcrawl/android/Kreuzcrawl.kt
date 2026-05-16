@@ -2,16 +2,56 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
 object Kreuzcrawl {
-    fun createEngine(config: String = ""): CrawlEngineHandle = CrawlEngineHandle(KreuzcrawlBridge.nativeCreateEngine(config))
+    private val mapper = jacksonObjectMapper()
 
-    fun scrape(engine: CrawlEngineHandle, url: String): String = KreuzcrawlBridge.nativeScrape(engine.handle, url)
+    fun createEngine(config: CrawlConfig? = null): CrawlEngineHandle =
+        CrawlEngineHandle(
+            KreuzcrawlBridge.nativeCreateEngine(config?.let { mapper.writeValueAsString(it) } ?: "")
+        )
 
-    fun crawl(engine: CrawlEngineHandle, url: String): String = KreuzcrawlBridge.nativeCrawl(engine.handle, url)
+    fun scrape(engine: CrawlEngineHandle, url: String): ScrapeResult {
+        val resultJson = KreuzcrawlBridge.nativeScrape(engine.handle, url)
+        return mapper.readValue(resultJson, ScrapeResult::class.java)
+    }
 
-    fun mapUrls(engine: CrawlEngineHandle, url: String): String = KreuzcrawlBridge.nativeMapUrls(engine.handle, url)
+    suspend fun scrapeAsync(engine: CrawlEngineHandle, url: String): ScrapeResult =
+        withContext(Dispatchers.IO) { scrape(engine, url) }
 
-    fun batchScrape(engine: CrawlEngineHandle, urls: String): String = KreuzcrawlBridge.nativeBatchScrape(engine.handle, urls)
+    fun crawl(engine: CrawlEngineHandle, url: String): CrawlResult {
+        val resultJson = KreuzcrawlBridge.nativeCrawl(engine.handle, url)
+        return mapper.readValue(resultJson, CrawlResult::class.java)
+    }
 
-    fun batchCrawl(engine: CrawlEngineHandle, urls: String): String = KreuzcrawlBridge.nativeBatchCrawl(engine.handle, urls)
+    suspend fun crawlAsync(engine: CrawlEngineHandle, url: String): CrawlResult =
+        withContext(Dispatchers.IO) { crawl(engine, url) }
+
+    fun mapUrls(engine: CrawlEngineHandle, url: String): MapResult {
+        val resultJson = KreuzcrawlBridge.nativeMapUrls(engine.handle, url)
+        return mapper.readValue(resultJson, MapResult::class.java)
+    }
+
+    suspend fun mapUrlsAsync(engine: CrawlEngineHandle, url: String): MapResult =
+        withContext(Dispatchers.IO) { mapUrls(engine, url) }
+
+    fun batchScrape(engine: CrawlEngineHandle, urls: String): List<BatchScrapeResult> {
+        val resultJson = KreuzcrawlBridge.nativeBatchScrape(engine.handle, urls)
+        return mapper.readValue(resultJson, object : TypeReference<List<BatchScrapeResult>>() {})
+    }
+
+    suspend fun batchScrapeAsync(engine: CrawlEngineHandle, urls: String): List<BatchScrapeResult> =
+        withContext(Dispatchers.IO) { batchScrape(engine, urls) }
+
+    fun batchCrawl(engine: CrawlEngineHandle, urls: String): List<BatchCrawlResult> {
+        val resultJson = KreuzcrawlBridge.nativeBatchCrawl(engine.handle, urls)
+        return mapper.readValue(resultJson, object : TypeReference<List<BatchCrawlResult>>() {})
+    }
+
+    suspend fun batchCrawlAsync(engine: CrawlEngineHandle, urls: String): List<BatchCrawlResult> =
+        withContext(Dispatchers.IO) { batchCrawl(engine, urls) }
 }

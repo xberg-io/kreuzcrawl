@@ -5,70 +5,67 @@ import RustBridge
 
 /// Metadata about an LLM extraction pass.
 public struct ExtractionMeta: Codable, Sendable, Hashable {
-  public let cost: Double
-  public let promptTokens: UInt64
-  public let completionTokens: UInt64
-  public let model: String
-  public let chunksProcessed: UInt
-  public init(
-    cost: Double, promptTokens: UInt64, completionTokens: UInt64, model: String,
-    chunksProcessed: UInt
-  ) {
-    self.cost = cost
-    self.promptTokens = promptTokens
-    self.completionTokens = completionTokens
-    self.model = model
-    self.chunksProcessed = chunksProcessed
-  }
-  private enum CodingKeys: String, CodingKey {
-    case cost = "cost"
-    case promptTokens = "prompt_tokens"
-    case completionTokens = "completion_tokens"
-    case model = "model"
-    case chunksProcessed = "chunks_processed"
-  }
+    public let cost: Double?
+    public let promptTokens: UInt64?
+    public let completionTokens: UInt64?
+    public let model: String?
+    public let chunksProcessed: UInt
+    public init(cost: Double? = nil, promptTokens: UInt64? = nil, completionTokens: UInt64? = nil, model: String? = nil, chunksProcessed: UInt) {
+        self.cost = cost
+        self.promptTokens = promptTokens
+        self.completionTokens = completionTokens
+        self.model = model
+        self.chunksProcessed = chunksProcessed
+    }
+    private enum CodingKeys: String, CodingKey {
+        case cost = "cost"
+        case promptTokens = "prompt_tokens"
+        case completionTokens = "completion_tokens"
+        case model = "model"
+        case chunksProcessed = "chunks_processed"
+    }
 }
 
 // MARK: - Internal FFI conversions for ExtractionMeta
-extension ExtractionMeta {
-  init(_ rb: RustBridge.ExtractionMeta) throws {
-    self.cost = rb.cost()
-    self.promptTokens = rb.promptTokens()
-    self.completionTokens = rb.completionTokens()
-    self.model = rb.model().toString()
-    self.chunksProcessed = rb.chunksProcessed()
-  }
-  func intoRust() throws -> RustBridge.ExtractionMeta {
-    let data = try JSONEncoder().encode(self)
-    let json = String(data: data, encoding: .utf8) ?? "{}"
-    return try RustBridge.extractionMetaFromJson(json)
-  }
+internal extension ExtractionMeta {
+    init(_ rb: RustBridge.ExtractionMeta) throws {
+        self.cost = rb.cost()
+        self.promptTokens = rb.promptTokens()
+        self.completionTokens = rb.completionTokens()
+        self.model = rb.model()?.toString()
+        self.chunksProcessed = rb.chunksProcessed()
+    }
+    func intoRust() throws -> RustBridge.ExtractionMeta {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "{}"
+        return try RustBridge.extractionMetaFromJson(json)
+    }
 }
 
 /// Proxy configuration for HTTP requests.
 public struct ProxyConfig: Codable, Sendable, Hashable {
-  public let url: String
-  public let username: String
-  public let password: String
-  public init(url: String, username: String, password: String) {
-    self.url = url
-    self.username = username
-    self.password = password
-  }
+    public let url: String
+    public let username: String?
+    public let password: String?
+    public init(url: String, username: String? = nil, password: String? = nil) {
+        self.url = url
+        self.username = username
+        self.password = password
+    }
 }
 
 // MARK: - Internal FFI conversions for ProxyConfig
-extension ProxyConfig {
-  init(_ rb: RustBridge.ProxyConfig) throws {
-    self.url = rb.url().toString()
-    self.username = rb.username().toString()
-    self.password = rb.password().toString()
-  }
-  func intoRust() throws -> RustBridge.ProxyConfig {
-    let data = try JSONEncoder().encode(self)
-    let json = String(data: data, encoding: .utf8) ?? "{}"
-    return try RustBridge.proxyConfigFromJson(json)
-  }
+internal extension ProxyConfig {
+    init(_ rb: RustBridge.ProxyConfig) throws {
+        self.url = rb.url().toString()
+        self.username = rb.username()?.toString()
+        self.password = rb.password()?.toString()
+    }
+    func intoRust() throws -> RustBridge.ProxyConfig {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "{}"
+        return try RustBridge.proxyConfigFromJson(json)
+    }
 }
 
 /// Content extraction and conversion configuration.
@@ -77,293 +74,275 @@ extension ProxyConfig {
 /// html-to-markdown-rs as the conversion engine for all formats
 /// (markdown, plain text, djot).
 public struct ContentConfig: Codable, Sendable, Hashable {
-  public let outputFormat: String
-  public let preprocessingPreset: String
-  public let removeNavigation: Bool
-  public let removeForms: Bool
-  public let stripTags: [String]
-  public let preserveTags: [String]
-  public let excludeSelectors: [String]
-  public let skipImages: Bool
-  public let maxDepth: UInt
-  public let wrap: Bool
-  public let wrapWidth: UInt
-  public let includeDocumentStructure: Bool
-  public init(
-    outputFormat: String, preprocessingPreset: String, removeNavigation: Bool, removeForms: Bool,
-    stripTags: [String], preserveTags: [String], excludeSelectors: [String], skipImages: Bool,
-    maxDepth: UInt, wrap: Bool, wrapWidth: UInt, includeDocumentStructure: Bool
-  ) {
-    self.outputFormat = outputFormat
-    self.preprocessingPreset = preprocessingPreset
-    self.removeNavigation = removeNavigation
-    self.removeForms = removeForms
-    self.stripTags = stripTags
-    self.preserveTags = preserveTags
-    self.excludeSelectors = excludeSelectors
-    self.skipImages = skipImages
-    self.maxDepth = maxDepth
-    self.wrap = wrap
-    self.wrapWidth = wrapWidth
-    self.includeDocumentStructure = includeDocumentStructure
-  }
-  private enum CodingKeys: String, CodingKey {
-    case outputFormat = "output_format"
-    case preprocessingPreset = "preprocessing_preset"
-    case removeNavigation = "remove_navigation"
-    case removeForms = "remove_forms"
-    case stripTags = "strip_tags"
-    case preserveTags = "preserve_tags"
-    case excludeSelectors = "exclude_selectors"
-    case skipImages = "skip_images"
-    case maxDepth = "max_depth"
-    case wrap = "wrap"
-    case wrapWidth = "wrap_width"
-    case includeDocumentStructure = "include_document_structure"
-  }
+    public let outputFormat: String
+    public let preprocessingPreset: String
+    public let removeNavigation: Bool
+    public let removeForms: Bool
+    public let stripTags: [String]
+    public let preserveTags: [String]
+    public let excludeSelectors: [String]
+    public let skipImages: Bool
+    public let maxDepth: UInt?
+    public let wrap: Bool
+    public let wrapWidth: UInt
+    public let includeDocumentStructure: Bool
+    public init(outputFormat: String, preprocessingPreset: String, removeNavigation: Bool, removeForms: Bool, stripTags: [String], preserveTags: [String], excludeSelectors: [String], skipImages: Bool, maxDepth: UInt? = nil, wrap: Bool, wrapWidth: UInt, includeDocumentStructure: Bool) {
+        self.outputFormat = outputFormat
+        self.preprocessingPreset = preprocessingPreset
+        self.removeNavigation = removeNavigation
+        self.removeForms = removeForms
+        self.stripTags = stripTags
+        self.preserveTags = preserveTags
+        self.excludeSelectors = excludeSelectors
+        self.skipImages = skipImages
+        self.maxDepth = maxDepth
+        self.wrap = wrap
+        self.wrapWidth = wrapWidth
+        self.includeDocumentStructure = includeDocumentStructure
+    }
+    private enum CodingKeys: String, CodingKey {
+        case outputFormat = "output_format"
+        case preprocessingPreset = "preprocessing_preset"
+        case removeNavigation = "remove_navigation"
+        case removeForms = "remove_forms"
+        case stripTags = "strip_tags"
+        case preserveTags = "preserve_tags"
+        case excludeSelectors = "exclude_selectors"
+        case skipImages = "skip_images"
+        case maxDepth = "max_depth"
+        case wrap = "wrap"
+        case wrapWidth = "wrap_width"
+        case includeDocumentStructure = "include_document_structure"
+    }
 }
 
 // MARK: - Internal FFI conversions for ContentConfig
-extension ContentConfig {
-  init(_ rb: RustBridge.ContentConfig) throws {
-    self.outputFormat = rb.outputFormat().toString()
-    self.preprocessingPreset = rb.preprocessingPreset().toString()
-    self.removeNavigation = rb.removeNavigation()
-    self.removeForms = rb.removeForms()
-    self.stripTags = rb.stripTags()
-    self.preserveTags = rb.preserveTags()
-    self.excludeSelectors = rb.excludeSelectors()
-    self.skipImages = rb.skipImages()
-    self.maxDepth = rb.maxDepth()
-    self.wrap = rb.wrap()
-    self.wrapWidth = rb.wrapWidth()
-    self.includeDocumentStructure = rb.includeDocumentStructure()
-  }
-  func intoRust() throws -> RustBridge.ContentConfig {
-    let data = try JSONEncoder().encode(self)
-    let json = String(data: data, encoding: .utf8) ?? "{}"
-    return try RustBridge.contentConfigFromJson(json)
-  }
+internal extension ContentConfig {
+    init(_ rb: RustBridge.ContentConfig) throws {
+        self.outputFormat = rb.outputFormat().toString()
+        self.preprocessingPreset = rb.preprocessingPreset().toString()
+        self.removeNavigation = rb.removeNavigation()
+        self.removeForms = rb.removeForms()
+        self.stripTags = rb.stripTags()
+        self.preserveTags = rb.preserveTags()
+        self.excludeSelectors = rb.excludeSelectors()
+        self.skipImages = rb.skipImages()
+        self.maxDepth = rb.maxDepth()
+        self.wrap = rb.wrap()
+        self.wrapWidth = rb.wrapWidth()
+        self.includeDocumentStructure = rb.includeDocumentStructure()
+    }
+    func intoRust() throws -> RustBridge.ContentConfig {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "{}"
+        return try RustBridge.contentConfigFromJson(json)
+    }
 }
 
 /// Browser fallback configuration.
 public struct BrowserConfig: Codable, Sendable, Hashable {
-  public let mode: BrowserMode
-  public let endpoint: String
-  public let timeout: Duration
-  public let wait: BrowserWait
-  public let waitSelector: String
-  public let extraWait: Duration
-  public init(
-    mode: BrowserMode, endpoint: String, timeout: Duration, wait: BrowserWait, waitSelector: String,
-    extraWait: Duration
-  ) {
-    self.mode = mode
-    self.endpoint = endpoint
-    self.timeout = timeout
-    self.wait = wait
-    self.waitSelector = waitSelector
-    self.extraWait = extraWait
-  }
-  private enum CodingKeys: String, CodingKey {
-    case mode = "mode"
-    case endpoint = "endpoint"
-    case timeout = "timeout"
-    case wait = "wait"
-    case waitSelector = "wait_selector"
-    case extraWait = "extra_wait"
-  }
+    public let mode: BrowserMode
+    public let endpoint: String?
+    public let timeout: Duration
+    public let wait: BrowserWait
+    public let waitSelector: String?
+    public let extraWait: Duration?
+    public init(mode: BrowserMode, endpoint: String? = nil, timeout: Duration, wait: BrowserWait, waitSelector: String? = nil, extraWait: Duration? = nil) {
+        self.mode = mode
+        self.endpoint = endpoint
+        self.timeout = timeout
+        self.wait = wait
+        self.waitSelector = waitSelector
+        self.extraWait = extraWait
+    }
+    private enum CodingKeys: String, CodingKey {
+        case mode = "mode"
+        case endpoint = "endpoint"
+        case timeout = "timeout"
+        case wait = "wait"
+        case waitSelector = "wait_selector"
+        case extraWait = "extra_wait"
+    }
 }
 
 // MARK: - Internal FFI conversions for BrowserConfig
-extension BrowserConfig {
-  init(_ rb: RustBridge.BrowserConfig) throws {
-    self.mode = rb.mode()
-    self.endpoint = rb.endpoint().toString()
-    self.timeout = rb.timeout()
-    self.wait = rb.wait()
-    self.waitSelector = rb.waitSelector().toString()
-    self.extraWait = rb.extraWait()
-  }
-  func intoRust() throws -> RustBridge.BrowserConfig {
-    let data = try JSONEncoder().encode(self)
-    let json = String(data: data, encoding: .utf8) ?? "{}"
-    return try RustBridge.browserConfigFromJson(json)
-  }
+internal extension BrowserConfig {
+    init(_ rb: RustBridge.BrowserConfig) throws {
+        self.mode = rb.mode()
+        self.endpoint = rb.endpoint()?.toString()
+        self.timeout = rb.timeout()
+        self.wait = rb.wait()
+        self.waitSelector = rb.waitSelector()?.toString()
+        self.extraWait = rb.extraWait()
+    }
+    func intoRust() throws -> RustBridge.BrowserConfig {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "{}"
+        return try RustBridge.browserConfigFromJson(json)
+    }
 }
 
 /// Configuration for crawl, scrape, and map operations.
 public struct CrawlConfig: Codable, Sendable, Hashable {
-  public let maxDepth: UInt
-  public let maxPages: UInt
-  public let maxConcurrent: UInt
-  public let respectRobotsTxt: Bool
-  public let softHttpErrors: Bool
-  public let userAgent: String
-  public let stayOnDomain: Bool
-  public let allowSubdomains: Bool
-  public let includePaths: [String]
-  public let excludePaths: [String]
-  public let customHeaders: [String: String]
-  public let requestTimeout: Duration
-  public let rateLimitMs: UInt64
-  public let maxRedirects: UInt
-  public let retryCount: UInt
-  public let retryCodes: [UInt16]
-  public let cookiesEnabled: Bool
-  public let auth: AuthConfig
-  public let maxBodySize: UInt
-  public let removeTags: [String]
-  public let content: ContentConfig
-  public let mapLimit: UInt
-  public let mapSearch: String
-  public let downloadAssets: Bool
-  public let assetTypes: [AssetCategory]
-  public let maxAssetSize: UInt
-  public let browser: BrowserConfig
-  public let proxy: ProxyConfig
-  public let userAgents: [String]
-  public let captureScreenshot: Bool
-  public let downloadDocuments: Bool
-  public let documentMaxSize: UInt
-  public let documentMimeTypes: [String]
-  public let warcOutput: URL
-  public let browserProfile: String
-  public let saveBrowserProfile: Bool
-  public init(
-    maxDepth: UInt, maxPages: UInt, maxConcurrent: UInt, respectRobotsTxt: Bool,
-    softHttpErrors: Bool, userAgent: String, stayOnDomain: Bool, allowSubdomains: Bool,
-    includePaths: [String], excludePaths: [String], customHeaders: [String: String],
-    requestTimeout: Duration, rateLimitMs: UInt64, maxRedirects: UInt, retryCount: UInt,
-    retryCodes: [UInt16], cookiesEnabled: Bool, auth: AuthConfig, maxBodySize: UInt,
-    removeTags: [String], content: ContentConfig, mapLimit: UInt, mapSearch: String,
-    downloadAssets: Bool, assetTypes: [AssetCategory], maxAssetSize: UInt, browser: BrowserConfig,
-    proxy: ProxyConfig, userAgents: [String], captureScreenshot: Bool, downloadDocuments: Bool,
-    documentMaxSize: UInt, documentMimeTypes: [String], warcOutput: URL, browserProfile: String,
-    saveBrowserProfile: Bool
-  ) {
-    self.maxDepth = maxDepth
-    self.maxPages = maxPages
-    self.maxConcurrent = maxConcurrent
-    self.respectRobotsTxt = respectRobotsTxt
-    self.softHttpErrors = softHttpErrors
-    self.userAgent = userAgent
-    self.stayOnDomain = stayOnDomain
-    self.allowSubdomains = allowSubdomains
-    self.includePaths = includePaths
-    self.excludePaths = excludePaths
-    self.customHeaders = customHeaders
-    self.requestTimeout = requestTimeout
-    self.rateLimitMs = rateLimitMs
-    self.maxRedirects = maxRedirects
-    self.retryCount = retryCount
-    self.retryCodes = retryCodes
-    self.cookiesEnabled = cookiesEnabled
-    self.auth = auth
-    self.maxBodySize = maxBodySize
-    self.removeTags = removeTags
-    self.content = content
-    self.mapLimit = mapLimit
-    self.mapSearch = mapSearch
-    self.downloadAssets = downloadAssets
-    self.assetTypes = assetTypes
-    self.maxAssetSize = maxAssetSize
-    self.browser = browser
-    self.proxy = proxy
-    self.userAgents = userAgents
-    self.captureScreenshot = captureScreenshot
-    self.downloadDocuments = downloadDocuments
-    self.documentMaxSize = documentMaxSize
-    self.documentMimeTypes = documentMimeTypes
-    self.warcOutput = warcOutput
-    self.browserProfile = browserProfile
-    self.saveBrowserProfile = saveBrowserProfile
-  }
-  private enum CodingKeys: String, CodingKey {
-    case maxDepth = "max_depth"
-    case maxPages = "max_pages"
-    case maxConcurrent = "max_concurrent"
-    case respectRobotsTxt = "respect_robots_txt"
-    case softHttpErrors = "soft_http_errors"
-    case userAgent = "user_agent"
-    case stayOnDomain = "stay_on_domain"
-    case allowSubdomains = "allow_subdomains"
-    case includePaths = "include_paths"
-    case excludePaths = "exclude_paths"
-    case customHeaders = "custom_headers"
-    case requestTimeout = "request_timeout"
-    case rateLimitMs = "rate_limit_ms"
-    case maxRedirects = "max_redirects"
-    case retryCount = "retry_count"
-    case retryCodes = "retry_codes"
-    case cookiesEnabled = "cookies_enabled"
-    case auth = "auth"
-    case maxBodySize = "max_body_size"
-    case removeTags = "remove_tags"
-    case content = "content"
-    case mapLimit = "map_limit"
-    case mapSearch = "map_search"
-    case downloadAssets = "download_assets"
-    case assetTypes = "asset_types"
-    case maxAssetSize = "max_asset_size"
-    case browser = "browser"
-    case proxy = "proxy"
-    case userAgents = "user_agents"
-    case captureScreenshot = "capture_screenshot"
-    case downloadDocuments = "download_documents"
-    case documentMaxSize = "document_max_size"
-    case documentMimeTypes = "document_mime_types"
-    case warcOutput = "warc_output"
-    case browserProfile = "browser_profile"
-    case saveBrowserProfile = "save_browser_profile"
-  }
+    public let maxDepth: UInt?
+    public let maxPages: UInt?
+    public let maxConcurrent: UInt?
+    public let respectRobotsTxt: Bool
+    public let softHttpErrors: Bool
+    public let userAgent: String?
+    public let stayOnDomain: Bool
+    public let allowSubdomains: Bool
+    public let includePaths: [String]
+    public let excludePaths: [String]
+    public let customHeaders: [String: String]
+    public let requestTimeout: Duration
+    public let rateLimitMs: UInt64?
+    public let maxRedirects: UInt
+    public let retryCount: UInt
+    public let retryCodes: [UInt16]
+    public let cookiesEnabled: Bool
+    public let auth: AuthConfig?
+    public let maxBodySize: UInt?
+    public let removeTags: [String]
+    public let content: ContentConfig
+    public let mapLimit: UInt?
+    public let mapSearch: String?
+    public let downloadAssets: Bool
+    public let assetTypes: [AssetCategory]
+    public let maxAssetSize: UInt?
+    public let browser: BrowserConfig
+    public let proxy: ProxyConfig?
+    public let userAgents: [String]
+    public let captureScreenshot: Bool
+    public let downloadDocuments: Bool
+    public let documentMaxSize: UInt?
+    public let documentMimeTypes: [String]
+    public let warcOutput: URL?
+    public let browserProfile: String?
+    public let saveBrowserProfile: Bool
+    public init(maxDepth: UInt? = nil, maxPages: UInt? = nil, maxConcurrent: UInt? = nil, respectRobotsTxt: Bool, softHttpErrors: Bool, userAgent: String? = nil, stayOnDomain: Bool, allowSubdomains: Bool, includePaths: [String], excludePaths: [String], customHeaders: [String: String], requestTimeout: Duration, rateLimitMs: UInt64? = nil, maxRedirects: UInt, retryCount: UInt, retryCodes: [UInt16], cookiesEnabled: Bool, auth: AuthConfig? = nil, maxBodySize: UInt? = nil, removeTags: [String], content: ContentConfig, mapLimit: UInt? = nil, mapSearch: String? = nil, downloadAssets: Bool, assetTypes: [AssetCategory], maxAssetSize: UInt? = nil, browser: BrowserConfig, proxy: ProxyConfig? = nil, userAgents: [String], captureScreenshot: Bool, downloadDocuments: Bool, documentMaxSize: UInt? = nil, documentMimeTypes: [String], warcOutput: URL? = nil, browserProfile: String? = nil, saveBrowserProfile: Bool) {
+        self.maxDepth = maxDepth
+        self.maxPages = maxPages
+        self.maxConcurrent = maxConcurrent
+        self.respectRobotsTxt = respectRobotsTxt
+        self.softHttpErrors = softHttpErrors
+        self.userAgent = userAgent
+        self.stayOnDomain = stayOnDomain
+        self.allowSubdomains = allowSubdomains
+        self.includePaths = includePaths
+        self.excludePaths = excludePaths
+        self.customHeaders = customHeaders
+        self.requestTimeout = requestTimeout
+        self.rateLimitMs = rateLimitMs
+        self.maxRedirects = maxRedirects
+        self.retryCount = retryCount
+        self.retryCodes = retryCodes
+        self.cookiesEnabled = cookiesEnabled
+        self.auth = auth
+        self.maxBodySize = maxBodySize
+        self.removeTags = removeTags
+        self.content = content
+        self.mapLimit = mapLimit
+        self.mapSearch = mapSearch
+        self.downloadAssets = downloadAssets
+        self.assetTypes = assetTypes
+        self.maxAssetSize = maxAssetSize
+        self.browser = browser
+        self.proxy = proxy
+        self.userAgents = userAgents
+        self.captureScreenshot = captureScreenshot
+        self.downloadDocuments = downloadDocuments
+        self.documentMaxSize = documentMaxSize
+        self.documentMimeTypes = documentMimeTypes
+        self.warcOutput = warcOutput
+        self.browserProfile = browserProfile
+        self.saveBrowserProfile = saveBrowserProfile
+    }
+    private enum CodingKeys: String, CodingKey {
+        case maxDepth = "max_depth"
+        case maxPages = "max_pages"
+        case maxConcurrent = "max_concurrent"
+        case respectRobotsTxt = "respect_robots_txt"
+        case softHttpErrors = "soft_http_errors"
+        case userAgent = "user_agent"
+        case stayOnDomain = "stay_on_domain"
+        case allowSubdomains = "allow_subdomains"
+        case includePaths = "include_paths"
+        case excludePaths = "exclude_paths"
+        case customHeaders = "custom_headers"
+        case requestTimeout = "request_timeout"
+        case rateLimitMs = "rate_limit_ms"
+        case maxRedirects = "max_redirects"
+        case retryCount = "retry_count"
+        case retryCodes = "retry_codes"
+        case cookiesEnabled = "cookies_enabled"
+        case auth = "auth"
+        case maxBodySize = "max_body_size"
+        case removeTags = "remove_tags"
+        case content = "content"
+        case mapLimit = "map_limit"
+        case mapSearch = "map_search"
+        case downloadAssets = "download_assets"
+        case assetTypes = "asset_types"
+        case maxAssetSize = "max_asset_size"
+        case browser = "browser"
+        case proxy = "proxy"
+        case userAgents = "user_agents"
+        case captureScreenshot = "capture_screenshot"
+        case downloadDocuments = "download_documents"
+        case documentMaxSize = "document_max_size"
+        case documentMimeTypes = "document_mime_types"
+        case warcOutput = "warc_output"
+        case browserProfile = "browser_profile"
+        case saveBrowserProfile = "save_browser_profile"
+    }
 }
 
 // MARK: - Internal FFI conversions for CrawlConfig
-extension CrawlConfig {
-  init(_ rb: RustBridge.CrawlConfig) throws {
-    self.maxDepth = rb.maxDepth()
-    self.maxPages = rb.maxPages()
-    self.maxConcurrent = rb.maxConcurrent()
-    self.respectRobotsTxt = rb.respectRobotsTxt()
-    self.softHttpErrors = rb.softHttpErrors()
-    self.userAgent = rb.userAgent().toString()
-    self.stayOnDomain = rb.stayOnDomain()
-    self.allowSubdomains = rb.allowSubdomains()
-    self.includePaths = rb.includePaths()
-    self.excludePaths = rb.excludePaths()
-    self.customHeaders = rb.customHeaders()
-    self.requestTimeout = rb.requestTimeout()
-    self.rateLimitMs = rb.rateLimitMs()
-    self.maxRedirects = rb.maxRedirects()
-    self.retryCount = rb.retryCount()
-    self.retryCodes = rb.retryCodes()
-    self.cookiesEnabled = rb.cookiesEnabled()
-    self.auth = rb.auth()
-    self.maxBodySize = rb.maxBodySize()
-    self.removeTags = rb.removeTags()
-    self.content = rb.content()
-    self.mapLimit = rb.mapLimit()
-    self.mapSearch = rb.mapSearch().toString()
-    self.downloadAssets = rb.downloadAssets()
-    self.assetTypes = rb.assetTypes()
-    self.maxAssetSize = rb.maxAssetSize()
-    self.browser = rb.browser()
-    self.proxy = rb.proxy()
-    self.userAgents = rb.userAgents()
-    self.captureScreenshot = rb.captureScreenshot()
-    self.downloadDocuments = rb.downloadDocuments()
-    self.documentMaxSize = rb.documentMaxSize()
-    self.documentMimeTypes = rb.documentMimeTypes()
-    self.warcOutput = rb.warcOutput()
-    self.browserProfile = rb.browserProfile().toString()
-    self.saveBrowserProfile = rb.saveBrowserProfile()
-  }
-  func intoRust() throws -> RustBridge.CrawlConfig {
-    let data = try JSONEncoder().encode(self)
-    let json = String(data: data, encoding: .utf8) ?? "{}"
-    return try RustBridge.crawlConfigFromJson(json)
-  }
+internal extension CrawlConfig {
+    init(_ rb: RustBridge.CrawlConfig) throws {
+        self.maxDepth = rb.maxDepth()
+        self.maxPages = rb.maxPages()
+        self.maxConcurrent = rb.maxConcurrent()
+        self.respectRobotsTxt = rb.respectRobotsTxt()
+        self.softHttpErrors = rb.softHttpErrors()
+        self.userAgent = rb.userAgent()?.toString()
+        self.stayOnDomain = rb.stayOnDomain()
+        self.allowSubdomains = rb.allowSubdomains()
+        self.includePaths = rb.includePaths()
+        self.excludePaths = rb.excludePaths()
+        self.customHeaders = rb.customHeaders()
+        self.requestTimeout = rb.requestTimeout()
+        self.rateLimitMs = rb.rateLimitMs()
+        self.maxRedirects = rb.maxRedirects()
+        self.retryCount = rb.retryCount()
+        self.retryCodes = rb.retryCodes()
+        self.cookiesEnabled = rb.cookiesEnabled()
+        self.auth = rb.auth()
+        self.maxBodySize = rb.maxBodySize()
+        self.removeTags = rb.removeTags()
+        self.content = rb.content()
+        self.mapLimit = rb.mapLimit()
+        self.mapSearch = rb.mapSearch()?.toString()
+        self.downloadAssets = rb.downloadAssets()
+        self.assetTypes = rb.assetTypes()
+        self.maxAssetSize = rb.maxAssetSize()
+        self.browser = rb.browser()
+        self.proxy = rb.proxy()
+        self.userAgents = rb.userAgents()
+        self.captureScreenshot = rb.captureScreenshot()
+        self.downloadDocuments = rb.downloadDocuments()
+        self.documentMaxSize = rb.documentMaxSize()
+        self.documentMimeTypes = rb.documentMimeTypes()
+        self.warcOutput = rb.warcOutput()
+        self.browserProfile = rb.browserProfile()?.toString()
+        self.saveBrowserProfile = rb.saveBrowserProfile()
+    }
+    func intoRust() throws -> RustBridge.CrawlConfig {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "{}"
+        return try RustBridge.crawlConfigFromJson(json)
+    }
 }
 
 /// A downloaded non-HTML document (PDF, DOCX, image, code file, etc.).
@@ -372,1059 +351,1017 @@ extension CrawlConfig {
 /// enabled, it downloads the raw bytes and populates this struct instead of
 /// skipping the resource.
 public struct DownloadedDocument: Codable, Sendable, Hashable {
-  public let url: String
-  public let mimeType: String
-  public let size: UInt
-  public let filename: String
-  public let contentHash: String
-  public let headers: [String: String]
-  public init(
-    url: String, mimeType: String, size: UInt, filename: String, contentHash: String,
-    headers: [String: String]
-  ) {
-    self.url = url
-    self.mimeType = mimeType
-    self.size = size
-    self.filename = filename
-    self.contentHash = contentHash
-    self.headers = headers
-  }
-  private enum CodingKeys: String, CodingKey {
-    case url = "url"
-    case mimeType = "mime_type"
-    case size = "size"
-    case filename = "filename"
-    case contentHash = "content_hash"
-    case headers = "headers"
-  }
+    public let url: String
+    public let mimeType: String
+    public let size: UInt
+    public let filename: String?
+    public let contentHash: String
+    public let headers: [String: String]
+    public init(url: String, mimeType: String, size: UInt, filename: String? = nil, contentHash: String, headers: [String: String]) {
+        self.url = url
+        self.mimeType = mimeType
+        self.size = size
+        self.filename = filename
+        self.contentHash = contentHash
+        self.headers = headers
+    }
+    private enum CodingKeys: String, CodingKey {
+        case url = "url"
+        case mimeType = "mime_type"
+        case size = "size"
+        case filename = "filename"
+        case contentHash = "content_hash"
+        case headers = "headers"
+    }
 }
 
 // MARK: - Internal FFI conversions for DownloadedDocument
-extension DownloadedDocument {
-  init(_ rb: RustBridge.DownloadedDocument) throws {
-    self.url = rb.url().toString()
-    self.mimeType = rb.mimeType().toString()
-    self.size = rb.size()
-    self.filename = rb.filename().toString()
-    self.contentHash = rb.contentHash().toString()
-    self.headers = rb.headers()
-  }
-  func intoRust() throws -> RustBridge.DownloadedDocument {
-    let data = try JSONEncoder().encode(self)
-    let json = String(data: data, encoding: .utf8) ?? "{}"
-    return try RustBridge.downloadedDocumentFromJson(json)
-  }
+internal extension DownloadedDocument {
+    init(_ rb: RustBridge.DownloadedDocument) throws {
+        self.url = rb.url().toString()
+        self.mimeType = rb.mimeType().toString()
+        self.size = rb.size()
+        self.filename = rb.filename()?.toString()
+        self.contentHash = rb.contentHash().toString()
+        self.headers = rb.headers()
+    }
+    func intoRust() throws -> RustBridge.DownloadedDocument {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "{}"
+        return try RustBridge.downloadedDocumentFromJson(json)
+    }
 }
 
 /// The result of a single-page scrape operation.
 public struct ScrapeResult: Codable, Sendable, Hashable {
-  public let statusCode: UInt16
-  public let contentType: String
-  public let html: String
-  public let bodySize: UInt
-  public let metadata: PageMetadata
-  public let links: [LinkInfo]
-  public let images: [ImageInfo]
-  public let feeds: [FeedInfo]
-  public let jsonLd: [JsonLdEntry]
-  public let isAllowed: Bool
-  public let crawlDelay: UInt64
-  public let noindexDetected: Bool
-  public let nofollowDetected: Bool
-  public let xRobotsTag: String
-  public let isPdf: Bool
-  public let wasSkipped: Bool
-  public let detectedCharset: String
-  public let authHeaderSent: Bool
-  public let responseMeta: ResponseMeta
-  public let assets: [DownloadedAsset]
-  public let jsRenderHint: Bool
-  public let browserUsed: Bool
-  public let markdown: MarkdownResult
-  public let extractedData: String
-  public let extractionMeta: ExtractionMeta
-  public let downloadedDocument: DownloadedDocument
-  public init(
-    statusCode: UInt16, contentType: String, html: String, bodySize: UInt, metadata: PageMetadata,
-    links: [LinkInfo], images: [ImageInfo], feeds: [FeedInfo], jsonLd: [JsonLdEntry],
-    isAllowed: Bool, crawlDelay: UInt64, noindexDetected: Bool, nofollowDetected: Bool,
-    xRobotsTag: String, isPdf: Bool, wasSkipped: Bool, detectedCharset: String,
-    authHeaderSent: Bool, responseMeta: ResponseMeta, assets: [DownloadedAsset], jsRenderHint: Bool,
-    browserUsed: Bool, markdown: MarkdownResult, extractedData: String,
-    extractionMeta: ExtractionMeta, downloadedDocument: DownloadedDocument
-  ) {
-    self.statusCode = statusCode
-    self.contentType = contentType
-    self.html = html
-    self.bodySize = bodySize
-    self.metadata = metadata
-    self.links = links
-    self.images = images
-    self.feeds = feeds
-    self.jsonLd = jsonLd
-    self.isAllowed = isAllowed
-    self.crawlDelay = crawlDelay
-    self.noindexDetected = noindexDetected
-    self.nofollowDetected = nofollowDetected
-    self.xRobotsTag = xRobotsTag
-    self.isPdf = isPdf
-    self.wasSkipped = wasSkipped
-    self.detectedCharset = detectedCharset
-    self.authHeaderSent = authHeaderSent
-    self.responseMeta = responseMeta
-    self.assets = assets
-    self.jsRenderHint = jsRenderHint
-    self.browserUsed = browserUsed
-    self.markdown = markdown
-    self.extractedData = extractedData
-    self.extractionMeta = extractionMeta
-    self.downloadedDocument = downloadedDocument
-  }
-  private enum CodingKeys: String, CodingKey {
-    case statusCode = "status_code"
-    case contentType = "content_type"
-    case html = "html"
-    case bodySize = "body_size"
-    case metadata = "metadata"
-    case links = "links"
-    case images = "images"
-    case feeds = "feeds"
-    case jsonLd = "json_ld"
-    case isAllowed = "is_allowed"
-    case crawlDelay = "crawl_delay"
-    case noindexDetected = "noindex_detected"
-    case nofollowDetected = "nofollow_detected"
-    case xRobotsTag = "x_robots_tag"
-    case isPdf = "is_pdf"
-    case wasSkipped = "was_skipped"
-    case detectedCharset = "detected_charset"
-    case authHeaderSent = "auth_header_sent"
-    case responseMeta = "response_meta"
-    case assets = "assets"
-    case jsRenderHint = "js_render_hint"
-    case browserUsed = "browser_used"
-    case markdown = "markdown"
-    case extractedData = "extracted_data"
-    case extractionMeta = "extraction_meta"
-    case downloadedDocument = "downloaded_document"
-  }
+    public let statusCode: UInt16
+    public let contentType: String
+    public let html: String
+    public let bodySize: UInt
+    public let metadata: PageMetadata
+    public let links: [LinkInfo]
+    public let images: [ImageInfo]
+    public let feeds: [FeedInfo]
+    public let jsonLd: [JsonLdEntry]
+    public let isAllowed: Bool
+    public let crawlDelay: UInt64?
+    public let noindexDetected: Bool
+    public let nofollowDetected: Bool
+    public let xRobotsTag: String?
+    public let isPdf: Bool
+    public let wasSkipped: Bool
+    public let detectedCharset: String?
+    public let authHeaderSent: Bool
+    public let responseMeta: ResponseMeta?
+    public let assets: [DownloadedAsset]
+    public let jsRenderHint: Bool
+    public let browserUsed: Bool
+    public let markdown: MarkdownResult?
+    public let extractedData: String?
+    public let extractionMeta: ExtractionMeta?
+    public let downloadedDocument: DownloadedDocument?
+    public init(statusCode: UInt16, contentType: String, html: String, bodySize: UInt, metadata: PageMetadata, links: [LinkInfo], images: [ImageInfo], feeds: [FeedInfo], jsonLd: [JsonLdEntry], isAllowed: Bool, crawlDelay: UInt64? = nil, noindexDetected: Bool, nofollowDetected: Bool, xRobotsTag: String? = nil, isPdf: Bool, wasSkipped: Bool, detectedCharset: String? = nil, authHeaderSent: Bool, responseMeta: ResponseMeta? = nil, assets: [DownloadedAsset], jsRenderHint: Bool, browserUsed: Bool, markdown: MarkdownResult? = nil, extractedData: String? = nil, extractionMeta: ExtractionMeta? = nil, downloadedDocument: DownloadedDocument? = nil) {
+        self.statusCode = statusCode
+        self.contentType = contentType
+        self.html = html
+        self.bodySize = bodySize
+        self.metadata = metadata
+        self.links = links
+        self.images = images
+        self.feeds = feeds
+        self.jsonLd = jsonLd
+        self.isAllowed = isAllowed
+        self.crawlDelay = crawlDelay
+        self.noindexDetected = noindexDetected
+        self.nofollowDetected = nofollowDetected
+        self.xRobotsTag = xRobotsTag
+        self.isPdf = isPdf
+        self.wasSkipped = wasSkipped
+        self.detectedCharset = detectedCharset
+        self.authHeaderSent = authHeaderSent
+        self.responseMeta = responseMeta
+        self.assets = assets
+        self.jsRenderHint = jsRenderHint
+        self.browserUsed = browserUsed
+        self.markdown = markdown
+        self.extractedData = extractedData
+        self.extractionMeta = extractionMeta
+        self.downloadedDocument = downloadedDocument
+    }
+    private enum CodingKeys: String, CodingKey {
+        case statusCode = "status_code"
+        case contentType = "content_type"
+        case html = "html"
+        case bodySize = "body_size"
+        case metadata = "metadata"
+        case links = "links"
+        case images = "images"
+        case feeds = "feeds"
+        case jsonLd = "json_ld"
+        case isAllowed = "is_allowed"
+        case crawlDelay = "crawl_delay"
+        case noindexDetected = "noindex_detected"
+        case nofollowDetected = "nofollow_detected"
+        case xRobotsTag = "x_robots_tag"
+        case isPdf = "is_pdf"
+        case wasSkipped = "was_skipped"
+        case detectedCharset = "detected_charset"
+        case authHeaderSent = "auth_header_sent"
+        case responseMeta = "response_meta"
+        case assets = "assets"
+        case jsRenderHint = "js_render_hint"
+        case browserUsed = "browser_used"
+        case markdown = "markdown"
+        case extractedData = "extracted_data"
+        case extractionMeta = "extraction_meta"
+        case downloadedDocument = "downloaded_document"
+    }
 }
 
 // MARK: - Internal FFI conversions for ScrapeResult
-extension ScrapeResult {
-  init(_ rb: RustBridge.ScrapeResult) throws {
-    self.statusCode = rb.statusCode()
-    self.contentType = rb.contentType().toString()
-    self.html = rb.html().toString()
-    self.bodySize = rb.bodySize()
-    self.metadata = rb.metadata()
-    self.links = rb.links()
-    self.images = rb.images()
-    self.feeds = rb.feeds()
-    self.jsonLd = rb.jsonLd()
-    self.isAllowed = rb.isAllowed()
-    self.crawlDelay = rb.crawlDelay()
-    self.noindexDetected = rb.noindexDetected()
-    self.nofollowDetected = rb.nofollowDetected()
-    self.xRobotsTag = rb.xRobotsTag().toString()
-    self.isPdf = rb.isPdf()
-    self.wasSkipped = rb.wasSkipped()
-    self.detectedCharset = rb.detectedCharset().toString()
-    self.authHeaderSent = rb.authHeaderSent()
-    self.responseMeta = rb.responseMeta()
-    self.assets = rb.assets()
-    self.jsRenderHint = rb.jsRenderHint()
-    self.browserUsed = rb.browserUsed()
-    self.markdown = rb.markdown()
-    self.extractedData = rb.extractedData()
-    self.extractionMeta = rb.extractionMeta()
-    self.downloadedDocument = rb.downloadedDocument()
-  }
-  func intoRust() throws -> RustBridge.ScrapeResult {
-    let data = try JSONEncoder().encode(self)
-    let json = String(data: data, encoding: .utf8) ?? "{}"
-    return try RustBridge.scrapeResultFromJson(json)
-  }
+internal extension ScrapeResult {
+    init(_ rb: RustBridge.ScrapeResult) throws {
+        self.statusCode = rb.statusCode()
+        self.contentType = rb.contentType().toString()
+        self.html = rb.html().toString()
+        self.bodySize = rb.bodySize()
+        self.metadata = rb.metadata()
+        self.links = rb.links()
+        self.images = rb.images()
+        self.feeds = rb.feeds()
+        self.jsonLd = rb.jsonLd()
+        self.isAllowed = rb.isAllowed()
+        self.crawlDelay = rb.crawlDelay()
+        self.noindexDetected = rb.noindexDetected()
+        self.nofollowDetected = rb.nofollowDetected()
+        self.xRobotsTag = rb.xRobotsTag()?.toString()
+        self.isPdf = rb.isPdf()
+        self.wasSkipped = rb.wasSkipped()
+        self.detectedCharset = rb.detectedCharset()?.toString()
+        self.authHeaderSent = rb.authHeaderSent()
+        self.responseMeta = rb.responseMeta()
+        self.assets = rb.assets()
+        self.jsRenderHint = rb.jsRenderHint()
+        self.browserUsed = rb.browserUsed()
+        self.markdown = rb.markdown()
+        self.extractedData = rb.extractedData()
+        self.extractionMeta = rb.extractionMeta()
+        self.downloadedDocument = rb.downloadedDocument()
+    }
+    func intoRust() throws -> RustBridge.ScrapeResult {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "{}"
+        return try RustBridge.scrapeResultFromJson(json)
+    }
 }
 
 /// The result of crawling a single page during a crawl operation.
 public struct CrawlPageResult: Codable, Sendable, Hashable {
-  public let url: String
-  public let normalizedUrl: String
-  public let statusCode: UInt16
-  public let contentType: String
-  public let html: String
-  public let bodySize: UInt
-  public let metadata: PageMetadata
-  public let links: [LinkInfo]
-  public let images: [ImageInfo]
-  public let feeds: [FeedInfo]
-  public let jsonLd: [JsonLdEntry]
-  public let depth: UInt
-  public let stayedOnDomain: Bool
-  public let wasSkipped: Bool
-  public let isPdf: Bool
-  public let detectedCharset: String
-  public let markdown: MarkdownResult
-  public let extractedData: String
-  public let extractionMeta: ExtractionMeta
-  public let downloadedDocument: DownloadedDocument
-  public init(
-    url: String, normalizedUrl: String, statusCode: UInt16, contentType: String, html: String,
-    bodySize: UInt, metadata: PageMetadata, links: [LinkInfo], images: [ImageInfo],
-    feeds: [FeedInfo], jsonLd: [JsonLdEntry], depth: UInt, stayedOnDomain: Bool, wasSkipped: Bool,
-    isPdf: Bool, detectedCharset: String, markdown: MarkdownResult, extractedData: String,
-    extractionMeta: ExtractionMeta, downloadedDocument: DownloadedDocument
-  ) {
-    self.url = url
-    self.normalizedUrl = normalizedUrl
-    self.statusCode = statusCode
-    self.contentType = contentType
-    self.html = html
-    self.bodySize = bodySize
-    self.metadata = metadata
-    self.links = links
-    self.images = images
-    self.feeds = feeds
-    self.jsonLd = jsonLd
-    self.depth = depth
-    self.stayedOnDomain = stayedOnDomain
-    self.wasSkipped = wasSkipped
-    self.isPdf = isPdf
-    self.detectedCharset = detectedCharset
-    self.markdown = markdown
-    self.extractedData = extractedData
-    self.extractionMeta = extractionMeta
-    self.downloadedDocument = downloadedDocument
-  }
-  private enum CodingKeys: String, CodingKey {
-    case url = "url"
-    case normalizedUrl = "normalized_url"
-    case statusCode = "status_code"
-    case contentType = "content_type"
-    case html = "html"
-    case bodySize = "body_size"
-    case metadata = "metadata"
-    case links = "links"
-    case images = "images"
-    case feeds = "feeds"
-    case jsonLd = "json_ld"
-    case depth = "depth"
-    case stayedOnDomain = "stayed_on_domain"
-    case wasSkipped = "was_skipped"
-    case isPdf = "is_pdf"
-    case detectedCharset = "detected_charset"
-    case markdown = "markdown"
-    case extractedData = "extracted_data"
-    case extractionMeta = "extraction_meta"
-    case downloadedDocument = "downloaded_document"
-  }
+    public let url: String
+    public let normalizedUrl: String
+    public let statusCode: UInt16
+    public let contentType: String
+    public let html: String
+    public let bodySize: UInt
+    public let metadata: PageMetadata
+    public let links: [LinkInfo]
+    public let images: [ImageInfo]
+    public let feeds: [FeedInfo]
+    public let jsonLd: [JsonLdEntry]
+    public let depth: UInt
+    public let stayedOnDomain: Bool
+    public let wasSkipped: Bool
+    public let isPdf: Bool
+    public let detectedCharset: String?
+    public let markdown: MarkdownResult?
+    public let extractedData: String?
+    public let extractionMeta: ExtractionMeta?
+    public let downloadedDocument: DownloadedDocument?
+    public init(url: String, normalizedUrl: String, statusCode: UInt16, contentType: String, html: String, bodySize: UInt, metadata: PageMetadata, links: [LinkInfo], images: [ImageInfo], feeds: [FeedInfo], jsonLd: [JsonLdEntry], depth: UInt, stayedOnDomain: Bool, wasSkipped: Bool, isPdf: Bool, detectedCharset: String? = nil, markdown: MarkdownResult? = nil, extractedData: String? = nil, extractionMeta: ExtractionMeta? = nil, downloadedDocument: DownloadedDocument? = nil) {
+        self.url = url
+        self.normalizedUrl = normalizedUrl
+        self.statusCode = statusCode
+        self.contentType = contentType
+        self.html = html
+        self.bodySize = bodySize
+        self.metadata = metadata
+        self.links = links
+        self.images = images
+        self.feeds = feeds
+        self.jsonLd = jsonLd
+        self.depth = depth
+        self.stayedOnDomain = stayedOnDomain
+        self.wasSkipped = wasSkipped
+        self.isPdf = isPdf
+        self.detectedCharset = detectedCharset
+        self.markdown = markdown
+        self.extractedData = extractedData
+        self.extractionMeta = extractionMeta
+        self.downloadedDocument = downloadedDocument
+    }
+    private enum CodingKeys: String, CodingKey {
+        case url = "url"
+        case normalizedUrl = "normalized_url"
+        case statusCode = "status_code"
+        case contentType = "content_type"
+        case html = "html"
+        case bodySize = "body_size"
+        case metadata = "metadata"
+        case links = "links"
+        case images = "images"
+        case feeds = "feeds"
+        case jsonLd = "json_ld"
+        case depth = "depth"
+        case stayedOnDomain = "stayed_on_domain"
+        case wasSkipped = "was_skipped"
+        case isPdf = "is_pdf"
+        case detectedCharset = "detected_charset"
+        case markdown = "markdown"
+        case extractedData = "extracted_data"
+        case extractionMeta = "extraction_meta"
+        case downloadedDocument = "downloaded_document"
+    }
 }
 
 // MARK: - Internal FFI conversions for CrawlPageResult
-extension CrawlPageResult {
-  init(_ rb: RustBridge.CrawlPageResult) throws {
-    self.url = rb.url().toString()
-    self.normalizedUrl = rb.normalizedUrl().toString()
-    self.statusCode = rb.statusCode()
-    self.contentType = rb.contentType().toString()
-    self.html = rb.html().toString()
-    self.bodySize = rb.bodySize()
-    self.metadata = rb.metadata()
-    self.links = rb.links()
-    self.images = rb.images()
-    self.feeds = rb.feeds()
-    self.jsonLd = rb.jsonLd()
-    self.depth = rb.depth()
-    self.stayedOnDomain = rb.stayedOnDomain()
-    self.wasSkipped = rb.wasSkipped()
-    self.isPdf = rb.isPdf()
-    self.detectedCharset = rb.detectedCharset().toString()
-    self.markdown = rb.markdown()
-    self.extractedData = rb.extractedData()
-    self.extractionMeta = rb.extractionMeta()
-    self.downloadedDocument = rb.downloadedDocument()
-  }
-  func intoRust() throws -> RustBridge.CrawlPageResult {
-    let data = try JSONEncoder().encode(self)
-    let json = String(data: data, encoding: .utf8) ?? "{}"
-    return try RustBridge.crawlPageResultFromJson(json)
-  }
+internal extension CrawlPageResult {
+    init(_ rb: RustBridge.CrawlPageResult) throws {
+        self.url = rb.url().toString()
+        self.normalizedUrl = rb.normalizedUrl().toString()
+        self.statusCode = rb.statusCode()
+        self.contentType = rb.contentType().toString()
+        self.html = rb.html().toString()
+        self.bodySize = rb.bodySize()
+        self.metadata = rb.metadata()
+        self.links = rb.links()
+        self.images = rb.images()
+        self.feeds = rb.feeds()
+        self.jsonLd = rb.jsonLd()
+        self.depth = rb.depth()
+        self.stayedOnDomain = rb.stayedOnDomain()
+        self.wasSkipped = rb.wasSkipped()
+        self.isPdf = rb.isPdf()
+        self.detectedCharset = rb.detectedCharset()?.toString()
+        self.markdown = rb.markdown()
+        self.extractedData = rb.extractedData()
+        self.extractionMeta = rb.extractionMeta()
+        self.downloadedDocument = rb.downloadedDocument()
+    }
+    func intoRust() throws -> RustBridge.CrawlPageResult {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "{}"
+        return try RustBridge.crawlPageResultFromJson(json)
+    }
 }
 
 /// The result of a multi-page crawl operation.
 public struct CrawlResult: Codable, Sendable, Hashable {
-  public let pages: [CrawlPageResult]
-  public let finalUrl: String
-  public let redirectCount: UInt
-  public let wasSkipped: Bool
-  public let error: String
-  public let cookies: [CookieInfo]
-  public let normalizedUrls: [String]
-  public init(
-    pages: [CrawlPageResult], finalUrl: String, redirectCount: UInt, wasSkipped: Bool,
-    error: String, cookies: [CookieInfo], normalizedUrls: [String]
-  ) {
-    self.pages = pages
-    self.finalUrl = finalUrl
-    self.redirectCount = redirectCount
-    self.wasSkipped = wasSkipped
-    self.error = error
-    self.cookies = cookies
-    self.normalizedUrls = normalizedUrls
-  }
-  private enum CodingKeys: String, CodingKey {
-    case pages = "pages"
-    case finalUrl = "final_url"
-    case redirectCount = "redirect_count"
-    case wasSkipped = "was_skipped"
-    case error = "error"
-    case cookies = "cookies"
-    case normalizedUrls = "normalized_urls"
-  }
+    public let pages: [CrawlPageResult]
+    public let finalUrl: String
+    public let redirectCount: UInt
+    public let wasSkipped: Bool
+    public let error: String?
+    public let cookies: [CookieInfo]
+    public let normalizedUrls: [String]
+    public init(pages: [CrawlPageResult], finalUrl: String, redirectCount: UInt, wasSkipped: Bool, error: String? = nil, cookies: [CookieInfo], normalizedUrls: [String]) {
+        self.pages = pages
+        self.finalUrl = finalUrl
+        self.redirectCount = redirectCount
+        self.wasSkipped = wasSkipped
+        self.error = error
+        self.cookies = cookies
+        self.normalizedUrls = normalizedUrls
+    }
+    private enum CodingKeys: String, CodingKey {
+        case pages = "pages"
+        case finalUrl = "final_url"
+        case redirectCount = "redirect_count"
+        case wasSkipped = "was_skipped"
+        case error = "error"
+        case cookies = "cookies"
+        case normalizedUrls = "normalized_urls"
+    }
 }
 
 // MARK: - Internal FFI conversions for CrawlResult
-extension CrawlResult {
-  init(_ rb: RustBridge.CrawlResult) throws {
-    self.pages = rb.pages()
-    self.finalUrl = rb.finalUrl().toString()
-    self.redirectCount = rb.redirectCount()
-    self.wasSkipped = rb.wasSkipped()
-    self.error = rb.error().toString()
-    self.cookies = rb.cookies()
-    self.normalizedUrls = rb.normalizedUrls()
-  }
-  func intoRust() throws -> RustBridge.CrawlResult {
-    let data = try JSONEncoder().encode(self)
-    let json = String(data: data, encoding: .utf8) ?? "{}"
-    return try RustBridge.crawlResultFromJson(json)
-  }
+internal extension CrawlResult {
+    init(_ rb: RustBridge.CrawlResult) throws {
+        self.pages = rb.pages()
+        self.finalUrl = rb.finalUrl().toString()
+        self.redirectCount = rb.redirectCount()
+        self.wasSkipped = rb.wasSkipped()
+        self.error = rb.error()?.toString()
+        self.cookies = rb.cookies()
+        self.normalizedUrls = rb.normalizedUrls()
+    }
+    func intoRust() throws -> RustBridge.CrawlResult {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "{}"
+        return try RustBridge.crawlResultFromJson(json)
+    }
 }
 
 /// A URL entry from a sitemap.
 public struct SitemapUrl: Codable, Sendable, Hashable {
-  public let url: String
-  public let lastmod: String
-  public let changefreq: String
-  public let priority: String
-  public init(url: String, lastmod: String, changefreq: String, priority: String) {
-    self.url = url
-    self.lastmod = lastmod
-    self.changefreq = changefreq
-    self.priority = priority
-  }
+    public let url: String
+    public let lastmod: String?
+    public let changefreq: String?
+    public let priority: String?
+    public init(url: String, lastmod: String? = nil, changefreq: String? = nil, priority: String? = nil) {
+        self.url = url
+        self.lastmod = lastmod
+        self.changefreq = changefreq
+        self.priority = priority
+    }
 }
 
 // MARK: - Internal FFI conversions for SitemapUrl
-extension SitemapUrl {
-  init(_ rb: RustBridge.SitemapUrl) throws {
-    self.url = rb.url().toString()
-    self.lastmod = rb.lastmod().toString()
-    self.changefreq = rb.changefreq().toString()
-    self.priority = rb.priority().toString()
-  }
-  func intoRust() throws -> RustBridge.SitemapUrl {
-    let data = try JSONEncoder().encode(self)
-    let json = String(data: data, encoding: .utf8) ?? "{}"
-    return try RustBridge.sitemapUrlFromJson(json)
-  }
+internal extension SitemapUrl {
+    init(_ rb: RustBridge.SitemapUrl) throws {
+        self.url = rb.url().toString()
+        self.lastmod = rb.lastmod()?.toString()
+        self.changefreq = rb.changefreq()?.toString()
+        self.priority = rb.priority()?.toString()
+    }
+    func intoRust() throws -> RustBridge.SitemapUrl {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "{}"
+        return try RustBridge.sitemapUrlFromJson(json)
+    }
 }
 
 /// The result of a map operation, containing discovered URLs.
 public struct MapResult: Codable, Sendable, Hashable {
-  public let urls: [SitemapUrl]
-  public init(urls: [SitemapUrl]) {
-    self.urls = urls
-  }
+    public let urls: [SitemapUrl]
+    public init(urls: [SitemapUrl]) {
+        self.urls = urls
+    }
 }
 
 // MARK: - Internal FFI conversions for MapResult
-extension MapResult {
-  init(_ rb: RustBridge.MapResult) throws {
-    self.urls = rb.urls()
-  }
-  func intoRust() throws -> RustBridge.MapResult {
-    let data = try JSONEncoder().encode(self)
-    let json = String(data: data, encoding: .utf8) ?? "{}"
-    return try RustBridge.mapResultFromJson(json)
-  }
+internal extension MapResult {
+    init(_ rb: RustBridge.MapResult) throws {
+        self.urls = rb.urls()
+    }
+    func intoRust() throws -> RustBridge.MapResult {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "{}"
+        return try RustBridge.mapResultFromJson(json)
+    }
 }
 
 /// Rich markdown conversion result from HTML processing.
 public struct MarkdownResult: Codable, Sendable, Hashable {
-  public let content: String
-  public let documentStructure: String
-  public let tables: [String]
-  public let warnings: [String]
-  public let citations: CitationResult
-  public let fitContent: String
-  public init(
-    content: String, documentStructure: String, tables: [String], warnings: [String],
-    citations: CitationResult, fitContent: String
-  ) {
-    self.content = content
-    self.documentStructure = documentStructure
-    self.tables = tables
-    self.warnings = warnings
-    self.citations = citations
-    self.fitContent = fitContent
-  }
-  private enum CodingKeys: String, CodingKey {
-    case content = "content"
-    case documentStructure = "document_structure"
-    case tables = "tables"
-    case warnings = "warnings"
-    case citations = "citations"
-    case fitContent = "fit_content"
-  }
+    public let content: String
+    public let documentStructure: String?
+    public let tables: [String]
+    public let warnings: [String]
+    public let citations: CitationResult?
+    public let fitContent: String?
+    public init(content: String, documentStructure: String? = nil, tables: [String], warnings: [String], citations: CitationResult? = nil, fitContent: String? = nil) {
+        self.content = content
+        self.documentStructure = documentStructure
+        self.tables = tables
+        self.warnings = warnings
+        self.citations = citations
+        self.fitContent = fitContent
+    }
+    private enum CodingKeys: String, CodingKey {
+        case content = "content"
+        case documentStructure = "document_structure"
+        case tables = "tables"
+        case warnings = "warnings"
+        case citations = "citations"
+        case fitContent = "fit_content"
+    }
 }
 
 // MARK: - Internal FFI conversions for MarkdownResult
-extension MarkdownResult {
-  init(_ rb: RustBridge.MarkdownResult) throws {
-    self.content = rb.content().toString()
-    self.documentStructure = rb.documentStructure()
-    self.tables = rb.tables()
-    self.warnings = rb.warnings()
-    self.citations = rb.citations()
-    self.fitContent = rb.fitContent().toString()
-  }
-  func intoRust() throws -> RustBridge.MarkdownResult {
-    let data = try JSONEncoder().encode(self)
-    let json = String(data: data, encoding: .utf8) ?? "{}"
-    return try RustBridge.markdownResultFromJson(json)
-  }
+internal extension MarkdownResult {
+    init(_ rb: RustBridge.MarkdownResult) throws {
+        self.content = rb.content().toString()
+        self.documentStructure = rb.documentStructure()
+        self.tables = rb.tables()
+        self.warnings = rb.warnings()
+        self.citations = rb.citations()
+        self.fitContent = rb.fitContent()?.toString()
+    }
+    func intoRust() throws -> RustBridge.MarkdownResult {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "{}"
+        return try RustBridge.markdownResultFromJson(json)
+    }
 }
 
 /// Information about a link found on a page.
 public struct LinkInfo: Codable, Sendable, Hashable {
-  public let url: String
-  public let text: String
-  public let linkType: LinkType
-  public let rel: String
-  public let nofollow: Bool
-  public init(url: String, text: String, linkType: LinkType, rel: String, nofollow: Bool) {
-    self.url = url
-    self.text = text
-    self.linkType = linkType
-    self.rel = rel
-    self.nofollow = nofollow
-  }
-  private enum CodingKeys: String, CodingKey {
-    case url = "url"
-    case text = "text"
-    case linkType = "link_type"
-    case rel = "rel"
-    case nofollow = "nofollow"
-  }
+    public let url: String
+    public let text: String
+    public let linkType: LinkType
+    public let rel: String?
+    public let nofollow: Bool
+    public init(url: String, text: String, linkType: LinkType, rel: String? = nil, nofollow: Bool) {
+        self.url = url
+        self.text = text
+        self.linkType = linkType
+        self.rel = rel
+        self.nofollow = nofollow
+    }
+    private enum CodingKeys: String, CodingKey {
+        case url = "url"
+        case text = "text"
+        case linkType = "link_type"
+        case rel = "rel"
+        case nofollow = "nofollow"
+    }
 }
 
 // MARK: - Internal FFI conversions for LinkInfo
-extension LinkInfo {
-  init(_ rb: RustBridge.LinkInfo) throws {
-    self.url = rb.url().toString()
-    self.text = rb.text().toString()
-    self.linkType = rb.linkType()
-    self.rel = rb.rel().toString()
-    self.nofollow = rb.nofollow()
-  }
-  func intoRust() throws -> RustBridge.LinkInfo {
-    let data = try JSONEncoder().encode(self)
-    let json = String(data: data, encoding: .utf8) ?? "{}"
-    return try RustBridge.linkInfoFromJson(json)
-  }
+internal extension LinkInfo {
+    init(_ rb: RustBridge.LinkInfo) throws {
+        self.url = rb.url().toString()
+        self.text = rb.text().toString()
+        self.linkType = rb.linkType()
+        self.rel = rb.rel()?.toString()
+        self.nofollow = rb.nofollow()
+    }
+    func intoRust() throws -> RustBridge.LinkInfo {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "{}"
+        return try RustBridge.linkInfoFromJson(json)
+    }
 }
 
 /// Information about an image found on a page.
 public struct ImageInfo: Codable, Sendable, Hashable {
-  public let url: String
-  public let alt: String
-  public let width: UInt32
-  public let height: UInt32
-  public let source: ImageSource
-  public init(url: String, alt: String, width: UInt32, height: UInt32, source: ImageSource) {
-    self.url = url
-    self.alt = alt
-    self.width = width
-    self.height = height
-    self.source = source
-  }
+    public let url: String
+    public let alt: String?
+    public let width: UInt32?
+    public let height: UInt32?
+    public let source: ImageSource
+    public init(url: String, alt: String? = nil, width: UInt32? = nil, height: UInt32? = nil, source: ImageSource) {
+        self.url = url
+        self.alt = alt
+        self.width = width
+        self.height = height
+        self.source = source
+    }
 }
 
 // MARK: - Internal FFI conversions for ImageInfo
-extension ImageInfo {
-  init(_ rb: RustBridge.ImageInfo) throws {
-    self.url = rb.url().toString()
-    self.alt = rb.alt().toString()
-    self.width = rb.width()
-    self.height = rb.height()
-    self.source = rb.source()
-  }
-  func intoRust() throws -> RustBridge.ImageInfo {
-    let data = try JSONEncoder().encode(self)
-    let json = String(data: data, encoding: .utf8) ?? "{}"
-    return try RustBridge.imageInfoFromJson(json)
-  }
+internal extension ImageInfo {
+    init(_ rb: RustBridge.ImageInfo) throws {
+        self.url = rb.url().toString()
+        self.alt = rb.alt()?.toString()
+        self.width = rb.width()
+        self.height = rb.height()
+        self.source = rb.source()
+    }
+    func intoRust() throws -> RustBridge.ImageInfo {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "{}"
+        return try RustBridge.imageInfoFromJson(json)
+    }
 }
 
 /// Information about a feed link found on a page.
 public struct FeedInfo: Codable, Sendable, Hashable {
-  public let url: String
-  public let title: String
-  public let feedType: FeedType
-  public init(url: String, title: String, feedType: FeedType) {
-    self.url = url
-    self.title = title
-    self.feedType = feedType
-  }
-  private enum CodingKeys: String, CodingKey {
-    case url = "url"
-    case title = "title"
-    case feedType = "feed_type"
-  }
+    public let url: String
+    public let title: String?
+    public let feedType: FeedType
+    public init(url: String, title: String? = nil, feedType: FeedType) {
+        self.url = url
+        self.title = title
+        self.feedType = feedType
+    }
+    private enum CodingKeys: String, CodingKey {
+        case url = "url"
+        case title = "title"
+        case feedType = "feed_type"
+    }
 }
 
 // MARK: - Internal FFI conversions for FeedInfo
-extension FeedInfo {
-  init(_ rb: RustBridge.FeedInfo) throws {
-    self.url = rb.url().toString()
-    self.title = rb.title().toString()
-    self.feedType = rb.feedType()
-  }
-  func intoRust() throws -> RustBridge.FeedInfo {
-    let data = try JSONEncoder().encode(self)
-    let json = String(data: data, encoding: .utf8) ?? "{}"
-    return try RustBridge.feedInfoFromJson(json)
-  }
+internal extension FeedInfo {
+    init(_ rb: RustBridge.FeedInfo) throws {
+        self.url = rb.url().toString()
+        self.title = rb.title()?.toString()
+        self.feedType = rb.feedType()
+    }
+    func intoRust() throws -> RustBridge.FeedInfo {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "{}"
+        return try RustBridge.feedInfoFromJson(json)
+    }
 }
 
 /// A JSON-LD structured data entry found on a page.
 public struct JsonLdEntry: Codable, Sendable, Hashable {
-  public let schemaType: String
-  public let name: String
-  public let raw: String
-  public init(schemaType: String, name: String, raw: String) {
-    self.schemaType = schemaType
-    self.name = name
-    self.raw = raw
-  }
-  private enum CodingKeys: String, CodingKey {
-    case schemaType = "schema_type"
-    case name = "name"
-    case raw = "raw"
-  }
+    public let schemaType: String
+    public let name: String?
+    public let raw: String
+    public init(schemaType: String, name: String? = nil, raw: String) {
+        self.schemaType = schemaType
+        self.name = name
+        self.raw = raw
+    }
+    private enum CodingKeys: String, CodingKey {
+        case schemaType = "schema_type"
+        case name = "name"
+        case raw = "raw"
+    }
 }
 
 // MARK: - Internal FFI conversions for JsonLdEntry
-extension JsonLdEntry {
-  init(_ rb: RustBridge.JsonLdEntry) throws {
-    self.schemaType = rb.schemaType().toString()
-    self.name = rb.name().toString()
-    self.raw = rb.raw().toString()
-  }
-  func intoRust() throws -> RustBridge.JsonLdEntry {
-    let data = try JSONEncoder().encode(self)
-    let json = String(data: data, encoding: .utf8) ?? "{}"
-    return try RustBridge.jsonLdEntryFromJson(json)
-  }
+internal extension JsonLdEntry {
+    init(_ rb: RustBridge.JsonLdEntry) throws {
+        self.schemaType = rb.schemaType().toString()
+        self.name = rb.name()?.toString()
+        self.raw = rb.raw().toString()
+    }
+    func intoRust() throws -> RustBridge.JsonLdEntry {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "{}"
+        return try RustBridge.jsonLdEntryFromJson(json)
+    }
 }
 
 /// Information about an HTTP cookie received from a response.
 public struct CookieInfo: Codable, Sendable, Hashable {
-  public let name: String
-  public let value: String
-  public let domain: String
-  public let path: String
-  public init(name: String, value: String, domain: String, path: String) {
-    self.name = name
-    self.value = value
-    self.domain = domain
-    self.path = path
-  }
+    public let name: String
+    public let value: String
+    public let domain: String?
+    public let path: String?
+    public init(name: String, value: String, domain: String? = nil, path: String? = nil) {
+        self.name = name
+        self.value = value
+        self.domain = domain
+        self.path = path
+    }
 }
 
 // MARK: - Internal FFI conversions for CookieInfo
-extension CookieInfo {
-  init(_ rb: RustBridge.CookieInfo) throws {
-    self.name = rb.name().toString()
-    self.value = rb.value().toString()
-    self.domain = rb.domain().toString()
-    self.path = rb.path().toString()
-  }
-  func intoRust() throws -> RustBridge.CookieInfo {
-    let data = try JSONEncoder().encode(self)
-    let json = String(data: data, encoding: .utf8) ?? "{}"
-    return try RustBridge.cookieInfoFromJson(json)
-  }
+internal extension CookieInfo {
+    init(_ rb: RustBridge.CookieInfo) throws {
+        self.name = rb.name().toString()
+        self.value = rb.value().toString()
+        self.domain = rb.domain()?.toString()
+        self.path = rb.path()?.toString()
+    }
+    func intoRust() throws -> RustBridge.CookieInfo {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "{}"
+        return try RustBridge.cookieInfoFromJson(json)
+    }
 }
 
 /// A downloaded asset from a page.
 public struct DownloadedAsset: Codable, Sendable, Hashable {
-  public let url: String
-  public let contentHash: String
-  public let mimeType: String
-  public let size: UInt
-  public let assetCategory: AssetCategory
-  public let htmlTag: String
-  public init(
-    url: String, contentHash: String, mimeType: String, size: UInt, assetCategory: AssetCategory,
-    htmlTag: String
-  ) {
-    self.url = url
-    self.contentHash = contentHash
-    self.mimeType = mimeType
-    self.size = size
-    self.assetCategory = assetCategory
-    self.htmlTag = htmlTag
-  }
-  private enum CodingKeys: String, CodingKey {
-    case url = "url"
-    case contentHash = "content_hash"
-    case mimeType = "mime_type"
-    case size = "size"
-    case assetCategory = "asset_category"
-    case htmlTag = "html_tag"
-  }
+    public let url: String
+    public let contentHash: String
+    public let mimeType: String?
+    public let size: UInt
+    public let assetCategory: AssetCategory
+    public let htmlTag: String?
+    public init(url: String, contentHash: String, mimeType: String? = nil, size: UInt, assetCategory: AssetCategory, htmlTag: String? = nil) {
+        self.url = url
+        self.contentHash = contentHash
+        self.mimeType = mimeType
+        self.size = size
+        self.assetCategory = assetCategory
+        self.htmlTag = htmlTag
+    }
+    private enum CodingKeys: String, CodingKey {
+        case url = "url"
+        case contentHash = "content_hash"
+        case mimeType = "mime_type"
+        case size = "size"
+        case assetCategory = "asset_category"
+        case htmlTag = "html_tag"
+    }
 }
 
 // MARK: - Internal FFI conversions for DownloadedAsset
-extension DownloadedAsset {
-  init(_ rb: RustBridge.DownloadedAsset) throws {
-    self.url = rb.url().toString()
-    self.contentHash = rb.contentHash().toString()
-    self.mimeType = rb.mimeType().toString()
-    self.size = rb.size()
-    self.assetCategory = rb.assetCategory()
-    self.htmlTag = rb.htmlTag().toString()
-  }
-  func intoRust() throws -> RustBridge.DownloadedAsset {
-    let data = try JSONEncoder().encode(self)
-    let json = String(data: data, encoding: .utf8) ?? "{}"
-    return try RustBridge.downloadedAssetFromJson(json)
-  }
+internal extension DownloadedAsset {
+    init(_ rb: RustBridge.DownloadedAsset) throws {
+        self.url = rb.url().toString()
+        self.contentHash = rb.contentHash().toString()
+        self.mimeType = rb.mimeType()?.toString()
+        self.size = rb.size()
+        self.assetCategory = rb.assetCategory()
+        self.htmlTag = rb.htmlTag()?.toString()
+    }
+    func intoRust() throws -> RustBridge.DownloadedAsset {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "{}"
+        return try RustBridge.downloadedAssetFromJson(json)
+    }
 }
 
 /// Article metadata extracted from `article:*` Open Graph tags.
 public struct ArticleMetadata: Codable, Sendable, Hashable {
-  public let publishedTime: String
-  public let modifiedTime: String
-  public let author: String
-  public let section: String
-  public let tags: [String]
-  public init(
-    publishedTime: String, modifiedTime: String, author: String, section: String, tags: [String]
-  ) {
-    self.publishedTime = publishedTime
-    self.modifiedTime = modifiedTime
-    self.author = author
-    self.section = section
-    self.tags = tags
-  }
-  private enum CodingKeys: String, CodingKey {
-    case publishedTime = "published_time"
-    case modifiedTime = "modified_time"
-    case author = "author"
-    case section = "section"
-    case tags = "tags"
-  }
+    public let publishedTime: String?
+    public let modifiedTime: String?
+    public let author: String?
+    public let section: String?
+    public let tags: [String]
+    public init(publishedTime: String? = nil, modifiedTime: String? = nil, author: String? = nil, section: String? = nil, tags: [String]) {
+        self.publishedTime = publishedTime
+        self.modifiedTime = modifiedTime
+        self.author = author
+        self.section = section
+        self.tags = tags
+    }
+    private enum CodingKeys: String, CodingKey {
+        case publishedTime = "published_time"
+        case modifiedTime = "modified_time"
+        case author = "author"
+        case section = "section"
+        case tags = "tags"
+    }
 }
 
 // MARK: - Internal FFI conversions for ArticleMetadata
-extension ArticleMetadata {
-  init(_ rb: RustBridge.ArticleMetadata) throws {
-    self.publishedTime = rb.publishedTime().toString()
-    self.modifiedTime = rb.modifiedTime().toString()
-    self.author = rb.author().toString()
-    self.section = rb.section().toString()
-    self.tags = rb.tags()
-  }
-  func intoRust() throws -> RustBridge.ArticleMetadata {
-    let data = try JSONEncoder().encode(self)
-    let json = String(data: data, encoding: .utf8) ?? "{}"
-    return try RustBridge.articleMetadataFromJson(json)
-  }
+internal extension ArticleMetadata {
+    init(_ rb: RustBridge.ArticleMetadata) throws {
+        self.publishedTime = rb.publishedTime()?.toString()
+        self.modifiedTime = rb.modifiedTime()?.toString()
+        self.author = rb.author()?.toString()
+        self.section = rb.section()?.toString()
+        self.tags = rb.tags()
+    }
+    func intoRust() throws -> RustBridge.ArticleMetadata {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "{}"
+        return try RustBridge.articleMetadataFromJson(json)
+    }
 }
 
 /// An hreflang alternate link entry.
 public struct HreflangEntry: Codable, Sendable, Hashable {
-  public let lang: String
-  public let url: String
-  public init(lang: String, url: String) {
-    self.lang = lang
-    self.url = url
-  }
+    public let lang: String
+    public let url: String
+    public init(lang: String, url: String) {
+        self.lang = lang
+        self.url = url
+    }
 }
 
 // MARK: - Internal FFI conversions for HreflangEntry
-extension HreflangEntry {
-  init(_ rb: RustBridge.HreflangEntry) throws {
-    self.lang = rb.lang().toString()
-    self.url = rb.url().toString()
-  }
-  func intoRust() throws -> RustBridge.HreflangEntry {
-    let data = try JSONEncoder().encode(self)
-    let json = String(data: data, encoding: .utf8) ?? "{}"
-    return try RustBridge.hreflangEntryFromJson(json)
-  }
+internal extension HreflangEntry {
+    init(_ rb: RustBridge.HreflangEntry) throws {
+        self.lang = rb.lang().toString()
+        self.url = rb.url().toString()
+    }
+    func intoRust() throws -> RustBridge.HreflangEntry {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "{}"
+        return try RustBridge.hreflangEntryFromJson(json)
+    }
 }
 
 /// Information about a favicon or icon link.
 public struct FaviconInfo: Codable, Sendable, Hashable {
-  public let url: String
-  public let rel: String
-  public let sizes: String
-  public let mimeType: String
-  public init(url: String, rel: String, sizes: String, mimeType: String) {
-    self.url = url
-    self.rel = rel
-    self.sizes = sizes
-    self.mimeType = mimeType
-  }
-  private enum CodingKeys: String, CodingKey {
-    case url = "url"
-    case rel = "rel"
-    case sizes = "sizes"
-    case mimeType = "mime_type"
-  }
+    public let url: String
+    public let rel: String
+    public let sizes: String?
+    public let mimeType: String?
+    public init(url: String, rel: String, sizes: String? = nil, mimeType: String? = nil) {
+        self.url = url
+        self.rel = rel
+        self.sizes = sizes
+        self.mimeType = mimeType
+    }
+    private enum CodingKeys: String, CodingKey {
+        case url = "url"
+        case rel = "rel"
+        case sizes = "sizes"
+        case mimeType = "mime_type"
+    }
 }
 
 // MARK: - Internal FFI conversions for FaviconInfo
-extension FaviconInfo {
-  init(_ rb: RustBridge.FaviconInfo) throws {
-    self.url = rb.url().toString()
-    self.rel = rb.rel().toString()
-    self.sizes = rb.sizes().toString()
-    self.mimeType = rb.mimeType().toString()
-  }
-  func intoRust() throws -> RustBridge.FaviconInfo {
-    let data = try JSONEncoder().encode(self)
-    let json = String(data: data, encoding: .utf8) ?? "{}"
-    return try RustBridge.faviconInfoFromJson(json)
-  }
+internal extension FaviconInfo {
+    init(_ rb: RustBridge.FaviconInfo) throws {
+        self.url = rb.url().toString()
+        self.rel = rb.rel().toString()
+        self.sizes = rb.sizes()?.toString()
+        self.mimeType = rb.mimeType()?.toString()
+    }
+    func intoRust() throws -> RustBridge.FaviconInfo {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "{}"
+        return try RustBridge.faviconInfoFromJson(json)
+    }
 }
 
 /// A heading element extracted from the page.
 public struct HeadingInfo: Codable, Sendable, Hashable {
-  public let level: UInt8
-  public let text: String
-  public init(level: UInt8, text: String) {
-    self.level = level
-    self.text = text
-  }
+    public let level: UInt8
+    public let text: String
+    public init(level: UInt8, text: String) {
+        self.level = level
+        self.text = text
+    }
 }
 
 // MARK: - Internal FFI conversions for HeadingInfo
-extension HeadingInfo {
-  init(_ rb: RustBridge.HeadingInfo) throws {
-    self.level = rb.level()
-    self.text = rb.text().toString()
-  }
-  func intoRust() throws -> RustBridge.HeadingInfo {
-    let data = try JSONEncoder().encode(self)
-    let json = String(data: data, encoding: .utf8) ?? "{}"
-    return try RustBridge.headingInfoFromJson(json)
-  }
+internal extension HeadingInfo {
+    init(_ rb: RustBridge.HeadingInfo) throws {
+        self.level = rb.level()
+        self.text = rb.text().toString()
+    }
+    func intoRust() throws -> RustBridge.HeadingInfo {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "{}"
+        return try RustBridge.headingInfoFromJson(json)
+    }
 }
 
 /// Response metadata extracted from HTTP headers.
 public struct ResponseMeta: Codable, Sendable, Hashable {
-  public let etag: String
-  public let lastModified: String
-  public let cacheControl: String
-  public let server: String
-  public let xPoweredBy: String
-  public let contentLanguage: String
-  public let contentEncoding: String
-  public init(
-    etag: String, lastModified: String, cacheControl: String, server: String, xPoweredBy: String,
-    contentLanguage: String, contentEncoding: String
-  ) {
-    self.etag = etag
-    self.lastModified = lastModified
-    self.cacheControl = cacheControl
-    self.server = server
-    self.xPoweredBy = xPoweredBy
-    self.contentLanguage = contentLanguage
-    self.contentEncoding = contentEncoding
-  }
-  private enum CodingKeys: String, CodingKey {
-    case etag = "etag"
-    case lastModified = "last_modified"
-    case cacheControl = "cache_control"
-    case server = "server"
-    case xPoweredBy = "x_powered_by"
-    case contentLanguage = "content_language"
-    case contentEncoding = "content_encoding"
-  }
+    public let etag: String?
+    public let lastModified: String?
+    public let cacheControl: String?
+    public let server: String?
+    public let xPoweredBy: String?
+    public let contentLanguage: String?
+    public let contentEncoding: String?
+    public init(etag: String? = nil, lastModified: String? = nil, cacheControl: String? = nil, server: String? = nil, xPoweredBy: String? = nil, contentLanguage: String? = nil, contentEncoding: String? = nil) {
+        self.etag = etag
+        self.lastModified = lastModified
+        self.cacheControl = cacheControl
+        self.server = server
+        self.xPoweredBy = xPoweredBy
+        self.contentLanguage = contentLanguage
+        self.contentEncoding = contentEncoding
+    }
+    private enum CodingKeys: String, CodingKey {
+        case etag = "etag"
+        case lastModified = "last_modified"
+        case cacheControl = "cache_control"
+        case server = "server"
+        case xPoweredBy = "x_powered_by"
+        case contentLanguage = "content_language"
+        case contentEncoding = "content_encoding"
+    }
 }
 
 // MARK: - Internal FFI conversions for ResponseMeta
-extension ResponseMeta {
-  init(_ rb: RustBridge.ResponseMeta) throws {
-    self.etag = rb.etag().toString()
-    self.lastModified = rb.lastModified().toString()
-    self.cacheControl = rb.cacheControl().toString()
-    self.server = rb.server().toString()
-    self.xPoweredBy = rb.xPoweredBy().toString()
-    self.contentLanguage = rb.contentLanguage().toString()
-    self.contentEncoding = rb.contentEncoding().toString()
-  }
-  func intoRust() throws -> RustBridge.ResponseMeta {
-    let data = try JSONEncoder().encode(self)
-    let json = String(data: data, encoding: .utf8) ?? "{}"
-    return try RustBridge.responseMetaFromJson(json)
-  }
+internal extension ResponseMeta {
+    init(_ rb: RustBridge.ResponseMeta) throws {
+        self.etag = rb.etag()?.toString()
+        self.lastModified = rb.lastModified()?.toString()
+        self.cacheControl = rb.cacheControl()?.toString()
+        self.server = rb.server()?.toString()
+        self.xPoweredBy = rb.xPoweredBy()?.toString()
+        self.contentLanguage = rb.contentLanguage()?.toString()
+        self.contentEncoding = rb.contentEncoding()?.toString()
+    }
+    func intoRust() throws -> RustBridge.ResponseMeta {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "{}"
+        return try RustBridge.responseMetaFromJson(json)
+    }
 }
 
 /// Metadata extracted from an HTML page's `<meta>` tags and `<title>` element.
 public struct PageMetadata: Codable, Sendable, Hashable {
-  public let title: String
-  public let description: String
-  public let canonicalUrl: String
-  public let keywords: String
-  public let author: String
-  public let viewport: String
-  public let themeColor: String
-  public let generator: String
-  public let robots: String
-  public let htmlLang: String
-  public let htmlDir: String
-  public let ogTitle: String
-  public let ogType: String
-  public let ogImage: String
-  public let ogDescription: String
-  public let ogUrl: String
-  public let ogSiteName: String
-  public let ogLocale: String
-  public let ogVideo: String
-  public let ogAudio: String
-  public let ogLocaleAlternates: [String]
-  public let twitterCard: String
-  public let twitterTitle: String
-  public let twitterDescription: String
-  public let twitterImage: String
-  public let twitterSite: String
-  public let twitterCreator: String
-  public let dcTitle: String
-  public let dcCreator: String
-  public let dcSubject: String
-  public let dcDescription: String
-  public let dcPublisher: String
-  public let dcDate: String
-  public let dcType: String
-  public let dcFormat: String
-  public let dcIdentifier: String
-  public let dcLanguage: String
-  public let dcRights: String
-  public let article: ArticleMetadata
-  public let hreflangs: [HreflangEntry]
-  public let favicons: [FaviconInfo]
-  public let headings: [HeadingInfo]
-  public let wordCount: UInt
-  public init(
-    title: String, description: String, canonicalUrl: String, keywords: String, author: String,
-    viewport: String, themeColor: String, generator: String, robots: String, htmlLang: String,
-    htmlDir: String, ogTitle: String, ogType: String, ogImage: String, ogDescription: String,
-    ogUrl: String, ogSiteName: String, ogLocale: String, ogVideo: String, ogAudio: String,
-    ogLocaleAlternates: [String], twitterCard: String, twitterTitle: String,
-    twitterDescription: String, twitterImage: String, twitterSite: String, twitterCreator: String,
-    dcTitle: String, dcCreator: String, dcSubject: String, dcDescription: String,
-    dcPublisher: String, dcDate: String, dcType: String, dcFormat: String, dcIdentifier: String,
-    dcLanguage: String, dcRights: String, article: ArticleMetadata, hreflangs: [HreflangEntry],
-    favicons: [FaviconInfo], headings: [HeadingInfo], wordCount: UInt
-  ) {
-    self.title = title
-    self.description = description
-    self.canonicalUrl = canonicalUrl
-    self.keywords = keywords
-    self.author = author
-    self.viewport = viewport
-    self.themeColor = themeColor
-    self.generator = generator
-    self.robots = robots
-    self.htmlLang = htmlLang
-    self.htmlDir = htmlDir
-    self.ogTitle = ogTitle
-    self.ogType = ogType
-    self.ogImage = ogImage
-    self.ogDescription = ogDescription
-    self.ogUrl = ogUrl
-    self.ogSiteName = ogSiteName
-    self.ogLocale = ogLocale
-    self.ogVideo = ogVideo
-    self.ogAudio = ogAudio
-    self.ogLocaleAlternates = ogLocaleAlternates
-    self.twitterCard = twitterCard
-    self.twitterTitle = twitterTitle
-    self.twitterDescription = twitterDescription
-    self.twitterImage = twitterImage
-    self.twitterSite = twitterSite
-    self.twitterCreator = twitterCreator
-    self.dcTitle = dcTitle
-    self.dcCreator = dcCreator
-    self.dcSubject = dcSubject
-    self.dcDescription = dcDescription
-    self.dcPublisher = dcPublisher
-    self.dcDate = dcDate
-    self.dcType = dcType
-    self.dcFormat = dcFormat
-    self.dcIdentifier = dcIdentifier
-    self.dcLanguage = dcLanguage
-    self.dcRights = dcRights
-    self.article = article
-    self.hreflangs = hreflangs
-    self.favicons = favicons
-    self.headings = headings
-    self.wordCount = wordCount
-  }
-  private enum CodingKeys: String, CodingKey {
-    case title = "title"
-    case description = "description"
-    case canonicalUrl = "canonical_url"
-    case keywords = "keywords"
-    case author = "author"
-    case viewport = "viewport"
-    case themeColor = "theme_color"
-    case generator = "generator"
-    case robots = "robots"
-    case htmlLang = "html_lang"
-    case htmlDir = "html_dir"
-    case ogTitle = "og_title"
-    case ogType = "og_type"
-    case ogImage = "og_image"
-    case ogDescription = "og_description"
-    case ogUrl = "og_url"
-    case ogSiteName = "og_site_name"
-    case ogLocale = "og_locale"
-    case ogVideo = "og_video"
-    case ogAudio = "og_audio"
-    case ogLocaleAlternates = "og_locale_alternates"
-    case twitterCard = "twitter_card"
-    case twitterTitle = "twitter_title"
-    case twitterDescription = "twitter_description"
-    case twitterImage = "twitter_image"
-    case twitterSite = "twitter_site"
-    case twitterCreator = "twitter_creator"
-    case dcTitle = "dc_title"
-    case dcCreator = "dc_creator"
-    case dcSubject = "dc_subject"
-    case dcDescription = "dc_description"
-    case dcPublisher = "dc_publisher"
-    case dcDate = "dc_date"
-    case dcType = "dc_type"
-    case dcFormat = "dc_format"
-    case dcIdentifier = "dc_identifier"
-    case dcLanguage = "dc_language"
-    case dcRights = "dc_rights"
-    case article = "article"
-    case hreflangs = "hreflangs"
-    case favicons = "favicons"
-    case headings = "headings"
-    case wordCount = "word_count"
-  }
+    public let title: String?
+    public let description: String?
+    public let canonicalUrl: String?
+    public let keywords: String?
+    public let author: String?
+    public let viewport: String?
+    public let themeColor: String?
+    public let generator: String?
+    public let robots: String?
+    public let htmlLang: String?
+    public let htmlDir: String?
+    public let ogTitle: String?
+    public let ogType: String?
+    public let ogImage: String?
+    public let ogDescription: String?
+    public let ogUrl: String?
+    public let ogSiteName: String?
+    public let ogLocale: String?
+    public let ogVideo: String?
+    public let ogAudio: String?
+    public let ogLocaleAlternates: [String]?
+    public let twitterCard: String?
+    public let twitterTitle: String?
+    public let twitterDescription: String?
+    public let twitterImage: String?
+    public let twitterSite: String?
+    public let twitterCreator: String?
+    public let dcTitle: String?
+    public let dcCreator: String?
+    public let dcSubject: String?
+    public let dcDescription: String?
+    public let dcPublisher: String?
+    public let dcDate: String?
+    public let dcType: String?
+    public let dcFormat: String?
+    public let dcIdentifier: String?
+    public let dcLanguage: String?
+    public let dcRights: String?
+    public let article: ArticleMetadata?
+    public let hreflangs: [HreflangEntry]?
+    public let favicons: [FaviconInfo]?
+    public let headings: [HeadingInfo]?
+    public let wordCount: UInt?
+    public init(title: String? = nil, description: String? = nil, canonicalUrl: String? = nil, keywords: String? = nil, author: String? = nil, viewport: String? = nil, themeColor: String? = nil, generator: String? = nil, robots: String? = nil, htmlLang: String? = nil, htmlDir: String? = nil, ogTitle: String? = nil, ogType: String? = nil, ogImage: String? = nil, ogDescription: String? = nil, ogUrl: String? = nil, ogSiteName: String? = nil, ogLocale: String? = nil, ogVideo: String? = nil, ogAudio: String? = nil, ogLocaleAlternates: [String]? = nil, twitterCard: String? = nil, twitterTitle: String? = nil, twitterDescription: String? = nil, twitterImage: String? = nil, twitterSite: String? = nil, twitterCreator: String? = nil, dcTitle: String? = nil, dcCreator: String? = nil, dcSubject: String? = nil, dcDescription: String? = nil, dcPublisher: String? = nil, dcDate: String? = nil, dcType: String? = nil, dcFormat: String? = nil, dcIdentifier: String? = nil, dcLanguage: String? = nil, dcRights: String? = nil, article: ArticleMetadata? = nil, hreflangs: [HreflangEntry]? = nil, favicons: [FaviconInfo]? = nil, headings: [HeadingInfo]? = nil, wordCount: UInt? = nil) {
+        self.title = title
+        self.description = description
+        self.canonicalUrl = canonicalUrl
+        self.keywords = keywords
+        self.author = author
+        self.viewport = viewport
+        self.themeColor = themeColor
+        self.generator = generator
+        self.robots = robots
+        self.htmlLang = htmlLang
+        self.htmlDir = htmlDir
+        self.ogTitle = ogTitle
+        self.ogType = ogType
+        self.ogImage = ogImage
+        self.ogDescription = ogDescription
+        self.ogUrl = ogUrl
+        self.ogSiteName = ogSiteName
+        self.ogLocale = ogLocale
+        self.ogVideo = ogVideo
+        self.ogAudio = ogAudio
+        self.ogLocaleAlternates = ogLocaleAlternates
+        self.twitterCard = twitterCard
+        self.twitterTitle = twitterTitle
+        self.twitterDescription = twitterDescription
+        self.twitterImage = twitterImage
+        self.twitterSite = twitterSite
+        self.twitterCreator = twitterCreator
+        self.dcTitle = dcTitle
+        self.dcCreator = dcCreator
+        self.dcSubject = dcSubject
+        self.dcDescription = dcDescription
+        self.dcPublisher = dcPublisher
+        self.dcDate = dcDate
+        self.dcType = dcType
+        self.dcFormat = dcFormat
+        self.dcIdentifier = dcIdentifier
+        self.dcLanguage = dcLanguage
+        self.dcRights = dcRights
+        self.article = article
+        self.hreflangs = hreflangs
+        self.favicons = favicons
+        self.headings = headings
+        self.wordCount = wordCount
+    }
+    private enum CodingKeys: String, CodingKey {
+        case title = "title"
+        case description = "description"
+        case canonicalUrl = "canonical_url"
+        case keywords = "keywords"
+        case author = "author"
+        case viewport = "viewport"
+        case themeColor = "theme_color"
+        case generator = "generator"
+        case robots = "robots"
+        case htmlLang = "html_lang"
+        case htmlDir = "html_dir"
+        case ogTitle = "og_title"
+        case ogType = "og_type"
+        case ogImage = "og_image"
+        case ogDescription = "og_description"
+        case ogUrl = "og_url"
+        case ogSiteName = "og_site_name"
+        case ogLocale = "og_locale"
+        case ogVideo = "og_video"
+        case ogAudio = "og_audio"
+        case ogLocaleAlternates = "og_locale_alternates"
+        case twitterCard = "twitter_card"
+        case twitterTitle = "twitter_title"
+        case twitterDescription = "twitter_description"
+        case twitterImage = "twitter_image"
+        case twitterSite = "twitter_site"
+        case twitterCreator = "twitter_creator"
+        case dcTitle = "dc_title"
+        case dcCreator = "dc_creator"
+        case dcSubject = "dc_subject"
+        case dcDescription = "dc_description"
+        case dcPublisher = "dc_publisher"
+        case dcDate = "dc_date"
+        case dcType = "dc_type"
+        case dcFormat = "dc_format"
+        case dcIdentifier = "dc_identifier"
+        case dcLanguage = "dc_language"
+        case dcRights = "dc_rights"
+        case article = "article"
+        case hreflangs = "hreflangs"
+        case favicons = "favicons"
+        case headings = "headings"
+        case wordCount = "word_count"
+    }
 }
 
 // MARK: - Internal FFI conversions for PageMetadata
-extension PageMetadata {
-  init(_ rb: RustBridge.PageMetadata) throws {
-    self.title = rb.title().toString()
-    self.description = rb.description().toString()
-    self.canonicalUrl = rb.canonicalUrl().toString()
-    self.keywords = rb.keywords().toString()
-    self.author = rb.author().toString()
-    self.viewport = rb.viewport().toString()
-    self.themeColor = rb.themeColor().toString()
-    self.generator = rb.generator().toString()
-    self.robots = rb.robots().toString()
-    self.htmlLang = rb.htmlLang().toString()
-    self.htmlDir = rb.htmlDir().toString()
-    self.ogTitle = rb.ogTitle().toString()
-    self.ogType = rb.ogType().toString()
-    self.ogImage = rb.ogImage().toString()
-    self.ogDescription = rb.ogDescription().toString()
-    self.ogUrl = rb.ogUrl().toString()
-    self.ogSiteName = rb.ogSiteName().toString()
-    self.ogLocale = rb.ogLocale().toString()
-    self.ogVideo = rb.ogVideo().toString()
-    self.ogAudio = rb.ogAudio().toString()
-    self.ogLocaleAlternates = rb.ogLocaleAlternates()
-    self.twitterCard = rb.twitterCard().toString()
-    self.twitterTitle = rb.twitterTitle().toString()
-    self.twitterDescription = rb.twitterDescription().toString()
-    self.twitterImage = rb.twitterImage().toString()
-    self.twitterSite = rb.twitterSite().toString()
-    self.twitterCreator = rb.twitterCreator().toString()
-    self.dcTitle = rb.dcTitle().toString()
-    self.dcCreator = rb.dcCreator().toString()
-    self.dcSubject = rb.dcSubject().toString()
-    self.dcDescription = rb.dcDescription().toString()
-    self.dcPublisher = rb.dcPublisher().toString()
-    self.dcDate = rb.dcDate().toString()
-    self.dcType = rb.dcType().toString()
-    self.dcFormat = rb.dcFormat().toString()
-    self.dcIdentifier = rb.dcIdentifier().toString()
-    self.dcLanguage = rb.dcLanguage().toString()
-    self.dcRights = rb.dcRights().toString()
-    self.article = rb.article()
-    self.hreflangs = rb.hreflangs()
-    self.favicons = rb.favicons()
-    self.headings = rb.headings()
-    self.wordCount = rb.wordCount()
-  }
-  func intoRust() throws -> RustBridge.PageMetadata {
-    let data = try JSONEncoder().encode(self)
-    let json = String(data: data, encoding: .utf8) ?? "{}"
-    return try RustBridge.pageMetadataFromJson(json)
-  }
+internal extension PageMetadata {
+    init(_ rb: RustBridge.PageMetadata) throws {
+        self.title = rb.title()?.toString()
+        self.description = rb.description()?.toString()
+        self.canonicalUrl = rb.canonicalUrl()?.toString()
+        self.keywords = rb.keywords()?.toString()
+        self.author = rb.author()?.toString()
+        self.viewport = rb.viewport()?.toString()
+        self.themeColor = rb.themeColor()?.toString()
+        self.generator = rb.generator()?.toString()
+        self.robots = rb.robots()?.toString()
+        self.htmlLang = rb.htmlLang()?.toString()
+        self.htmlDir = rb.htmlDir()?.toString()
+        self.ogTitle = rb.ogTitle()?.toString()
+        self.ogType = rb.ogType()?.toString()
+        self.ogImage = rb.ogImage()?.toString()
+        self.ogDescription = rb.ogDescription()?.toString()
+        self.ogUrl = rb.ogUrl()?.toString()
+        self.ogSiteName = rb.ogSiteName()?.toString()
+        self.ogLocale = rb.ogLocale()?.toString()
+        self.ogVideo = rb.ogVideo()?.toString()
+        self.ogAudio = rb.ogAudio()?.toString()
+        self.ogLocaleAlternates = rb.ogLocaleAlternates()
+        self.twitterCard = rb.twitterCard()?.toString()
+        self.twitterTitle = rb.twitterTitle()?.toString()
+        self.twitterDescription = rb.twitterDescription()?.toString()
+        self.twitterImage = rb.twitterImage()?.toString()
+        self.twitterSite = rb.twitterSite()?.toString()
+        self.twitterCreator = rb.twitterCreator()?.toString()
+        self.dcTitle = rb.dcTitle()?.toString()
+        self.dcCreator = rb.dcCreator()?.toString()
+        self.dcSubject = rb.dcSubject()?.toString()
+        self.dcDescription = rb.dcDescription()?.toString()
+        self.dcPublisher = rb.dcPublisher()?.toString()
+        self.dcDate = rb.dcDate()?.toString()
+        self.dcType = rb.dcType()?.toString()
+        self.dcFormat = rb.dcFormat()?.toString()
+        self.dcIdentifier = rb.dcIdentifier()?.toString()
+        self.dcLanguage = rb.dcLanguage()?.toString()
+        self.dcRights = rb.dcRights()?.toString()
+        self.article = rb.article()
+        self.hreflangs = rb.hreflangs()
+        self.favicons = rb.favicons()
+        self.headings = rb.headings()
+        self.wordCount = rb.wordCount()
+    }
+    func intoRust() throws -> RustBridge.PageMetadata {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "{}"
+        return try RustBridge.pageMetadataFromJson(json)
+    }
 }
 
 /// Result of citation conversion.
 public struct CitationResult: Codable, Sendable, Hashable {
-  public let content: String
-  public let references: [CitationReference]
-  public init(content: String, references: [CitationReference]) {
-    self.content = content
-    self.references = references
-  }
+    public let content: String
+    public let references: [CitationReference]
+    public init(content: String, references: [CitationReference]) {
+        self.content = content
+        self.references = references
+    }
 }
 
 // MARK: - Internal FFI conversions for CitationResult
-extension CitationResult {
-  init(_ rb: RustBridge.CitationResult) throws {
-    self.content = rb.content().toString()
-    self.references = rb.references()
-  }
-  func intoRust() throws -> RustBridge.CitationResult {
-    let data = try JSONEncoder().encode(self)
-    let json = String(data: data, encoding: .utf8) ?? "{}"
-    return try RustBridge.citationResultFromJson(json)
-  }
+internal extension CitationResult {
+    init(_ rb: RustBridge.CitationResult) throws {
+        self.content = rb.content().toString()
+        self.references = rb.references()
+    }
+    func intoRust() throws -> RustBridge.CitationResult {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "{}"
+        return try RustBridge.citationResultFromJson(json)
+    }
 }
 
 public struct CitationReference: Codable, Sendable, Hashable {
-  public let index: UInt
-  public let url: String
-  public let text: String
-  public init(index: UInt, url: String, text: String) {
-    self.index = index
-    self.url = url
-    self.text = text
-  }
+    public let index: UInt
+    public let url: String
+    public let text: String
+    public init(index: UInt, url: String, text: String) {
+        self.index = index
+        self.url = url
+        self.text = text
+    }
 }
 
 // MARK: - Internal FFI conversions for CitationReference
-extension CitationReference {
-  init(_ rb: RustBridge.CitationReference) throws {
-    self.index = rb.index()
-    self.url = rb.url().toString()
-    self.text = rb.text().toString()
-  }
-  func intoRust() throws -> RustBridge.CitationReference {
-    let data = try JSONEncoder().encode(self)
-    let json = String(data: data, encoding: .utf8) ?? "{}"
-    return try RustBridge.citationReferenceFromJson(json)
-  }
+internal extension CitationReference {
+    init(_ rb: RustBridge.CitationReference) throws {
+        self.index = rb.index()
+        self.url = rb.url().toString()
+        self.text = rb.text().toString()
+    }
+    func intoRust() throws -> RustBridge.CitationReference {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "{}"
+        return try RustBridge.citationReferenceFromJson(json)
+    }
 }
 
 /// Opaque handle to a configured crawl engine.
@@ -1435,180 +1372,180 @@ public typealias CrawlEngineHandle = RustBridge.CrawlEngineHandle
 
 /// Result from a single URL in a batch scrape operation.
 public struct BatchScrapeResult: Codable, Sendable, Hashable {
-  public let url: String
-  public let result: ScrapeResult
-  public let error: String
-  public init(url: String, result: ScrapeResult, error: String) {
-    self.url = url
-    self.result = result
-    self.error = error
-  }
+    public let url: String
+    public let result: ScrapeResult?
+    public let error: String?
+    public init(url: String, result: ScrapeResult? = nil, error: String? = nil) {
+        self.url = url
+        self.result = result
+        self.error = error
+    }
 }
 
 // MARK: - Internal FFI conversions for BatchScrapeResult
-extension BatchScrapeResult {
-  init(_ rb: RustBridge.BatchScrapeResult) throws {
-    self.url = rb.url().toString()
-    self.result = rb.result()
-    self.error = rb.error().toString()
-  }
-  func intoRust() throws -> RustBridge.BatchScrapeResult {
-    let data = try JSONEncoder().encode(self)
-    let json = String(data: data, encoding: .utf8) ?? "{}"
-    return try RustBridge.batchScrapeResultFromJson(json)
-  }
+internal extension BatchScrapeResult {
+    init(_ rb: RustBridge.BatchScrapeResult) throws {
+        self.url = rb.url().toString()
+        self.result = rb.result()
+        self.error = rb.error()?.toString()
+    }
+    func intoRust() throws -> RustBridge.BatchScrapeResult {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "{}"
+        return try RustBridge.batchScrapeResultFromJson(json)
+    }
 }
 
 /// Result from a single URL in a batch crawl operation.
 public struct BatchCrawlResult: Codable, Sendable, Hashable {
-  public let url: String
-  public let result: CrawlResult
-  public let error: String
-  public init(url: String, result: CrawlResult, error: String) {
-    self.url = url
-    self.result = result
-    self.error = error
-  }
+    public let url: String
+    public let result: CrawlResult?
+    public let error: String?
+    public init(url: String, result: CrawlResult? = nil, error: String? = nil) {
+        self.url = url
+        self.result = result
+        self.error = error
+    }
 }
 
 // MARK: - Internal FFI conversions for BatchCrawlResult
-extension BatchCrawlResult {
-  init(_ rb: RustBridge.BatchCrawlResult) throws {
-    self.url = rb.url().toString()
-    self.result = rb.result()
-    self.error = rb.error().toString()
-  }
-  func intoRust() throws -> RustBridge.BatchCrawlResult {
-    let data = try JSONEncoder().encode(self)
-    let json = String(data: data, encoding: .utf8) ?? "{}"
-    return try RustBridge.batchCrawlResultFromJson(json)
-  }
+internal extension BatchCrawlResult {
+    init(_ rb: RustBridge.BatchCrawlResult) throws {
+        self.url = rb.url().toString()
+        self.result = rb.result()
+        self.error = rb.error()?.toString()
+    }
+    func intoRust() throws -> RustBridge.BatchCrawlResult {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "{}"
+        return try RustBridge.batchCrawlResultFromJson(json)
+    }
 }
 
 /// When to use the headless browser fallback.
 public enum BrowserMode {
-  /// Automatically detect when JS rendering is needed and fall back to browser.
-  case auto
-  /// Always use the browser for every request.
-  case always
-  /// Never use the browser fallback.
-  case never
+    /// Automatically detect when JS rendering is needed and fall back to browser.
+    case auto
+    /// Always use the browser for every request.
+    case always
+    /// Never use the browser fallback.
+    case never
 }
 
 /// Wait strategy for browser page rendering.
 public enum BrowserWait {
-  /// Wait until network activity is idle.
-  case networkIdle
-  /// Wait for a specific CSS selector to appear in the DOM.
-  case selector
-  /// Wait for a fixed duration after navigation.
-  case fixed
+    /// Wait until network activity is idle.
+    case networkIdle
+    /// Wait for a specific CSS selector to appear in the DOM.
+    case selector
+    /// Wait for a fixed duration after navigation.
+    case fixed
 }
 
 /// Authentication configuration.
 public enum AuthConfig {
-  /// HTTP Basic authentication.
-  case basic(username: String, password: String)
-  /// Bearer token authentication.
-  case bearer(token: String)
-  /// Custom authentication header.
-  case header(name: String, value: String)
+    /// HTTP Basic authentication.
+    case basic(username: String, password: String)
+    /// Bearer token authentication.
+    case bearer(token: String)
+    /// Custom authentication header.
+    case header(name: String, value: String)
 }
 
 /// The classification of a link.
 public enum LinkType {
-  /// A link to the same domain.
-  case internal_
-  /// A link to a different domain.
-  case external
-  /// A fragment-only link (e.g., `#section`).
-  case anchor
-  /// A link to a downloadable document (PDF, DOC, etc.).
-  case document
+    /// A link to the same domain.
+    case `internal`
+    /// A link to a different domain.
+    case external
+    /// A fragment-only link (e.g., `#section`).
+    case anchor
+    /// A link to a downloadable document (PDF, DOC, etc.).
+    case document
 }
 
 /// The source of an image reference.
 public enum ImageSource {
-  /// An `<img>` tag.
-  case img
-  /// A `<source>` tag inside `<picture>`.
-  case pictureSource
-  /// An `og:image` meta tag.
-  case ogImage
-  /// A `twitter:image` meta tag.
-  case twitterImage
+    /// An `<img>` tag.
+    case img
+    /// A `<source>` tag inside `<picture>`.
+    case pictureSource
+    /// An `og:image` meta tag.
+    case ogImage
+    /// A `twitter:image` meta tag.
+    case twitterImage
 }
 
 /// The type of a feed (RSS, Atom, or JSON Feed).
 public enum FeedType {
-  /// RSS feed.
-  case rss
-  /// Atom feed.
-  case atom
-  /// JSON Feed.
-  case jsonFeed
+    /// RSS feed.
+    case rss
+    /// Atom feed.
+    case atom
+    /// JSON Feed.
+    case jsonFeed
 }
 
 /// The category of a downloaded asset.
 public enum AssetCategory {
-  /// A document file (PDF, DOC, etc.).
-  case document
-  /// An image file.
-  case image
-  /// An audio file.
-  case audio
-  /// A video file.
-  case video
-  /// A font file.
-  case font
-  /// A CSS stylesheet.
-  case stylesheet
-  /// A JavaScript file.
-  case script
-  /// An archive file (ZIP, TAR, etc.).
-  case archive
-  /// A data file (JSON, XML, CSV, etc.).
-  case data
-  /// An unrecognized asset type.
-  case other
+    /// A document file (PDF, DOC, etc.).
+    case document
+    /// An image file.
+    case image
+    /// An audio file.
+    case audio
+    /// A video file.
+    case video
+    /// A font file.
+    case font
+    /// A CSS stylesheet.
+    case stylesheet
+    /// A JavaScript file.
+    case script
+    /// An archive file (ZIP, TAR, etc.).
+    case archive
+    /// A data file (JSON, XML, CSV, etc.).
+    case data
+    /// An unrecognized asset type.
+    case other
 }
 
 /// Errors that can occur during crawling, scraping, or mapping operations.
 public enum CrawlError: Swift.Error {
-  /// The requested page was not found (HTTP 404).
-  case notFound(message: String, field0: String)
-  /// The request was unauthorized (HTTP 401).
-  case unauthorized(message: String, field0: String)
-  /// The request was forbidden (HTTP 403).
-  case forbidden(message: String, field0: String)
-  /// The request was blocked by a WAF or bot protection (HTTP 403 with WAF indicators).
-  case wafBlocked(message: String, field0: String)
-  /// The request timed out.
-  case timeout(message: String, field0: String)
-  /// The request was rate-limited (HTTP 429).
-  case rateLimited(message: String, field0: String)
-  /// A server error occurred (HTTP 5xx).
-  case serverError(message: String, field0: String)
-  /// A bad gateway error occurred (HTTP 502).
-  case badGateway(message: String, field0: String)
-  /// The resource is permanently gone (HTTP 410).
-  case gone(message: String, field0: String)
-  /// A connection error occurred.
-  case connection(message: String, field0: String)
-  /// A DNS resolution error occurred.
-  case dns(message: String, field0: String)
-  /// An SSL/TLS error occurred.
-  case ssl(message: String, field0: String)
-  /// Data was lost or truncated during transfer.
-  case dataLoss(message: String, field0: String)
-  /// The browser failed to launch, connect, or navigate.
-  case browserError(message: String, field0: String)
-  /// The browser page load or rendering timed out.
-  case browserTimeout(message: String, field0: String)
-  /// The provided configuration is invalid.
-  case invalidConfig(message: String, field0: String)
-  /// An unclassified error occurred.
-  case other(message: String, field0: String)
+    /// The requested page was not found (HTTP 404).
+    case notFound(message: String, field0: String)
+    /// The request was unauthorized (HTTP 401).
+    case unauthorized(message: String, field0: String)
+    /// The request was forbidden (HTTP 403).
+    case forbidden(message: String, field0: String)
+    /// The request was blocked by a WAF or bot protection (HTTP 403 with WAF indicators).
+    case wafBlocked(message: String, field0: String)
+    /// The request timed out.
+    case timeout(message: String, field0: String)
+    /// The request was rate-limited (HTTP 429).
+    case rateLimited(message: String, field0: String)
+    /// A server error occurred (HTTP 5xx).
+    case serverError(message: String, field0: String)
+    /// A bad gateway error occurred (HTTP 502).
+    case badGateway(message: String, field0: String)
+    /// The resource is permanently gone (HTTP 410).
+    case gone(message: String, field0: String)
+    /// A connection error occurred.
+    case connection(message: String, field0: String)
+    /// A DNS resolution error occurred.
+    case dns(message: String, field0: String)
+    /// An SSL/TLS error occurred.
+    case ssl(message: String, field0: String)
+    /// Data was lost or truncated during transfer.
+    case dataLoss(message: String, field0: String)
+    /// The browser failed to launch, connect, or navigate.
+    case browserError(message: String, field0: String)
+    /// The browser page load or rendering timed out.
+    case browserTimeout(message: String, field0: String)
+    /// The provided configuration is invalid.
+    case invalidConfig(message: String, field0: String)
+    /// An unclassified error occurred.
+    case other(message: String, field0: String)
 }
 
 // MARK: - From-JSON Helpers
@@ -1617,6 +1554,6 @@ public enum CrawlError: Swift.Error {
 // Opaque RustBridge types forward to RustBridge.
 
 public func crawlConfigFromJson(_ json: String) throws -> CrawlConfig {
-  let data = json.data(using: .utf8) ?? Data()
-  return try JSONDecoder().decode(CrawlConfig.self, from: data)
+    let data = json.data(using: .utf8) ?? Data()
+    return try JSONDecoder().decode(CrawlConfig.self, from: data)
 }

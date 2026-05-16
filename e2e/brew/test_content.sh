@@ -8,108 +8,108 @@
 set -euo pipefail
 
 test_content_204_no_content() {
-    # Handles 204 No Content response gracefully
-    local output
-    output=$(kreuzcrawl scrape "${MOCK_SERVER_CONTENT_204_NO_CONTENT:-${MOCK_SERVER_URL}/fixtures/content_204_no_content}" --config '{}' --format json --browser-mode never)
+  # Handles 204 No Content response gracefully
+  local output
+  output=$(kreuzcrawl scrape "${MOCK_SERVER_CONTENT_204_NO_CONTENT:-${MOCK_SERVER_URL}/fixtures/content_204_no_content}" --config '{}' --format json --browser-mode never)
 
-    local val_status_code
-    val_status_code=$(echo "$output" | jq -r '.status_code')
-    assert_equals "$val_status_code" '204' 'status_code'
-    local val_html
-    val_html=$(echo "$output" | jq -r '.html // empty')
-    assert_is_empty "$val_html" 'html'
+  local val_status_code
+  val_status_code=$(echo "$output" | jq -r '.status_code')
+  assert_equals "$val_status_code" '204' 'status_code'
+  local val_html
+  val_html=$(echo "$output" | jq -r '.html // empty')
+  assert_is_empty "$val_html" 'html'
 }
 
 test_content_charset_iso8859() {
-    # Handles ISO-8859-1 encoded page correctly
-    local output
-    output=$(kreuzcrawl scrape "${MOCK_SERVER_CONTENT_CHARSET_ISO8859:-${MOCK_SERVER_URL}/fixtures/content_charset_iso8859}" --config '{"respect_robots_txt":false}' --format json --browser-mode never)
+  # Handles ISO-8859-1 encoded page correctly
+  local output
+  output=$(kreuzcrawl scrape "${MOCK_SERVER_CONTENT_CHARSET_ISO8859:-${MOCK_SERVER_URL}/fixtures/content_charset_iso8859}" --config '{"respect_robots_txt":false}' --format json --browser-mode never)
 
-    local val_content_detected_charset
-    val_content_detected_charset=$(echo "$output" | jq -r '.detected_charset')
-    assert_equals "$val_content_detected_charset" 'iso-8859-1' 'content.detected_charset'
+  local val_content_detected_charset
+  val_content_detected_charset=$(echo "$output" | jq -r '.detected_charset')
+  assert_equals "$val_content_detected_charset" 'iso-8859-1' 'content.detected_charset'
 }
 
 test_content_empty_body() {
-    # Handles 200 response with empty body gracefully
-    local output
-    output=$(kreuzcrawl scrape "${MOCK_SERVER_CONTENT_EMPTY_BODY:-${MOCK_SERVER_URL}/fixtures/content_empty_body}" --config '{"respect_robots_txt":false}' --format json --browser-mode never)
+  # Handles 200 response with empty body gracefully
+  local output
+  output=$(kreuzcrawl scrape "${MOCK_SERVER_CONTENT_EMPTY_BODY:-${MOCK_SERVER_URL}/fixtures/content_empty_body}" --config '{"respect_robots_txt":false}' --format json --browser-mode never)
 
-    local val_status_code
-    val_status_code=$(echo "$output" | jq -r '.status_code')
-    assert_equals "$val_status_code" '200' 'status_code'
+  local val_status_code
+  val_status_code=$(echo "$output" | jq -r '.status_code')
+  assert_equals "$val_status_code" '200' 'status_code'
 }
 
 test_content_gzip_compressed() {
-    # Handles response with Accept-Encoding gzip negotiation
-    local output
-    output=$(kreuzcrawl scrape "${MOCK_SERVER_CONTENT_GZIP_COMPRESSED:-${MOCK_SERVER_URL}/fixtures/content_gzip_compressed}" --config '{"respect_robots_txt":false}' --format json --browser-mode never)
+  # Handles response with Accept-Encoding gzip negotiation
+  local output
+  output=$(kreuzcrawl scrape "${MOCK_SERVER_CONTENT_GZIP_COMPRESSED:-${MOCK_SERVER_URL}/fixtures/content_gzip_compressed}" --config '{"respect_robots_txt":false}' --format json --browser-mode never)
 
-    local val_html
-    val_html=$(echo "$output" | jq -r '.html')
-    assert_not_empty "$val_html" 'html'
-    local val_status_code
-    val_status_code=$(echo "$output" | jq -r '.status_code')
-    assert_equals "$val_status_code" '200' 'status_code'
+  local val_html
+  val_html=$(echo "$output" | jq -r '.html')
+  assert_not_empty "$val_html" 'html'
+  local val_status_code
+  val_status_code=$(echo "$output" | jq -r '.status_code')
+  assert_equals "$val_status_code" '200' 'status_code'
 }
 
 test_content_large_page_limit() {
-    # Respects max body size limit and truncates or skips oversized pages
-    local output
-    output=$(kreuzcrawl scrape "${MOCK_SERVER_CONTENT_LARGE_PAGE_LIMIT:-${MOCK_SERVER_URL}/fixtures/content_large_page_limit}" --config '{"max_body_size":1024,"respect_robots_txt":false}' --format json --browser-mode never)
+  # Respects max body size limit and truncates or skips oversized pages
+  local output
+  output=$(kreuzcrawl scrape "${MOCK_SERVER_CONTENT_LARGE_PAGE_LIMIT:-${MOCK_SERVER_URL}/fixtures/content_large_page_limit}" --config '{"max_body_size":1024,"respect_robots_txt":false}' --format json --browser-mode never)
 
-    local val_content_body_size
-    val_content_body_size=$(echo "$output" | jq -r '.body_size')
-    assert_less_than "$val_content_body_size" '1025' 'content.body_size'
+  local val_content_body_size
+  val_content_body_size=$(echo "$output" | jq -r '.body_size')
+  assert_less_than "$val_content_body_size" '1025' 'content.body_size'
 }
 
 test_content_main_only() {
-    # Extracts content with aggressive preprocessing, excluding nav, sidebar, footer
-    kreuzcrawl scrape "${MOCK_SERVER_CONTENT_MAIN_ONLY:-${MOCK_SERVER_URL}/fixtures/content_main_only}" --config '{"content":{"preprocessing_preset":"aggressive"},"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
+  # Extracts content with aggressive preprocessing, excluding nav, sidebar, footer
+  kreuzcrawl scrape "${MOCK_SERVER_CONTENT_MAIN_ONLY:-${MOCK_SERVER_URL}/fixtures/content_main_only}" --config '{"content":{"preprocessing_preset":"aggressive"},"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
 
 }
 
 test_content_pdf_no_extension() {
-    # Detects PDF content by Content-Type header when URL has no .pdf extension
-    local output
-    output=$(kreuzcrawl scrape "${MOCK_SERVER_CONTENT_PDF_NO_EXTENSION:-${MOCK_SERVER_URL}/fixtures/content_pdf_no_extension}" --config '{"respect_robots_txt":false}' --format json --browser-mode never)
+  # Detects PDF content by Content-Type header when URL has no .pdf extension
+  local output
+  output=$(kreuzcrawl scrape "${MOCK_SERVER_CONTENT_PDF_NO_EXTENSION:-${MOCK_SERVER_URL}/fixtures/content_pdf_no_extension}" --config '{"respect_robots_txt":false}' --format json --browser-mode never)
 
-    local val_content_is_pdf
-    val_content_is_pdf=$(echo "$output" | jq -r '.is_pdf')
-    assert_equals "$val_content_is_pdf" 'true' 'content.is_pdf'
+  local val_content_is_pdf
+  val_content_is_pdf=$(echo "$output" | jq -r '.is_pdf')
+  assert_equals "$val_content_is_pdf" 'true' 'content.is_pdf'
 }
 
 test_content_remove_tags() {
-    # Removes specified HTML elements by CSS selector before processing
-    local output
-    output=$(kreuzcrawl scrape "${MOCK_SERVER_CONTENT_REMOVE_TAGS:-${MOCK_SERVER_URL}/fixtures/content_remove_tags}" --config '{"remove_tags":["nav","aside","footer"],"respect_robots_txt":false}' --format json --browser-mode never)
+  # Removes specified HTML elements by CSS selector before processing
+  local output
+  output=$(kreuzcrawl scrape "${MOCK_SERVER_CONTENT_REMOVE_TAGS:-${MOCK_SERVER_URL}/fixtures/content_remove_tags}" --config '{"remove_tags":["nav","aside","footer"],"respect_robots_txt":false}' --format json --browser-mode never)
 
-    local val_html
-    val_html=$(echo "$output" | jq -r '.html')
-    assert_not_empty "$val_html" 'html'
+  local val_html
+  val_html=$(echo "$output" | jq -r '.html')
+  assert_not_empty "$val_html" 'html'
 }
 
 test_content_utf8_bom() {
-    # Handles UTF-8 content with BOM marker correctly
-    local output
-    output=$(kreuzcrawl scrape "${MOCK_SERVER_CONTENT_UTF8_BOM:-${MOCK_SERVER_URL}/fixtures/content_utf8_bom}" --config '{"respect_robots_txt":false}' --format json --browser-mode never)
+  # Handles UTF-8 content with BOM marker correctly
+  local output
+  output=$(kreuzcrawl scrape "${MOCK_SERVER_CONTENT_UTF8_BOM:-${MOCK_SERVER_URL}/fixtures/content_utf8_bom}" --config '{"respect_robots_txt":false}' --format json --browser-mode never)
 
-    local val_content_detected_charset
-    val_content_detected_charset=$(echo "$output" | jq -r '.detected_charset')
-    assert_equals "$val_content_detected_charset" 'utf-8' 'content.detected_charset'
-    local val_html
-    val_html=$(echo "$output" | jq -r '.html')
-    assert_not_empty "$val_html" 'html'
+  local val_content_detected_charset
+  val_content_detected_charset=$(echo "$output" | jq -r '.detected_charset')
+  assert_equals "$val_content_detected_charset" 'utf-8' 'content.detected_charset'
+  local val_html
+  val_html=$(echo "$output" | jq -r '.html')
+  assert_not_empty "$val_html" 'html'
 }
 
 run_tests_content() {
-    run_test test_content_204_no_content
-    run_test test_content_charset_iso8859
-    run_test test_content_empty_body
-    run_test test_content_gzip_compressed
-    run_test test_content_large_page_limit
-    run_test test_content_main_only
-    run_test test_content_pdf_no_extension
-    run_test test_content_remove_tags
-    run_test test_content_utf8_bom
+  run_test test_content_204_no_content
+  run_test test_content_charset_iso8859
+  run_test test_content_empty_body
+  run_test test_content_gzip_compressed
+  run_test test_content_large_page_limit
+  run_test test_content_main_only
+  run_test test_content_pdf_no_extension
+  run_test test_content_remove_tags
+  run_test test_content_utf8_bom
 }

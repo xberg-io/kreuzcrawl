@@ -2,9 +2,7 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/**
- * The classification of a link.
- */
+/** The classification of a link. */
 enum class LinkType {
     INTERNAL,
     EXTERNAL,

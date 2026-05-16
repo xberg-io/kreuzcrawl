@@ -4,9 +4,7 @@ package dev.kreuzberg.kreuzcrawl.android
 
 import kotlin.time.Duration
 
-/**
- * Browser fallback configuration.
- */
+/** Browser fallback configuration. */
 data class BrowserConfig(
     val mode: BrowserMode,
     val endpoint: String?,

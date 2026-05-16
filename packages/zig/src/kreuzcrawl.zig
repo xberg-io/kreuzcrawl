@@ -31,7 +31,7 @@ inline fn _first_error(comptime E: type) E {
 }
 
 /// Errors that can occur during crawling, scraping, or mapping operations.
-pub const CrawlError = error{
+pub const CrawlError = error {
     NotFound,
     Unauthorized,
     Forbidden,
@@ -49,6 +49,7 @@ pub const CrawlError = error{
     BrowserTimeout,
     InvalidConfig,
     Other,
+    OutOfMemory,
 };
 
 /// Metadata about an LLM extraction pass.
@@ -441,8 +442,8 @@ pub const LinkType = enum {
 pub const ImageSource = enum {
     img,
     picture_source,
-    og_image,
-    twitter_image,
+    og:image,
+    twitter:image,
 };
 
 /// The type of a feed (RSS, Atom, or JSON Feed).
@@ -467,11 +468,13 @@ pub const AssetCategory = enum {
 };
 
 /// Scrape a single URL, returning extracted page data.
-pub fn scrape(engine: ?[]const u8, url: []const u8) (CrawlError || error{OutOfMemory})![]u8 {
-    const engine_config_z: ?[:0]u8 = if (engine) |v| try std.fmt.allocPrintSentinel(std.heap.c_allocator, "{s}", .{v}, 0) else null;
+pub fn scrape(engine: ?[]const u8, url: []const u8) CrawlError![]u8 {
+    const engine_config_z: ?[:0]u8 = if (engine) |v| try std.fmt.allocPrintSentinel(
+        std.heap.c_allocator, "{s}", .{v}, 0) else null;
     const engine_config_handle = if (engine_config_z) |z| c.kcrawl_crawl_config_from_json(z) else null;
     const engine_handle = c.kcrawl_create_engine(engine_config_handle);
-    const url_z = try std.fmt.allocPrintSentinel(std.heap.c_allocator, "{s}", .{url}, 0);
+    const url_z = try std.fmt.allocPrintSentinel(
+        std.heap.c_allocator, "{s}", .{url}, 0);
     defer std.heap.c_allocator.free(url_z);
     const _result = c.kcrawl_scrape(engine_handle, url_z);
     if (c.kcrawl_last_error_code() != 0) {
@@ -487,15 +490,18 @@ pub fn scrape(engine: ?[]const u8, url: []const u8) (CrawlError || error{OutOfMe
         const slice = std.mem.sliceTo(_json_ptr, 0);
         const owned = try std.heap.c_allocator.dupe(u8, slice);
         break :blk owned;
-    };
+    }
+;
 }
 
 /// Crawl a website starting from `url`, following links up to the configured depth.
-pub fn crawl(engine: ?[]const u8, url: []const u8) (CrawlError || error{OutOfMemory})![]u8 {
-    const engine_config_z: ?[:0]u8 = if (engine) |v| try std.fmt.allocPrintSentinel(std.heap.c_allocator, "{s}", .{v}, 0) else null;
+pub fn crawl(engine: ?[]const u8, url: []const u8) CrawlError![]u8 {
+    const engine_config_z: ?[:0]u8 = if (engine) |v| try std.fmt.allocPrintSentinel(
+        std.heap.c_allocator, "{s}", .{v}, 0) else null;
     const engine_config_handle = if (engine_config_z) |z| c.kcrawl_crawl_config_from_json(z) else null;
     const engine_handle = c.kcrawl_create_engine(engine_config_handle);
-    const url_z = try std.fmt.allocPrintSentinel(std.heap.c_allocator, "{s}", .{url}, 0);
+    const url_z = try std.fmt.allocPrintSentinel(
+        std.heap.c_allocator, "{s}", .{url}, 0);
     defer std.heap.c_allocator.free(url_z);
     const _result = c.kcrawl_crawl(engine_handle, url_z);
     if (c.kcrawl_last_error_code() != 0) {
@@ -511,15 +517,18 @@ pub fn crawl(engine: ?[]const u8, url: []const u8) (CrawlError || error{OutOfMem
         const slice = std.mem.sliceTo(_json_ptr, 0);
         const owned = try std.heap.c_allocator.dupe(u8, slice);
         break :blk owned;
-    };
+    }
+;
 }
 
 /// Discover all pages on a website by following links and sitemaps.
-pub fn map_urls(engine: ?[]const u8, url: []const u8) (CrawlError || error{OutOfMemory})![]u8 {
-    const engine_config_z: ?[:0]u8 = if (engine) |v| try std.fmt.allocPrintSentinel(std.heap.c_allocator, "{s}", .{v}, 0) else null;
+pub fn map_urls(engine: ?[]const u8, url: []const u8) CrawlError![]u8 {
+    const engine_config_z: ?[:0]u8 = if (engine) |v| try std.fmt.allocPrintSentinel(
+        std.heap.c_allocator, "{s}", .{v}, 0) else null;
     const engine_config_handle = if (engine_config_z) |z| c.kcrawl_crawl_config_from_json(z) else null;
     const engine_handle = c.kcrawl_create_engine(engine_config_handle);
-    const url_z = try std.fmt.allocPrintSentinel(std.heap.c_allocator, "{s}", .{url}, 0);
+    const url_z = try std.fmt.allocPrintSentinel(
+        std.heap.c_allocator, "{s}", .{url}, 0);
     defer std.heap.c_allocator.free(url_z);
     const _result = c.kcrawl_map_urls(engine_handle, url_z);
     if (c.kcrawl_last_error_code() != 0) {
@@ -535,16 +544,19 @@ pub fn map_urls(engine: ?[]const u8, url: []const u8) (CrawlError || error{OutOf
         const slice = std.mem.sliceTo(_json_ptr, 0);
         const owned = try std.heap.c_allocator.dupe(u8, slice);
         break :blk owned;
-    };
+    }
+;
 }
 
 /// Scrape multiple URLs concurrently.
-pub fn batch_scrape(engine: ?[]const u8, urls: []const u8) (CrawlError || error{OutOfMemory})![]u8 {
-    const engine_config_z: ?[:0]u8 = if (engine) |v| try std.fmt.allocPrintSentinel(std.heap.c_allocator, "{s}", .{v}, 0) else null;
+pub fn batch_scrape(engine: ?[]const u8, urls: []const u8) CrawlError![]u8 {
+    const engine_config_z: ?[:0]u8 = if (engine) |v| try std.fmt.allocPrintSentinel(
+        std.heap.c_allocator, "{s}", .{v}, 0) else null;
     const engine_config_handle = if (engine_config_z) |z| c.kcrawl_crawl_config_from_json(z) else null;
     const engine_handle = c.kcrawl_create_engine(engine_config_handle);
     // Vec/Map parameters are passed as JSON strings across the FFI boundary.
-    const urls_z = try std.fmt.allocPrintSentinel(std.heap.c_allocator, "{s}", .{urls}, 0);
+    const urls_z = try std.fmt.allocPrintSentinel(
+        std.heap.c_allocator, "{s}", .{urls}, 0);
     defer std.heap.c_allocator.free(urls_z);
     const _result = c.kcrawl_batch_scrape(engine_handle, urls_z);
     if (c.kcrawl_last_error_code() != 0) {
@@ -562,12 +574,14 @@ pub fn batch_scrape(engine: ?[]const u8, urls: []const u8) (CrawlError || error{
 }
 
 /// Crawl multiple seed URLs concurrently, each following links to configured depth.
-pub fn batch_crawl(engine: ?[]const u8, urls: []const u8) (CrawlError || error{OutOfMemory})![]u8 {
-    const engine_config_z: ?[:0]u8 = if (engine) |v| try std.fmt.allocPrintSentinel(std.heap.c_allocator, "{s}", .{v}, 0) else null;
+pub fn batch_crawl(engine: ?[]const u8, urls: []const u8) CrawlError![]u8 {
+    const engine_config_z: ?[:0]u8 = if (engine) |v| try std.fmt.allocPrintSentinel(
+        std.heap.c_allocator, "{s}", .{v}, 0) else null;
     const engine_config_handle = if (engine_config_z) |z| c.kcrawl_crawl_config_from_json(z) else null;
     const engine_handle = c.kcrawl_create_engine(engine_config_handle);
     // Vec/Map parameters are passed as JSON strings across the FFI boundary.
-    const urls_z = try std.fmt.allocPrintSentinel(std.heap.c_allocator, "{s}", .{urls}, 0);
+    const urls_z = try std.fmt.allocPrintSentinel(
+        std.heap.c_allocator, "{s}", .{urls}, 0);
     defer std.heap.c_allocator.free(urls_z);
     const _result = c.kcrawl_batch_crawl(engine_handle, urls_z);
     if (c.kcrawl_last_error_code() != 0) {

@@ -2,9 +2,7 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/**
- * Response metadata extracted from HTTP headers.
- */
+/** Response metadata extracted from HTTP headers. */
 data class ResponseMeta(
     val etag: String?,
     val lastModified: String?,

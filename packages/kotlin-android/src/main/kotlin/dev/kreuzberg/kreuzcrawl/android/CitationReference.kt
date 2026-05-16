@@ -2,8 +2,4 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-data class CitationReference(
-    val index: Long,
-    val url: String,
-    val text: String,
-)
+data class CitationReference(val index: Long, val url: String, val text: String)

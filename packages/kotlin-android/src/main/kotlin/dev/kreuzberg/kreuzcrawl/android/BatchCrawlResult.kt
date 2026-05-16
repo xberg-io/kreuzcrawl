@@ -2,11 +2,5 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/**
- * Result from a single URL in a batch crawl operation.
- */
-data class BatchCrawlResult(
-    val url: String,
-    val result: CrawlResult?,
-    val error: String?,
-)
+/** Result from a single URL in a batch crawl operation. */
+data class BatchCrawlResult(val url: String, val result: CrawlResult?, val error: String?)

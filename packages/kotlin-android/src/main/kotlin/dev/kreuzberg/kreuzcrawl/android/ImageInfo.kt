@@ -2,9 +2,7 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/**
- * Information about an image found on a page.
- */
+/** Information about an image found on a page. */
 data class ImageInfo(
     val url: String,
     val alt: String?,

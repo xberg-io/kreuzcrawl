@@ -2,9 +2,7 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/**
- * Metadata extracted from an HTML page's `<meta>` tags and `<title>` element.
- */
+/** Metadata extracted from an HTML page's `<meta>` tags and `<title>` element. */
 data class PageMetadata(
     val title: String?,
     val description: String?,

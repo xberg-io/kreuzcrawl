@@ -2,9 +2,7 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/**
- * Article metadata extracted from `article:*` Open Graph tags.
- */
+/** Article metadata extracted from `article:*` Open Graph tags. */
 data class ArticleMetadata(
     val publishedTime: String?,
     val modifiedTime: String?,

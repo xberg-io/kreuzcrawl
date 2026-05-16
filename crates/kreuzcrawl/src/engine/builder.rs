@@ -47,6 +47,7 @@ impl CrawlEngineBuilder {
 
     /// Set the frontier implementation.
     #[allow(dead_code)]
+    #[cfg_attr(alef, alef(skip))]
     pub fn frontier(mut self, frontier: impl Frontier + 'static) -> Self {
         self.frontier = Some(Arc::new(frontier));
         self
@@ -54,6 +55,7 @@ impl CrawlEngineBuilder {
 
     /// Set the rate limiter implementation.
     #[allow(dead_code)]
+    #[cfg_attr(alef, alef(skip))]
     pub fn rate_limiter(mut self, rate_limiter: impl RateLimiter + 'static) -> Self {
         self.rate_limiter = Some(Arc::new(rate_limiter));
         self
@@ -61,6 +63,7 @@ impl CrawlEngineBuilder {
 
     /// Set the store implementation.
     #[allow(dead_code)]
+    #[cfg_attr(alef, alef(skip))]
     pub fn store(mut self, store: impl CrawlStore + 'static) -> Self {
         self.store = Some(Arc::new(store));
         self
@@ -68,6 +71,7 @@ impl CrawlEngineBuilder {
 
     /// Set the event emitter implementation.
     #[allow(dead_code)]
+    #[cfg_attr(alef, alef(skip))]
     pub fn event_emitter(mut self, event_emitter: impl EventEmitter + 'static) -> Self {
         self.event_emitter = Some(Arc::new(event_emitter));
         self
@@ -75,6 +79,7 @@ impl CrawlEngineBuilder {
 
     /// Set the crawl strategy implementation.
     #[allow(dead_code)]
+    #[cfg_attr(alef, alef(skip))]
     pub fn strategy(mut self, strategy: impl CrawlStrategy + 'static) -> Self {
         self.strategy = Some(Arc::new(strategy));
         self
@@ -82,6 +87,7 @@ impl CrawlEngineBuilder {
 
     /// Set the content filter implementation.
     #[allow(dead_code)]
+    #[cfg_attr(alef, alef(skip))]
     pub fn content_filter(mut self, content_filter: impl ContentFilter + 'static) -> Self {
         self.content_filter = Some(Arc::new(content_filter));
         self
@@ -89,6 +95,7 @@ impl CrawlEngineBuilder {
 
     /// Set the persistent cache implementation.
     #[allow(dead_code)]
+    #[cfg_attr(alef, alef(skip))]
     pub fn cache(mut self, cache: impl CrawlCache + 'static) -> Self {
         self.cache = Some(Arc::new(cache));
         self

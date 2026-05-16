@@ -8,54 +8,54 @@
 set -euo pipefail
 
 test_map_discover_urls() {
-    # Discovers all URLs on a site without fetching full content
-    kreuzcrawl scrape "${MOCK_SERVER_MAP_DISCOVER_URLS:-${MOCK_SERVER_URL}/fixtures/map_discover_urls}" --config '{"max_depth":0,"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
+  # Discovers all URLs on a site without fetching full content
+  kreuzcrawl scrape "${MOCK_SERVER_MAP_DISCOVER_URLS:-${MOCK_SERVER_URL}/fixtures/map_discover_urls}" --config '{"max_depth":0,"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
 
-    # skipped: field 'urls.length' not available on result type
+  # skipped: field 'urls.length' not available on result type
 }
 
 test_map_exclude_patterns() {
-    # Excludes URLs matching patterns from URL map
-    kreuzcrawl scrape "${MOCK_SERVER_MAP_EXCLUDE_PATTERNS:-${MOCK_SERVER_URL}/fixtures/map_exclude_patterns}" --config '{"exclude_paths":["/private/.*","/api/.*"],"max_depth":0,"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
+  # Excludes URLs matching patterns from URL map
+  kreuzcrawl scrape "${MOCK_SERVER_MAP_EXCLUDE_PATTERNS:-${MOCK_SERVER_URL}/fixtures/map_exclude_patterns}" --config '{"exclude_paths":["/private/.*","/api/.*"],"max_depth":0,"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
 
-    # skipped: field 'urls.length' not available on result type
+  # skipped: field 'urls.length' not available on result type
 }
 
 test_map_include_subdomains() {
-    # Includes subdomain URLs in URL map discovery
-    kreuzcrawl scrape "${MOCK_SERVER_MAP_INCLUDE_SUBDOMAINS:-${MOCK_SERVER_URL}/fixtures/map_include_subdomains}" --config '{"allow_subdomains":true,"max_depth":0,"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
+  # Includes subdomain URLs in URL map discovery
+  kreuzcrawl scrape "${MOCK_SERVER_MAP_INCLUDE_SUBDOMAINS:-${MOCK_SERVER_URL}/fixtures/map_include_subdomains}" --config '{"allow_subdomains":true,"max_depth":0,"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
 
-    # skipped: field 'urls.length' not available on result type
-    # skipped: field 'urls' not available on result type
+  # skipped: field 'urls.length' not available on result type
+  # skipped: field 'urls' not available on result type
 }
 
 test_map_large_sitemap() {
-    # Handles large sitemap with 100+ URLs
-    kreuzcrawl scrape "${MOCK_SERVER_MAP_LARGE_SITEMAP:-${MOCK_SERVER_URL}/fixtures/map_large_sitemap}" --config '{"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
+  # Handles large sitemap with 100+ URLs
+  kreuzcrawl scrape "${MOCK_SERVER_MAP_LARGE_SITEMAP:-${MOCK_SERVER_URL}/fixtures/map_large_sitemap}" --config '{"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
 
-    # skipped: field 'urls.length' not available on result type
+  # skipped: field 'urls.length' not available on result type
 }
 
 test_map_limit_pagination() {
-    # Limits map result count to specified maximum
-    kreuzcrawl scrape "${MOCK_SERVER_MAP_LIMIT_PAGINATION:-${MOCK_SERVER_URL}/fixtures/map_limit_pagination}" --config '{"map_limit":5,"max_depth":0,"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
+  # Limits map result count to specified maximum
+  kreuzcrawl scrape "${MOCK_SERVER_MAP_LIMIT_PAGINATION:-${MOCK_SERVER_URL}/fixtures/map_limit_pagination}" --config '{"map_limit":5,"max_depth":0,"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
 
-    # skipped: field 'urls.length' not available on result type
+  # skipped: field 'urls.length' not available on result type
 }
 
 test_map_search_filter() {
-    # Filters map results by search keyword
-    kreuzcrawl scrape "${MOCK_SERVER_MAP_SEARCH_FILTER:-${MOCK_SERVER_URL}/fixtures/map_search_filter}" --config '{"map_search":"blog","max_depth":0,"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
+  # Filters map results by search keyword
+  kreuzcrawl scrape "${MOCK_SERVER_MAP_SEARCH_FILTER:-${MOCK_SERVER_URL}/fixtures/map_search_filter}" --config '{"map_search":"blog","max_depth":0,"respect_robots_txt":false}' --format json --browser-mode never >/dev/null
 
-    # skipped: field 'urls.length' not available on result type
-    # skipped: field 'urls' not available on result type
+  # skipped: field 'urls.length' not available on result type
+  # skipped: field 'urls' not available on result type
 }
 
 run_tests_map() {
-    run_test test_map_discover_urls
-    run_test test_map_exclude_patterns
-    run_test test_map_include_subdomains
-    run_test test_map_large_sitemap
-    run_test test_map_limit_pagination
-    run_test test_map_search_filter
+  run_test test_map_discover_urls
+  run_test test_map_exclude_patterns
+  run_test test_map_include_subdomains
+  run_test test_map_large_sitemap
+  run_test test_map_limit_pagination
+  run_test test_map_search_filter
 }

@@ -17,8 +17,7 @@ class KreuzcrawlBridge {
 
   /// Scrape a single URL, returning extracted page data.
   /// throws CrawlError on failure
-  static Future<ScrapeResult> scrape(
-      CrawlEngineHandle engine, String url) async {
+  static Future<ScrapeResult> scrape(CrawlEngineHandle engine, String url) async {
     return await rust_bridge.scrape(engine: engine, url: url);
   }
 
@@ -36,15 +35,14 @@ class KreuzcrawlBridge {
 
   /// Scrape multiple URLs concurrently.
   /// throws CrawlError on failure
-  static Future<List<BatchScrapeResult>> batchScrape(
-      CrawlEngineHandle engine, List<String> urls) async {
+  static Future<List<BatchScrapeResult>> batchScrape(CrawlEngineHandle engine, List<String> urls) async {
     return await rust_bridge.batchScrape(engine: engine, urls: urls);
   }
 
   /// Crawl multiple seed URLs concurrently, each following links to configured depth.
   /// throws CrawlError on failure
-  static Future<List<BatchCrawlResult>> batchCrawl(
-      CrawlEngineHandle engine, List<String> urls) async {
+  static Future<List<BatchCrawlResult>> batchCrawl(CrawlEngineHandle engine, List<String> urls) async {
     return await rust_bridge.batchCrawl(engine: engine, urls: urls);
   }
+
 }

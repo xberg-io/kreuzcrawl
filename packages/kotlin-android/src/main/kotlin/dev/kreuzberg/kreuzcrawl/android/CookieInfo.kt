@@ -2,12 +2,5 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/**
- * Information about an HTTP cookie received from a response.
- */
-data class CookieInfo(
-    val name: String,
-    val value: String,
-    val domain: String?,
-    val path: String?,
-)
+/** Information about an HTTP cookie received from a response. */
+data class CookieInfo(val name: String, val value: String, val domain: String?, val path: String?)
