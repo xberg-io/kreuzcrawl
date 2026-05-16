@@ -128,7 +128,7 @@ extend-exclude = [
   "node_modules/",
   "dist/",
   "site/",
-  # Code snippets (validated separately by `alef snippets validate`)
+  # Code snippets (validated separately by `alef-snippets validate`)
   "docs/snippets/",
   # Generated files (e2e tests, bindgen)
   "e2e/",

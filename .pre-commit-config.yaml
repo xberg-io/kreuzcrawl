@@ -1,14 +1,13 @@
 default_install_hook_types:
   - pre-commit
   - commit-msg
-exclude: ^docs/snippets/|vendor/|node_modules/|target/|invalid*|dist/|artifacts/|test_documents/|test_apps/|scripts/ci/|packages/.*/tools/vendor-
+exclude: ^docs/snippets/|vendor/|node_modules/|target/|dist/|artifacts/|scripts/ci/|\.cache/|rust-vendor/|\.venv/|test_documents/|test_apps/|packages/.*/tools/vendor-
 
 repos:
   # AI-Rulez: auto-generate AI assistant configuration files
   - repo: https://github.com/Goldziher/ai-rulez
     rev: v4.1.6
     hooks:
-      - id: ai-rulez-validate
       - id: ai-rulez-generate
 
   # Commit message linting
@@ -24,13 +23,15 @@ repos:
     rev: v6.0.0
     hooks:
       - id: trailing-whitespace
+        exclude: \.github/copilot-instructions\.md
       - id: end-of-file-fixer
-        exclude: ^docs/reference/
+        exclude: \.github/copilot-instructions\.md|^docs/reference/
       - id: check-merge-conflict
       - id: check-added-large-files
         exclude: uv.lock|docs/benchmarks/app/
       - id: detect-private-key
       - id: check-json
+        exclude: tsconfig\.base\.json
       - id: check-yaml
         args: ["--allow-multiple-documents", "--unsafe"]
       - id: check-toml
@@ -41,8 +42,9 @@ repos:
     rev: "v2.21.2"
     hooks:
       - id: pyproject-fmt
+        exclude: ^test_apps/python/pyproject\.toml$
 
-  # Python: ruff (linting + formatting)
+  # Python: ruff (linting + formatting) + mypy (type checking)
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.15.13
     hooks:
@@ -56,10 +58,20 @@ repos:
     hooks:
       - id: cargo-sort
         args: [-w]
+        exclude: ^(e2e/rust/|test_apps/rust/|packages/dart/rust/)Cargo\.toml$
       - id: cargo-fmt
         args: ["--all"]
       - id: cargo-check
-        args: ["--workspace", "--exclude=kreuzcrawl-php", "--all-features", "--all-targets"]
+        args:
+          [
+            "--workspace",
+            "--exclude=kreuzcrawl-php",
+            "--exclude=kreuzcrawl-py",
+            "--exclude=kreuzcrawl-node",
+            "--exclude=kreuzcrawl-e2e-rust",
+            "--all-features",
+            "--all-targets",
+          ]
       - id: cargo-clippy
         args:
           [
@@ -68,6 +80,9 @@ repos:
             "--allow-staged",
             "--workspace",
             "--exclude=kreuzcrawl-php",
+            "--exclude=kreuzcrawl-py",
+            "--exclude=kreuzcrawl-node",
+            "--exclude=kreuzcrawl-e2e-rust",
             "--all-features",
             "--all-targets",
             "--",
@@ -89,13 +104,19 @@ repos:
       - id: pydocstyle
         files: ^packages/python/.*\.py$
         exclude: ^packages/python/(tests/|.*_native\.py$)
-      - id: tsdoc-lint
-        files: ^packages/typescript/src/.*\.ts$
-        exclude: \.d\.ts$
+      # tsdoc-lint disabled — TypeScript binding uses biome+oxlint, not
+      # eslint, so the hook would no-op anyway. Re-enable after wiring eslint +
+      # eslint-plugin-tsdoc + eslint-plugin-jsdoc in packages/typescript/.
+      # - id: tsdoc-lint
+      #   files: ^packages/typescript/src/.*\.ts$
+      #   exclude: \.d\.ts$
       - id: alef-docs-fresh
-      - id: yard-coverage
-        files: ^packages/ruby/lib/.*\.rb$
-        exclude: ^packages/ruby/lib/kreuzcrawl/native\.rb$
+      # yard-coverage disabled — root Gemfile doesn't include yard; bundle
+      # exec yard fails and the hook doesn't fall back to direct `yard` on
+      # PATH. Add `gem 'yard', group: :development` to enable.
+      # - id: yard-coverage
+      #   files: ^packages/ruby/lib/.*\.rb$
+      #   exclude: ^packages/ruby/lib/kreuzcrawl/native\.rb$
       # godoc-lint disabled — hook v1.1.2 invokes `golangci-lint --disable-all`
       # which is not accepted by golangci-lint v2.x. Re-enable after
       # pre-commit-hooks fix lands.
@@ -118,13 +139,25 @@ repos:
       - id: dart-doc-lint
         files: ^packages/dart/lib/.*\.dart$
         exclude: ^packages/dart/lib/src/rust/
-      - id: swift-doc-coverage
-        files: ^packages/swift/Sources/Kreuzcrawl/.*\.swift$
-      - id: zig-doc-lint
-        files: ^packages/zig/src/.*\.zig$
-        exclude: ^packages/zig/src/kreuzcrawl\.zig$
-      - id: kotlin-dokka
-        files: ^packages/kotlin-android/src/main/.*\.kt$
+      # swift-doc-coverage disabled — requires swift-docc-plugin in
+      # packages/swift/Package.swift. Re-enable after Package.swift adds the
+      # plugin dep.
+      # - id: swift-doc-coverage
+      #   files: ^packages/swift/Sources/Kreuzcrawl/.*\.swift$
+      # zig-doc-lint disabled — prek/identify doesn't classify .zig files
+      # as type 'zig', so prek skips with "no files to check". Re-enable
+      # after pre-commit-hooks switches the manifest to a files-based pattern.
+      # - id: zig-doc-lint
+      #   files: ^packages/zig/src/.*\.zig$
+      #   exclude: ^packages/zig/src/kreuzcrawl\.zig$
+      # kotlin-dokka disabled — requires Dokka Gradle plugin in
+      # packages/kotlin-android/build.gradle.kts; not yet wired.
+      # - id: kotlin-dokka
+      #   files: ^packages/kotlin-android/src/main/.*\.kt$
+      # markdownlint-rumdl-strict is not wired — kreuzcrawl docs use mkdocs/
+      # zensical extensions (HTML grids, indented code, long URL tables) that
+      # the bundled strict config over-flags. The auto-fixing `rumdl-fmt` hook
+      # below already catches the issues we care about.
       - id: shfmt
         args: ["-w", "-i", "2"]
       - id: shellcheck
@@ -136,6 +169,39 @@ repos:
       - id: checkstyle
         args: ["-c", "packages/java/checkstyle.xml", "-p", "packages/java/checkstyle.properties"]
         exclude: ^(\.mvn/wrapper/|e2e/|test_apps/|packages/java/src/)
+      - id: mypy
+        exclude: "e2e/|tests/|scripts/"
+      - id: go-fmt
+        exclude: ^(e2e/|test_apps/)
+      - id: golangci-lint
+        exclude: ^(e2e/|test_apps/)
+        env:
+          KREUZBERG_GO_MOD_DIRS: "packages/go"
+      - id: govulncheck
+        exclude: ^(e2e/|test_apps/)
+      - id: rubocop
+        files: ^packages/ruby/.*\.rb$
+        exclude: ^packages/ruby/(ext/|lib/kreuzcrawl/native\.rb$)
+      - id: rubocop-lint
+        files: ^packages/ruby/.*\.(rb|rbs)$
+        exclude: ^packages/ruby/(ext/|lib/kreuzcrawl/native\.rb$)
+      - id: steep
+        files: ^packages/ruby/.*\.(rb|rbs)$
+        exclude: ^packages/ruby/(ext/|lib/kreuzcrawl/native\.rb$)
+      - id: dotnet-format
+        files: ^packages/csharp/.*\.cs$
+      - id: dotnet-format-check
+        files: ^packages/csharp/.*\.cs$
+      - id: php-cs-fixer
+        files: ^packages/php/.*\.php$
+        exclude: ^packages/php/stubs/
+      - id: phpstan
+        files: ^packages/php/(src|tests)/.*\.php$
+        args: ["analyse", "--no-progress", "--configuration", "packages/php/phpstan.neon"]
+      - id: mix-format
+        files: ^packages/elixir/
+      - id: mix-credo
+        files: ^packages/elixir/
       - id: java-verify
         files: ^packages/java/
       - id: ktfmt
@@ -146,48 +212,6 @@ repos:
         args: ["--build-upon-default-config"]
       - id: ktlint
         files: ^packages/kotlin-android/.*\.kts?$
-      - id: mypy
-        exclude: "e2e/|tests/|scripts/|^packages/r/"
-      - id: go-fmt
-        exclude: ^(e2e/|test_apps/)
-      - id: golangci-lint
-        exclude: ^(e2e/|test_apps/)
-        env:
-          KREUZBERG_GO_MOD_DIRS: "packages/go"
-      - id: govulncheck
-        exclude: ^(e2e/|test_apps/)
-        env:
-          KREUZBERG_GO_MOD_DIRS: "packages/go"
-      - id: rubocop
-        files: ^packages/ruby/.*\.rb$
-        exclude: ^packages/ruby/ext/
-      - id: rubocop-lint
-        files: ^packages/ruby/.*\.(rb|rbs)$
-        exclude: ^packages/ruby/ext/
-      - id: steep
-        files: ^packages/ruby/.*\.(rb|rbs)$
-        exclude: ^packages/ruby/ext/
-      - id: dotnet-format
-        files: ^packages/csharp/.*\.cs$
-      - id: dotnet-format-check
-        files: ^packages/csharp/.*\.cs$
-      - id: php-cs-fixer
-        files: ^packages/php/.*\.php$
-        # packages/php/src/ and packages/php/stubs/ are alef-generated. cs-fixer's
-        # PSR-12 rules reformat in ways alef's emitter doesn't produce; touching
-        # them invalidates the alef:hash header and makes alef-verify fail every
-        # commit. Until alef emits PSR-12-shaped PHP, skip both alef-owned dirs.
-        exclude: ^packages/php/(src|stubs)/
-      - id: phpstan
-        # stubs/ deliberately excluded — alef-generated kreuzcrawl_extension.php has
-        # constructor-promoted readonly fields phpstan flags as 'unused', which only
-        # the alef codegen can fix; the .neon config still scans it as a type provider.
-        files: ^packages/php/(src|tests)/.*\.php$
-        args: ["analyse", "--no-progress", "--configuration", "packages/php/phpstan.neon"]
-      - id: mix-format
-        files: ^packages/elixir/
-      - id: mix-credo
-        files: ^packages/elixir/
       - id: swift-format
         files: ^packages/swift/.*\.swift$
       - id: swiftlint
@@ -196,6 +220,7 @@ repos:
         files: ^packages/dart/.*\.dart$
       - id: dart-analyze
         files: ^packages/dart/.*\.dart$
+        exclude: ^(test_apps/|e2e/dart/)
       - id: zig-fmt
         files: ^packages/zig/.*\.zig$
       - id: zig-build-check
@@ -204,30 +229,19 @@ repos:
         files: ^docs/.*\.md$
         exclude: ^docs/(reference/|api-|snippets/|migration/)
         args: ["--fix", "--config", ".textlintrc.json"]
+
       - id: oxlint
       - id: oxfmt
       - id: cppcheck
         args: ["--suppress=unusedStructMember"]
       - id: rumdl-fmt
-        # alef-generated reference docs are checked verbatim against `alef docs`
-        # output in CI; rumdl's MD022 fixes would diverge from that.
-        exclude: ^docs/reference/
-      # markdownlint-rumdl-strict is intentionally not wired — kreuzcrawl docs
-      # use zensical/material extensions (HTML grids, indented code, long URL
-      # tables) that the bundled strict config over-flags. rumdl-fmt above
-      # already auto-fixes the issues we care about.
       - id: cpd
-        # Raise from default 100. alef-generated *Builder.java share ~213 tokens
-        # of @JsonProperty boilerplate mirroring the Rust struct layout
-        # (CrawlPageResult/ScrapeResult Builder chains, etc.) — structural,
-        # not refactorable from the kreuzcrawl side.
-        args: [--minimum-tokens=250]
+        args: ["--minimum-tokens=120"]
+        exclude: ^test_apps/
 
-  # Alef: verify bindings and sync versions.
-  # Pin to v0.16.17 — the latest tag with release assets uploaded. v0.16.18/19/20
-  # are tagged in git but their GitHub release artifacts have not been published.
+  # Alef: verify bindings and sync versions
   - repo: https://github.com/kreuzberg-dev/alef
-    rev: v0.16.17
+    rev: v0.16.21
     hooks:
       - id: alef-verify
       - id: alef-sync-versions

@@ -108,11 +108,14 @@ jobs:
       - name: Install alef CLI
         uses: kreuzberg-dev/actions/install-alef@v1
 
+      - name: Install alef-snippets CLI
+        run: cargo install --git https://github.com/kreuzberg-dev/alef --bin alef-snippets --features cli --locked
+
       - name: Audit + gaps + validate snippets
         run: |
-          alef snippets audit --snippets docs/snippets
-          alef snippets gaps
-          alef snippets validate --snippets docs/snippets
+          alef-snippets audit --snippets docs/snippets
+          alef-snippets gaps --snippets docs/snippets --docs docs
+          alef-snippets validate --snippets docs/snippets
 
   deploy:
     name: Deploy
