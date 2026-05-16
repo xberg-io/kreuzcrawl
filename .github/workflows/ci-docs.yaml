@@ -47,15 +47,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Python
-        uses: kreuzberg-dev/actions/setup-python-env@v1
+      - name: Build documentation
+        uses: kreuzberg-dev/actions/build-docs@v1
         with:
+          strict: "true"
           python-version: "3.13"
-          cache-prefix: docs-build
-          install-command: "uv sync --group docs --no-install-project --no-install-workspace --frozen"
-
-      - name: Build docs (strict)
-        run: scripts/ci/docs/build.sh --strict
 
       - name: Upload site artifact
         uses: actions/upload-artifact@v7.0.1
@@ -64,62 +60,24 @@ jobs:
           path: site/
           retention-days: 1
 
-  lint-links:
-    name: Lint Links
-    needs: [build]
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v6.0.2
-
-      - name: Download site artifact
-        uses: actions/download-artifact@v8.0.1
-        with:
-          name: docs-site
-          path: site/
-
-      - name: Check links
-        uses: lycheeverse/lychee-action@v2.8.0
-        with:
-          args: "--config .lychee.toml site/"
-          fail: true
-
-  lint-prose:
-    name: Lint Prose
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v6.0.2
-
-      - name: Setup textlint
-        uses: kreuzberg-dev/actions/setup-textlint@v1
-
-      - name: Run textlint
-        run: scripts/ci/docs/textlint.sh
-
-  validate-snippets:
-    name: Validate Snippets
+  lint:
+    name: Lint
     if: github.repository == 'kreuzberg-dev/kreuzcrawl' && github.actor != 'dependabot[bot]'
-    runs-on: ubuntu-24.04-arm
-    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6.0.2
 
-      - name: Install alef CLI
-        uses: kreuzberg-dev/actions/install-alef@v1
-
-      - name: Install alef-snippets CLI
-        run: cargo install --git https://github.com/kreuzberg-dev/alef --bin alef-snippets --features cli --locked
-
-      - name: Audit + gaps + validate snippets
-        run: |
-          alef-snippets audit --snippets docs/snippets
-          alef-snippets gaps --snippets docs/snippets --docs docs
-          alef-snippets validate --snippets docs/snippets
+      - name: Lint documentation (links + prose + snippets)
+        uses: kreuzberg-dev/actions/lint-docs@v1
+        with:
+          strict: "false"
+          validate-snippets: "true"
+          alef-ref: "main"
 
   deploy:
     name: Deploy
-    needs: [build, lint-links, lint-prose, validate-snippets]
+    needs: [build, lint]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     permissions:
       contents: read
