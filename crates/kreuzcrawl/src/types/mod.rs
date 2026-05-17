@@ -6,7 +6,8 @@ mod metadata;
 mod results;
 
 pub use config::{
-    AuthConfig, BrowserConfig, BrowserMode, BrowserWait, ContentConfig, CrawlConfig, ExtractionMeta, ProxyConfig,
+    AuthConfig, BrowserBackend, BrowserConfig, BrowserMode, BrowserWait, ContentConfig, CrawlConfig, ExtractionMeta,
+    ProxyConfig,
 };
 #[cfg(not(target_arch = "wasm32"))]
 pub use discovery::CrawlEvent;

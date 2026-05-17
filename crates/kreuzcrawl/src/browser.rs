@@ -12,7 +12,7 @@ use tokio_stream::StreamExt;
 use crate::browser_pool::BrowserPool;
 use crate::error::CrawlError;
 use crate::http::HttpResponse;
-use crate::types::{AuthConfig, BrowserWait, CookieInfo, CrawlConfig};
+use crate::types::{AuthConfig, BrowserBackend, BrowserWait, CookieInfo, CrawlConfig};
 
 /// Fetch a URL using a headless Chrome browser via CDP.
 ///
@@ -22,6 +22,18 @@ use crate::types::{AuthConfig, BrowserWait, CookieInfo, CrawlConfig};
 ///
 /// Returns an `HttpResponse` compatible with the existing scrape pipeline.
 pub(crate) async fn browser_fetch(
+    url: &str,
+    config: &CrawlConfig,
+    prior_cookies: Option<&[CookieInfo]>,
+    pool: Option<&BrowserPool>,
+) -> Result<HttpResponse, CrawlError> {
+    match config.browser.backend {
+        BrowserBackend::Chromiumoxide => chromiumoxide_fetch(url, config, prior_cookies, pool).await,
+        BrowserBackend::Native => native_fetch(url, config).await,
+    }
+}
+
+async fn chromiumoxide_fetch(
     url: &str,
     config: &CrawlConfig,
     prior_cookies: Option<&[CookieInfo]>,
@@ -53,6 +65,93 @@ pub(crate) async fn browser_fetch(
 
         result
     }
+}
+
+#[cfg(feature = "browser-native")]
+async fn native_fetch(url: &str, config: &CrawlConfig) -> Result<HttpResponse, CrawlError> {
+    if config.browser.endpoint.is_some() {
+        return Err(CrawlError::InvalidConfig(
+            "browser.endpoint is only supported by the chromiumoxide backend".into(),
+        ));
+    }
+    if config.browser.wait == BrowserWait::Selector {
+        return Err(CrawlError::BrowserError(
+            "BrowserWait::Selector is not yet supported by the native backend".into(),
+        ));
+    }
+
+    let mut extra_headers = config.custom_headers.clone();
+    match config.auth {
+        Some(AuthConfig::Bearer { ref token }) => {
+            extra_headers.insert("Authorization".to_owned(), format!("Bearer {token}"));
+        }
+        Some(AuthConfig::Header { ref name, ref value }) => {
+            extra_headers.insert(name.clone(), value.clone());
+        }
+        _ => {}
+    }
+
+    let wait_until = match config.browser.wait {
+        BrowserWait::NetworkIdle => kreuzcrawl_browser::adapter::NativeBrowserWait::NetworkIdle,
+        BrowserWait::Fixed | BrowserWait::Selector => kreuzcrawl_browser::adapter::NativeBrowserWait::Load,
+    };
+    let native_config = kreuzcrawl_browser::adapter::NativeBrowserConfig {
+        user_agent: config.user_agent.clone(),
+        timeout: config.browser.timeout,
+        wait_until,
+        extra_headers,
+        respect_robots_txt: config.respect_robots_txt,
+    };
+
+    let url = url.to_owned();
+    let timeout = config.browser.timeout;
+    let rendered = tokio::task::spawn_blocking(move || {
+        let runtime = tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .build()
+            .map_err(|e| format!("failed to create native browser runtime: {e}"))?;
+        runtime
+            .block_on(kreuzcrawl_browser::adapter::render_url(&url, &native_config))
+            .map_err(|e| e.to_string())
+    })
+    .await
+    .map_err(|e| CrawlError::BrowserError(format!("native browser render task failed: {e}")))?
+    .map_err(|e| {
+        if e.contains("timed out") {
+            CrawlError::BrowserTimeout(format!("browser timed out after {timeout:?}"))
+        } else {
+            CrawlError::BrowserError(format!("native browser render failed: {e}"))
+        }
+    })?;
+
+    if config.browser.wait == BrowserWait::Fixed {
+        tokio::time::sleep(Duration::from_secs(2)).await;
+    }
+    if let Some(extra) = config.browser.extra_wait {
+        tokio::time::sleep(extra).await;
+    }
+
+    let content_type = rendered
+        .headers
+        .get("content-type")
+        .cloned()
+        .unwrap_or_else(|| "text/html".to_owned());
+    let body_bytes = rendered.html.as_bytes().to_vec();
+
+    Ok(HttpResponse {
+        status: rendered.status.unwrap_or(200),
+        content_type,
+        body: rendered.html,
+        body_bytes,
+        headers: rendered.headers.into_iter().map(|(k, v)| (k, vec![v])).collect(),
+    })
+}
+
+#[cfg(not(feature = "browser-native"))]
+async fn native_fetch(_url: &str, _config: &CrawlConfig) -> Result<HttpResponse, CrawlError> {
+    Err(CrawlError::InvalidConfig(
+        "browser.backend = native requires the browser-native feature".into(),
+    ))
 }
 
 /// Navigate a pre-existing CDP page to `url`, wait for rendering, and extract

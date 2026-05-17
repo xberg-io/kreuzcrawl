@@ -27,7 +27,9 @@ default = ["native-runtime"]
 # error that occurs when tokio's net/fs/signal/process features are requested
 # on wasm32-unknown-unknown.
 native-runtime = []
-browser = ["dep:chromiumoxide", "dep:dirs", "native-runtime"]
+browser = ["browser-chromiumoxide"]
+browser-chromiumoxide = ["dep:chromiumoxide", "dep:dirs", "native-runtime"]
+browser-native = ["dep:kreuzcrawl-browser", "native-runtime"]
 ai = ["dep:liter-llm", "dep:minijinja"]
 tracing = ["dep:tracing"]
 interact = ["browser"]
@@ -58,6 +60,7 @@ dirs = { workspace = true, optional = true }
 encoding_rs = { workspace = true }
 flate2 = { workspace = true }
 html-to-markdown-rs = { workspace = true }
+kreuzcrawl-browser = { workspace = true, optional = true }
 liter-llm = { workspace = true, optional = true }
 memchr = { workspace = true }
 minijinja = { workspace = true, optional = true }

@@ -48,6 +48,17 @@ pub enum BrowserWait {
     Fixed,
 }
 
+/// Browser backend used for JavaScript rendering.
+#[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum BrowserBackend {
+    /// Existing Chromium/CDP backend powered by chromiumoxide.
+    #[default]
+    Chromiumoxide,
+    /// Kreuzcrawl-owned native browser backend derived from Obscura.
+    Native,
+}
+
 pub(crate) mod duration_ms {
     use serde::{Deserialize, Deserializer, Serialize, Serializer};
     use std::time::Duration;
@@ -198,6 +209,8 @@ impl Default for ContentConfig {
 pub struct BrowserConfig {
     /// When to use the headless browser fallback.
     pub mode: BrowserMode,
+    /// Browser backend used to render JavaScript-heavy pages.
+    pub backend: BrowserBackend,
     /// CDP WebSocket endpoint for connecting to an external browser instance.
     pub endpoint: Option<String>,
     /// Timeout for browser page load and rendering (in milliseconds when serialized).
@@ -216,6 +229,7 @@ impl Default for BrowserConfig {
     fn default() -> Self {
         Self {
             mode: BrowserMode::Auto,
+            backend: BrowserBackend::Chromiumoxide,
             endpoint: None,
             timeout: Duration::from_secs(30),
             wait: BrowserWait::default(),
@@ -457,6 +471,11 @@ impl CrawlConfig {
                 "browser.endpoint must start with ws:// or wss://, got: {endpoint:?}"
             )));
         }
+        if self.browser.backend == BrowserBackend::Native && self.browser.endpoint.is_some() {
+            return Err(CrawlError::InvalidConfig(
+                "browser.endpoint is only supported by the chromiumoxide backend".into(),
+            ));
+        }
         Ok(())
     }
 }
@@ -513,5 +532,25 @@ mod tests {
             ..Default::default()
         };
         assert!(config.validate().is_ok());
+    }
+
+    #[test]
+    fn browser_backend_defaults_to_chromiumoxide() {
+        assert_eq!(BrowserConfig::default().backend, BrowserBackend::Chromiumoxide);
+    }
+
+    #[test]
+    fn validate_rejects_native_endpoint() {
+        let config = CrawlConfig {
+            browser: BrowserConfig {
+                backend: BrowserBackend::Native,
+                endpoint: Some("ws://localhost:9222".into()),
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+        let err = config.validate().unwrap_err();
+        let msg = err.to_string();
+        assert!(msg.contains("chromiumoxide"), "unexpected error: {msg}");
     }
 }
