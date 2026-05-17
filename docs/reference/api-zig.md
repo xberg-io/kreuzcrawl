@@ -207,11 +207,14 @@ pub fn default() BrowserConfig
 
 #### CitationReference
 
-| Field   | Type           | Default | Description |
-| ------- | -------------- | ------- | ----------- |
-| `index` | `u64`          | —       | Index       |
-| `url`   | `[:0]const u8` | —       | Url         |
-| `text`  | `[:0]const u8` | —       | Text        |
+A single numbered reference in a citation list — produced by the citation
+extractor when content uses inline `[N]`-style markers.
+
+| Field   | Type           | Default | Description                                                |
+| ------- | -------------- | ------- | ---------------------------------------------------------- |
+| `index` | `u64`          | —       | 1-based reference number as it appears in the source text. |
+| `url`   | `[:0]const u8` | —       | Resolved absolute URL for this reference.                  |
+| `text`  | `[:0]const u8` | —       | Human-readable anchor text or title for the reference.     |
 
 ---
 

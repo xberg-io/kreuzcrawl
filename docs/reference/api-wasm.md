@@ -213,11 +213,14 @@ static default(): BrowserConfig
 
 #### CitationReference
 
-| Field   | Type     | Default | Description |
-| ------- | -------- | ------- | ----------- |
-| `index` | `number` | —       | Index       |
-| `url`   | `string` | —       | Url         |
-| `text`  | `string` | —       | Text        |
+A single numbered reference in a citation list — produced by the citation
+extractor when content uses inline `[N]`-style markers.
+
+| Field   | Type     | Default | Description                                                |
+| ------- | -------- | ------- | ---------------------------------------------------------- |
+| `index` | `number` | —       | 1-based reference number as it appears in the source text. |
+| `url`   | `string` | —       | Resolved absolute URL for this reference.                  |
+| `text`  | `string` | —       | Human-readable anchor text or title for the reference.     |
 
 ---
 

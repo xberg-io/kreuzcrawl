@@ -6,7 +6,7 @@ defmodule Kreuzcrawl.MixProject do
       app: :kreuzcrawl,
       version: "0.3.0-rc.20",
       elixir: "~> 1.14",
-      elixirc_paths: ["lib", "../..//packages/elixir/native/kreuzcrawl_nif/src"],
+      elixirc_paths: ["lib", Path.expand("../../packages/elixir/native/kreuzcrawl_nif/src", __DIR__)],
       rustler_crates: [kreuzcrawl_nif: [mode: :release]],
       description: "High-performance web crawling engine",
       package: package(),

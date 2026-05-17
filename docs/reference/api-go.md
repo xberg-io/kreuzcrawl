@@ -207,11 +207,14 @@ func (o *BrowserConfig) Default() BrowserConfig
 
 #### CitationReference
 
-| Field   | Type     | Default | Description |
-| ------- | -------- | ------- | ----------- |
-| `Index` | `int`    | —       | Index       |
-| `Url`   | `string` | —       | Url         |
-| `Text`  | `string` | —       | Text        |
+A single numbered reference in a citation list — produced by the citation
+extractor when content uses inline `[N]`-style markers.
+
+| Field   | Type     | Default | Description                                                |
+| ------- | -------- | ------- | ---------------------------------------------------------- |
+| `Index` | `int`    | —       | 1-based reference number as it appears in the source text. |
+| `Url`   | `string` | —       | Resolved absolute URL for this reference.                  |
+| `Text`  | `string` | —       | Human-readable anchor text or title for the reference.     |
 
 ---
 

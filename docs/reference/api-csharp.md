@@ -207,11 +207,14 @@ public BrowserConfig CreateDefault()
 
 #### CitationReference
 
-| Field   | Type     | Default | Description |
-| ------- | -------- | ------- | ----------- |
-| `Index` | `nuint`  | —       | Index       |
-| `Url`   | `string` | —       | Url         |
-| `Text`  | `string` | —       | Text        |
+A single numbered reference in a citation list — produced by the citation
+extractor when content uses inline `[N]`-style markers.
+
+| Field   | Type     | Default | Description                                                |
+| ------- | -------- | ------- | ---------------------------------------------------------- |
+| `Index` | `nuint`  | —       | 1-based reference number as it appears in the source text. |
+| `Url`   | `string` | —       | Resolved absolute URL for this reference.                  |
+| `Text`  | `string` | —       | Human-readable anchor text or title for the reference.     |
 
 ---
 

@@ -62,9 +62,6 @@ lint.ignore = [
   "TD",
   "TRY",
 ]
-# kreuzcrawl/ is alef-generated. TC001 wants enum re-exports moved into
-# TYPE_CHECKING blocks, but those enums are used at runtime in the facade.
-lint.per-file-ignores."kreuzcrawl/**" = [ "TC001" ]
 lint.per-file-ignores."tests/**" = [ "ANN", "D103", "PLR2004", "S101" ]
 lint.mccabe.max-complexity = 15
 lint.pydocstyle.convention = "google"

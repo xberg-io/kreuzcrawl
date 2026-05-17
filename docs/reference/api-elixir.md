@@ -213,11 +213,14 @@ def default()
 
 #### CitationReference
 
-| Field   | Type         | Default | Description |
-| ------- | ------------ | ------- | ----------- |
-| `index` | `integer()`  | —       | Index       |
-| `url`   | `String.t()` | —       | Url         |
-| `text`  | `String.t()` | —       | Text        |
+A single numbered reference in a citation list — produced by the citation
+extractor when content uses inline `[N]`-style markers.
+
+| Field   | Type         | Default | Description                                                |
+| ------- | ------------ | ------- | ---------------------------------------------------------- |
+| `index` | `integer()`  | —       | 1-based reference number as it appears in the source text. |
+| `url`   | `String.t()` | —       | Resolved absolute URL for this reference.                  |
+| `text`  | `String.t()` | —       | Human-readable anchor text or title for the reference.     |
 
 ---
 

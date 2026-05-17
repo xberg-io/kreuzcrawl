@@ -8,10 +8,12 @@ readme = false
 keywords = ["crawl", "scrape", "web", "spider"]
 categories = ["text-processing"]
 
+# `serde_json` is emitted unconditionally above so the manifest is stable
+# across regens, but for umbrella crates with no JSON-marshalled return types
+# it is genuinely unused. List it here so `cargo machete` doesn't flag the
+# no-json case as a real finding.
 [package.metadata.cargo-machete]
-# serde_bytes is used via #[serde(with = "serde_bytes")] string-reference
-# attribute, which cargo-machete cannot statically detect.
-ignored = ["serde", "serde_bytes"]
+ignored = ["serde_json"]
 
 [lib]
 crate-type = ["cdylib"]
@@ -21,7 +23,6 @@ kreuzcrawl = { path = "../kreuzcrawl" }
 napi = { version = "3", features = ["async", "serde-json"] }
 napi-derive = "3"
 serde = { version = "1", features = ["derive"] }
-serde_bytes = "0.11"
 serde_json = "1"
 
 [build-dependencies]

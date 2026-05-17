@@ -12,6 +12,7 @@ categories = ["text-processing"]
 
 [lib]
 name = "kreuzcrawl_nif"
+
 crate-type = ["cdylib"]
 
 [dependencies]

@@ -69,12 +69,12 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.21.3</version>
+            <version>2.21.2</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jdk8</artifactId>
-            <version>2.21.3</version>
+            <version>2.21.2</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -291,17 +291,6 @@
                     <rulesets>
                         <ruleset>/rulesets/java/quickstart.xml</ruleset>
                     </rulesets>
-                    <!--
-                      Default 100 flags ~121 tokens of structurally-identical
-                      @JsonProperty + private field boilerplate that alef
-                      emits in *Builder.java for every struct. Bumping the
-                      threshold accepts the structural duplication that only
-                      alef codegen can refactor. 250 tolerates the 213-token
-                      Builder overlap between CrawlPageResult and ScrapeResult
-                      (status_code/headers/url/final_url/title chain), which
-                      both wrap response_meta + page_metadata.
-                    -->
-                    <minimumTokens>250</minimumTokens>
                 </configuration>
                 <executions>
                     <execution>

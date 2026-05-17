@@ -208,11 +208,14 @@ def default() -> BrowserConfig
 
 #### CitationReference
 
-| Field   | Type  | Default | Description |
-| ------- | ----- | ------- | ----------- |
-| `index` | `int` | —       | Index       |
-| `url`   | `str` | —       | Url         |
-| `text`  | `str` | —       | Text        |
+A single numbered reference in a citation list — produced by the citation
+extractor when content uses inline `[N]`-style markers.
+
+| Field   | Type  | Default | Description                                                |
+| ------- | ----- | ------- | ---------------------------------------------------------- |
+| `index` | `int` | —       | 1-based reference number as it appears in the source text. |
+| `url`   | `str` | —       | Resolved absolute URL for this reference.                  |
+| `text`  | `str` | —       | Human-readable anchor text or title for the reference.     |
 
 ---
 
