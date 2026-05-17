@@ -94,13 +94,26 @@ pub struct ProxyConfig {
 pub enum AuthConfig {
     /// HTTP Basic authentication.
     #[serde(rename = "basic")]
-    Basic { username: String, password: String },
+    Basic {
+        /// Username sent in the `Authorization: Basic` header.
+        username: String,
+        /// Password sent in the `Authorization: Basic` header.
+        password: String,
+    },
     /// Bearer token authentication.
     #[serde(rename = "bearer")]
-    Bearer { token: String },
+    Bearer {
+        /// Token sent in the `Authorization: Bearer` header.
+        token: String,
+    },
     /// Custom authentication header.
     #[serde(rename = "header")]
-    Header { name: String, value: String },
+    Header {
+        /// HTTP header name to set on each request.
+        name: String,
+        /// HTTP header value to send.
+        value: String,
+    },
 }
 
 impl Default for AuthConfig {

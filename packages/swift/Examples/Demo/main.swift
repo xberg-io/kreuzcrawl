@@ -2,8 +2,8 @@ import Kreuzcrawl
 
 @main
 struct Demo {
-    static func main() {
-        print("Demo: Kreuzcrawl loaded successfully")
-        // Add your API calls here after code generation
-    }
+  static func main() {
+    print("Demo: Kreuzcrawl loaded successfully")
+    // Add your API calls here after code generation
+  }
 }

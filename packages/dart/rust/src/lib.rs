@@ -611,10 +611,15 @@ pub struct CitationResult {
     pub references: Vec<CitationReference>,
 }
 
+/// A single numbered reference in a citation list — produced by the citation
+/// extractor when content uses inline `[N]`-style markers.
 #[frb(mirror(CitationReference))]
 pub struct CitationReference {
+    /// 1-based reference number as it appears in the source text.
     pub index: i64,
+    /// Resolved absolute URL for this reference.
     pub url: String,
+    /// Human-readable anchor text or title for the reference.
     pub text: String,
 }
 
@@ -687,11 +692,24 @@ pub enum BrowserWait {
 #[frb(mirror(AuthConfig))]
 pub enum AuthConfig {
     /// HTTP Basic authentication.
-    Basic { username: String, password: String },
+    Basic {
+        /// Username sent in the `Authorization: Basic` header.
+        username: String,
+        /// Password sent in the `Authorization: Basic` header.
+        password: String,
+    },
     /// Bearer token authentication.
-    Bearer { token: String },
+    Bearer {
+        /// Token sent in the `Authorization: Bearer` header.
+        token: String,
+    },
     /// Custom authentication header.
-    Header { name: String, value: String },
+    Header {
+        /// HTTP header name to set on each request.
+        name: String,
+        /// HTTP header value to send.
+        value: String,
+    },
 }
 
 /// The classification of a link.

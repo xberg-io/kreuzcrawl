@@ -229,7 +229,10 @@ class AuthConfig_Basic extends AuthConfig {
   const AuthConfig_Basic({required this.username, required this.password})
       : super._();
 
+  /// Username sent in the `Authorization: Basic` header.
   final String username;
+
+  /// Password sent in the `Authorization: Basic` header.
   final String password;
 
   /// Create a copy of AuthConfig
@@ -302,6 +305,7 @@ class _$AuthConfig_BasicCopyWithImpl<$Res>
 class AuthConfig_Bearer extends AuthConfig {
   const AuthConfig_Bearer({required this.token}) : super._();
 
+  /// Token sent in the `Authorization: Bearer` header.
   final String token;
 
   /// Create a copy of AuthConfig
@@ -367,7 +371,10 @@ class AuthConfig_Header extends AuthConfig {
   const AuthConfig_Header({required this.name, required this.value})
       : super._();
 
+  /// HTTP header name to set on each request.
   final String name;
+
+  /// HTTP header value to send.
   final String value;
 
   /// Create a copy of AuthConfig

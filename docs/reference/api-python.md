@@ -800,6 +800,7 @@ The category of a downloaded asset.
 Errors that can occur during crawling, scraping, or mapping operations.
 
 **Base class:** `CrawlError(Exception)`
+
 | Exception | Description |
 |-----------|-------------|
 | `NotFound(CrawlError)` | The requested page was not found (HTTP 404). |

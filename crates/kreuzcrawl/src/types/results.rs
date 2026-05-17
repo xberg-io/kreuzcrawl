@@ -273,11 +273,18 @@ pub struct MarkdownResult {
 /// Cached page data for HTTP response caching.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CachedPage {
+    /// Absolute URL of the cached page.
     pub url: String,
+    /// HTTP status code returned at the time the page was cached.
     pub status_code: u16,
+    /// `Content-Type` header captured from the original response.
     pub content_type: String,
+    /// Raw response body stored verbatim in the cache.
     pub body: String,
+    /// `ETag` header value, if any — used for conditional revalidation.
     pub etag: Option<String>,
+    /// `Last-Modified` header value, if any — used for conditional revalidation.
     pub last_modified: Option<String>,
+    /// Unix timestamp (seconds) when the entry was written to the cache.
     pub cached_at: u64,
 }

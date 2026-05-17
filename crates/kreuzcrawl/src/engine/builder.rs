@@ -12,7 +12,7 @@ use super::CrawlEngine;
 /// Builder for [`CrawlEngine`].
 ///
 /// Any field left unset will be filled with a default implementation
-/// from [`crate::defaults`].
+/// from the crate's internal `defaults` module.
 pub struct CrawlEngineBuilder {
     config: Option<CrawlConfig>,
     frontier: Option<Arc<dyn Frontier>>,

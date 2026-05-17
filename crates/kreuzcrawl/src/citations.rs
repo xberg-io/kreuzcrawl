@@ -17,11 +17,16 @@ pub struct CitationResult {
     pub references: Vec<CitationReference>,
 }
 
+/// A single numbered reference in a citation list — produced by the citation
+/// extractor when content uses inline `[N]`-style markers.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct CitationReference {
+    /// 1-based reference number as it appears in the source text.
     pub index: usize,
+    /// Resolved absolute URL for this reference.
     pub url: String,
+    /// Human-readable anchor text or title for the reference.
     pub text: String,
 }
 

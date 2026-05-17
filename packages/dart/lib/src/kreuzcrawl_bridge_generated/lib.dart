@@ -218,18 +218,25 @@ sealed class AuthConfig with _$AuthConfig {
 
   /// HTTP Basic authentication.
   const factory AuthConfig.basic({
+    /// Username sent in the `Authorization: Basic` header.
     required String username,
+
+    /// Password sent in the `Authorization: Basic` header.
     required String password,
   }) = AuthConfig_Basic;
 
   /// Bearer token authentication.
   const factory AuthConfig.bearer({
+    /// Token sent in the `Authorization: Bearer` header.
     required String token,
   }) = AuthConfig_Bearer;
 
   /// Custom authentication header.
   const factory AuthConfig.header({
+    /// HTTP header name to set on each request.
     required String name,
+
+    /// HTTP header value to send.
     required String value,
   }) = AuthConfig_Header;
 }
@@ -371,9 +378,16 @@ enum BrowserWait {
   ;
 }
 
+/// A single numbered reference in a citation list — produced by the citation
+/// extractor when content uses inline `[N]`-style markers.
 class CitationReference {
+  /// 1-based reference number as it appears in the source text.
   final PlatformInt64 index;
+
+  /// Resolved absolute URL for this reference.
   final String url;
+
+  /// Human-readable anchor text or title for the reference.
   final String text;
 
   const CitationReference({

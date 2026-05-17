@@ -624,9 +624,14 @@ pub const CitationResult = struct {
     references: []const CitationReference,
 };
 
+/// A single numbered reference in a citation list — produced by the citation
+/// extractor when content uses inline `[N]`-style markers.
 pub const CitationReference = struct {
+    /// 1-based reference number as it appears in the source text.
     index: u64,
+    /// Resolved absolute URL for this reference.
     url: []const u8,
+    /// Human-readable anchor text or title for the reference.
     text: []const u8,
 };
 

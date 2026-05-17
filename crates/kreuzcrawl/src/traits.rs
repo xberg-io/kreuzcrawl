@@ -10,7 +10,9 @@ use async_trait::async_trait;
 /// An entry in the URL frontier queue.
 #[derive(Debug, Clone)]
 pub struct FrontierEntry {
+    /// URL waiting to be crawled.
     pub url: String,
+    /// Crawl depth at which this URL was discovered.
     pub depth: usize,
     /// Priority score for this entry. Higher values mean higher priority.
     pub priority: f64,
@@ -19,29 +21,42 @@ pub struct FrontierEntry {
 /// Statistics about an ongoing or completed crawl.
 #[derive(Debug, Clone, Default)]
 pub struct CrawlStats {
+    /// Number of pages successfully crawled so far.
     pub pages_crawled: usize,
+    /// Number of pages that failed to crawl (network errors, parse failures, etc.).
     pub pages_failed: usize,
+    /// Total number of URLs discovered (queued + crawled + filtered).
     pub urls_discovered: usize,
+    /// Number of URLs rejected by filters before being crawled.
     pub urls_filtered: usize,
+    /// Wall-clock time elapsed since the crawl started.
     pub elapsed: Duration,
 }
 
-/// Events emitted during crawl lifecycle.
+/// Emitted by the engine when a page has finished being processed.
 #[derive(Debug, Clone)]
 pub struct PageEvent {
+    /// URL of the page that was processed.
     pub url: String,
+    /// Final HTTP status code returned by the page request.
     pub status_code: u16,
+    /// Crawl depth at which this page was reached.
     pub depth: usize,
 }
 
+/// Emitted when a page fails to be processed.
 #[derive(Debug, Clone)]
 pub struct ErrorEvent {
+    /// URL that triggered the error.
     pub url: String,
+    /// Human-readable error description.
     pub error: String,
 }
 
+/// Emitted when the crawl completes (all queues drained or limits reached).
 #[derive(Debug, Clone)]
 pub struct CompleteEvent {
+    /// Final count of successfully crawled pages.
     pub pages_crawled: usize,
 }
 

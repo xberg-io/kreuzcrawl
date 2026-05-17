@@ -42,6 +42,10 @@ typedef struct KCRAWLBrowserMode KCRAWLBrowserMode;
  * Wait strategy for browser page rendering.
  */
 typedef struct KCRAWLBrowserWait KCRAWLBrowserWait;
+/**
+ * A single numbered reference in a citation list â produced by the citation
+ * extractor when content uses inline `[N]`-style markers.
+ */
 typedef struct KCRAWLCitationReference KCRAWLCitationReference;
 /**
  * Result of citation conversion.

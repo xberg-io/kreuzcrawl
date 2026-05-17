@@ -1,0 +1,13 @@
+name: e2e_dart
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ">=3.11.0 <4.0.0"
+
+dependencies:
+  kreuzcrawl: ^0.3.0-rc.20
+
+dev_dependencies:
+  test: ^1.25.0
+  http: ^1.2.0
