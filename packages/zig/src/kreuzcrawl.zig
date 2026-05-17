@@ -705,9 +705,9 @@ pub const ImageSource = enum {
     /// A `<source>` tag inside `<picture>`.
     picture_source,
     /// An `og:image` meta tag.
-    og: image,
+    og_image,
     /// A `twitter:image` meta tag.
-    twitter: image,
+    twitter_image,
 };
 
 /// The type of a feed (RSS, Atom, or JSON Feed).

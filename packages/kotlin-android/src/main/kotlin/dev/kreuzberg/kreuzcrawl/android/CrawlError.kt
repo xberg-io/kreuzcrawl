@@ -2,9 +2,7 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/**
- * Errors that can occur during crawling, scraping, or mapping operations.
- */
+/** Errors that can occur during crawling, scraping, or mapping operations. */
 sealed class CrawlError(message: String) : Exception(message) {
     data class NotFound(val field0: String) : CrawlError("not_found: $field0")
 

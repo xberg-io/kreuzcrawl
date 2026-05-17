@@ -1,8 +1,8 @@
 version: "3"
 
 # Documentation build + lint + snippet workflows.
-# Snippet commands wrap `alef-snippets` (the new alef-snippets crate that replaces
-# the deleted tools/snippet-runner). See `alef-snippets <cmd> --help`.
+# Snippet commands wrap `alef snippets` (subcommand of the alef CLI that replaced
+# the deleted tools/snippet-runner). See `alef snippets <cmd> --help`.
 
 tasks:
   build:
@@ -37,19 +37,19 @@ tasks:
   snippets:list:
     desc: List all documentation snippets discovered by alef
     cmds:
-      - alef-snippets list --snippets docs/snippets
+      - alef snippets list --snippets docs/snippets
 
   snippets:list:lang:
     desc: List snippets filtered to specific languages (LANGUAGES=rust,python)
     requires:
       vars: [LANGUAGES]
     cmds:
-      - alef-snippets list --snippets docs/snippets --languages {{.LANGUAGES}}
+      - alef snippets list --snippets docs/snippets --languages {{.LANGUAGES}}
 
   snippets:validate:
     desc: Syntax-validate all docs/snippets entries via alef
     cmds:
-      - alef-snippets validate --snippets docs/snippets
+      - alef snippets validate --snippets docs/snippets
 
   snippets:validate:lang:
     desc: Validate snippets for specific languages (LANGUAGES=rust,python LEVEL=syntax)
@@ -58,21 +58,21 @@ tasks:
     vars:
       LEVEL: '{{ .LEVEL | default "syntax" }}'
     cmds:
-      - alef-snippets validate --snippets docs/snippets --languages {{.LANGUAGES}} --level {{.LEVEL}}
+      - alef snippets validate --snippets docs/snippets --languages {{.LANGUAGES}} --level {{.LEVEL}}
 
   snippets:gaps:
     desc: Report unreferenced snippets + missing language variants
     cmds:
-      - alef-snippets gaps --snippets docs/snippets --docs docs
+      - alef snippets gaps --snippets docs/snippets --docs docs
 
   snippets:audit:
     desc: Audit snippet + markdown include structure under docs/snippets
     cmds:
-      - alef-snippets audit --snippets docs/snippets
+      - alef snippets audit --snippets docs/snippets
 
   snippets:all:
     desc: Run audit + gaps + validate (canonical docs:snippets gate)
     cmds:
-      - alef-snippets audit --snippets docs/snippets
-      - alef-snippets gaps --snippets docs/snippets --docs docs
-      - alef-snippets validate --snippets docs/snippets
+      - alef snippets audit --snippets docs/snippets
+      - alef snippets gaps --snippets docs/snippets --docs docs
+      - alef snippets validate --snippets docs/snippets

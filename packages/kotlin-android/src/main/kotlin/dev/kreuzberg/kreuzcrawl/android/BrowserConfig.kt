@@ -4,32 +4,18 @@ package dev.kreuzberg.kreuzcrawl.android
 
 import kotlin.time.Duration
 
-/**
- * Browser fallback configuration.
- */
+/** Browser fallback configuration. */
 data class BrowserConfig(
-    /**
-     * When to use the headless browser fallback.
-     */
+    /** When to use the headless browser fallback. */
     val mode: BrowserMode,
-    /**
-     * CDP WebSocket endpoint for connecting to an external browser instance.
-     */
+    /** CDP WebSocket endpoint for connecting to an external browser instance. */
     val endpoint: String?,
-    /**
-     * Timeout for browser page load and rendering (in milliseconds when serialized).
-     */
+    /** Timeout for browser page load and rendering (in milliseconds when serialized). */
     val timeout: Duration,
-    /**
-     * Wait strategy after browser navigation.
-     */
+    /** Wait strategy after browser navigation. */
     val wait: BrowserWait,
-    /**
-     * CSS selector to wait for when `wait` is `Selector`.
-     */
+    /** CSS selector to wait for when `wait` is `Selector`. */
     val waitSelector: String?,
-    /**
-     * Extra time to wait after the wait condition is met.
-     */
+    /** Extra time to wait after the wait condition is met. */
     val extraWait: Duration?,
 )
