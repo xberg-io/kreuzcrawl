@@ -64,6 +64,23 @@ command = "cd packages/elixir && mix format"
 # it always shows as stale. Dropped.
 extra_paths = ["package.json", "crates/kreuzcrawl-node/package.json"]
 
+[workspace.citation]
+title = "kreuzcrawl"
+abstract = "Web crawling and scraping with HTML→Markdown and headless-Chrome fallback."
+repository-code = "https://github.com/kreuzberg-dev/kreuzcrawl"
+url = "https://kreuzberg.dev"
+license = "Elastic-2.0"
+date-released = "2026-05-17"
+
+[[workspace.citation.authors]]
+family-names = "Hirschfeld"
+given-names = "Na'aman"
+email = "naaman@kreuzberg.dev"
+orcid = "https://orcid.org/0009-0000-2247-5072"
+
+[[workspace.citation.authors]]
+name = "Kreuzberg, Inc."
+
 # kreuzcrawl-cli depends on kreuzcrawl via a path; cargo publish requires
 # the dep also declares a version. Keep that version in lockstep with the
 # workspace bump so every rc tag stays publishable.
