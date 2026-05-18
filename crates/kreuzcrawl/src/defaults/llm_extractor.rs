@@ -106,26 +106,28 @@ Content:
                 .map_err(|e| CrawlError::Other(format!("template render error: {e}")))?;
 
             // Build request.
-            let mut request = liter_llm::ChatCompletionRequest::default();
-            request.model = self.model.clone();
-            request.messages = vec![
-                liter_llm::Message::System(liter_llm::SystemMessage {
-                    content: "You are a data extraction assistant. Extract structured data from the provided content. Return valid JSON only.".into(),
-                    name: None,
+            let request = liter_llm::ChatCompletionRequest {
+                model: self.model.clone(),
+                messages: vec![
+                    liter_llm::Message::System(liter_llm::SystemMessage {
+                        content: "You are a data extraction assistant. Extract structured data from the provided content. Return valid JSON only.".into(),
+                        name: None,
+                    }),
+                    liter_llm::Message::User(liter_llm::UserMessage {
+                        content: liter_llm::UserContent::Text(rendered),
+                        name: None,
+                    }),
+                ],
+                response_format: self.schema.as_ref().map(|s| liter_llm::ResponseFormat::JsonSchema {
+                    json_schema: liter_llm::JsonSchemaFormat {
+                        name: "extraction".to_owned(),
+                        description: None,
+                        schema: s.clone(),
+                        strict: Some(true),
+                    },
                 }),
-                liter_llm::Message::User(liter_llm::UserMessage {
-                    content: liter_llm::UserContent::Text(rendered),
-                    name: None,
-                }),
-            ];
-            request.response_format = self.schema.as_ref().map(|s| liter_llm::ResponseFormat::JsonSchema {
-                json_schema: liter_llm::JsonSchemaFormat {
-                    name: "extraction".to_owned(),
-                    description: None,
-                    schema: s.clone(),
-                    strict: Some(true),
-                },
-            });
+                ..Default::default()
+            };
 
             // Call LLM.
             let response = self

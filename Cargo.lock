@@ -514,9 +514,9 @@ dependencies = [
 
 [[package]]
 name = "boring-sys2"
-version = "5.0.0-alpha.13"
+version = "5.0.0-alpha.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "455d79965f5155dcc88a7abce112c3590883889131b799beda10bf9a813ed669"
+checksum = "6708f31d293423b48662069e699b8a79ac1c2a5d8de2c560c2cc0958e480d377"
 dependencies = [
  "bindgen",
  "cmake",
@@ -526,9 +526,9 @@ dependencies = [
 
 [[package]]
 name = "boring2"
-version = "5.0.0-alpha.13"
+version = "5.0.0-alpha.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "183ccc3854411c035410dcdbffafca62084f3a6c33f013c77e83c025d2a08a28"
+checksum = "d190e62fc07d3433265641a2df3109baab591175c42a39a5f2379b584f3f0768"
 dependencies = [
  "bitflags 2.11.1",
  "boring-sys2",
@@ -2910,6 +2910,8 @@ dependencies = [
  "anyhow",
  "async-trait",
  "base64",
+ "boring-sys2",
+ "boring2",
  "cssparser",
  "deno_core",
  "deno_error",
@@ -2924,6 +2926,7 @@ dependencies = [
  "servo_arc",
  "thiserror 2.0.18",
  "tokio",
+ "tokio-boring2",
  "tracing",
  "url",
  "wreq",
@@ -5384,9 +5387,9 @@ dependencies = [
 
 [[package]]
 name = "tokio-boring2"
-version = "5.0.0-alpha.13"
+version = "5.0.0-alpha.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0f81df1210d791f31d72d840de8fbd80b9c3cb324956523048b1413e2bd55756"
+checksum = "8332a3a493b27722984a621fc00dc6e46211ac034083f4aab4305fc1bbae2b85"
 dependencies = [
  "boring2",
  "tokio",

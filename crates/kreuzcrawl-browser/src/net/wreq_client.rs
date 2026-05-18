@@ -52,10 +52,10 @@ impl StealthHttpClient {
             .timeout(Duration::from_secs(30))
             .redirect(wreq::redirect::Policy::none());
 
-        if let Some(proxy) = proxy_url {
-            if let Ok(p) = wreq::Proxy::all(proxy) {
-                builder = builder.proxy(p);
-            }
+        if let Some(proxy) = proxy_url
+            && let Ok(p) = wreq::Proxy::all(proxy)
+        {
+            builder = builder.proxy(p);
         }
 
         let client = builder.build().expect("failed to build wreq stealth client");
@@ -105,18 +105,18 @@ impl StealthHttpClient {
                 .map(|(k, v)| (k.as_str().to_lowercase(), v.to_str().unwrap_or("").to_string()))
                 .collect();
 
-            if status.is_redirection() {
-                if let Some(location) = resp.headers().get("location") {
-                    let location_str = location
-                        .to_str()
-                        .map_err(|_| ObscuraNetError::Network("Invalid redirect Location".into()))?;
-                    let next_url = current_url
-                        .join(location_str)
-                        .map_err(|e| ObscuraNetError::Network(format!("Invalid redirect URL: {}", e)))?;
-                    redirects.push(current_url.clone());
-                    current_url = next_url;
-                    continue;
-                }
+            if status.is_redirection()
+                && let Some(location) = resp.headers().get("location")
+            {
+                let location_str = location
+                    .to_str()
+                    .map_err(|_| ObscuraNetError::Network("Invalid redirect Location".into()))?;
+                let next_url = current_url
+                    .join(location_str)
+                    .map_err(|e| ObscuraNetError::Network(format!("Invalid redirect URL: {}", e)))?;
+                redirects.push(current_url.clone());
+                current_url = next_url;
+                continue;
             }
 
             let body = resp

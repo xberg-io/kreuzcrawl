@@ -7,7 +7,7 @@ publish = false
 
 [features]
 default = []
-stealth = ["wreq", "wreq-util"]
+stealth = ["wreq", "wreq-util", "boring2", "boring-sys2", "tokio-boring2"]
 
 [build-dependencies]
 deno_core = { workspace = true }
@@ -33,6 +33,14 @@ tokio = { workspace = true }
 tracing = { workspace = true }
 url = { workspace = true }
 wreq-util = { version = "3.0.0-rc.10", optional = true }
+# Pin the boring2 family to the alpha.12 release that wreq 6.0.0-rc.28 was
+# tested against; alpha.13 ships boring2 callsites for FFI symbols
+# (SSL_set_aes_hw_override, SSL_set_alps_use_new_codepoint, ...) that
+# boring-sys2 alpha.13 doesn't export. Marked optional so non-stealth builds
+# don't pull boring at all.
+boring2 = { version = "=5.0.0-alpha.12", optional = true }
+boring-sys2 = { version = "=5.0.0-alpha.12", optional = true }
+tokio-boring2 = { version = "=5.0.0-alpha.12", optional = true }
 
 [target.'cfg(any(target_os = "linux", target_os = "android"))'.dependencies]
 wreq = { version = "6.0.0-rc.28", optional = true, features = ["prefix-symbols"] }
