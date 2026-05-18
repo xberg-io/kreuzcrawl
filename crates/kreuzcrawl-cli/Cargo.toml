@@ -24,8 +24,8 @@ tracing = ["kreuzcrawl/tracing"]
 [dependencies]
 clap = { workspace = true }
 kreuzcrawl = { path = "../kreuzcrawl", version = "0.3.0-rc.20", features = [
-    "native-runtime",
-    "browser",
+  "native-runtime",
+  "browser",
 ] }
 serde_json = { workspace = true }
 tokio = { workspace = true }

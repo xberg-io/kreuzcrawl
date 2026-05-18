@@ -1,5 +1,16 @@
 import RustBridgeC
 
+public func generateCitations<GenericIntoRustString: IntoRustString>(
+  _ markdown: GenericIntoRustString
+) -> CitationResult {
+  CitationResult(
+    ptr: __swift_bridge__$generate_citations(
+      {
+        let rustString = markdown.intoRustString()
+        rustString.isOwned = false
+        return rustString.ptr
+      }()))
+}
 public func createEngine(_ config: CrawlConfig?) throws -> CrawlEngineHandle {
   try {
     let val = __swift_bridge__$create_engine(

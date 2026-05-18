@@ -908,6 +908,7 @@ void* __swift_bridge__$LinkType$to_string(void* self);
 void* __swift_bridge__$ImageSource$to_string(void* self);
 void* __swift_bridge__$FeedType$to_string(void* self);
 void* __swift_bridge__$AssetCategory$to_string(void* self);
+void* __swift_bridge__$generate_citations(void* markdown);
 struct __private__ResultPtrAndPtr __swift_bridge__$create_engine(void* config);
 struct __private__ResultPtrAndPtr __swift_bridge__$scrape(void* engine, void* url);
 struct __private__ResultPtrAndPtr __swift_bridge__$crawl(void* engine, void* url);
