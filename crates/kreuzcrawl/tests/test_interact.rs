@@ -1,11 +1,13 @@
 #![allow(clippy::unwrap_used, clippy::panic)]
 
+#[cfg(feature = "browser-chromiumoxide")]
 use std::time::Duration;
 
-use kreuzcrawl::{
-    BrowserBackend, BrowserConfig, BrowserMode, CrawlConfig, CrawlError, PageAction, ScrollDirection, create_engine,
-    interact,
-};
+#[cfg(feature = "browser-chromiumoxide")]
+use kreuzcrawl::ScrollDirection;
+#[cfg(any(feature = "browser-chromiumoxide", feature = "browser-native"))]
+use kreuzcrawl::{BrowserBackend, BrowserConfig, BrowserMode, CrawlConfig};
+use kreuzcrawl::{CrawlError, PageAction, create_engine, interact};
 
 #[cfg(feature = "browser-chromiumoxide")]
 use wiremock::matchers::{method, path};
@@ -121,6 +123,21 @@ async fn native_interact_returns_unsupported() {
         Err(CrawlError::Unsupported(message)) => {
             assert!(message.contains("BrowserBackend::Native"));
             assert!(message.contains("BrowserBackend::Chromiumoxide"));
+        }
+        other => panic!("expected Unsupported, got {other:?}"),
+    }
+}
+
+#[cfg(not(feature = "browser-chromiumoxide"))]
+#[tokio::test]
+async fn no_chromiumoxide_backend_interact_returns_unsupported() {
+    let engine = create_engine(None).unwrap();
+
+    let result = interact(&engine, "https://example.com", vec![PageAction::Scrape]).await;
+
+    match result {
+        Err(CrawlError::Unsupported(message)) => {
+            assert!(message.contains("browser-chromiumoxide"));
         }
         other => panic!("expected Unsupported, got {other:?}"),
     }

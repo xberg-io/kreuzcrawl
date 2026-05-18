@@ -15,7 +15,7 @@
 //! # Planned Tools (stubs registered, not yet implemented)
 //!
 //! - **screenshot**: Capture a screenshot of a URL (requires browser feature)
-//! - **interact**: Execute browser actions on a page (requires interact feature)
+//! - **interact**: Execute browser actions on a page (MCP adapter not yet implemented)
 //! - **research**: AI-driven research across multiple pages (requires ai feature)
 //! - **crawl_status**: Check the status of a crawl job (requires job registry)
 //!

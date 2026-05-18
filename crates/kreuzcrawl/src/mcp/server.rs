@@ -332,9 +332,9 @@ impl KreuzcrawlMcp {
         )]))
     }
 
-    /// Execute browser actions on a page (requires interact feature).
+    /// Execute browser actions on a page.
     #[tool(
-        description = "Execute browser actions on a page (requires interact feature).",
+        description = "Execute browser actions on a page.",
         annotations(title = "Interact", read_only_hint = true)
     )]
     async fn interact(
@@ -344,7 +344,7 @@ impl KreuzcrawlMcp {
         validate_url(&params.url)?;
 
         Ok(CallToolResult::success(vec![Content::text(
-            "Interact tool is not yet implemented. It requires the 'interact' feature.",
+            "Interact tool is not yet implemented in the MCP adapter.",
         )]))
     }
 
