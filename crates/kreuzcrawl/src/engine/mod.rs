@@ -81,14 +81,18 @@ impl CrawlEngine {
         /// shape expected by the extraction pipeline. Browser fetches do not carry
         /// HTTP response headers, so we supply an empty map.
         #[cfg(feature = "browser")]
-        fn browser_http_to_crawl(r: crate::http::HttpResponse) -> CrawlResponse {
-            CrawlResponse {
-                status: r.status,
-                content_type: r.content_type,
-                body: r.body,
-                body_bytes: r.body_bytes,
-                headers: std::collections::HashMap::new(),
-            }
+        fn browser_http_to_crawl(r: crate::http::HttpResponse) -> (CrawlResponse, Option<crate::http::BrowserExtras>) {
+            let extras = r.browser_extras;
+            (
+                CrawlResponse {
+                    status: r.status,
+                    content_type: r.content_type,
+                    body: r.body,
+                    body_bytes: r.body_bytes,
+                    headers: std::collections::HashMap::new(),
+                },
+                extras,
+            )
         }
 
         // BrowserMode::Always — skip HTTP entirely.
@@ -96,7 +100,8 @@ impl CrawlEngine {
         if self.config.browser.mode == crate::types::BrowserMode::Always {
             let pool = self.config.browser_pool.as_deref();
             let http_resp = crate::browser::browser_fetch(url, &self.config, None, pool).await?;
-            return Ok((browser_http_to_crawl(http_resp), true));
+            let (crawl_resp, _extras) = browser_http_to_crawl(http_resp);
+            return Ok((crawl_resp, true));
         }
 
         // Tower HTTP stack (with optional WAF fallback).
@@ -139,7 +144,8 @@ impl CrawlEngine {
             {
                 let pool = self.config.browser_pool.as_deref();
                 let http_resp = crate::browser::browser_fetch(url, &self.config, None, pool).await?;
-                Ok((browser_http_to_crawl(http_resp), true))
+                let (crawl_resp, _extras) = browser_http_to_crawl(http_resp);
+                Ok((crawl_resp, true))
             }
             Err(e) => Err(e),
         }
@@ -160,6 +166,35 @@ impl CrawlEngine {
     ///   and re-runs the extraction pipeline on the rendered HTML.
     pub async fn scrape(&self, url: &str) -> Result<ScrapeResult, CrawlError> {
         self.config.validate()?;
+
+        // Short-circuit for BrowserMode::Always so we can preserve browser_extras
+        // rather than losing them in the fetch_response indirection.
+        // Gated on browser-native (not just browser) so it also fires when only
+        // the native backend is active without chromiumoxide.
+        #[cfg(all(not(target_arch = "wasm32"), feature = "browser-native"))]
+        if self.config.browser.mode == crate::types::BrowserMode::Always
+            && self.config.browser.backend == crate::types::BrowserBackend::Native
+        {
+            let mut http_resp = crate::native_browser::native_browser_fetch(url, &self.config, None).await?;
+            let raw_extras = http_resp.browser_extras.take();
+            let crawl_resp = crate::tower::CrawlResponse {
+                status: http_resp.status,
+                content_type: http_resp.content_type,
+                body: http_resp.body,
+                body_bytes: http_resp.body_bytes,
+                headers: std::collections::HashMap::new(),
+            };
+            let mut result = crate::scrape::scrape_from_crawl_response(url, &crawl_resp, &self.config).await?;
+            result.browser_used = true;
+            if let Some(ex) = raw_extras {
+                result.browser = Some(crate::types::BrowserExtras {
+                    eval_result: ex.eval_result,
+                    network_events: ex.network_events,
+                    cookies: ex.cookies,
+                });
+            }
+            return Ok(result);
+        }
 
         #[cfg(not(target_arch = "wasm32"))]
         let (final_url, response, browser_used_for_fetch) = {
@@ -202,6 +237,7 @@ impl CrawlEngine {
                     extraction_meta: None,
                     screenshot: None,
                     downloaded_document: None,
+                    browser: None,
                 });
             }
             // Also short-circuit for redirected-chain 404s (redirect_count > 0) —
@@ -238,6 +274,7 @@ impl CrawlEngine {
                     extraction_meta: None,
                     screenshot: None,
                     downloaded_document: None,
+                    browser: None,
                 });
             }
             (outcome.final_url, outcome.final_response, false)
@@ -268,7 +305,8 @@ impl CrawlEngine {
         if result.js_render_hint && !result.browser_used && self.config.browser.mode == crate::types::BrowserMode::Auto
         {
             let pool = self.config.browser_pool.as_deref();
-            let http_resp = crate::browser::browser_fetch(&final_url, &self.config, None, pool).await?;
+            let mut http_resp = crate::browser::browser_fetch(&final_url, &self.config, None, pool).await?;
+            let raw_extras = http_resp.browser_extras.take();
             let crawl_resp = crate::tower::CrawlResponse {
                 status: http_resp.status,
                 content_type: http_resp.content_type,
@@ -278,6 +316,13 @@ impl CrawlEngine {
             };
             result = crate::scrape::scrape_from_crawl_response(&final_url, &crawl_resp, &self.config).await?;
             result.browser_used = true;
+            if let Some(ex) = raw_extras {
+                result.browser = Some(crate::types::BrowserExtras {
+                    eval_result: ex.eval_result,
+                    network_events: ex.network_events,
+                    cookies: ex.cookies,
+                });
+            }
         }
 
         Ok(result)

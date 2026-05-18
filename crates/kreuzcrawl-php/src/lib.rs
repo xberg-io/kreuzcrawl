@@ -2188,6 +2188,12 @@ impl From<BrowserConfig> for kreuzcrawl::BrowserConfig {
             wait_selector: val.wait_selector,
             extra_wait: val.extra_wait.map(|v| std::time::Duration::from_millis(v as u64)),
             backend: kreuzcrawl::BrowserBackend::default(),
+            stealth: false,
+            proxy: None,
+            block_url_patterns: Vec::new(),
+            eval_script: None,
+            robots_user_agent: None,
+            capture_network_events: false,
         }
     }
 }
@@ -2398,6 +2404,7 @@ impl From<ScrapeResult> for kreuzcrawl::ScrapeResult {
             extraction_meta: val.extraction_meta.map(Into::into),
             screenshot: Default::default(),
             downloaded_document: val.downloaded_document.map(Into::into),
+            browser: None,
         }
     }
 }

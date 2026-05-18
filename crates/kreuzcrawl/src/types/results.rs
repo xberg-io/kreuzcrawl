@@ -8,6 +8,24 @@ use super::{
     CookieInfo, DownloadedAsset, ExtractionMeta, FeedInfo, ImageInfo, JsonLdEntry, LinkInfo, PageMetadata, ResponseMeta,
 };
 
+/// Browser-specific extras populated when the native browser backend was used.
+///
+/// Available on `ScrapeResult.browser` when `BrowserBackend::Native` handled the request.
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct BrowserExtras {
+    /// Return value of `BrowserConfig.eval_script`, if provided.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub eval_result: Option<serde_json::Value>,
+    /// Network events captured during page navigation (only populated when
+    /// `BrowserConfig.capture_network_events` is true).
+    #[serde(default)]
+    pub network_events: Vec<ResponseMeta>,
+    /// All non-expired cookies present in the browser's cookie jar after
+    /// navigation completes (includes both prior cookies and server Set-Cookie).
+    #[serde(default)]
+    pub cookies: Vec<CookieInfo>,
+}
+
 /// A downloaded non-HTML document (PDF, DOCX, image, code file, etc.).
 ///
 /// When the crawler encounters non-HTML content and `download_documents` is
@@ -128,6 +146,10 @@ pub struct ScrapeResult {
     /// Downloaded non-HTML document (PDF, DOCX, image, code, etc.).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub downloaded_document: Option<DownloadedDocument>,
+    /// Browser-specific extras (eval result, network events, cookies). Only
+    /// populated when `BrowserBackend::Native` was used for this request.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub browser: Option<BrowserExtras>,
 }
 
 /// The result of crawling a single page during a crawl operation.

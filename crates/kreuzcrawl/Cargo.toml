@@ -45,7 +45,7 @@ api = [
 ]
 mcp-http = ["mcp", "api"]
 warc = ["dep:uuid"]
-full = ["browser", "ai", "tracing", "interact", "mcp", "api", "mcp-http", "warc"]
+full = ["browser", "browser-native", "ai", "tracing", "interact", "mcp", "api", "mcp-http", "warc"]
 
 [dependencies]
 ahash = { workspace = true }

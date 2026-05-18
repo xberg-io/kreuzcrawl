@@ -26,6 +26,8 @@ mod map;
 mod markdown;
 #[cfg(feature = "mcp")]
 pub(crate) mod mcp;
+#[cfg(feature = "browser-native")]
+mod native_browser;
 mod normalize;
 mod pruning;
 #[cfg(feature = "ai")]
@@ -55,8 +57,9 @@ pub use error::CrawlError;
 #[cfg(feature = "mcp")]
 pub use mcp::{start_mcp_server, start_mcp_server_with_config};
 pub use types::{
-    ArticleMetadata, AssetCategory, AuthConfig, BrowserBackend, BrowserConfig, BrowserMode, BrowserWait, CachedPage,
-    ContentConfig, CookieInfo, CrawlConfig, CrawlPageResult, CrawlResult, DownloadedAsset, DownloadedDocument,
-    ExtractionMeta, FaviconInfo, FeedInfo, FeedType, HeadingInfo, HreflangEntry, ImageInfo, ImageSource, JsonLdEntry,
-    LinkInfo, LinkType, MapResult, MarkdownResult, PageMetadata, ProxyConfig, ResponseMeta, ScrapeResult, SitemapUrl,
+    ArticleMetadata, AssetCategory, AuthConfig, BrowserBackend, BrowserConfig, BrowserExtras, BrowserMode, BrowserWait,
+    CachedPage, ContentConfig, CookieInfo, CrawlConfig, CrawlPageResult, CrawlResult, DownloadedAsset,
+    DownloadedDocument, ExtractionMeta, FaviconInfo, FeedInfo, FeedType, HeadingInfo, HreflangEntry, ImageInfo,
+    ImageSource, JsonLdEntry, LinkInfo, LinkType, MapResult, MarkdownResult, PageMetadata, ProxyConfig, ResponseMeta,
+    ScrapeResult, SitemapUrl,
 };

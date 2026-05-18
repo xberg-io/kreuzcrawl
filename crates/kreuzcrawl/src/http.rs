@@ -9,6 +9,15 @@ use crate::error::{CrawlError, classify_reqwest_error, error_chain_string};
 use crate::types::CookieInfo;
 use crate::types::{AuthConfig, CrawlConfig, ResponseMeta};
 
+/// Browser-specific extras attached to an `HttpResponse` produced by the native
+/// browser backend. Populated when `browser_used` is true.
+#[derive(Debug, Clone, Default)]
+pub(crate) struct BrowserExtras {
+    pub(crate) eval_result: Option<serde_json::Value>,
+    pub(crate) network_events: Vec<crate::types::ResponseMeta>,
+    pub(crate) cookies: Vec<crate::types::CookieInfo>,
+}
+
 /// An HTTP response with status, headers, and body content.
 pub(crate) struct HttpResponse {
     pub(crate) status: u16,
@@ -17,6 +26,7 @@ pub(crate) struct HttpResponse {
     pub(crate) body_bytes: Vec<u8>,
     #[allow(dead_code)]
     pub(crate) headers: std::collections::HashMap<String, Vec<String>>,
+    pub(crate) browser_extras: Option<BrowserExtras>,
 }
 
 /// Perform a single HTTP GET request with the given configuration.
@@ -169,6 +179,7 @@ pub(crate) async fn http_fetch(
         body,
         body_bytes: body_bytes_vec,
         headers: headers_map,
+        browser_extras: None,
     })
 }
 

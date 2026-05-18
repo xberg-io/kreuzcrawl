@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Features
+
+- **Browser**: Native browser backend (`browser.backend = "native"`) now supports stealth TLS, proxy with credentials, URL-pattern blocking, JavaScript eval, selector-wait, robots-txt awareness, cookie forwarding, and network event capture
+- **Browser**: New `BrowserExtras` type on `ScrapeResult.browser` carries eval result, captured network events, and post-render cookies when using the native backend
+- **Browser**: `browser-native` feature added to the `full` feature set
+
 ### Fixes
 
 - **Elixir**: `:force_build` now respects `config :rustler_precompiled, :force_build, kreuzcrawl: true` in addition to the `KREUZCRAWL_BUILD` env var, fixing the documented workaround that was previously ignored when users hit precompiled checksum errors (#7). Bumps alef pin to 0.12.7.

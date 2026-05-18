@@ -1370,6 +1370,12 @@ impl From<BrowserConfig> for kreuzcrawl::BrowserConfig {
             wait_selector: v.wait_selector.map(Into::into),
             extra_wait: v.extra_wait.map(|ms| std::time::Duration::from_millis(ms as u64)),
             backend: v.backend.into(),
+            stealth: false,
+            proxy: None,
+            block_url_patterns: Vec::new(),
+            eval_script: None,
+            robots_user_agent: None,
+            capture_network_events: false,
         }
     }
 }

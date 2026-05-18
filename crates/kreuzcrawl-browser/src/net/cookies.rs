@@ -320,6 +320,59 @@ impl CookieJar {
         }
     }
 
+    /// Insert a cookie from pre-parsed fields (not a raw Set-Cookie header).
+    pub fn set_parsed_cookie(
+        &self,
+        name: &str,
+        value: &str,
+        domain: Option<&str>,
+        path: Option<&str>,
+        secure: bool,
+        http_only: bool,
+    ) {
+        let domain = domain.unwrap_or("").trim_start_matches('.').to_lowercase();
+        let path = path.unwrap_or("/").to_string();
+        let entry = CookieEntry {
+            name: name.to_string(),
+            value: value.to_string(),
+            path,
+            domain: domain.clone(),
+            secure,
+            http_only,
+            expires: None,
+        };
+        let mut cookies = self.cookies.write().unwrap();
+        cookies.entry(domain).or_default().insert(name.to_string(), entry);
+    }
+
+    /// Snapshot all non-expired cookies as flat tuples.
+    pub fn snapshot(&self) -> Vec<(String, String, String, String, bool, bool)> {
+        let cookies = self.cookies.read().unwrap();
+        let now = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_secs();
+        let mut result = Vec::new();
+        for domain_cookies in cookies.values() {
+            for entry in domain_cookies.values() {
+                if let Some(exp) = entry.expires
+                    && exp < now
+                {
+                    continue;
+                }
+                result.push((
+                    entry.name.clone(),
+                    entry.value.clone(),
+                    entry.domain.clone(),
+                    entry.path.clone(),
+                    entry.secure,
+                    entry.http_only,
+                ));
+            }
+        }
+        result
+    }
+
     pub fn clear(&self) {
         self.cookies.write().unwrap().clear();
     }

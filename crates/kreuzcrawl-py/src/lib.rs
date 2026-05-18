@@ -2756,6 +2756,7 @@ impl From<ScrapeResult> for kreuzcrawl::ScrapeResult {
             extraction_meta: val.extraction_meta.map(Into::into),
             screenshot: Default::default(),
             downloaded_document: val.downloaded_document.map(Into::into),
+            browser: None,
         }
     }
 }

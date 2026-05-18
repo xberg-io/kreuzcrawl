@@ -223,6 +223,32 @@ pub struct BrowserConfig {
     /// Extra time to wait after the wait condition is met.
     #[serde(default, with = "option_duration_ms")]
     pub extra_wait: Option<Duration>,
+    /// Enable browser-realistic TLS fingerprint via the stealth HTTP client.
+    /// Only honored by `BrowserBackend::Native` — chromiumoxide is already
+    /// full-stealth via Chrome's TLS stack.
+    #[serde(default)]
+    pub stealth: bool,
+    /// Proxy for browser fetches. Overrides `CrawlConfig.proxy` when set.
+    /// Native backend supports http/https only (no SOCKS5).
+    #[serde(default)]
+    pub proxy: Option<ProxyConfig>,
+    /// URL patterns to block before the network request fires. Supports `*`
+    /// wildcards. Useful for skipping ads/analytics/large images. Honored by
+    /// `BrowserBackend::Native`; chromiumoxide ignores this field today.
+    #[serde(default)]
+    pub block_url_patterns: Vec<String>,
+    /// JavaScript snippet evaluated after navigation completes. Result is
+    /// captured in `ScrapeResult.browser.eval_result`. Native only.
+    #[serde(default)]
+    pub eval_script: Option<String>,
+    /// User-agent used when fetching robots.txt. Defaults to `BrowserConfig.user_agent`
+    /// (or kreuzcrawl's default) if unset. Native only.
+    #[serde(default)]
+    pub robots_user_agent: Option<String>,
+    /// Capture the full network event stream into the result. Default false
+    /// (only the document event is captured). Native only.
+    #[serde(default)]
+    pub capture_network_events: bool,
 }
 
 impl Default for BrowserConfig {
@@ -235,6 +261,12 @@ impl Default for BrowserConfig {
             wait: BrowserWait::default(),
             wait_selector: None,
             extra_wait: None,
+            stealth: false,
+            proxy: None,
+            block_url_patterns: Vec::new(),
+            eval_script: None,
+            robots_user_agent: None,
+            capture_network_events: false,
         }
     }
 }
