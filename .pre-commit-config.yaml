@@ -54,7 +54,7 @@ repos:
 
   # Shared polyrepo hooks
   - repo: https://github.com/kreuzberg-dev/pre-commit-hooks
-    rev: v1.1.10
+    rev: v1.1.11
     hooks:
       - id: cargo-sort
         args: [-w]
@@ -243,7 +243,7 @@ repos:
 
   # Alef: verify bindings and sync versions
   - repo: https://github.com/kreuzberg-dev/alef
-    rev: v0.16.24
+    rev: v0.16.43
     hooks:
       - id: alef-verify
       - id: alef-sync-versions
@@ -253,6 +253,12 @@ repos:
     rev: v1.7.12
     hooks:
       - id: actionlint
+
+  # GitHub Actions: pin maintenance
+  - repo: https://github.com/Goldziher/gh-actions-updater
+    rev: v0.1.1
+    hooks:
+      - id: gh-actions-updater
 
   # Spelling: fast Rust-based spell checker
   - repo: https://github.com/crate-ci/typos

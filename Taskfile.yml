@@ -120,7 +120,7 @@ tasks:
       - alef update
       - prek autoupdate
       - cargo update
-      - npx --yes actions-up@latest --yes --style preserve
+      - gh-actions-updater --update .
       - cmd: cd packages/python && uv sync --all-extras --no-install-workspace --no-install-project
         ignore_error: true
       - cmd: pnpm up -r
@@ -144,7 +144,7 @@ tasks:
       - alef update --latest
       - prek autoupdate
       - cargo upgrade --incompatible
-      - npx --yes actions-up@latest --yes --style preserve
+      - gh-actions-updater --update .
       - cmd: cd packages/python && uv sync --all-extras --upgrade --no-install-workspace --no-install-project
         ignore_error: true
       - cmd: pnpm up -r --latest

@@ -1,7 +1,6 @@
 ---
 title: "Ruby API Reference"
 ---
-
 ## Ruby API Reference <span class="version-badge">v0.3.0-rc.20</span>
 
 ### Functions
@@ -18,7 +17,6 @@ Returns an error if the configuration is invalid.
 ```ruby
 def self.create_engine(config: nil)
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -39,7 +37,6 @@ Scrape a single URL, returning extracted page data.
 ```ruby
 def self.scrape(engine, url)
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -61,7 +58,6 @@ Crawl a website starting from `url`, following links up to the configured depth.
 ```ruby
 def self.crawl(engine, url)
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -83,7 +79,6 @@ Discover all pages on a website by following links and sitemaps.
 ```ruby
 def self.map_urls(engine, url)
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -105,7 +100,6 @@ Scrape multiple URLs concurrently.
 ```ruby
 def self.batch_scrape(engine, urls)
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -127,7 +121,6 @@ Crawl multiple seed URLs concurrently, each following links to configured depth.
 ```ruby
 def self.batch_crawl(engine, urls)
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -357,7 +350,6 @@ Configuration for crawl, scrape, and map operations.
 ```ruby
 def self.default()
 ```
-
 ###### validate()
 
 Validate the configuration, returning an error if any values are invalid.

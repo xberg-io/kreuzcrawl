@@ -1,7 +1,6 @@
 ---
 title: "Python API Reference"
 ---
-
 ## Python API Reference <span class="version-badge">v0.3.0-rc.20</span>
 
 ### Functions
@@ -18,7 +17,6 @@ Returns an error if the configuration is invalid.
 ```python
 def create_engine(config: CrawlConfig = None) -> CrawlEngineHandle
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -39,7 +37,6 @@ Scrape a single URL, returning extracted page data.
 ```python
 def scrape(engine: CrawlEngineHandle, url: str) -> ScrapeResult
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -61,7 +58,6 @@ Crawl a website starting from `url`, following links up to the configured depth.
 ```python
 def crawl(engine: CrawlEngineHandle, url: str) -> CrawlResult
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -83,7 +79,6 @@ Discover all pages on a website by following links and sitemaps.
 ```python
 def map_urls(engine: CrawlEngineHandle, url: str) -> MapResult
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -105,7 +100,6 @@ Scrape multiple URLs concurrently.
 ```python
 def batch_scrape(engine: CrawlEngineHandle, urls: list[str]) -> list[BatchScrapeResult]
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -127,7 +121,6 @@ Crawl multiple seed URLs concurrently, each following links to configured depth.
 ```python
 def batch_crawl(engine: CrawlEngineHandle, urls: list[str]) -> list[BatchCrawlResult]
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -360,7 +353,6 @@ Configuration for crawl, scrape, and map operations.
 @staticmethod
 def default() -> CrawlConfig
 ```
-
 ###### validate()
 
 Validate the configuration, returning an error if any values are invalid.
@@ -870,7 +862,6 @@ The category of a downloaded asset.
 Errors that can occur during crawling, scraping, or mapping operations.
 
 **Base class:** `CrawlError(Exception)`
-
 | Exception | Description |
 |-----------|-------------|
 | `NotFound(CrawlError)` | The requested page was not found (HTTP 404). |

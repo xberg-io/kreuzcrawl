@@ -32,67 +32,80 @@ object Kreuzcrawl {
     /**
      * Create a new crawl engine with the given configuration.
      *
-     * If `config` is `null`, uses `CrawlConfig.default()`. Returns an error if the configuration is
-     * invalid.
+     * If `config` is `null`, uses `CrawlConfig.default()`.
+     * Returns an error if the configuration is invalid.
      */
     fun createEngine(config: CrawlConfig? = null): CrawlEngineHandle =
         CrawlEngineHandle(
             KreuzcrawlBridge.nativeCreateEngine(config?.let { mapper.writeValueAsString(it) } ?: "")
-        )
-
-    /** Scrape a single URL, returning extracted page data. */
+                )
+    /**
+     * Scrape a single URL, returning extracted page data.
+     */
     fun scrape(engine: CrawlEngineHandle, url: String): ScrapeResult {
         val resultJson = KreuzcrawlBridge.nativeScrape(engine.handle, url)
         return mapper.readValue(resultJson, ScrapeResult::class.java)
     }
 
-    /** Scrape a single URL, returning extracted page data. */
+    /**
+     * Scrape a single URL, returning extracted page data.
+     */
     suspend fun scrapeAsync(engine: CrawlEngineHandle, url: String): ScrapeResult =
         withContext(Dispatchers.IO) { scrape(engine, url) }
 
-    /** Crawl a website starting from `url`, following links up to the configured depth. */
+    /**
+     * Crawl a website starting from `url`, following links up to the configured depth.
+     */
     fun crawl(engine: CrawlEngineHandle, url: String): CrawlResult {
         val resultJson = KreuzcrawlBridge.nativeCrawl(engine.handle, url)
         return mapper.readValue(resultJson, CrawlResult::class.java)
     }
 
-    /** Crawl a website starting from `url`, following links up to the configured depth. */
+    /**
+     * Crawl a website starting from `url`, following links up to the configured depth.
+     */
     suspend fun crawlAsync(engine: CrawlEngineHandle, url: String): CrawlResult =
         withContext(Dispatchers.IO) { crawl(engine, url) }
 
-    /** Discover all pages on a website by following links and sitemaps. */
+    /**
+     * Discover all pages on a website by following links and sitemaps.
+     */
     fun mapUrls(engine: CrawlEngineHandle, url: String): MapResult {
         val resultJson = KreuzcrawlBridge.nativeMapUrls(engine.handle, url)
         return mapper.readValue(resultJson, MapResult::class.java)
     }
 
-    /** Discover all pages on a website by following links and sitemaps. */
+    /**
+     * Discover all pages on a website by following links and sitemaps.
+     */
     suspend fun mapUrlsAsync(engine: CrawlEngineHandle, url: String): MapResult =
         withContext(Dispatchers.IO) { mapUrls(engine, url) }
 
-    /** Scrape multiple URLs concurrently. */
+    /**
+     * Scrape multiple URLs concurrently.
+     */
     fun batchScrape(engine: CrawlEngineHandle, urls: List<String>): List<BatchScrapeResult> {
-        val resultJson =
-            KreuzcrawlBridge.nativeBatchScrape(engine.handle, mapper.writeValueAsString(urls))
+        val resultJson = KreuzcrawlBridge.nativeBatchScrape(engine.handle, mapper.writeValueAsString(urls))
         return mapper.readValue(resultJson, object : TypeReference<List<BatchScrapeResult>>() {})
     }
 
-    /** Scrape multiple URLs concurrently. */
-    suspend fun batchScrapeAsync(
-        engine: CrawlEngineHandle,
-        urls: List<String>,
-    ): List<BatchScrapeResult> = withContext(Dispatchers.IO) { batchScrape(engine, urls) }
+    /**
+     * Scrape multiple URLs concurrently.
+     */
+    suspend fun batchScrapeAsync(engine: CrawlEngineHandle, urls: List<String>): List<BatchScrapeResult> =
+        withContext(Dispatchers.IO) { batchScrape(engine, urls) }
 
-    /** Crawl multiple seed URLs concurrently, each following links to configured depth. */
+    /**
+     * Crawl multiple seed URLs concurrently, each following links to configured depth.
+     */
     fun batchCrawl(engine: CrawlEngineHandle, urls: List<String>): List<BatchCrawlResult> {
-        val resultJson =
-            KreuzcrawlBridge.nativeBatchCrawl(engine.handle, mapper.writeValueAsString(urls))
+        val resultJson = KreuzcrawlBridge.nativeBatchCrawl(engine.handle, mapper.writeValueAsString(urls))
         return mapper.readValue(resultJson, object : TypeReference<List<BatchCrawlResult>>() {})
     }
 
-    /** Crawl multiple seed URLs concurrently, each following links to configured depth. */
-    suspend fun batchCrawlAsync(
-        engine: CrawlEngineHandle,
-        urls: List<String>,
-    ): List<BatchCrawlResult> = withContext(Dispatchers.IO) { batchCrawl(engine, urls) }
+    /**
+     * Crawl multiple seed URLs concurrently, each following links to configured depth.
+     */
+    suspend fun batchCrawlAsync(engine: CrawlEngineHandle, urls: List<String>): List<BatchCrawlResult> =
+        withContext(Dispatchers.IO) { batchCrawl(engine, urls) }
 }

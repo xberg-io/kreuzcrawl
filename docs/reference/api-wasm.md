@@ -1,7 +1,6 @@
 ---
 title: "WebAssembly API Reference"
 ---
-
 ## WebAssembly API Reference <span class="version-badge">v0.3.0-rc.20</span>
 
 ### Functions
@@ -18,7 +17,6 @@ Returns an error if the configuration is invalid.
 ```typescript
 function createEngine(config?: CrawlConfig): CrawlEngineHandle
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -39,7 +37,6 @@ Scrape a single URL, returning extracted page data.
 ```typescript
 function scrape(engine: CrawlEngineHandle, url: string): Promise<ScrapeResult>
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -61,7 +58,6 @@ Crawl a website starting from `url`, following links up to the configured depth.
 ```typescript
 function crawl(engine: CrawlEngineHandle, url: string): Promise<CrawlResult>
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -83,7 +79,6 @@ Discover all pages on a website by following links and sitemaps.
 ```typescript
 function mapUrls(engine: CrawlEngineHandle, url: string): Promise<MapResult>
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -105,7 +100,6 @@ Scrape multiple URLs concurrently.
 ```typescript
 function batchScrape(engine: CrawlEngineHandle, urls: Array<string>): Promise<Array<BatchScrapeResult>>
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -127,7 +121,6 @@ Crawl multiple seed URLs concurrently, each following links to configured depth.
 ```typescript
 function batchCrawl(engine: CrawlEngineHandle, urls: Array<string>): Promise<Array<BatchCrawlResult>>
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -357,7 +350,6 @@ Configuration for crawl, scrape, and map operations.
 ```typescript
 static default(): CrawlConfig
 ```
-
 ###### validate()
 
 Validate the configuration, returning an error if any values are invalid.

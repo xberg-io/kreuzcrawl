@@ -24,91 +24,159 @@ package dev.kreuzberg.kreuzcrawl.android
 import java.nio.file.Path
 import kotlin.time.Duration
 
-/** Configuration for crawl, scrape, and map operations. */
+/**
+ * Configuration for crawl, scrape, and map operations.
+ */
 data class CrawlConfig(
-    /** Maximum crawl depth (number of link hops from the start URL). */
+    /**
+     * Maximum crawl depth (number of link hops from the start URL).
+     */
     val maxDepth: Long?,
-    /** Maximum number of pages to crawl. */
+    /**
+     * Maximum number of pages to crawl.
+     */
     val maxPages: Long?,
-    /** Maximum number of concurrent requests. */
+    /**
+     * Maximum number of concurrent requests.
+     */
     val maxConcurrent: Long?,
-    /** Whether to respect robots.txt directives. */
+    /**
+     * Whether to respect robots.txt directives.
+     */
     val respectRobotsTxt: Boolean,
     /**
-     * When true, HTTP-level error responses (404 NotFound, 403 Forbidden, WAF blocks) are surfaced
-     * as `ScrapeResult` records with the matching `status_code` rather than raised as `CrawlError`.
-     * Default `false` preserves the historical throw-on-error contract for direct fetches.
-     * Independently of this flag, 404s reached at the end of a redirect chain are *always* surfaced
-     * softly — the user opted into redirect-following, so receiving a 404 there is part of the
-     * normal flow rather than an unexpected error.
+     * When true, HTTP-level error responses (404 NotFound, 403 Forbidden, WAF blocks)
+     * are surfaced as `ScrapeResult` records with the matching `status_code` rather
+     * than raised as `CrawlError`. Default `false` preserves the historical
+     * throw-on-error contract for direct fetches. Independently of this flag,
+     * 404s reached at the end of a redirect chain are *always* surfaced softly —
+     * the user opted into redirect-following, so receiving a 404 there is part of
+     * the normal flow rather than an unexpected error.
      */
     val softHttpErrors: Boolean,
-    /** Custom user-agent string. */
+    /**
+     * Custom user-agent string.
+     */
     val userAgent: String?,
-    /** Whether to restrict crawling to the same domain. */
+    /**
+     * Whether to restrict crawling to the same domain.
+     */
     val stayOnDomain: Boolean,
-    /** Whether to allow subdomains when `stay_on_domain` is true. */
+    /**
+     * Whether to allow subdomains when `stay_on_domain` is true.
+     */
     val allowSubdomains: Boolean,
-    /** Regex patterns for paths to include during crawling. */
+    /**
+     * Regex patterns for paths to include during crawling.
+     */
     val includePaths: List<String>,
-    /** Regex patterns for paths to exclude during crawling. */
+    /**
+     * Regex patterns for paths to exclude during crawling.
+     */
     val excludePaths: List<String>,
-    /** Custom HTTP headers to send with each request. */
+    /**
+     * Custom HTTP headers to send with each request.
+     */
     val customHeaders: Map<String, String>,
-    /** Timeout for individual HTTP requests (in milliseconds when serialized). */
+    /**
+     * Timeout for individual HTTP requests (in milliseconds when serialized).
+     */
     val requestTimeout: Duration,
     /**
-     * Per-domain rate limit in milliseconds. When set, enforces a minimum delay between requests to
-     * the same domain. Defaults to 200ms when `null`.
+     * Per-domain rate limit in milliseconds. When set, enforces a minimum delay
+     * between requests to the same domain. Defaults to 200ms when `null`.
      */
     val rateLimitMs: Long?,
-    /** Maximum number of redirects to follow. */
+    /**
+     * Maximum number of redirects to follow.
+     */
     val maxRedirects: Long,
-    /** Number of retry attempts for failed requests. */
+    /**
+     * Number of retry attempts for failed requests.
+     */
     val retryCount: Long,
-    /** HTTP status codes that should trigger a retry. */
+    /**
+     * HTTP status codes that should trigger a retry.
+     */
     val retryCodes: List<Short>,
-    /** Whether to enable cookie handling. */
+    /**
+     * Whether to enable cookie handling.
+     */
     val cookiesEnabled: Boolean,
-    /** Authentication configuration. */
+    /**
+     * Authentication configuration.
+     */
     val auth: AuthConfig?,
-    /** Maximum response body size in bytes. */
+    /**
+     * Maximum response body size in bytes.
+     */
     val maxBodySize: Long?,
-    /** CSS selectors for tags to remove from HTML before processing. */
+    /**
+     * CSS selectors for tags to remove from HTML before processing.
+     */
     val removeTags: List<String>,
-    /** Content extraction and conversion configuration. */
+    /**
+     * Content extraction and conversion configuration.
+     */
     val content: ContentConfig,
-    /** Maximum number of URLs to return from a map operation. */
+    /**
+     * Maximum number of URLs to return from a map operation.
+     */
     val mapLimit: Long?,
-    /** Search filter for map results (case-insensitive substring match on URLs). */
+    /**
+     * Search filter for map results (case-insensitive substring match on URLs).
+     */
     val mapSearch: String?,
-    /** Whether to download assets (CSS, JS, images, etc.) from the page. */
+    /**
+     * Whether to download assets (CSS, JS, images, etc.) from the page.
+     */
     val downloadAssets: Boolean,
-    /** Filter for asset categories to download. */
+    /**
+     * Filter for asset categories to download.
+     */
     val assetTypes: List<AssetCategory>,
-    /** Maximum size in bytes for individual asset downloads. */
+    /**
+     * Maximum size in bytes for individual asset downloads.
+     */
     val maxAssetSize: Long?,
-    /** Browser configuration. */
+    /**
+     * Browser configuration.
+     */
     val browser: BrowserConfig,
-    /** Proxy configuration for HTTP requests. */
+    /**
+     * Proxy configuration for HTTP requests.
+     */
     val proxy: ProxyConfig?,
-    /** List of user-agent strings for rotation. If non-empty, overrides `user_agent`. */
+    /**
+     * List of user-agent strings for rotation. If non-empty, overrides `user_agent`.
+     */
     val userAgents: List<String>,
-    /** Whether to capture a screenshot when using the browser. */
+    /**
+     * Whether to capture a screenshot when using the browser.
+     */
     val captureScreenshot: Boolean,
     /**
-     * Whether to download non-HTML documents (PDF, DOCX, images, code, etc.) instead of skipping
-     * them.
+     * Whether to download non-HTML documents (PDF, DOCX, images, code, etc.) instead of skipping them.
      */
     val downloadDocuments: Boolean,
-    /** Maximum size in bytes for document downloads. Defaults to 50 MB. */
+    /**
+     * Maximum size in bytes for document downloads. Defaults to 50 MB.
+     */
     val documentMaxSize: Long?,
-    /** Allowlist of MIME types to download. If empty, uses built-in defaults. */
+    /**
+     * Allowlist of MIME types to download. If empty, uses built-in defaults.
+     */
     val documentMimeTypes: List<String>,
-    /** Path to write WARC output. If `null`, WARC output is disabled. */
+    /**
+     * Path to write WARC output. If `null`, WARC output is disabled.
+     */
     val warcOutput: Path?,
-    /** Named browser profile for persistent sessions (cookies, localStorage). */
+    /**
+     * Named browser profile for persistent sessions (cookies, localStorage).
+     */
     val browserProfile: String?,
-    /** Whether to save changes back to the browser profile on exit. */
-    val saveBrowserProfile: Boolean,
+    /**
+     * Whether to save changes back to the browser profile on exit.
+     */
+    val saveBrowserProfile: Boolean
 )

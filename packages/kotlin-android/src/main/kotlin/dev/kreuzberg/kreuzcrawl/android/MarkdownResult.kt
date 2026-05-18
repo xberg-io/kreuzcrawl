@@ -21,18 +21,32 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/** Rich markdown conversion result from HTML processing. */
+/**
+ * Rich markdown conversion result from HTML processing.
+ */
 data class MarkdownResult(
-    /** Converted markdown text. */
+    /**
+     * Converted markdown text.
+     */
     val content: String,
-    /** Structured document tree with semantic nodes. */
+    /**
+     * Structured document tree with semantic nodes.
+     */
     val documentStructure: String?,
-    /** Extracted tables with structured cell data. */
+    /**
+     * Extracted tables with structured cell data.
+     */
     val tables: List<String>,
-    /** Non-fatal processing warnings. */
+    /**
+     * Non-fatal processing warnings.
+     */
     val warnings: List<String>,
-    /** Content with links replaced by numbered citations. */
+    /**
+     * Content with links replaced by numbered citations.
+     */
     val citations: CitationResult?,
-    /** Content-filtered markdown optimized for LLM consumption. */
-    val fitContent: String?,
+    /**
+     * Content-filtered markdown optimized for LLM consumption.
+     */
+    val fitContent: String?
 )

@@ -1,7 +1,6 @@
 ---
 title: "Go API Reference"
 ---
-
 ## Go API Reference <span class="version-badge">v0.3.0-rc.20</span>
 
 ### Functions
@@ -18,7 +17,6 @@ Returns an error if the configuration is invalid.
 ```go
 func CreateEngine(config CrawlConfig) (CrawlEngineHandle, error)
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -39,7 +37,6 @@ Scrape a single URL, returning extracted page data.
 ```go
 func Scrape(engine CrawlEngineHandle, url string) (ScrapeResult, error)
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -61,7 +58,6 @@ Crawl a website starting from `url`, following links up to the configured depth.
 ```go
 func Crawl(engine CrawlEngineHandle, url string) (CrawlResult, error)
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -83,7 +79,6 @@ Discover all pages on a website by following links and sitemaps.
 ```go
 func MapUrls(engine CrawlEngineHandle, url string) (MapResult, error)
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -105,7 +100,6 @@ Scrape multiple URLs concurrently.
 ```go
 func BatchScrape(engine CrawlEngineHandle, urls []string) ([]BatchScrapeResult, error)
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -127,7 +121,6 @@ Crawl multiple seed URLs concurrently, each following links to configured depth.
 ```go
 func BatchCrawl(engine CrawlEngineHandle, urls []string) ([]BatchCrawlResult, error)
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -357,7 +350,6 @@ Configuration for crawl, scrape, and map operations.
 ```go
 func (o *CrawlConfig) Default() CrawlConfig
 ```
-
 ###### Validate()
 
 Validate the configuration, returning an error if any values are invalid.

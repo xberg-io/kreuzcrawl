@@ -1,7 +1,6 @@
 ---
 title: "Kotlin (Android) API Reference"
 ---
-
 ## Kotlin (Android) API Reference <span class="version-badge">v0.3.0-rc.20</span>
 
 ### Functions
@@ -19,7 +18,6 @@ Returns an error if the configuration is invalid.
 @Throws(CrawlError::class)
 fun createEngine(config: CrawlConfig? = null): CrawlEngineHandle
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -41,7 +39,6 @@ Scrape a single URL, returning extracted page data.
 @Throws(CrawlError::class)
 fun scrape(engine: CrawlEngineHandle, url: String): ScrapeResult
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -64,7 +61,6 @@ Crawl a website starting from `url`, following links up to the configured depth.
 @Throws(CrawlError::class)
 fun crawl(engine: CrawlEngineHandle, url: String): CrawlResult
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -87,7 +83,6 @@ Discover all pages on a website by following links and sitemaps.
 @Throws(CrawlError::class)
 fun mapUrls(engine: CrawlEngineHandle, url: String): MapResult
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -110,7 +105,6 @@ Scrape multiple URLs concurrently.
 @Throws(CrawlError::class)
 fun batchScrape(engine: CrawlEngineHandle, urls: List<String>): List<BatchScrapeResult>
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -133,7 +127,6 @@ Crawl multiple seed URLs concurrently, each following links to configured depth.
 @Throws(CrawlError::class)
 fun batchCrawl(engine: CrawlEngineHandle, urls: List<String>): List<BatchCrawlResult>
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -366,7 +359,6 @@ Configuration for crawl, scrape, and map operations.
 @JvmStatic
 fun default(): CrawlConfig
 ```
-
 ###### validate()
 
 Validate the configuration, returning an error if any values are invalid.

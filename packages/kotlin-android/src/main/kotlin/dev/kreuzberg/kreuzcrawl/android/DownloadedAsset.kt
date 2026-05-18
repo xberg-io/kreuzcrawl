@@ -21,18 +21,32 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/** A downloaded asset from a page. */
+/**
+ * A downloaded asset from a page.
+ */
 data class DownloadedAsset(
-    /** The original URL of the asset. */
+    /**
+     * The original URL of the asset.
+     */
     val url: String,
-    /** The SHA-256 content hash of the asset. */
+    /**
+     * The SHA-256 content hash of the asset.
+     */
     val contentHash: String,
-    /** The MIME type from the Content-Type header. */
+    /**
+     * The MIME type from the Content-Type header.
+     */
     val mimeType: String?,
-    /** The size of the asset in bytes. */
+    /**
+     * The size of the asset in bytes.
+     */
     val size: Long,
-    /** The category of the asset. */
+    /**
+     * The category of the asset.
+     */
     val assetCategory: AssetCategory,
-    /** The HTML tag that referenced this asset (e.g., "link", "script", "img"). */
-    val htmlTag: String?,
+    /**
+     * The HTML tag that referenced this asset (e.g., "link", "script", "img").
+     */
+    val htmlTag: String?
 )

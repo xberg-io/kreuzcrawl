@@ -1,7 +1,6 @@
 ---
 title: "Rust API Reference"
 ---
-
 ## Rust API Reference <span class="version-badge">v0.3.0-rc.20</span>
 
 ### Functions
@@ -18,7 +17,6 @@ Returns an error if the configuration is invalid.
 ```rust
 pub fn create_engine(config: Option<CrawlConfig>) -> Result<CrawlEngineHandle, CrawlError>
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -39,7 +37,6 @@ Scrape a single URL, returning extracted page data.
 ```rust
 pub async fn scrape(engine: CrawlEngineHandle, url: &str) -> Result<ScrapeResult, CrawlError>
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -61,7 +58,6 @@ Crawl a website starting from `url`, following links up to the configured depth.
 ```rust
 pub async fn crawl(engine: CrawlEngineHandle, url: &str) -> Result<CrawlResult, CrawlError>
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -83,7 +79,6 @@ Discover all pages on a website by following links and sitemaps.
 ```rust
 pub async fn map_urls(engine: CrawlEngineHandle, url: &str) -> Result<MapResult, CrawlError>
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -105,7 +100,6 @@ Scrape multiple URLs concurrently.
 ```rust
 pub async fn batch_scrape(engine: CrawlEngineHandle, urls: Vec<String>) -> Result<Vec<BatchScrapeResult>, CrawlError>
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -127,7 +121,6 @@ Crawl multiple seed URLs concurrently, each following links to configured depth.
 ```rust
 pub async fn batch_crawl(engine: CrawlEngineHandle, urls: Vec<String>) -> Result<Vec<BatchCrawlResult>, CrawlError>
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -357,7 +350,6 @@ Configuration for crawl, scrape, and map operations.
 ```rust
 pub fn default() -> CrawlConfig
 ```
-
 ###### validate()
 
 Validate the configuration, returning an error if any values are invalid.

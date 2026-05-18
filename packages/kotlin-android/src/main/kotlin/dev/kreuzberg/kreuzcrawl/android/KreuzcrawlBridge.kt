@@ -17,7 +17,8 @@ object KreuzcrawlBridge {
         System.loadLibrary("kcrawl_jni")
     }
 
-    @Throws(KreuzcrawlBridgeException::class) external fun nativeCreateEngine(config: String): Long
+    @Throws(KreuzcrawlBridgeException::class)
+    external fun nativeCreateEngine(config: String): Long
 
     @Throws(KreuzcrawlBridgeException::class)
     external fun nativeScrape(engine: Long, url: String): String

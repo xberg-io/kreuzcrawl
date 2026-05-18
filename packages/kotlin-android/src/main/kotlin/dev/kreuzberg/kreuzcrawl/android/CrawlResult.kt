@@ -21,20 +21,36 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/** The result of a multi-page crawl operation. */
+/**
+ * The result of a multi-page crawl operation.
+ */
 data class CrawlResult(
-    /** The list of crawled pages. */
+    /**
+     * The list of crawled pages.
+     */
     val pages: List<CrawlPageResult>,
-    /** The final URL after following redirects. */
+    /**
+     * The final URL after following redirects.
+     */
     val finalUrl: String,
-    /** The number of redirects followed. */
+    /**
+     * The number of redirects followed.
+     */
     val redirectCount: Long,
-    /** Whether any page was skipped during crawling. */
+    /**
+     * Whether any page was skipped during crawling.
+     */
     val wasSkipped: Boolean,
-    /** An error message, if the crawl encountered an issue. */
+    /**
+     * An error message, if the crawl encountered an issue.
+     */
     val error: String?,
-    /** Cookies collected during the crawl. */
+    /**
+     * Cookies collected during the crawl.
+     */
     val cookies: List<CookieInfo>,
-    /** Normalized URLs encountered during crawling (for deduplication counting). */
-    val normalizedUrls: List<String>,
+    /**
+     * Normalized URLs encountered during crawling (for deduplication counting).
+     */
+    val normalizedUrls: List<String>
 )

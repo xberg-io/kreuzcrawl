@@ -1,7 +1,6 @@
 ---
 title: "C# API Reference"
 ---
-
 ## C# API Reference <span class="version-badge">v0.3.0-rc.20</span>
 
 ### Functions
@@ -18,7 +17,6 @@ Returns an error if the configuration is invalid.
 ```csharp
 public static CrawlEngineHandle CreateEngine(CrawlConfig? config = null)
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -39,7 +37,6 @@ Scrape a single URL, returning extracted page data.
 ```csharp
 public static async Task<ScrapeResult> ScrapeAsync(CrawlEngineHandle engine, string url)
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -61,7 +58,6 @@ Crawl a website starting from `url`, following links up to the configured depth.
 ```csharp
 public static async Task<CrawlResult> CrawlAsync(CrawlEngineHandle engine, string url)
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -83,7 +79,6 @@ Discover all pages on a website by following links and sitemaps.
 ```csharp
 public static async Task<MapResult> MapUrlsAsync(CrawlEngineHandle engine, string url)
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -105,7 +100,6 @@ Scrape multiple URLs concurrently.
 ```csharp
 public static async Task<List<BatchScrapeResult>> BatchScrapeAsync(CrawlEngineHandle engine, List<string> urls)
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -127,7 +121,6 @@ Crawl multiple seed URLs concurrently, each following links to configured depth.
 ```csharp
 public static async Task<List<BatchCrawlResult>> BatchCrawlAsync(CrawlEngineHandle engine, List<string> urls)
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -357,7 +350,6 @@ Configuration for crawl, scrape, and map operations.
 ```csharp
 public CrawlConfig CreateDefault()
 ```
-
 ###### Validate()
 
 Validate the configuration, returning an error if any values are invalid.

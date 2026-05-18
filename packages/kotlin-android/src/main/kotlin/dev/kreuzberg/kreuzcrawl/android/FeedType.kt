@@ -21,12 +21,20 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/** The type of a feed (RSS, Atom, or JSON Feed). */
+/**
+ * The type of a feed (RSS, Atom, or JSON Feed).
+ */
 enum class FeedType {
-    /** RSS feed. */
+    /**
+     * RSS feed.
+     */
     RSS,
-    /** Atom feed. */
+    /**
+     * Atom feed.
+     */
     ATOM,
-    /** JSON Feed. */
-    JSON_FEED,
+    /**
+     * JSON Feed.
+     */
+    JSON_FEED;
 }

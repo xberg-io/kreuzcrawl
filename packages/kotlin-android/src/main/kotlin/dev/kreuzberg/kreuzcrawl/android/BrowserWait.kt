@@ -21,12 +21,20 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/** Wait strategy for browser page rendering. */
+/**
+ * Wait strategy for browser page rendering.
+ */
 enum class BrowserWait {
-    /** Wait until network activity is idle. */
+    /**
+     * Wait until network activity is idle.
+     */
     NETWORK_IDLE,
-    /** Wait for a specific CSS selector to appear in the DOM. */
+    /**
+     * Wait for a specific CSS selector to appear in the DOM.
+     */
     SELECTOR,
-    /** Wait for a fixed duration after navigation. */
-    FIXED,
+    /**
+     * Wait for a fixed duration after navigation.
+     */
+    FIXED;
 }

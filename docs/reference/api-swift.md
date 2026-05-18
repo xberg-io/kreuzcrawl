@@ -1,7 +1,6 @@
 ---
 title: "Swift API Reference"
 ---
-
 ## Swift API Reference <span class="version-badge">v0.3.0-rc.20</span>
 
 ### Functions
@@ -18,7 +17,6 @@ Returns an error if the configuration is invalid.
 ```swift
 public static func createEngine(config: CrawlConfig? = nil) throws -> CrawlEngineHandle
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -39,7 +37,6 @@ Scrape a single URL, returning extracted page data.
 ```swift
 public static func scrape(engine: CrawlEngineHandle, url: String) throws -> ScrapeResult
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -61,7 +58,6 @@ Crawl a website starting from `url`, following links up to the configured depth.
 ```swift
 public static func crawl(engine: CrawlEngineHandle, url: String) throws -> CrawlResult
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -83,7 +79,6 @@ Discover all pages on a website by following links and sitemaps.
 ```swift
 public static func mapUrls(engine: CrawlEngineHandle, url: String) throws -> MapResult
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -105,7 +100,6 @@ Scrape multiple URLs concurrently.
 ```swift
 public static func batchScrape(engine: CrawlEngineHandle, urls: [String]) throws -> [BatchScrapeResult]
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -127,7 +121,6 @@ Crawl multiple seed URLs concurrently, each following links to configured depth.
 ```swift
 public static func batchCrawl(engine: CrawlEngineHandle, urls: [String]) throws -> [BatchCrawlResult]
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -357,7 +350,6 @@ Configuration for crawl, scrape, and map operations.
 ```swift
 public static func default() -> CrawlConfig
 ```
-
 ###### validate()
 
 Validate the configuration, returning an error if any values are invalid.

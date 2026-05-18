@@ -1,7 +1,6 @@
 ---
 title: "Dart API Reference"
 ---
-
 ## Dart API Reference <span class="version-badge">v0.3.0-rc.20</span>
 
 ### Functions
@@ -18,7 +17,6 @@ Returns an error if the configuration is invalid.
 ```dart
 CrawlEngineHandle createEngine([CrawlConfig? config])
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -39,7 +37,6 @@ Scrape a single URL, returning extracted page data.
 ```dart
 ScrapeResult scrape(CrawlEngineHandle engine, String url)
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -61,7 +58,6 @@ Crawl a website starting from `url`, following links up to the configured depth.
 ```dart
 CrawlResult crawl(CrawlEngineHandle engine, String url)
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -83,7 +79,6 @@ Discover all pages on a website by following links and sitemaps.
 ```dart
 MapResult mapUrls(CrawlEngineHandle engine, String url)
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -105,7 +100,6 @@ Scrape multiple URLs concurrently.
 ```dart
 List<BatchScrapeResult> batchScrape(CrawlEngineHandle engine, List<String> urls)
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -127,7 +121,6 @@ Crawl multiple seed URLs concurrently, each following links to configured depth.
 ```dart
 List<BatchCrawlResult> batchCrawl(CrawlEngineHandle engine, List<String> urls)
 ```
-
 **Parameters:**
 
 | Name | Type | Required | Description |
@@ -357,7 +350,6 @@ Configuration for crawl, scrape, and map operations.
 ```dart
 static CrawlConfig default()
 ```
-
 ###### validate()
 
 Validate the configuration, returning an error if any values are invalid.

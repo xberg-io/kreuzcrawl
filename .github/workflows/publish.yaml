@@ -1854,7 +1854,7 @@ jobs:
           abi: ${{ matrix.abi }}
           target: ${{ matrix.target }}
 
-      - uses: actions/upload-artifact@v8
+      - uses: actions/upload-artifact@v7.0.1
         with:
           name: kotlin-android-${{ matrix.abi }}
           path: dist/android-natives/${{ matrix.abi }}/

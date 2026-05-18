@@ -13,6 +13,7 @@ languages = [
   "wasm",
   "dart",
   "kotlin_android",
+  "jni",
   "swift",
   "zig",
 ]

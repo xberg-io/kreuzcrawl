@@ -24,11 +24,14 @@ package dev.kreuzberg.kreuzcrawl.android
 /**
  * Content extraction and conversion configuration.
  *
- * Controls how HTML is converted to the output format. Uses html-to-markdown-rs as the conversion
- * engine for all formats (markdown, plain text, djot).
+ * Controls how HTML is converted to the output format. Uses
+ * html-to-markdown-rs as the conversion engine for all formats
+ * (markdown, plain text, djot).
  */
 data class ContentConfig(
-    /** Output format: `"markdown"` (default), `"plain"`, `"djot"`. */
+    /**
+     * Output format: `"markdown"` (default), `"plain"`, `"djot"`.
+     */
     val outputFormat: String,
     /**
      * Preprocessing aggressiveness: `"minimal"`, `"standard"` (default), `"aggressive"`.
@@ -38,35 +41,51 @@ data class ContentConfig(
      * - Aggressive: removes all footers/asides unconditionally.
      */
     val preprocessingPreset: String,
-    /** Remove navigation elements (nav, breadcrumbs, menus). Default: `true`. */
+    /**
+     * Remove navigation elements (nav, breadcrumbs, menus). Default: `true`.
+     */
     val removeNavigation: Boolean,
-    /** Remove form elements. Default: `true`. */
+    /**
+     * Remove form elements. Default: `true`.
+     */
     val removeForms: Boolean,
     /**
-     * HTML tag names to strip (render children only, remove the tag wrapper). Default:
-     * `["noscript"]`.
+     * HTML tag names to strip (render children only, remove the tag wrapper).
+     * Default: `["noscript"]`.
      */
     val stripTags: List<String>,
-    /** HTML tag names to preserve as raw HTML in output. */
+    /**
+     * HTML tag names to preserve as raw HTML in output.
+     */
     val preserveTags: List<String>,
     /**
      * CSS selectors for elements to exclude entirely (element + all content).
      *
-     * Unlike `strip_tags` (which removes the wrapper but keeps children), excluded elements and all
-     * descendants are dropped. Supports CSS selectors: `.class`, `#id`, `[attribute]`, compound
-     * selectors.
+     * Unlike `strip_tags` (which removes the wrapper but keeps children),
+     * excluded elements and all descendants are dropped. Supports CSS selectors:
+     * `.class`, `#id`, `[attribute]`, compound selectors.
      *
      * Example: `[".cookie-banner", "#ad-container", "[role='complementary']"]`
      */
     val excludeSelectors: List<String>,
-    /** Skip image elements in output. Default: `false`. */
+    /**
+     * Skip image elements in output. Default: `false`.
+     */
     val skipImages: Boolean,
-    /** Max DOM traversal depth. Prevents stack overflow on deeply nested HTML. */
+    /**
+     * Max DOM traversal depth. Prevents stack overflow on deeply nested HTML.
+     */
     val maxDepth: Long?,
-    /** Enable line wrapping. Default: `false`. */
+    /**
+     * Enable line wrapping. Default: `false`.
+     */
     val wrap: Boolean,
-    /** Wrap width when `wrap` is enabled. Default: `80`. */
+    /**
+     * Wrap width when `wrap` is enabled. Default: `80`.
+     */
     val wrapWidth: Long,
-    /** Include document structure tree in output. Default: `true`. */
-    val includeDocumentStructure: Boolean,
+    /**
+     * Include document structure tree in output. Default: `true`.
+     */
+    val includeDocumentStructure: Boolean
 )

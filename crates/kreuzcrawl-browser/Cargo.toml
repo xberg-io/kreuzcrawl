@@ -5,10 +5,6 @@ edition.workspace = true
 license.workspace = true
 publish = false
 
-[features]
-default = []
-stealth = ["wreq", "wreq-util", "boring2", "boring-sys2", "tokio-boring2"]
-
 [package.metadata.cargo-machete]
 # boring2 / boring-sys2 / tokio-boring2 are not consumed directly by this
 # crate; they are pulled in by `wreq` and pinned here at =5.0.0-alpha.12 so
@@ -16,6 +12,10 @@ stealth = ["wreq", "wreq-util", "boring2", "boring-sys2", "tokio-boring2"]
 # was tested against (alpha.13 callsites reference symbols boring-sys2
 # alpha.13 does not export).
 ignored = ["boring2", "boring-sys2", "tokio-boring2"]
+
+[features]
+default = []
+stealth = ["wreq", "wreq-util", "boring2", "boring-sys2", "tokio-boring2"]
 
 [dependencies]
 async-trait = { workspace = true }
@@ -42,7 +42,7 @@ tokio = { workspace = true }
 tokio-boring2 = { version = "=5.0.0-alpha.12", optional = true }
 tracing = { workspace = true }
 url = { workspace = true }
-wreq-util = { version = "3.0.0-rc.10", optional = true }
+wreq-util = { version = "3.0.0-rc.11", optional = true }
 
 [target.'cfg(any(target_os = "linux", target_os = "android"))'.dependencies]
 wreq = { version = "6.0.0-rc.28", optional = true, features = ["prefix-symbols"] }

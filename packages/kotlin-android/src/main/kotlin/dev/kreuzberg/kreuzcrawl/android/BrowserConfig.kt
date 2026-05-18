@@ -23,51 +23,68 @@ package dev.kreuzberg.kreuzcrawl.android
 
 import kotlin.time.Duration
 
-/** Browser fallback configuration. */
+/**
+ * Browser fallback configuration.
+ */
 data class BrowserConfig(
-    /** When to use the headless browser fallback. */
+    /**
+     * When to use the headless browser fallback.
+     */
     val mode: BrowserMode,
-    /** Browser backend used to render JavaScript-heavy pages. */
+    /**
+     * Browser backend used to render JavaScript-heavy pages.
+     */
     val backend: BrowserBackend,
-    /** CDP WebSocket endpoint for connecting to an external browser instance. */
+    /**
+     * CDP WebSocket endpoint for connecting to an external browser instance.
+     */
     val endpoint: String?,
-    /** Timeout for browser page load and rendering (in milliseconds when serialized). */
+    /**
+     * Timeout for browser page load and rendering (in milliseconds when serialized).
+     */
     val timeout: Duration,
-    /** Wait strategy after browser navigation. */
+    /**
+     * Wait strategy after browser navigation.
+     */
     val wait: BrowserWait,
-    /** CSS selector to wait for when `wait` is `Selector`. */
+    /**
+     * CSS selector to wait for when `wait` is `Selector`.
+     */
     val waitSelector: String?,
-    /** Extra time to wait after the wait condition is met. */
+    /**
+     * Extra time to wait after the wait condition is met.
+     */
     val extraWait: Duration?,
     /**
-     * Enable browser-realistic TLS fingerprint via the stealth HTTP client. Only honored by
-     * `BrowserBackend.Native` — chromiumoxide is already full-stealth via Chrome's TLS stack.
+     * Enable browser-realistic TLS fingerprint via the stealth HTTP client.
+     * Only honored by `BrowserBackend.Native` — chromiumoxide is already
+     * full-stealth via Chrome's TLS stack.
      */
     val stealth: Boolean,
     /**
-     * Proxy for browser fetches. Overrides `CrawlConfig.proxy` when set. Native backend supports
-     * http/https only (no SOCKS5).
+     * Proxy for browser fetches. Overrides `CrawlConfig.proxy` when set.
+     * Native backend supports http/https only (no SOCKS5).
      */
     val proxy: ProxyConfig?,
     /**
-     * URL patterns to block before the network request fires. Supports `*` wildcards. Useful for
-     * skipping ads/analytics/large images. Honored by `BrowserBackend.Native`; chromiumoxide
-     * ignores this field today.
+     * URL patterns to block before the network request fires. Supports `*`
+     * wildcards. Useful for skipping ads/analytics/large images. Honored by
+     * `BrowserBackend.Native`; chromiumoxide ignores this field today.
      */
     val blockUrlPatterns: List<String>,
     /**
-     * JavaScript snippet evaluated after navigation completes. Result is captured in
-     * `ScrapeResult.browser.eval_result`. Native only.
+     * JavaScript snippet evaluated after navigation completes. Result is
+     * captured in `ScrapeResult.browser.eval_result`. Native only.
      */
     val evalScript: String?,
     /**
-     * User-agent used when fetching robots.txt. Defaults to `BrowserConfig.user_agent` (or
-     * kreuzcrawl's default) if unset. Native only.
+     * User-agent used when fetching robots.txt. Defaults to `BrowserConfig.user_agent`
+     * (or kreuzcrawl's default) if unset. Native only.
      */
     val robotsUserAgent: String?,
     /**
-     * Capture the full network event stream into the result. Default false (only the document event
-     * is captured). Native only.
+     * Capture the full network event stream into the result. Default false
+     * (only the document event is captured). Native only.
      */
-    val captureNetworkEvents: Boolean,
+    val captureNetworkEvents: Boolean
 )
