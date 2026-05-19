@@ -11,6 +11,10 @@
 #include <stdlib.h>
 /* Opaque type forward declarations */
 /**
+ * Result from a single page action execution.
+ */
+typedef struct KCRAWLActionResult KCRAWLActionResult;
+/**
  * Article metadata extracted from `article:*` Open Graph tags.
  */
 typedef struct KCRAWLArticleMetadata KCRAWLArticleMetadata;
@@ -137,6 +141,10 @@ typedef struct KCRAWLImageInfo KCRAWLImageInfo;
  */
 typedef struct KCRAWLImageSource KCRAWLImageSource;
 /**
+ * Result of executing a sequence of page interaction actions.
+ */
+typedef struct KCRAWLInteractionResult KCRAWLInteractionResult;
+/**
  * A JSON-LD structured data entry found on a page.
  */
 typedef struct KCRAWLJsonLdEntry KCRAWLJsonLdEntry;
@@ -157,6 +165,13 @@ typedef struct KCRAWLMapResult KCRAWLMapResult;
  */
 typedef struct KCRAWLMarkdownResult KCRAWLMarkdownResult;
 /**
+ * A single page interaction action.
+ *
+ * Actions are serialized with a `type` tag using camelCase naming,
+ * except `ExecuteJs` which is explicitly renamed to `"executeJs"`.
+ */
+typedef struct KCRAWLPageAction KCRAWLPageAction;
+/**
  * Metadata extracted from an HTML page's `<meta>` tags and `<title>` element.
  */
 typedef struct KCRAWLPageMetadata KCRAWLPageMetadata;
@@ -172,6 +187,10 @@ typedef struct KCRAWLResponseMeta KCRAWLResponseMeta;
  * The result of a single-page scrape operation.
  */
 typedef struct KCRAWLScrapeResult KCRAWLScrapeResult;
+/**
+ * Direction for a scroll action.
+ */
+typedef struct KCRAWLScrollDirection KCRAWLScrollDirection;
 /**
  * A URL entry from a sitemap.
  */
@@ -939,6 +958,108 @@ uintptr_t kcrawl_downloaded_document_size(const KCRAWLDownloadedDocument *ptr);
  * Pointer must be a valid handle returned by this library.
  */
 char *kcrawl_downloaded_document_headers(const KCRAWLDownloadedDocument *ptr);
+
+/**
+ * Create a `InteractionResult` from a JSON string. Returns null on failure.
+ * # Safety
+ * JSON string must be valid UTF-8 and null-terminated.
+ * Returned handle must be freed with `kcrawl_interaction_result_free`.
+ */
+KCRAWLInteractionResult *kcrawl_interaction_result_from_json(const char *json);
+
+/**
+ * Serialize a `InteractionResult` to a JSON string. Returns null on failure.
+ * # Safety
+ * `ptr` must be a valid, non-null pointer returned by a `kcrawl` function.
+ * The returned string must be freed with `kcrawl_free_string`.
+ */
+char *kcrawl_interaction_result_to_json(const KCRAWLInteractionResult *ptr);
+
+/**
+ * Free a `InteractionResult` handle.
+ * # Safety
+ * Pointer must have been returned by this library, or be null.
+ */
+void kcrawl_interaction_result_free(KCRAWLInteractionResult *ptr);
+
+/**
+ * Get the `action_results` field from a `InteractionResult`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+char *kcrawl_interaction_result_action_results(const KCRAWLInteractionResult *ptr);
+
+/**
+ * Get the `final_html` field from a `InteractionResult`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+char *kcrawl_interaction_result_final_html(const KCRAWLInteractionResult *ptr);
+
+/**
+ * Get the `final_url` field from a `InteractionResult`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+char *kcrawl_interaction_result_final_url(const KCRAWLInteractionResult *ptr);
+
+/**
+ * Get the `screenshot` field from a `InteractionResult`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+uint8_t *kcrawl_interaction_result_screenshot(const KCRAWLInteractionResult *ptr);
+
+/**
+ * Create a `ActionResult` from a JSON string. Returns null on failure.
+ * # Safety
+ * JSON string must be valid UTF-8 and null-terminated.
+ * Returned handle must be freed with `kcrawl_action_result_free`.
+ */
+KCRAWLActionResult *kcrawl_action_result_from_json(const char *json);
+
+/**
+ * Serialize a `ActionResult` to a JSON string. Returns null on failure.
+ * # Safety
+ * `ptr` must be a valid, non-null pointer returned by a `kcrawl` function.
+ * The returned string must be freed with `kcrawl_free_string`.
+ */
+char *kcrawl_action_result_to_json(const KCRAWLActionResult *ptr);
+
+/**
+ * Free a `ActionResult` handle.
+ * # Safety
+ * Pointer must have been returned by this library, or be null.
+ */
+void kcrawl_action_result_free(KCRAWLActionResult *ptr);
+
+/**
+ * Get the `action_index` field from a `ActionResult`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+uintptr_t kcrawl_action_result_action_index(const KCRAWLActionResult *ptr);
+
+/**
+ * Get the `success` field from a `ActionResult`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+int32_t kcrawl_action_result_success(const KCRAWLActionResult *ptr);
+
+/**
+ * Get the `data` field from a `ActionResult`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+char *kcrawl_action_result_data(const KCRAWLActionResult *ptr);
+
+/**
+ * Get the `error` field from a `ActionResult`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+char *kcrawl_action_result_error(const KCRAWLActionResult *ptr);
 
 /**
  * Create a `ScrapeResult` from a JSON string. Returns null on failure.
@@ -2743,6 +2864,36 @@ int32_t kcrawl_asset_category_from_i32(int32_t value);
 int32_t kcrawl_asset_category_from_str(const char *name);
 
 /**
+ * Convert an integer to a `PageAction` variant. Returns -1 on invalid input.
+ * # Safety
+ * Caller must ensure all pointer arguments are valid or null.
+ * Returned pointers must be freed with the appropriate free function.
+ */
+int32_t kcrawl_page_action_from_i32(int32_t value);
+
+/**
+ * Convert a `PageAction` variant name (C string) to its integer value. Returns -1 on invalid input.
+ * # Safety
+ * Caller must ensure `ptr` is a valid pointer to a `c_char` or null.
+ */
+int32_t kcrawl_page_action_from_str(const char *name);
+
+/**
+ * Convert an integer to a `ScrollDirection` variant. Returns -1 on invalid input.
+ * # Safety
+ * Caller must ensure all pointer arguments are valid or null.
+ * Returned pointers must be freed with the appropriate free function.
+ */
+int32_t kcrawl_scroll_direction_from_i32(int32_t value);
+
+/**
+ * Convert a `ScrollDirection` variant name (C string) to its integer value. Returns -1 on invalid input.
+ * # Safety
+ * Caller must ensure `ptr` is a valid pointer to a `c_char` or null.
+ */
+int32_t kcrawl_scroll_direction_from_str(const char *name);
+
+/**
  * Free a heap-allocated `BrowserMode` returned by a pointer-returning FFI function.
  * # Safety
  * Pointer must have been returned by this library, or be null.
@@ -2986,6 +3137,15 @@ KCRAWLCrawlResult *kcrawl_crawl(const KCRAWLCrawlEngineHandle *engine,
  */
 KCRAWLMapResult *kcrawl_map_urls(const KCRAWLCrawlEngineHandle *engine,
                                  const char *url);
+
+/**
+ * Execute browser actions on a single page.
+ * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
+ * freed with the appropriate free function.
+ */
+KCRAWLInteractionResult *kcrawl_interact(const KCRAWLCrawlEngineHandle *engine,
+                                         const char *url,
+                                         const char *actions);
 
 /**
  * Scrape multiple URLs concurrently.

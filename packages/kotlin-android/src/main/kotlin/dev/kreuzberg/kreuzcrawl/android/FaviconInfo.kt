@@ -21,24 +21,14 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/**
- * Information about a favicon or icon link.
- */
+/** Information about a favicon or icon link. */
 data class FaviconInfo(
-    /**
-     * The icon URL.
-     */
+    /** The icon URL. */
     val url: String,
-    /**
-     * The `rel` attribute (e.g., "icon", "apple-touch-icon").
-     */
+    /** The `rel` attribute (e.g., "icon", "apple-touch-icon"). */
     val rel: String,
-    /**
-     * The `sizes` attribute, if present.
-     */
+    /** The `sizes` attribute, if present. */
     val sizes: String?,
-    /**
-     * The MIME type, if present.
-     */
-    val mimeType: String?
+    /** The MIME type, if present. */
+    val mimeType: String?,
 )

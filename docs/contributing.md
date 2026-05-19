@@ -31,22 +31,24 @@ pre-commit run --all-files
 
 The default build has no optional dependencies. Add features as needed:
 
-| Feature    | What it adds                                               |
-| ---------- | ---------------------------------------------------------- |
-| `browser`  | Headless Chrome via chromiumoxide                          |
-| `ai`       | LLM extraction via liter-llm                               |
-| `api`      | REST API server via Axum                                   |
-| `mcp`      | Model Context Protocol server                              |
-| `mcp-http` | MCP over HTTP (implies `mcp` + `api`)                      |
-| `tracing`  | OpenTelemetry spans                                        |
-| `interact` | Page interaction — click, type, scroll (implies `browser`) |
-| `warc`     | WARC archive output                                        |
+| Feature    | What it adds                                            |
+| ---------- | ------------------------------------------------------- |
+| `browser`  | Browser-backed rendering and interaction                |
+| `ai`       | LLM extraction via liter-llm                            |
+| `api`      | REST API server via Axum                                |
+| `mcp`      | Model Context Protocol server                           |
+| `mcp-http` | MCP over HTTP (implies `mcp` + `api`)                   |
+| `tracing`  | OpenTelemetry spans                                     |
+| `interact` | Compatibility alias for browser-backed page interaction |
+| `warc`     | WARC archive output                                     |
 
 ```bash
 cargo build --features api,mcp
 ```
 
-`browser` and `interact` require a Chrome/Chromium binary at runtime. They compile without one but panic the first time you use them.
+`interact()` is always part of the public API. Runtime support depends on the compiled browser backend:
+chromiumoxide performs the actions, native performs supported actions in-process, and builds without a browser
+backend return `Unsupported`.
 
 ## Tests
 

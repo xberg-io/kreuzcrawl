@@ -44,6 +44,13 @@ async fn run_with_browser(
 
     prepare_page(&page, config).await?;
     navigate_and_wait(&page, url, config).await?;
+    if let Some(ref script) = config.browser.eval_script {
+        evaluate_json(&page, script).await.map_err(|e| {
+            CrawlError::BrowserError(format!(
+                "post-navigation eval_script failed before interaction actions: {e}"
+            ))
+        })?;
+    }
 
     let mut action_results = Vec::with_capacity(actions.len());
     let mut screenshot = None;
@@ -295,10 +302,10 @@ async fn scroll(
     selector: Option<&str>,
     amount: Option<i64>,
 ) -> Result<(), CrawlError> {
-    let amount = amount.unwrap_or(800).abs();
+    let amount = amount.unwrap_or(800).unsigned_abs();
     let signed_amount = match direction {
-        ScrollDirection::Up => -amount,
-        ScrollDirection::Down => amount,
+        ScrollDirection::Up => format!("-{amount}"),
+        ScrollDirection::Down => amount.to_string(),
     };
     let selector_json =
         serde_json::to_string(&selector).map_err(|e| CrawlError::Other(format!("failed to encode selector: {e}")))?;

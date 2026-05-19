@@ -92,6 +92,33 @@ public func mapUrls<GenericIntoRustString: IntoRustString>(
     }
   }()
 }
+public func interact<GenericIntoRustString: IntoRustString>(
+  _ engine: CrawlEngineHandle, _ url: GenericIntoRustString,
+  _ actions: RustVec<GenericIntoRustString>
+) throws -> InteractionResult {
+  try {
+    let val = __swift_bridge__$interact(
+      {
+        engine.isOwned = false
+        return engine.ptr
+      }(),
+      {
+        let rustString = url.intoRustString()
+        rustString.isOwned = false
+        return rustString.ptr
+      }(),
+      {
+        let val = actions
+        val.isOwned = false
+        return val.ptr
+      }())
+    if val.is_ok {
+      return InteractionResult(ptr: val.ok_or_err!)
+    } else {
+      throw RustString(ptr: val.ok_or_err!)
+    }
+  }()
+}
 public func batchScrape<GenericIntoRustString: IntoRustString>(
   _ engine: CrawlEngineHandle, _ urls: RustVec<GenericIntoRustString>
 ) throws -> RustVec<BatchScrapeResult> {
@@ -1446,6 +1473,271 @@ extension DownloadedDocument: Vectorizable {
 
   public static func vecOfSelfLen(vecPtr: UnsafeMutableRawPointer) -> UInt {
     __swift_bridge__$Vec_DownloadedDocument$len(vecPtr)
+  }
+}
+
+public class InteractionResult: InteractionResultRefMut {
+  var isOwned: Bool = true
+
+  public override init(ptr: UnsafeMutableRawPointer) {
+    super.init(ptr: ptr)
+  }
+
+  deinit {
+    if isOwned {
+      __swift_bridge__$InteractionResult$_free(ptr)
+    }
+  }
+}
+extension InteractionResult {
+  public convenience init<GenericIntoRustString: IntoRustString>(
+    _ action_results: RustVec<ActionResult>, _ final_html: GenericIntoRustString,
+    _ final_url: GenericIntoRustString
+  ) {
+    self.init(
+      ptr: __swift_bridge__$InteractionResult$new(
+        {
+          let val = action_results
+          val.isOwned = false
+          return val.ptr
+        }(),
+        {
+          let rustString = final_html.intoRustString()
+          rustString.isOwned = false
+          return rustString.ptr
+        }(),
+        {
+          let rustString = final_url.intoRustString()
+          rustString.isOwned = false
+          return rustString.ptr
+        }()))
+  }
+}
+public class InteractionResultRefMut: InteractionResultRef {
+  public override init(ptr: UnsafeMutableRawPointer) {
+    super.init(ptr: ptr)
+  }
+}
+public class InteractionResultRef {
+  var ptr: UnsafeMutableRawPointer
+
+  public init(ptr: UnsafeMutableRawPointer) {
+    self.ptr = ptr
+  }
+}
+extension InteractionResultRef {
+  public func action_results() -> RustVec<ActionResult> {
+    RustVec(ptr: __swift_bridge__$InteractionResult$action_results(ptr))
+  }
+
+  public func final_html() -> RustString {
+    RustString(ptr: __swift_bridge__$InteractionResult$final_html(ptr))
+  }
+
+  public func final_url() -> RustString {
+    RustString(ptr: __swift_bridge__$InteractionResult$final_url(ptr))
+  }
+}
+extension InteractionResult: Vectorizable {
+  public static func vecOfSelfNew() -> UnsafeMutableRawPointer {
+    __swift_bridge__$Vec_InteractionResult$new()
+  }
+
+  public static func vecOfSelfFree(vecPtr: UnsafeMutableRawPointer) {
+    __swift_bridge__$Vec_InteractionResult$drop(vecPtr)
+  }
+
+  public static func vecOfSelfPush(vecPtr: UnsafeMutableRawPointer, value: InteractionResult) {
+    __swift_bridge__$Vec_InteractionResult$push(
+      vecPtr,
+      {
+        value.isOwned = false
+        return value.ptr
+      }())
+  }
+
+  public static func vecOfSelfPop(vecPtr: UnsafeMutableRawPointer) -> Self? {
+    let pointer = __swift_bridge__$Vec_InteractionResult$pop(vecPtr)
+    if pointer == nil {
+      return nil
+    } else {
+      return (InteractionResult(ptr: pointer!) as! Self)
+    }
+  }
+
+  public static func vecOfSelfGet(vecPtr: UnsafeMutableRawPointer, index: UInt)
+    -> InteractionResultRef?
+  {
+    let pointer = __swift_bridge__$Vec_InteractionResult$get(vecPtr, index)
+    if pointer == nil {
+      return nil
+    } else {
+      return InteractionResultRef(ptr: pointer!)
+    }
+  }
+
+  public static func vecOfSelfGetMut(vecPtr: UnsafeMutableRawPointer, index: UInt)
+    -> InteractionResultRefMut?
+  {
+    let pointer = __swift_bridge__$Vec_InteractionResult$get_mut(vecPtr, index)
+    if pointer == nil {
+      return nil
+    } else {
+      return InteractionResultRefMut(ptr: pointer!)
+    }
+  }
+
+  public static func vecOfSelfAsPtr(vecPtr: UnsafeMutableRawPointer) -> UnsafePointer<
+    InteractionResultRef
+  > {
+    UnsafePointer<InteractionResultRef>(
+      OpaquePointer(__swift_bridge__$Vec_InteractionResult$as_ptr(vecPtr)))
+  }
+
+  public static func vecOfSelfLen(vecPtr: UnsafeMutableRawPointer) -> UInt {
+    __swift_bridge__$Vec_InteractionResult$len(vecPtr)
+  }
+}
+
+public class ActionResult: ActionResultRefMut {
+  var isOwned: Bool = true
+
+  public override init(ptr: UnsafeMutableRawPointer) {
+    super.init(ptr: ptr)
+  }
+
+  deinit {
+    if isOwned {
+      __swift_bridge__$ActionResult$_free(ptr)
+    }
+  }
+}
+extension ActionResult {
+  public convenience init<GenericIntoRustString: IntoRustString>(
+    _ action_index: UInt, _ action_type: GenericIntoRustString, _ success: Bool,
+    _ data: GenericIntoRustString?, _ error: GenericIntoRustString?
+  ) {
+    self.init(
+      ptr: __swift_bridge__$ActionResult$new(
+        action_index,
+        {
+          let rustString = action_type.intoRustString()
+          rustString.isOwned = false
+          return rustString.ptr
+        }(), success,
+        {
+          if let rustString = optionalStringIntoRustString(data) {
+            rustString.isOwned = false
+            return rustString.ptr
+          } else {
+            return nil
+          }
+        }(),
+        {
+          if let rustString = optionalStringIntoRustString(error) {
+            rustString.isOwned = false
+            return rustString.ptr
+          } else {
+            return nil
+          }
+        }()))
+  }
+}
+public class ActionResultRefMut: ActionResultRef {
+  public override init(ptr: UnsafeMutableRawPointer) {
+    super.init(ptr: ptr)
+  }
+}
+public class ActionResultRef {
+  var ptr: UnsafeMutableRawPointer
+
+  public init(ptr: UnsafeMutableRawPointer) {
+    self.ptr = ptr
+  }
+}
+extension ActionResultRef {
+  public func action_index() -> UInt {
+    __swift_bridge__$ActionResult$action_index(ptr)
+  }
+
+  public func action_type() -> RustString {
+    RustString(ptr: __swift_bridge__$ActionResult$action_type(ptr))
+  }
+
+  public func success() -> Bool {
+    __swift_bridge__$ActionResult$success(ptr)
+  }
+
+  public func data() -> RustString? {
+    {
+      let val = __swift_bridge__$ActionResult$data(ptr)
+      if val != nil { return RustString(ptr: val!) } else { return nil }
+    }()
+  }
+
+  public func error() -> RustString? {
+    {
+      let val = __swift_bridge__$ActionResult$error(ptr)
+      if val != nil { return RustString(ptr: val!) } else { return nil }
+    }()
+  }
+}
+extension ActionResult: Vectorizable {
+  public static func vecOfSelfNew() -> UnsafeMutableRawPointer {
+    __swift_bridge__$Vec_ActionResult$new()
+  }
+
+  public static func vecOfSelfFree(vecPtr: UnsafeMutableRawPointer) {
+    __swift_bridge__$Vec_ActionResult$drop(vecPtr)
+  }
+
+  public static func vecOfSelfPush(vecPtr: UnsafeMutableRawPointer, value: ActionResult) {
+    __swift_bridge__$Vec_ActionResult$push(
+      vecPtr,
+      {
+        value.isOwned = false
+        return value.ptr
+      }())
+  }
+
+  public static func vecOfSelfPop(vecPtr: UnsafeMutableRawPointer) -> Self? {
+    let pointer = __swift_bridge__$Vec_ActionResult$pop(vecPtr)
+    if pointer == nil {
+      return nil
+    } else {
+      return (ActionResult(ptr: pointer!) as! Self)
+    }
+  }
+
+  public static func vecOfSelfGet(vecPtr: UnsafeMutableRawPointer, index: UInt) -> ActionResultRef?
+  {
+    let pointer = __swift_bridge__$Vec_ActionResult$get(vecPtr, index)
+    if pointer == nil {
+      return nil
+    } else {
+      return ActionResultRef(ptr: pointer!)
+    }
+  }
+
+  public static func vecOfSelfGetMut(vecPtr: UnsafeMutableRawPointer, index: UInt)
+    -> ActionResultRefMut?
+  {
+    let pointer = __swift_bridge__$Vec_ActionResult$get_mut(vecPtr, index)
+    if pointer == nil {
+      return nil
+    } else {
+      return ActionResultRefMut(ptr: pointer!)
+    }
+  }
+
+  public static func vecOfSelfAsPtr(vecPtr: UnsafeMutableRawPointer) -> UnsafePointer<
+    ActionResultRef
+  > {
+    UnsafePointer<ActionResultRef>(OpaquePointer(__swift_bridge__$Vec_ActionResult$as_ptr(vecPtr)))
+  }
+
+  public static func vecOfSelfLen(vecPtr: UnsafeMutableRawPointer) -> UInt {
+    __swift_bridge__$Vec_ActionResult$len(vecPtr)
   }
 }
 
@@ -6196,5 +6488,183 @@ extension AssetCategory: Vectorizable {
 
   public static func vecOfSelfLen(vecPtr: UnsafeMutableRawPointer) -> UInt {
     __swift_bridge__$Vec_AssetCategory$len(vecPtr)
+  }
+}
+
+public class PageAction: PageActionRefMut {
+  var isOwned: Bool = true
+
+  public override init(ptr: UnsafeMutableRawPointer) {
+    super.init(ptr: ptr)
+  }
+
+  deinit {
+    if isOwned {
+      __swift_bridge__$PageAction$_free(ptr)
+    }
+  }
+}
+public class PageActionRefMut: PageActionRef {
+  public override init(ptr: UnsafeMutableRawPointer) {
+    super.init(ptr: ptr)
+  }
+}
+public class PageActionRef {
+  var ptr: UnsafeMutableRawPointer
+
+  public init(ptr: UnsafeMutableRawPointer) {
+    self.ptr = ptr
+  }
+}
+extension PageActionRef {
+  public func to_string() -> RustString {
+    RustString(ptr: __swift_bridge__$PageAction$to_string(ptr))
+  }
+}
+extension PageAction: Vectorizable {
+  public static func vecOfSelfNew() -> UnsafeMutableRawPointer {
+    __swift_bridge__$Vec_PageAction$new()
+  }
+
+  public static func vecOfSelfFree(vecPtr: UnsafeMutableRawPointer) {
+    __swift_bridge__$Vec_PageAction$drop(vecPtr)
+  }
+
+  public static func vecOfSelfPush(vecPtr: UnsafeMutableRawPointer, value: PageAction) {
+    __swift_bridge__$Vec_PageAction$push(
+      vecPtr,
+      {
+        value.isOwned = false
+        return value.ptr
+      }())
+  }
+
+  public static func vecOfSelfPop(vecPtr: UnsafeMutableRawPointer) -> Self? {
+    let pointer = __swift_bridge__$Vec_PageAction$pop(vecPtr)
+    if pointer == nil {
+      return nil
+    } else {
+      return (PageAction(ptr: pointer!) as! Self)
+    }
+  }
+
+  public static func vecOfSelfGet(vecPtr: UnsafeMutableRawPointer, index: UInt) -> PageActionRef? {
+    let pointer = __swift_bridge__$Vec_PageAction$get(vecPtr, index)
+    if pointer == nil {
+      return nil
+    } else {
+      return PageActionRef(ptr: pointer!)
+    }
+  }
+
+  public static func vecOfSelfGetMut(vecPtr: UnsafeMutableRawPointer, index: UInt)
+    -> PageActionRefMut?
+  {
+    let pointer = __swift_bridge__$Vec_PageAction$get_mut(vecPtr, index)
+    if pointer == nil {
+      return nil
+    } else {
+      return PageActionRefMut(ptr: pointer!)
+    }
+  }
+
+  public static func vecOfSelfAsPtr(vecPtr: UnsafeMutableRawPointer) -> UnsafePointer<PageActionRef>
+  {
+    UnsafePointer<PageActionRef>(OpaquePointer(__swift_bridge__$Vec_PageAction$as_ptr(vecPtr)))
+  }
+
+  public static func vecOfSelfLen(vecPtr: UnsafeMutableRawPointer) -> UInt {
+    __swift_bridge__$Vec_PageAction$len(vecPtr)
+  }
+}
+
+public class ScrollDirection: ScrollDirectionRefMut {
+  var isOwned: Bool = true
+
+  public override init(ptr: UnsafeMutableRawPointer) {
+    super.init(ptr: ptr)
+  }
+
+  deinit {
+    if isOwned {
+      __swift_bridge__$ScrollDirection$_free(ptr)
+    }
+  }
+}
+public class ScrollDirectionRefMut: ScrollDirectionRef {
+  public override init(ptr: UnsafeMutableRawPointer) {
+    super.init(ptr: ptr)
+  }
+}
+public class ScrollDirectionRef {
+  var ptr: UnsafeMutableRawPointer
+
+  public init(ptr: UnsafeMutableRawPointer) {
+    self.ptr = ptr
+  }
+}
+extension ScrollDirectionRef {
+  public func to_string() -> RustString {
+    RustString(ptr: __swift_bridge__$ScrollDirection$to_string(ptr))
+  }
+}
+extension ScrollDirection: Vectorizable {
+  public static func vecOfSelfNew() -> UnsafeMutableRawPointer {
+    __swift_bridge__$Vec_ScrollDirection$new()
+  }
+
+  public static func vecOfSelfFree(vecPtr: UnsafeMutableRawPointer) {
+    __swift_bridge__$Vec_ScrollDirection$drop(vecPtr)
+  }
+
+  public static func vecOfSelfPush(vecPtr: UnsafeMutableRawPointer, value: ScrollDirection) {
+    __swift_bridge__$Vec_ScrollDirection$push(
+      vecPtr,
+      {
+        value.isOwned = false
+        return value.ptr
+      }())
+  }
+
+  public static func vecOfSelfPop(vecPtr: UnsafeMutableRawPointer) -> Self? {
+    let pointer = __swift_bridge__$Vec_ScrollDirection$pop(vecPtr)
+    if pointer == nil {
+      return nil
+    } else {
+      return (ScrollDirection(ptr: pointer!) as! Self)
+    }
+  }
+
+  public static func vecOfSelfGet(vecPtr: UnsafeMutableRawPointer, index: UInt)
+    -> ScrollDirectionRef?
+  {
+    let pointer = __swift_bridge__$Vec_ScrollDirection$get(vecPtr, index)
+    if pointer == nil {
+      return nil
+    } else {
+      return ScrollDirectionRef(ptr: pointer!)
+    }
+  }
+
+  public static func vecOfSelfGetMut(vecPtr: UnsafeMutableRawPointer, index: UInt)
+    -> ScrollDirectionRefMut?
+  {
+    let pointer = __swift_bridge__$Vec_ScrollDirection$get_mut(vecPtr, index)
+    if pointer == nil {
+      return nil
+    } else {
+      return ScrollDirectionRefMut(ptr: pointer!)
+    }
+  }
+
+  public static func vecOfSelfAsPtr(vecPtr: UnsafeMutableRawPointer) -> UnsafePointer<
+    ScrollDirectionRef
+  > {
+    UnsafePointer<ScrollDirectionRef>(
+      OpaquePointer(__swift_bridge__$Vec_ScrollDirection$as_ptr(vecPtr)))
+  }
+
+  public static func vecOfSelfLen(vecPtr: UnsafeMutableRawPointer) -> UInt {
+    __swift_bridge__$Vec_ScrollDirection$len(vecPtr)
   }
 }

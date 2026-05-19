@@ -793,22 +793,30 @@ impl Page {
     }
 
     pub fn evaluate(&mut self, expression: &str) -> serde_json::Value {
-        if let Some(js) = &mut self.js {
-            match js.evaluate(expression) {
-                Ok(val) => val,
-                Err(e) => {
-                    tracing::debug!("JS eval error for '{}': {}", &expression[..expression.len().min(80)], e);
-                    serde_json::Value::Null
-                }
+        match self.evaluate_result(expression) {
+            Ok(value) => value,
+            Err(error) => {
+                tracing::debug!(
+                    "JS eval error for '{}': {}",
+                    &expression[..expression.len().min(80)],
+                    error
+                );
+                serde_json::Value::Null
             }
+        }
+    }
+
+    pub fn evaluate_result(&mut self, expression: &str) -> Result<serde_json::Value, String> {
+        if let Some(js) = &mut self.js {
+            js.evaluate(expression).map_err(|e| e.to_string())
         } else {
-            match expression.trim() {
+            Ok(match expression.trim() {
                 "document.title" => serde_json::Value::String(self.title.clone()),
                 "document.URL" | "document.location.href" | "window.location.href" => {
                     serde_json::Value::String(self.url_string())
                 }
                 _ => serde_json::Value::Null,
-            }
+            })
         }
     }
 

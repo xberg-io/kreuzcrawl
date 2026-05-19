@@ -21,24 +21,14 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/**
- * The classification of a link.
- */
+/** The classification of a link. */
 enum class LinkType {
-    /**
-     * A link to the same domain.
-     */
+    /** A link to the same domain. */
     INTERNAL,
-    /**
-     * A link to a different domain.
-     */
+    /** A link to a different domain. */
     EXTERNAL,
-    /**
-     * A fragment-only link (e.g., `#section`).
-     */
+    /** A fragment-only link (e.g., `#section`). */
     ANCHOR,
-    /**
-     * A link to a downloadable document (PDF, DOC, etc.).
-     */
-    DOCUMENT;
+    /** A link to a downloadable document (PDF, DOC, etc.). */
+    DOCUMENT,
 }

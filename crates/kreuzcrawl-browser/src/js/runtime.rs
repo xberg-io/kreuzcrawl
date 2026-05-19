@@ -590,10 +590,7 @@ impl BrowserJsRuntime {
             || trimmed.starts_with("return ");
 
         if is_multi_statement {
-            format!(
-                "(function() {{ try {{ {} }} catch(e) {{ return null; }} }})()",
-                expression
-            )
+            format!("(function() {{ {} }})()", expression)
         } else {
             // Strip trailing semicolons + whitespace before wrapping in
             // `return (...);`. Playwright's utility-script expression is
@@ -603,10 +600,7 @@ impl BrowserJsRuntime {
             // catchable), and the function silently returns `undefined`.
             // Stripping makes the wrapped expression syntactically valid.
             let cleaned = trimmed.trim_end_matches(|c: char| c == ';' || c.is_whitespace());
-            format!(
-                "(function() {{ try {{ return ({}); }} catch(e) {{ return null; }} }})()",
-                cleaned
-            )
+            format!("(function() {{ return ({}); }})()", cleaned)
         }
     }
 

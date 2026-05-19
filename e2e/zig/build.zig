@@ -137,6 +137,21 @@ pub fn build(b: *std.Build) void {
     const error_run = b.addRunArtifact(error_tests);
     test_step.dependOn(&error_run.step);
 
+    const interaction_module = b.createModule(.{
+        .root_source_file = b.path("src/interaction_test.zig"),
+        .target = target,
+        .optimize = optimize,
+        .link_libc = true,
+    });
+    interaction_module.addImport("kreuzcrawl", kreuzcrawl_module);
+    const interaction_tests = b.addTest(.{
+        .name = "interaction_test",
+        .root_module = interaction_module,
+        .use_llvm = true,
+    });
+    const interaction_run = b.addRunArtifact(interaction_tests);
+    test_step.dependOn(&interaction_run.step);
+
     const links_module = b.createModule(.{
         .root_source_file = b.path("src/links_test.zig"),
         .target = target,

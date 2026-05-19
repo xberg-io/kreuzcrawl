@@ -1,5 +1,5 @@
 [workspace]
-alef_version = "0.16.57"
+alef_version = "0.16.71"
 languages = [
   "python",
   "node",
@@ -106,6 +106,7 @@ sources = [
   "crates/kreuzcrawl/src/types/results.rs",
   "crates/kreuzcrawl/src/types/discovery.rs",
   "crates/kreuzcrawl/src/types/metadata.rs",
+  "crates/kreuzcrawl/src/interact/actions.rs",
   "crates/kreuzcrawl/src/error.rs",
   "crates/kreuzcrawl/src/citations.rs",
   "crates/kreuzcrawl/src/bindings.rs",
@@ -186,8 +187,7 @@ zig = "packages/zig/src/"
 # Crate-internal items are hidden from alef via `#[cfg_attr(alef, alef(skip))]`
 # on the Rust definition (preferred over an exclude list here — keeps the intent
 # alongside the type). Currently skipped at source: `CachedPage` (CrawlCache-only
-# storage type), `InteractionResult`/`ActionResult` (placeholders for a future
-# interaction API), `CrawlEvent` (streaming API not yet bridged).
+# storage type), `CrawlEvent` (streaming API not yet bridged).
 # `CrawlResult::new` is `pub(crate)` and therefore invisible to alef without any
 # directive.
 
@@ -224,6 +224,10 @@ types = [
   "HeadingInfo",
   "ResponseMeta",
   "BrowserExtras",
+  "ScrollDirection",
+  "PageAction",
+  "ActionResult",
+  "InteractionResult",
   "PageMetadata",
   "CitationResult",
   "CitationReference",
@@ -237,6 +241,7 @@ functions = [
   "scrape",
   "crawl",
   "map_urls",
+  "interact",
   "batch_scrape",
   "batch_crawl",
   "generate_citations",
@@ -417,7 +422,6 @@ exclude_categories = [
   "concurrent",
   "download",
   "filter",
-  "interaction",
   "middleware",
   "proxy",
   "rate_limit",

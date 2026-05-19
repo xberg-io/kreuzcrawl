@@ -48,6 +48,7 @@ pub const CrawlError = error{
     BrowserError,
     BrowserTimeout,
     InvalidConfig,
+    Unsupported,
     Other,
     OutOfMemory,
 };
@@ -146,8 +147,11 @@ pub const BrowserConfig = struct {
     /// wildcards. Useful for skipping ads/analytics/large images. Honored by
     /// `BrowserBackend.Native`; chromiumoxide ignores this field today.
     block_url_patterns: []const []const u8,
-    /// JavaScript snippet evaluated after navigation completes. Result is
-    /// captured in `ScrapeResult.browser.eval_result`. Native only.
+    /// JavaScript snippet evaluated after navigation completes.
+    ///
+    /// Scraping captures the native backend result in `ScrapeResult.browser.eval_result`.
+    /// Interactions run this script before page actions on both browser backends but do
+    /// not include the script result in `InteractionResult`.
     eval_script: ?[]const u8,
     /// User-agent used when fetching robots.txt. Defaults to `BrowserConfig.user_agent`
     /// (or kreuzcrawl's default) if unset. Native only.
@@ -272,6 +276,30 @@ pub const DownloadedDocument = struct {
     content_hash: []const u8,
     /// Selected response headers.
     headers: std.StringHashMap([]const u8),
+};
+
+/// Result of executing a sequence of page interaction actions.
+pub const InteractionResult = struct {
+    /// Results from each executed action.
+    action_results: []const ActionResult,
+    /// Final page HTML after all actions completed.
+    final_html: []const u8,
+    /// Final page URL (may have changed due to navigation).
+    final_url: []const u8,
+};
+
+/// Result from a single page action execution.
+pub const ActionResult = struct {
+    /// Zero-based index of the action in the sequence.
+    action_index: u64,
+    /// The type of action that was executed.
+    action_type: []const u8,
+    /// Whether the action completed successfully.
+    success: bool,
+    /// Action-specific return data (screenshot bytes, JS return value, scraped HTML).
+    data: ?[]const u8,
+    /// Error message if the action failed.
+    error_: ?[]const u8,
 };
 
 /// The result of a single-page scrape operation.
@@ -794,6 +822,52 @@ pub const AssetCategory = enum {
     other,
 };
 
+/// A single page interaction action.
+///
+/// Actions are serialized with a `type` tag using camelCase naming,
+/// except `ExecuteJs` which is explicitly renamed to `"executeJs"`.
+pub const PageAction = union(enum) {
+    /// Click on an element matching the given CSS selector.
+    click: []const u8,
+    /// Type text into an element matching the given CSS selector.
+    type: struct {
+        selector: []const u8,
+        text: []const u8,
+    },
+    /// Press a keyboard key (e.g. "Enter", "Tab", "Escape").
+    press: []const u8,
+    /// Scroll the page or a specific element.
+    scroll: struct {
+        direction: ScrollDirection,
+        selector: ?[]const u8,
+        amount: ?i64,
+    },
+    /// Wait for a duration or for an element to appear.
+    wait: struct {
+        milliseconds: ?i64,
+        selector: ?[]const u8,
+    },
+    /// Take a screenshot of the current page.
+    screenshot: ?bool,
+    /// Execute arbitrary JavaScript in the page context.
+    ///
+    /// **Safety:**
+    ///
+    /// The script runs with full page privileges in the browser context.
+    /// Only execute scripts from trusted sources.
+    executeJs: []const u8,
+    /// Scrape the current page HTML.
+    scrape: void,
+};
+
+/// Direction for a scroll action.
+pub const ScrollDirection = enum {
+    /// Scroll upward.
+    up,
+    /// Scroll downward.
+    down,
+};
+
 /// Convert markdown links to numbered citations.
 ///
 /// `[Example](https://example.com)` becomes `Example[1]`
@@ -895,6 +969,33 @@ pub fn map_urls(engine: ?[]const u8, url: []const u8) CrawlError![]u8 {
         const _json_ptr = c.kcrawl_map_result_to_json(_result.?);
         defer _free_string(_json_ptr);
         c.kcrawl_map_result_free(_result.?);
+        const slice = std.mem.sliceTo(_json_ptr, 0);
+        const owned = try std.heap.c_allocator.dupe(u8, slice);
+        break :blk owned;
+    };
+}
+
+/// Execute browser actions on a single page.
+pub fn interact(engine: ?[]const u8, url: []const u8, actions: []const u8) CrawlError![]u8 {
+    const engine_config_z: ?[:0]u8 = if (engine) |v| try std.fmt.allocPrintSentinel(std.heap.c_allocator, "{s}", .{v}, 0) else null;
+    const engine_config_handle = if (engine_config_z) |z| c.kcrawl_crawl_config_from_json(z) else null;
+    const engine_handle = c.kcrawl_create_engine(engine_config_handle);
+    const url_z = try std.fmt.allocPrintSentinel(std.heap.c_allocator, "{s}", .{url}, 0);
+    defer std.heap.c_allocator.free(url_z);
+    // Vec/Map parameters are passed as JSON strings across the FFI boundary.
+    const actions_z = try std.fmt.allocPrintSentinel(std.heap.c_allocator, "{s}", .{actions}, 0);
+    defer std.heap.c_allocator.free(actions_z);
+    const _result = c.kcrawl_interact(engine_handle, url_z, actions_z);
+    if (c.kcrawl_last_error_code() != 0) {
+        return _first_error(CrawlError);
+    }
+    if (engine_config_z) |z| std.heap.c_allocator.free(z);
+    if (engine_config_handle) |h| c.kcrawl_crawl_config_free(h);
+    if (engine_handle) |h| c.kcrawl_crawl_engine_handle_free(h);
+    return blk: {
+        const _json_ptr = c.kcrawl_interaction_result_to_json(_result.?);
+        defer _free_string(_json_ptr);
+        c.kcrawl_interaction_result_free(_result.?);
         const slice = std.mem.sliceTo(_json_ptr, 0);
         const owned = try std.heap.c_allocator.dupe(u8, slice);
         break :blk owned;

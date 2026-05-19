@@ -21,180 +21,92 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/**
- * Metadata extracted from an HTML page's `<meta>` tags and `<title>` element.
- */
+/** Metadata extracted from an HTML page's `<meta>` tags and `<title>` element. */
 data class PageMetadata(
-    /**
-     * The page title from the `<title>` element.
-     */
+    /** The page title from the `<title>` element. */
     val title: String?,
-    /**
-     * The meta description.
-     */
+    /** The meta description. */
     val description: String?,
-    /**
-     * The canonical URL from `<link rel="canonical">`.
-     */
+    /** The canonical URL from `<link rel="canonical">`. */
     val canonicalUrl: String?,
-    /**
-     * Keywords from `<meta name="keywords">`.
-     */
+    /** Keywords from `<meta name="keywords">`. */
     val keywords: String?,
-    /**
-     * Author from `<meta name="author">`.
-     */
+    /** Author from `<meta name="author">`. */
     val author: String?,
-    /**
-     * Viewport content from `<meta name="viewport">`.
-     */
+    /** Viewport content from `<meta name="viewport">`. */
     val viewport: String?,
-    /**
-     * Theme color from `<meta name="theme-color">`.
-     */
+    /** Theme color from `<meta name="theme-color">`. */
     val themeColor: String?,
-    /**
-     * Generator from `<meta name="generator">`.
-     */
+    /** Generator from `<meta name="generator">`. */
     val generator: String?,
-    /**
-     * Robots content from `<meta name="robots">`.
-     */
+    /** Robots content from `<meta name="robots">`. */
     val robots: String?,
-    /**
-     * The `lang` attribute from the `<html>` element.
-     */
+    /** The `lang` attribute from the `<html>` element. */
     val htmlLang: String?,
-    /**
-     * The `dir` attribute from the `<html>` element.
-     */
+    /** The `dir` attribute from the `<html>` element. */
     val htmlDir: String?,
-    /**
-     * Open Graph title.
-     */
+    /** Open Graph title. */
     val ogTitle: String?,
-    /**
-     * Open Graph type.
-     */
+    /** Open Graph type. */
     val ogType: String?,
-    /**
-     * Open Graph image URL.
-     */
+    /** Open Graph image URL. */
     val ogImage: String?,
-    /**
-     * Open Graph description.
-     */
+    /** Open Graph description. */
     val ogDescription: String?,
-    /**
-     * Open Graph URL.
-     */
+    /** Open Graph URL. */
     val ogUrl: String?,
-    /**
-     * Open Graph site name.
-     */
+    /** Open Graph site name. */
     val ogSiteName: String?,
-    /**
-     * Open Graph locale.
-     */
+    /** Open Graph locale. */
     val ogLocale: String?,
-    /**
-     * Open Graph video URL.
-     */
+    /** Open Graph video URL. */
     val ogVideo: String?,
-    /**
-     * Open Graph audio URL.
-     */
+    /** Open Graph audio URL. */
     val ogAudio: String?,
-    /**
-     * Open Graph locale alternates.
-     */
+    /** Open Graph locale alternates. */
     val ogLocaleAlternates: List<String>?,
-    /**
-     * Twitter card type.
-     */
+    /** Twitter card type. */
     val twitterCard: String?,
-    /**
-     * Twitter title.
-     */
+    /** Twitter title. */
     val twitterTitle: String?,
-    /**
-     * Twitter description.
-     */
+    /** Twitter description. */
     val twitterDescription: String?,
-    /**
-     * Twitter image URL.
-     */
+    /** Twitter image URL. */
     val twitterImage: String?,
-    /**
-     * Twitter site handle.
-     */
+    /** Twitter site handle. */
     val twitterSite: String?,
-    /**
-     * Twitter creator handle.
-     */
+    /** Twitter creator handle. */
     val twitterCreator: String?,
-    /**
-     * Dublin Core title.
-     */
+    /** Dublin Core title. */
     val dcTitle: String?,
-    /**
-     * Dublin Core creator.
-     */
+    /** Dublin Core creator. */
     val dcCreator: String?,
-    /**
-     * Dublin Core subject.
-     */
+    /** Dublin Core subject. */
     val dcSubject: String?,
-    /**
-     * Dublin Core description.
-     */
+    /** Dublin Core description. */
     val dcDescription: String?,
-    /**
-     * Dublin Core publisher.
-     */
+    /** Dublin Core publisher. */
     val dcPublisher: String?,
-    /**
-     * Dublin Core date.
-     */
+    /** Dublin Core date. */
     val dcDate: String?,
-    /**
-     * Dublin Core type.
-     */
+    /** Dublin Core type. */
     val dcType: String?,
-    /**
-     * Dublin Core format.
-     */
+    /** Dublin Core format. */
     val dcFormat: String?,
-    /**
-     * Dublin Core identifier.
-     */
+    /** Dublin Core identifier. */
     val dcIdentifier: String?,
-    /**
-     * Dublin Core language.
-     */
+    /** Dublin Core language. */
     val dcLanguage: String?,
-    /**
-     * Dublin Core rights.
-     */
+    /** Dublin Core rights. */
     val dcRights: String?,
-    /**
-     * Article metadata from `article:*` Open Graph tags.
-     */
+    /** Article metadata from `article:*` Open Graph tags. */
     val article: ArticleMetadata?,
-    /**
-     * Hreflang alternate links.
-     */
+    /** Hreflang alternate links. */
     val hreflangs: List<HreflangEntry>?,
-    /**
-     * Favicon and icon links.
-     */
+    /** Favicon and icon links. */
     val favicons: List<FaviconInfo>?,
-    /**
-     * Heading elements (h1-h6).
-     */
+    /** Heading elements (h1-h6). */
     val headings: List<HeadingInfo>?,
-    /**
-     * Computed word count of the page body text.
-     */
-    val wordCount: Long?
+    /** Computed word count of the page body text. */
+    val wordCount: Long?,
 )

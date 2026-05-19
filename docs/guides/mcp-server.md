@@ -45,7 +45,7 @@ start_mcp_server_with_config(config).await?;
 
 ## Available tools
 
-The server registers 10 tools. Six are fully implemented; four are registered as stubs
+The server registers 10 tools. Seven are fully implemented; three are registered as stubs
 for future feature-gated functionality.
 
 ### Implemented tools
@@ -145,6 +145,15 @@ Download a document from a URL and return metadata.
 Returns JSON with `url`, `mime_type`, `size`, `filename`, and `content_hash` for
 documents, or page metadata if the URL returns HTML.
 
+#### `interact`
+
+Execute browser actions on a page and return per-action results plus the final DOM.
+
+| Parameter | Type             | Required | Description                                  |
+| --------- | ---------------- | -------- | -------------------------------------------- |
+| `url`     | string           | yes      | URL to navigate to before executing actions  |
+| `actions` | array of objects | yes      | Page actions such as click, wait, and scrape |
+
 #### `get_version`
 
 Return the kreuzcrawl library version. Takes no parameters.
@@ -157,7 +166,6 @@ messages until their backing features are implemented:
 | Tool           | Required feature | Description                               |
 | -------------- | ---------------- | ----------------------------------------- |
 | `screenshot`   | `browser`        | Capture a screenshot of a URL.            |
-| `interact`     | `interact`       | Execute browser actions on a page.        |
 | `research`     | `ai`             | AI-driven research across multiple pages. |
 | `crawl_status` | (job registry)   | Check the status of a crawl job.          |
 

@@ -237,8 +237,11 @@ pub struct BrowserConfig {
     /// `BrowserBackend::Native`; chromiumoxide ignores this field today.
     #[serde(default)]
     pub block_url_patterns: Vec<String>,
-    /// JavaScript snippet evaluated after navigation completes. Result is
-    /// captured in `ScrapeResult.browser.eval_result`. Native only.
+    /// JavaScript snippet evaluated after navigation completes.
+    ///
+    /// Scraping captures the native backend result in `ScrapeResult.browser.eval_result`.
+    /// Interactions run this script before page actions on both browser backends but do
+    /// not include the script result in `InteractionResult`.
     #[serde(default)]
     pub eval_script: Option<String>,
     /// User-agent used when fetching robots.txt. Defaults to `BrowserConfig.user_agent`

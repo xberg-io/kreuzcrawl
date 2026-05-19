@@ -21,20 +21,12 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/**
- * Proxy configuration for HTTP requests.
- */
+/** Proxy configuration for HTTP requests. */
 data class ProxyConfig(
-    /**
-     * Proxy URL (e.g. "http://proxy:8080", "socks5://proxy:1080").
-     */
+    /** Proxy URL (e.g. "http://proxy:8080", "socks5://proxy:1080"). */
     val url: String,
-    /**
-     * Optional username for proxy authentication.
-     */
+    /** Optional username for proxy authentication. */
     val username: String?,
-    /**
-     * Optional password for proxy authentication.
-     */
-    val password: String?
+    /** Optional password for proxy authentication. */
+    val password: String?,
 )

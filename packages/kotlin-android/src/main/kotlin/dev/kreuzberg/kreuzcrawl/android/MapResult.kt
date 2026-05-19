@@ -21,12 +21,8 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/**
- * The result of a map operation, containing discovered URLs.
- */
+/** The result of a map operation, containing discovered URLs. */
 data class MapResult(
-    /**
-     * The list of discovered URLs.
-     */
+    /** The list of discovered URLs. */
     val urls: List<SitemapUrl>
 )

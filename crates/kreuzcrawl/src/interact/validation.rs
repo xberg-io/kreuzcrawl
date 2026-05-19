@@ -60,7 +60,7 @@ pub fn validate_actions(actions: &[PageAction]) -> Result<(), CrawlError> {
                     )));
                 }
             }
-            PageAction::Wait { milliseconds, .. } => {
+            PageAction::Wait { milliseconds, selector } => {
                 if let Some(ms) = milliseconds {
                     if *ms < 0 {
                         return Err(CrawlError::InvalidConfig(format!(
@@ -75,6 +75,9 @@ pub fn validate_actions(actions: &[PageAction]) -> Result<(), CrawlError> {
                     }
                     total_wait_ms = total_wait_ms.saturating_add(ms);
                 }
+                if let Some(selector) = selector {
+                    validate_selector(i, "wait", selector)?;
+                }
             }
             PageAction::ExecuteJs { script } => {
                 if script.is_empty() {
@@ -88,13 +91,16 @@ pub fn validate_actions(actions: &[PageAction]) -> Result<(), CrawlError> {
                     )));
                 }
             }
-            PageAction::Scroll { amount, .. } => {
+            PageAction::Scroll { selector, amount, .. } => {
+                if let Some(selector) = selector {
+                    validate_selector(i, "scroll", selector)?;
+                }
                 if let Some(a) = amount
-                    && a.abs() > MAX_SCROLL_AMOUNT
+                    && a.unsigned_abs() > MAX_SCROLL_AMOUNT as u64
                 {
                     return Err(CrawlError::InvalidConfig(format!(
                         "action[{i}]: scroll amount {} exceeds maximum of {MAX_SCROLL_AMOUNT}",
-                        a.abs()
+                        a.unsigned_abs()
                     )));
                 }
             }
@@ -109,5 +115,19 @@ pub fn validate_actions(actions: &[PageAction]) -> Result<(), CrawlError> {
         )));
     }
 
+    Ok(())
+}
+
+fn validate_selector(action_index: usize, action_type: &str, selector: &str) -> Result<(), CrawlError> {
+    if selector.is_empty() {
+        return Err(CrawlError::InvalidConfig(format!(
+            "action[{action_index}]: {action_type} selector must not be empty"
+        )));
+    }
+    if selector.len() > MAX_SELECTOR_LEN {
+        return Err(CrawlError::InvalidConfig(format!(
+            "action[{action_index}]: selector exceeds maximum length of {MAX_SELECTOR_LEN} bytes"
+        )));
+    }
     Ok(())
 }

@@ -8,7 +8,7 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 part 'lib.freezed.dart';
 
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`
 
 /// Convert markdown links to numbered citations.
 ///
@@ -43,6 +43,17 @@ Future<MapResult> mapUrls({
   required String url,
 }) => RustLib.instance.api.crateMapUrls(engine: engine, url: url);
 
+/// Execute browser actions on a single page.
+Future<InteractionResult> interact({
+  required CrawlEngineHandle engine,
+  required String url,
+  required List<PageAction> actions,
+}) => RustLib.instance.api.crateInteract(
+  engine: engine,
+  url: url,
+  actions: actions,
+);
+
 /// Scrape multiple URLs concurrently.
 Future<List<BatchScrapeResult>> batchScrape({
   required CrawlEngineHandle engine,
@@ -76,6 +87,13 @@ Future<BrowserExtras> createBrowserExtrasFromJson({required String json}) =>
 Future<DownloadedDocument> createDownloadedDocumentFromJson({
   required String json,
 }) => RustLib.instance.api.crateCreateDownloadedDocumentFromJson(json: json);
+
+Future<InteractionResult> createInteractionResultFromJson({
+  required String json,
+}) => RustLib.instance.api.crateCreateInteractionResultFromJson(json: json);
+
+Future<ActionResult> createActionResultFromJson({required String json}) =>
+    RustLib.instance.api.crateCreateActionResultFromJson(json: json);
 
 Future<ScrapeResult> createScrapeResultFromJson({required String json}) =>
     RustLib.instance.api.crateCreateScrapeResultFromJson(json: json);
@@ -148,6 +166,51 @@ Future<BatchCrawlResult> createBatchCrawlResultFromJson({
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<CrawlEngineHandle>>
 abstract class CrawlEngineHandle implements RustOpaqueInterface {}
+
+/// Result from a single page action execution.
+class ActionResult {
+  /// Zero-based index of the action in the sequence.
+  final PlatformInt64 actionIndex;
+
+  /// The type of action that was executed.
+  final String actionType;
+
+  /// Whether the action completed successfully.
+  final bool success;
+
+  /// Action-specific return data (screenshot bytes, JS return value, scraped HTML).
+  final String? data;
+
+  /// Error message if the action failed.
+  final String? error;
+
+  const ActionResult({
+    required this.actionIndex,
+    required this.actionType,
+    required this.success,
+    this.data,
+    this.error,
+  });
+
+  @override
+  int get hashCode =>
+      actionIndex.hashCode ^
+      actionType.hashCode ^
+      success.hashCode ^
+      data.hashCode ^
+      error.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ActionResult &&
+          runtimeType == other.runtimeType &&
+          actionIndex == other.actionIndex &&
+          actionType == other.actionType &&
+          success == other.success &&
+          data == other.data &&
+          error == other.error;
+}
 
 /// Article metadata extracted from `article:*` Open Graph tags.
 class ArticleMetadata {
@@ -354,8 +417,11 @@ class BrowserConfig {
   /// `BrowserBackend::Native`; chromiumoxide ignores this field today.
   final List<String> blockUrlPatterns;
 
-  /// JavaScript snippet evaluated after navigation completes. Result is
-  /// captured in `ScrapeResult.browser.eval_result`. Native only.
+  /// JavaScript snippet evaluated after navigation completes.
+  ///
+  /// Scraping captures the native backend result in `ScrapeResult.browser.eval_result`.
+  /// Interactions run this script before page actions on both browser backends but do
+  /// not include the script result in `InteractionResult`.
   final String? evalScript;
 
   /// User-agent used when fetching robots.txt. Defaults to `BrowserConfig.user_agent`
@@ -1421,6 +1487,37 @@ enum ImageSource {
   twitterImage,
 }
 
+/// Result of executing a sequence of page interaction actions.
+class InteractionResult {
+  /// Results from each executed action.
+  final List<ActionResult> actionResults;
+
+  /// Final page HTML after all actions completed.
+  final String finalHtml;
+
+  /// Final page URL (may have changed due to navigation).
+  final String finalUrl;
+
+  const InteractionResult({
+    required this.actionResults,
+    required this.finalHtml,
+    required this.finalUrl,
+  });
+
+  @override
+  int get hashCode =>
+      actionResults.hashCode ^ finalHtml.hashCode ^ finalUrl.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is InteractionResult &&
+          runtimeType == other.runtimeType &&
+          actionResults == other.actionResults &&
+          finalHtml == other.finalHtml &&
+          finalUrl == other.finalUrl;
+}
+
 /// A JSON-LD structured data entry found on a page.
 class JsonLdEntry {
   /// The `@type` value from the JSON-LD object.
@@ -1574,6 +1671,73 @@ class MarkdownResult {
           warnings == other.warnings &&
           citations == other.citations &&
           fitContent == other.fitContent;
+}
+
+@freezed
+sealed class PageAction with _$PageAction {
+  const PageAction._();
+
+  /// Click on an element matching the given CSS selector.
+  const factory PageAction.click({
+    /// CSS selector for the element to click.
+    required String selector,
+  }) = PageAction_Click;
+
+  /// Type text into an element matching the given CSS selector.
+  const factory PageAction.typeText({
+    /// CSS selector for the input element.
+    required String selector,
+
+    /// Text to type into the element.
+    required String text,
+  }) = PageAction_TypeText;
+
+  /// Press a keyboard key (e.g. "Enter", "Tab", "Escape").
+  const factory PageAction.press({
+    /// Key name to press.
+    required String key,
+  }) = PageAction_Press;
+
+  /// Scroll the page or a specific element.
+  const factory PageAction.scroll({
+    /// Direction to scroll.
+    required ScrollDirection direction,
+
+    /// Optional CSS selector for a scrollable element. Scrolls the page if absent.
+    required String selector,
+
+    /// Optional pixel amount to scroll. Uses a default if absent.
+    required PlatformInt64 amount,
+  }) = PageAction_Scroll;
+
+  /// Wait for a duration or for an element to appear.
+  const factory PageAction.wait({
+    /// Milliseconds to wait. Ignored if `selector` is provided.
+    required PlatformInt64 milliseconds,
+
+    /// CSS selector to wait for.
+    required String selector,
+  }) = PageAction_Wait;
+
+  /// Take a screenshot of the current page.
+  const factory PageAction.screenshot({
+    /// Whether to capture the full scrollable page. Defaults to viewport only.
+    required bool fullPage,
+  }) = PageAction_Screenshot;
+
+  /// Execute arbitrary JavaScript in the page context.
+  ///
+  /// # Safety
+  ///
+  /// The script runs with full page privileges in the browser context.
+  /// Only execute scripts from trusted sources.
+  const factory PageAction.executeJs({
+    /// JavaScript source code to execute. Max 1 MB.
+    required String script,
+  }) = PageAction_ExecuteJs;
+
+  /// Scrape the current page HTML.
+  const factory PageAction.scrape() = PageAction_Scrape;
 }
 
 /// Metadata extracted from an HTML page's `<meta>` tags and `<title>` element.
@@ -2108,6 +2272,15 @@ class ScrapeResult {
           extractionMeta == other.extractionMeta &&
           downloadedDocument == other.downloadedDocument &&
           browser == other.browser;
+}
+
+/// Direction for a scroll action.
+enum ScrollDirection {
+  /// Scroll upward.
+  up,
+
+  /// Scroll downward.
+  down,
 }
 
 /// A URL entry from a sitemap.

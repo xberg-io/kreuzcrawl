@@ -53,13 +53,7 @@ pub struct DownloadedDocument {
 }
 
 /// Result of executing a sequence of page interaction actions.
-///
-/// Reserved for a future page-interaction API; not yet wired into the engine's
-/// binding surface. Hidden from alef so the unreleased shape doesn't leak into
-/// stable binding APIs.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-#[allow(dead_code)]
-#[cfg_attr(alef, alef(skip))]
 pub struct InteractionResult {
     /// Results from each executed action.
     pub action_results: Vec<ActionResult>,
@@ -69,15 +63,12 @@ pub struct InteractionResult {
     pub final_url: String,
     /// Screenshot taken after all actions, if requested.
     #[serde(skip)]
+    #[cfg_attr(alef, alef(skip))]
     pub screenshot: Option<Vec<u8>>,
 }
 
 /// Result from a single page action execution.
-///
-/// Companion to `InteractionResult`; hidden from alef for the same reason.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-#[allow(dead_code)]
-#[cfg_attr(alef, alef(skip))]
 pub struct ActionResult {
     /// Zero-based index of the action in the sequence.
     pub action_index: usize,

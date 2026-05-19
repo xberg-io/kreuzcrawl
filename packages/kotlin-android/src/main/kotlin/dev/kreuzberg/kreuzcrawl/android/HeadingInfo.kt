@@ -21,16 +21,10 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/**
- * A heading element extracted from the page.
- */
+/** A heading element extracted from the page. */
 data class HeadingInfo(
-    /**
-     * The heading level (1-6).
-     */
+    /** The heading level (1-6). */
     val level: Byte,
-    /**
-     * The heading text content.
-     */
-    val text: String
+    /** The heading text content. */
+    val text: String,
 )

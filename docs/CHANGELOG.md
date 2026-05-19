@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased
+
+### Features
+
+- **Core**: Published `interact()` with `PageAction`, `ActionResult`, and `InteractionResult` for backend-neutral page interaction.
+- **Browser (native)**: Added native `interact()` execution for click, type, press, scroll, wait, JavaScript, and scrape actions. Screenshot actions return an action-level unsupported result because the native backend has no visual renderer.
+
+### Fixes
+
+- **Core**: `interact()` now runs `BrowserConfig.eval_script` after navigation and before page actions.
+- **Core**: Page-action validation now rejects invalid wait and scroll selectors before navigation.
+- **MCP**: The MCP `interact` tool now delegates to the public engine API instead of returning a placeholder message.
+
 ## 0.3.0 - 2026-05-18
 
 ### Highlights

@@ -1,13 +1,13 @@
 [workspace]
 members = ["crates/*", "packages/dart/rust", "packages/swift/rust", "tools/*"]
 exclude = [
-  ".claude",
-  "e2e/rust",
-  "packages/elixir/native/kreuzcrawl_nif",
-  "packages/ruby/ext/kreuzcrawl_rb",
-  "packages/ruby/ext/src_rb",
-  "packages/ruby/tmp",
-  "packages/ruby/vendor",
+    ".claude",
+    "e2e/rust",
+    "packages/elixir/native/kreuzcrawl_nif",
+    "packages/ruby/ext/kreuzcrawl_rb",
+    "packages/ruby/ext/src_rb",
+    "packages/ruby/tmp",
+    "packages/ruby/vendor",
 ]
 resolver = "2"
 
@@ -86,13 +86,13 @@ tokio-stream = "0.1"
 toml = "1.1"
 tower = { version = "0.5", features = ["timeout", "retry", "limit", "util", "make"] }
 tower-http = { version = "0.6", features = [
-  "cors",
-  "compression-full",
-  "trace",
-  "limit",
-  "catch-panic",
-  "request-id",
-  "sensitive-headers",
+    "cors",
+    "compression-full",
+    "trace",
+    "limit",
+    "catch-panic",
+    "request-id",
+    "sensitive-headers",
 ] }
 tracing = "0.1"
 url = "2"

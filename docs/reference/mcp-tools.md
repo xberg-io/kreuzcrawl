@@ -122,6 +122,21 @@ If the URL returns HTML instead of a downloadable document, the response include
 
 ---
 
+### interact
+
+Execute browser actions on a page.
+
+**Parameters:**
+
+| Parameter | Type       | Required | Description                                 |
+| --------- | ---------- | -------- | ------------------------------------------- |
+| `url`     | `string`   | Yes      | URL to navigate to before executing actions |
+| `actions` | `object[]` | Yes      | Sequence of page actions                    |
+
+**Returns:** JSON text containing the `InteractionResult`, including per-action results, final HTML, and final URL. Browser backend availability determines runtime behavior.
+
+---
+
 ### get_version
 
 Get the current kreuzcrawl library version.
@@ -154,17 +169,6 @@ Capture a screenshot of a URL.
 | ----------- | --------- | -------- | ---------------------------------- |
 | `url`       | `string`  | Yes      | URL to capture                     |
 | `full_page` | `boolean` | No       | Capture full page vs viewport only |
-
-### interact
-
-Execute browser actions on a page (click, type, scroll, etc.).
-
-**Requires:** `interact` feature
-
-| Parameter | Type       | Required | Description                                 |
-| --------- | ---------- | -------- | ------------------------------------------- |
-| `url`     | `string`   | Yes      | URL to navigate to before executing actions |
-| `actions` | `object[]` | Yes      | Sequence of browser actions                 |
 
 ### research
 

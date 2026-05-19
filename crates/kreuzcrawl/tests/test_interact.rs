@@ -5,11 +5,10 @@ use std::sync::OnceLock;
 #[cfg(any(feature = "browser-chromiumoxide", feature = "browser-native"))]
 use std::time::Duration;
 
-#[cfg(any(feature = "browser-chromiumoxide", feature = "browser-native"))]
 use kreuzcrawl::ScrollDirection;
 #[cfg(any(feature = "browser-chromiumoxide", feature = "browser-native"))]
 use kreuzcrawl::{BrowserBackend, BrowserConfig, BrowserMode, CrawlConfig};
-use kreuzcrawl::{CrawlError, PageAction, create_engine, interact};
+use kreuzcrawl::{CrawlError, PageAction, create_engine, interact, validate_actions};
 
 #[cfg(any(feature = "browser-chromiumoxide", feature = "browser-native"))]
 use wiremock::matchers::{method, path};
@@ -65,6 +64,7 @@ async fn chromiumoxide_interact_click_wait_screenshot_and_scrape() {
             backend: BrowserBackend::Chromiumoxide,
             mode: BrowserMode::Always,
             timeout: Duration::from_secs(15),
+            eval_script: Some("document.body.setAttribute('data-eval-script', 'ran')".to_string()),
             ..BrowserConfig::default()
         },
         ..CrawlConfig::default()
@@ -110,6 +110,7 @@ async fn chromiumoxide_interact_click_wait_screenshot_and_scrape() {
     );
     assert!(result.final_html.contains("clicked"));
     assert!(result.final_html.contains("id=\"done\""));
+    assert!(result.final_html.contains("data-eval-script=\"ran\""));
     assert!(result.screenshot.as_ref().is_some_and(|bytes| !bytes.is_empty()));
     let scrape_data = result
         .action_results
@@ -157,6 +158,7 @@ async fn native_interact_click_type_wait_scroll_execute_js_and_scrape() {
             backend: BrowserBackend::Native,
             mode: BrowserMode::Always,
             timeout: Duration::from_secs(15),
+            eval_script: Some("document.body.setAttribute('data-eval-script', 'ran')".to_string()),
             ..BrowserConfig::default()
         },
         ..CrawlConfig::default()
@@ -186,6 +188,13 @@ async fn native_interact_click_type_wait_scroll_execute_js_and_scrape() {
             PageAction::ExecuteJs {
                 script: "document.querySelector('#name').value".to_string(),
             },
+            PageAction::ExecuteJs {
+                script: "throw new Error('boom')".to_string(),
+            },
+            PageAction::Wait {
+                milliseconds: Some(1_000),
+                selector: Some("##".to_string()),
+            },
             PageAction::Screenshot { full_page: Some(false) },
             PageAction::Scrape,
         ],
@@ -193,7 +202,7 @@ async fn native_interact_click_type_wait_scroll_execute_js_and_scrape() {
     .await
     .unwrap();
 
-    assert_eq!(result.action_results.len(), 7);
+    assert_eq!(result.action_results.len(), 9);
     assert!(
         result.action_results[..5].iter().all(|action| action.success),
         "non-screenshot actions should succeed: {:?}",
@@ -204,11 +213,28 @@ async fn native_interact_click_type_wait_scroll_execute_js_and_scrape() {
         result.action_results[5]
             .error
             .as_deref()
+            .is_some_and(|error| !error.is_empty())
+    );
+    assert!(!result.action_results[6].success);
+    assert!(
+        result.action_results[6]
+            .error
+            .as_deref()
+            .is_some_and(|error| error.contains("selector syntax error")),
+        "invalid selector should surface an evaluation error: {:?}",
+        result.action_results[6]
+    );
+    assert!(!result.action_results[7].success);
+    assert!(
+        result.action_results[7]
+            .error
+            .as_deref()
             .is_some_and(|error| error.contains("BrowserBackend::Chromiumoxide"))
     );
-    assert!(result.action_results[6].success);
+    assert!(result.action_results[8].success);
     assert!(result.final_html.contains("clicked"));
     assert!(result.final_html.contains("id=\"done\""));
+    assert!(result.final_html.contains("data-eval-script=\"ran\""));
     assert!(result.screenshot.is_none());
 
     let typed_value = result.action_results[4]
@@ -218,13 +244,40 @@ async fn native_interact_click_type_wait_scroll_execute_js_and_scrape() {
         .unwrap_or_default();
     assert_eq!(typed_value, "kreuzcrawl");
 
-    let scrape_data = result.action_results[6]
+    let scrape_data = result.action_results[8]
         .data
         .as_ref()
         .and_then(|data| data.get("html"))
         .and_then(serde_json::Value::as_str)
         .unwrap_or_default();
     assert!(scrape_data.contains("clicked"));
+}
+
+#[test]
+fn validation_rejects_empty_wait_and_scroll_selectors() {
+    let wait = validate_actions(&[PageAction::Wait {
+        milliseconds: None,
+        selector: Some(String::new()),
+    }]);
+    assert!(matches!(wait, Err(CrawlError::InvalidConfig(message)) if message.contains("wait selector")));
+
+    let scroll = validate_actions(&[PageAction::Scroll {
+        direction: ScrollDirection::Down,
+        selector: Some(String::new()),
+        amount: None,
+    }]);
+    assert!(matches!(scroll, Err(CrawlError::InvalidConfig(message)) if message.contains("scroll selector")));
+}
+
+#[test]
+fn validation_rejects_i64_min_scroll_amount() {
+    let result = validate_actions(&[PageAction::Scroll {
+        direction: ScrollDirection::Down,
+        selector: None,
+        amount: Some(i64::MIN),
+    }]);
+
+    assert!(matches!(result, Err(CrawlError::InvalidConfig(message)) if message.contains("scroll amount")));
 }
 
 #[cfg(not(feature = "browser-chromiumoxide"))]

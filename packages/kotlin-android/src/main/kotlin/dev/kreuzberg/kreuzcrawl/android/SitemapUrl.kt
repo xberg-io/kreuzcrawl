@@ -21,24 +21,14 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/**
- * A URL entry from a sitemap.
- */
+/** A URL entry from a sitemap. */
 data class SitemapUrl(
-    /**
-     * The URL.
-     */
+    /** The URL. */
     val url: String,
-    /**
-     * The last modification date, if present.
-     */
+    /** The last modification date, if present. */
     val lastmod: String?,
-    /**
-     * The change frequency, if present.
-     */
+    /** The change frequency, if present. */
     val changefreq: String?,
-    /**
-     * The priority, if present.
-     */
-    val priority: String?
+    /** The priority, if present. */
+    val priority: String?,
 )

@@ -98,6 +98,12 @@ public typealias BrowserExtras = RustBridge.BrowserExtras
 /// skipping the resource.
 public typealias DownloadedDocument = RustBridge.DownloadedDocument
 
+/// Result of executing a sequence of page interaction actions.
+public typealias InteractionResult = RustBridge.InteractionResult
+
+/// Result from a single page action execution.
+public typealias ActionResult = RustBridge.ActionResult
+
 /// The result of a single-page scrape operation.
 public typealias ScrapeResult = RustBridge.ScrapeResult
 
@@ -499,6 +505,42 @@ public enum AssetCategory {
     case other
 }
 
+/// A single page interaction action.
+///
+/// Actions are serialized with a `type` tag using camelCase naming,
+/// except `ExecuteJs` which is explicitly renamed to `"executeJs"`.
+public enum PageAction {
+    /// Click on an element matching the given CSS selector.
+    case click(selector: String)
+    /// Type text into an element matching the given CSS selector.
+    case typeText(selector: String, text: String)
+    /// Press a keyboard key (e.g. "Enter", "Tab", "Escape").
+    case press(key: String)
+    /// Scroll the page or a specific element.
+    case scroll(direction: ScrollDirection, selector: String?, amount: Int64?)
+    /// Wait for a duration or for an element to appear.
+    case wait(milliseconds: Int64?, selector: String?)
+    /// Take a screenshot of the current page.
+    case screenshot(fullPage: Bool?)
+    /// Execute arbitrary JavaScript in the page context.
+    ///
+    /// # Safety
+    ///
+    /// The script runs with full page privileges in the browser context.
+    /// Only execute scripts from trusted sources.
+    case executeJs(script: String)
+    /// Scrape the current page HTML.
+    case scrape
+}
+
+/// Direction for a scroll action.
+public enum ScrollDirection {
+    /// Scroll upward.
+    case up
+    /// Scroll downward.
+    case down
+}
+
 /// Errors that can occur during crawling, scraping, or mapping operations.
 public enum CrawlError: Swift.Error {
     /// The requested page was not found (HTTP 404).
@@ -533,6 +575,8 @@ public enum CrawlError: Swift.Error {
     case browserTimeout(message: String, field0: String)
     /// The provided configuration is invalid.
     case invalidConfig(message: String, field0: String)
+    /// The requested capability is not supported by the active backend or build.
+    case unsupported(message: String, field0: String)
     /// An unclassified error occurred.
     case other(message: String, field0: String)
 }

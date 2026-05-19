@@ -21,16 +21,10 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/**
- * Browser backend used for JavaScript rendering.
- */
+/** Browser backend used for JavaScript rendering. */
 enum class BrowserBackend {
-    /**
-     * Existing Chromium/CDP backend powered by chromiumoxide.
-     */
+    /** Existing Chromium/CDP backend powered by chromiumoxide. */
     CHROMIUMOXIDE,
-    /**
-     * Kreuzcrawl-owned native browser backend derived from Obscura.
-     */
-    NATIVE;
+    /** Kreuzcrawl-owned native browser backend derived from Obscura. */
+    NATIVE,
 }

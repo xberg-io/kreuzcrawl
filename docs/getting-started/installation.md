@@ -55,10 +55,10 @@ kreuzcrawl --version
 
     | Feature | Description |
     |---------|-------------|
-    | `browser` | Headless Chrome via chromiumoxide |
+    | `browser` | Browser-backed rendering and interaction |
     | `ai` | LLM extraction via liter-llm |
     | `tracing` | OpenTelemetry span recording |
-    | `interact` | Page interaction actions (requires `browser`) |
+    | `interact` | Compatibility alias for browser-backed page interaction |
     | `mcp` | Model Context Protocol server |
     | `api` | REST API server via Axum |
     | `warc` | WARC archive output |

@@ -1,66 +1,66 @@
 [build-system]
 build-backend = "maturin"
-requires = ["maturin>=1,<2"]
+requires = [ "maturin>=1,<2" ]
 
 [dependency-groups]
-dev = ["mypy>=1.20", "prek", "pyproject-fmt", "pytest-asyncio>=1.3", "ruff", "validate-pyproject"]
-docs = ["mkdocstrings>=1.0.3", "mkdocstrings-python>=2.0.3", "zensical"]
+dev = [ "mypy>=1.20", "prek", "pyproject-fmt", "pytest-asyncio>=1.3", "ruff", "validate-pyproject" ]
+docs = [ "mkdocstrings>=1.0.3", "mkdocstrings-python>=2.0.3", "zensical" ]
 
 [tool.uv]
-workspace.members = ["packages/python"]
+workspace.members = [ "packages/python" ]
 cache-keys = [
-  { file = "pyproject.toml" },
-  { file = "Cargo.toml" },
-  { file = "Cargo.lock" },
-  { file = "crates/**/*.rs" },
-  { file = "crates/**/Cargo.toml" },
+    { file = "pyproject.toml" },
+    { file = "Cargo.toml" },
+    { file = "Cargo.lock" },
+    { file = "crates/**/*.rs" },
+    { file = "crates/**/Cargo.toml" },
 ]
 
 [tool.ruff]
 target-version = "py310"
 line-length = 120
-lint.select = ["ALL"]
-lint.ignore = ["ANN", "COM812", "D", "ISC001"]
-lint.per-file-ignores."e2e/**/*.py" = ["B017", "PLR2004", "PT011", "S"]
-lint.per-file-ignores."packages/python/kreuzcrawl/*.py" = ["E501", "I001"]
+lint.select = [ "ALL" ]
+lint.ignore = [ "ANN", "COM812", "D", "ISC001" ]
+lint.per-file-ignores."e2e/**/*.py" = [ "B017", "PLR2004", "PT011", "S" ]
+lint.per-file-ignores."packages/python/kreuzcrawl/*.py" = [ "E501", "I001" ]
 lint.per-file-ignores."scripts/**/*.py" = [
-  "B023",
-  "B904",
-  "BLE001",
-  "C901",
-  "E501",
-  "EM101",
-  "EM102",
-  "ERA001",
-  "EXE002",
-  "FBT001",
-  "FBT002",
-  "G004",
-  "G201",
-  "INP001",
-  "PERF203",
-  "PGH003",
-  "PLC0415",
-  "PLR0912",
-  "PLR0915",
-  "PLR2004",
-  "PT018",
-  "PTH108",
-  "PTH123",
-  "S101",
-  "S108",
-  "S311",
-  "S603",
-  "S607",
-  "S701",
-  "SIM108",
-  "SIM115",
-  "T201",
-  "TRY003",
-  "TRY300",
-  "TRY400",
+    "B023",
+    "B904",
+    "BLE001",
+    "C901",
+    "E501",
+    "EM101",
+    "EM102",
+    "ERA001",
+    "EXE002",
+    "FBT001",
+    "FBT002",
+    "G004",
+    "G201",
+    "INP001",
+    "PERF203",
+    "PGH003",
+    "PLC0415",
+    "PLR0912",
+    "PLR0915",
+    "PLR2004",
+    "PT018",
+    "PTH108",
+    "PTH123",
+    "S101",
+    "S108",
+    "S311",
+    "S603",
+    "S607",
+    "S701",
+    "SIM108",
+    "SIM115",
+    "T201",
+    "TRY003",
+    "TRY300",
+    "TRY400",
 ]
-lint.per-file-ignores."tests/**/*.py" = ["INP001", "PERF203", "PLC0415", "PLR2004", "S", "TC002"]
+lint.per-file-ignores."tests/**/*.py" = [ "INP001", "PERF203", "PLC0415", "PLR2004", "S", "TC002" ]
 
 [tool.pyproject-fmt]
 column_limit = 120
@@ -68,8 +68,8 @@ indent = 4
 
 [tool.mypy]
 overrides = [
-  # alef-generated facade: type mismatches between the facade and _kreuzcrawl.pyi
-  # stubs (AuthConfig __init__, BatchScrapeResult list parameterisation) are
-  # upstream codegen bugs tracked in alef; relax until the stubs catch up.
-  { module = "kreuzcrawl.api", ignore_errors = true },
+    # alef-generated facade: type mismatches between the facade and _kreuzcrawl.pyi
+    # stubs (AuthConfig __init__, BatchScrapeResult list parameterisation) are
+    # upstream codegen bugs tracked in alef; relax until the stubs catch up.
+    { module = "kreuzcrawl.api", ignore_errors = true },
 ]

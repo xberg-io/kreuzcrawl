@@ -19,6 +19,48 @@ println!("Body size: {} bytes", result.body_size);
 
 The scrape request routes through the engine's Tower service stack, which applies per-domain rate limiting, HTTP response caching, and user-agent rotation before the actual HTTP fetch.
 
+## Page interaction
+
+Use `interact()` when a page must be changed before HTML is captured: click a button, type into an input, wait for a selector, run JavaScript, take a screenshot, or scrape the current DOM.
+
+```rust
+use kreuzcrawl::{
+    BrowserBackend, BrowserConfig, BrowserMode, CrawlConfig, PageAction, create_engine, interact,
+};
+
+let engine = create_engine(Some(CrawlConfig {
+    browser: BrowserConfig {
+        backend: BrowserBackend::Chromiumoxide,
+        mode: BrowserMode::Always,
+        ..BrowserConfig::default()
+    },
+    ..CrawlConfig::default()
+}))?;
+
+let result = interact(
+    &engine,
+    "https://example.com",
+    vec![
+        PageAction::Click {
+            selector: "#show-more".to_string(),
+        },
+        PageAction::Wait {
+            milliseconds: None,
+            selector: Some("#expanded".to_string()),
+        },
+        PageAction::Scrape,
+    ],
+)
+.await?;
+
+println!("Final URL: {}", result.final_url);
+println!("HTML bytes: {}", result.final_html.len());
+```
+
+`interact()` validates the action list before navigation and returns one `ActionResult` per action. Failed actions are recorded in the result and later actions still run; navigation/setup failures are returned as `CrawlError`.
+
+The chromiumoxide backend supports click, type, press, scroll, wait, screenshot, JavaScript execution, and scrape actions. The native backend supports DOM and JavaScript actions, but screenshot actions return an action-level unsupported error because the native renderer has no visual layout surface.
+
 ## ScrapeResult fields
 
 The `ScrapeResult` struct contains everything extracted from a single page:

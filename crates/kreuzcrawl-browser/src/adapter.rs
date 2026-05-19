@@ -190,6 +190,10 @@ pub async fn interact_url(
     if let Some(wait) = post_navigation_wait {
         tokio::time::sleep(wait).await;
     }
+    if let Some(ref script) = config.eval_script {
+        page.evaluate_result(script)
+            .map_err(|e| PageError::ParseError(format!("post-navigation eval_script failed: {e}")))?;
+    }
 
     let mut action_results = Vec::with_capacity(actions.len());
     let mut screenshot = None;
@@ -368,9 +372,9 @@ async fn navigate_configured(page: &mut Page, url: &str, config: &NativeBrowserC
     {
         let deadline = tokio::time::Instant::now() + config.timeout;
         loop {
-            let expr = format!("!!document.querySelector({selector:?})");
-            let found = page.evaluate(&expr);
-            if found.as_bool() == Some(true) {
+            let found = selector_exists(page, selector)
+                .map_err(|e| PageError::ParseError(format!("invalid wait selector {selector:?}: {e}")))?;
+            if found {
                 break;
             }
             if tokio::time::Instant::now() >= deadline {
@@ -443,7 +447,7 @@ async fn execute_action(page: &mut Page, action: &NativePageAction) -> Result<Na
                 "Native backend does not support {scope} screenshot actions because it has no visual layout renderer; use BrowserBackend::Chromiumoxide for screenshots"
             ))
         }
-        NativePageAction::ExecuteJs { script } => Ok(NativeActionData::data(page.evaluate(script))),
+        NativePageAction::ExecuteJs { script } => page.evaluate_result(script).map(NativeActionData::data),
         NativePageAction::Scrape => {
             let final_url = page.url_string();
             let html = rendered_html(page).ok_or_else(|| format!("no rendered DOM available for {final_url}"))?;
@@ -453,6 +457,7 @@ async fn execute_action(page: &mut Page, action: &NativePageAction) -> Result<Na
 }
 
 async fn click(page: &mut Page, selector: &str) -> Result<(), String> {
+    validate_selector_syntax(page, selector)?;
     let selector_json = json_string(selector, "selector")?;
     let script = format!(
         r#"
@@ -467,7 +472,10 @@ async fn click(page: &mut Page, selector: &str) -> Result<(), String> {
         }})()
         "#
     );
-    expect_ok(page.evaluate(&script), "click")?;
+    let result = page
+        .evaluate_result(&script)
+        .map_err(|e| format!("click selector evaluation failed: {e}"))?;
+    expect_ok(result, "click")?;
     page.process_pending_navigation()
         .await
         .map_err(|e| format!("failed to process click navigation: {e}"))?;
@@ -475,6 +483,7 @@ async fn click(page: &mut Page, selector: &str) -> Result<(), String> {
 }
 
 fn type_text(page: &mut Page, selector: &str, text: &str) -> Result<(), String> {
+    validate_selector_syntax(page, selector)?;
     let selector_json = json_string(selector, "selector")?;
     let text_json = json_string(text, "text")?;
     let script = format!(
@@ -495,7 +504,10 @@ fn type_text(page: &mut Page, selector: &str, text: &str) -> Result<(), String> 
         }})()
         "#
     );
-    expect_ok(page.evaluate(&script), "type")
+    let result = page
+        .evaluate_result(&script)
+        .map_err(|e| format!("type selector evaluation failed: {e}"))?;
+    expect_ok(result, "type")
 }
 
 async fn press(page: &mut Page, key: &str) -> Result<(), String> {
@@ -530,6 +542,9 @@ fn scroll(
         NativeScrollDirection::Up => -amount,
         NativeScrollDirection::Down => amount,
     };
+    if let Some(selector) = selector {
+        validate_selector_syntax(page, selector)?;
+    }
     let selector_json = json_option_string(selector, "selector")?;
     let script = format!(
         r#"
@@ -551,7 +566,10 @@ fn scroll(
         }})()
         "#
     );
-    expect_ok(page.evaluate(&script), "scroll")
+    let result = page
+        .evaluate_result(&script)
+        .map_err(|e| format!("scroll selector evaluation failed: {e}"))?;
+    expect_ok(result, "scroll")
 }
 
 async fn wait_for_action(page: &mut Page, milliseconds: Option<i64>, selector: Option<&str>) -> Result<(), String> {
@@ -582,9 +600,25 @@ async fn wait_for_action(page: &mut Page, milliseconds: Option<i64>, selector: O
 }
 
 fn selector_exists(page: &mut Page, selector: &str) -> Result<bool, String> {
+    if let Some(result) = page.with_dom(|dom| dom.query_selector(selector)) {
+        return result
+            .map(|node| node.is_some())
+            .map_err(|e| format!("selector syntax error: {e}"));
+    }
+
     let selector_json = json_string(selector, "selector")?;
     let script = format!("!!document.querySelector({selector_json})");
-    Ok(page.evaluate(&script).as_bool().unwrap_or(false))
+    let found = page
+        .evaluate_result(&script)
+        .map_err(|e| format!("wait selector evaluation failed: {e}"))?;
+    Ok(found.as_bool().unwrap_or(false))
+}
+
+fn validate_selector_syntax(page: &Page, selector: &str) -> Result<(), String> {
+    if let Some(result) = page.with_dom(|dom| dom.query_selector(selector)) {
+        result.map(|_| ()).map_err(|e| format!("selector syntax error: {e}"))?;
+    }
+    Ok(())
 }
 
 fn expect_ok(value: serde_json::Value, operation: &str) -> Result<(), String> {

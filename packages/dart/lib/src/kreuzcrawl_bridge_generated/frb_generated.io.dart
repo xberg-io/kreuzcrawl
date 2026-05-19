@@ -41,6 +41,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   String dco_decode_String(dynamic raw);
 
   @protected
+  ActionResult dco_decode_action_result(dynamic raw);
+
+  @protected
   ArticleMetadata dco_decode_article_metadata(dynamic raw);
 
   @protected
@@ -176,6 +179,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ImageSource dco_decode_image_source(dynamic raw);
 
   @protected
+  InteractionResult dco_decode_interaction_result(dynamic raw);
+
+  @protected
   JsonLdEntry dco_decode_json_ld_entry(dynamic raw);
 
   @protected
@@ -186,6 +192,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   List<String> dco_decode_list_String(dynamic raw);
+
+  @protected
+  List<ActionResult> dco_decode_list_action_result(dynamic raw);
 
   @protected
   List<AssetCategory> dco_decode_list_asset_category(dynamic raw);
@@ -228,6 +237,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   List<LinkInfo> dco_decode_list_link_info(dynamic raw);
+
+  @protected
+  List<PageAction> dco_decode_list_page_action(dynamic raw);
 
   @protected
   Int64List dco_decode_list_prim_i_64_strict(dynamic raw);
@@ -310,6 +322,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<HreflangEntry>? dco_decode_opt_list_hreflang_entry(dynamic raw);
 
   @protected
+  PageAction dco_decode_page_action(dynamic raw);
+
+  @protected
   PageMetadata dco_decode_page_metadata(dynamic raw);
 
   @protected
@@ -323,6 +338,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ScrapeResult dco_decode_scrape_result(dynamic raw);
+
+  @protected
+  ScrollDirection dco_decode_scroll_direction(dynamic raw);
 
   @protected
   SitemapUrl dco_decode_sitemap_url(dynamic raw);
@@ -355,6 +373,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   String sse_decode_String(SseDeserializer deserializer);
+
+  @protected
+  ActionResult sse_decode_action_result(SseDeserializer deserializer);
 
   @protected
   ArticleMetadata sse_decode_article_metadata(SseDeserializer deserializer);
@@ -512,6 +533,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   ImageSource sse_decode_image_source(SseDeserializer deserializer);
 
   @protected
+  InteractionResult sse_decode_interaction_result(SseDeserializer deserializer);
+
+  @protected
   JsonLdEntry sse_decode_json_ld_entry(SseDeserializer deserializer);
 
   @protected
@@ -522,6 +546,11 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   List<String> sse_decode_list_String(SseDeserializer deserializer);
+
+  @protected
+  List<ActionResult> sse_decode_list_action_result(
+    SseDeserializer deserializer,
+  );
 
   @protected
   List<AssetCategory> sse_decode_list_asset_category(
@@ -578,6 +607,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   List<LinkInfo> sse_decode_list_link_info(SseDeserializer deserializer);
+
+  @protected
+  List<PageAction> sse_decode_list_page_action(SseDeserializer deserializer);
 
   @protected
   Int64List sse_decode_list_prim_i_64_strict(SseDeserializer deserializer);
@@ -692,6 +724,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  PageAction sse_decode_page_action(SseDeserializer deserializer);
+
+  @protected
   PageMetadata sse_decode_page_metadata(SseDeserializer deserializer);
 
   @protected
@@ -707,6 +742,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ScrapeResult sse_decode_scrape_result(SseDeserializer deserializer);
+
+  @protected
+  ScrollDirection sse_decode_scroll_direction(SseDeserializer deserializer);
 
   @protected
   SitemapUrl sse_decode_sitemap_url(SseDeserializer deserializer);
@@ -742,6 +780,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_String(String self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_action_result(ActionResult self, SseSerializer serializer);
 
   @protected
   void sse_encode_article_metadata(
@@ -948,6 +989,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_image_source(ImageSource self, SseSerializer serializer);
 
   @protected
+  void sse_encode_interaction_result(
+    InteractionResult self,
+    SseSerializer serializer,
+  );
+
+  @protected
   void sse_encode_json_ld_entry(JsonLdEntry self, SseSerializer serializer);
 
   @protected
@@ -958,6 +1005,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_list_String(List<String> self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_list_action_result(
+    List<ActionResult> self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_list_asset_category(
@@ -1036,6 +1089,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_list_link_info(List<LinkInfo> self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_list_page_action(
+    List<PageAction> self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_list_prim_i_64_strict(
@@ -1182,6 +1241,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   );
 
   @protected
+  void sse_encode_page_action(PageAction self, SseSerializer serializer);
+
+  @protected
   void sse_encode_page_metadata(PageMetadata self, SseSerializer serializer);
 
   @protected
@@ -1198,6 +1260,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_scrape_result(ScrapeResult self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_scroll_direction(
+    ScrollDirection self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_sitemap_url(SitemapUrl self, SseSerializer serializer);

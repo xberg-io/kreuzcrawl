@@ -21,28 +21,16 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/**
- * Information about an image found on a page.
- */
+/** Information about an image found on a page. */
 data class ImageInfo(
-    /**
-     * The image URL.
-     */
+    /** The image URL. */
     val url: String,
-    /**
-     * The alt text, if present.
-     */
+    /** The alt text, if present. */
     val alt: String?,
-    /**
-     * The width attribute, if present and parseable.
-     */
+    /** The width attribute, if present and parseable. */
     val width: Int?,
-    /**
-     * The height attribute, if present and parseable.
-     */
+    /** The height attribute, if present and parseable. */
     val height: Int?,
-    /**
-     * The source of the image reference.
-     */
-    val source: ImageSource
+    /** The source of the image reference. */
+    val source: ImageSource,
 )

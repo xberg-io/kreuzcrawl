@@ -27,9 +27,7 @@ package dev.kreuzberg.kreuzcrawl.android
  * Available on `ScrapeResult.browser` when `BrowserBackend.Native` handled the request.
  */
 data class BrowserExtras(
-    /**
-     * Return value of `BrowserConfig.eval_script`, if provided.
-     */
+    /** Return value of `BrowserConfig.eval_script`, if provided. */
     val evalResult: String?,
     /**
      * Network events captured during page navigation (only populated when
@@ -37,8 +35,8 @@ data class BrowserExtras(
      */
     val networkEvents: List<ResponseMeta>,
     /**
-     * All non-expired cookies present in the browser's cookie jar after
-     * navigation completes (includes both prior cookies and server Set-Cookie).
+     * All non-expired cookies present in the browser's cookie jar after navigation completes
+     * (includes both prior cookies and server Set-Cookie).
      */
-    val cookies: List<CookieInfo>
+    val cookies: List<CookieInfo>,
 )

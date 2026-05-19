@@ -21,48 +21,26 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/**
- * The category of a downloaded asset.
- */
+/** The category of a downloaded asset. */
 enum class AssetCategory {
-    /**
-     * A document file (PDF, DOC, etc.).
-     */
+    /** A document file (PDF, DOC, etc.). */
     DOCUMENT,
-    /**
-     * An image file.
-     */
+    /** An image file. */
     IMAGE,
-    /**
-     * An audio file.
-     */
+    /** An audio file. */
     AUDIO,
-    /**
-     * A video file.
-     */
+    /** A video file. */
     VIDEO,
-    /**
-     * A font file.
-     */
+    /** A font file. */
     FONT,
-    /**
-     * A CSS stylesheet.
-     */
+    /** A CSS stylesheet. */
     STYLESHEET,
-    /**
-     * A JavaScript file.
-     */
+    /** A JavaScript file. */
     SCRIPT,
-    /**
-     * An archive file (ZIP, TAR, etc.).
-     */
+    /** An archive file (ZIP, TAR, etc.). */
     ARCHIVE,
-    /**
-     * A data file (JSON, XML, CSV, etc.).
-     */
+    /** A data file (JSON, XML, CSV, etc.). */
     DATA,
-    /**
-     * An unrecognized asset type.
-     */
-    OTHER;
+    /** An unrecognized asset type. */
+    OTHER,
 }

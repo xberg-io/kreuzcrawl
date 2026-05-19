@@ -182,7 +182,7 @@ return header(_that.name,_that.value);case _:
 
 class AuthConfig_Basic extends AuthConfig {
   const AuthConfig_Basic({required this.username, required this.password}): super._();
-  
+
 
 /// Username sent in the `Authorization: Basic` header.
  final  String username;
@@ -252,7 +252,7 @@ as String,
 
 class AuthConfig_Bearer extends AuthConfig {
   const AuthConfig_Bearer({required this.token}): super._();
-  
+
 
 /// Token sent in the `Authorization: Bearer` header.
  final  String token;
@@ -319,7 +319,7 @@ as String,
 
 class AuthConfig_Header extends AuthConfig {
   const AuthConfig_Header({required this.name, required this.value}): super._();
-  
+
 
 /// HTTP header name to set on each request.
  final  String name;
@@ -383,5 +383,714 @@ as String,
 
 
 }
+
+/// @nodoc
+mixin _$PageAction {
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PageAction);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'PageAction()';
+}
+
+
+}
+
+/// @nodoc
+class $PageActionCopyWith<$Res>  {
+$PageActionCopyWith(PageAction _, $Res Function(PageAction) __);
+}
+
+
+/// Adds pattern-matching-related methods to [PageAction].
+extension PageActionPatterns on PageAction {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( PageAction_Click value)?  click,TResult Function( PageAction_TypeText value)?  typeText,TResult Function( PageAction_Press value)?  press,TResult Function( PageAction_Scroll value)?  scroll,TResult Function( PageAction_Wait value)?  wait,TResult Function( PageAction_Screenshot value)?  screenshot,TResult Function( PageAction_ExecuteJs value)?  executeJs,TResult Function( PageAction_Scrape value)?  scrape,required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case PageAction_Click() when click != null:
+return click(_that);case PageAction_TypeText() when typeText != null:
+return typeText(_that);case PageAction_Press() when press != null:
+return press(_that);case PageAction_Scroll() when scroll != null:
+return scroll(_that);case PageAction_Wait() when wait != null:
+return wait(_that);case PageAction_Screenshot() when screenshot != null:
+return screenshot(_that);case PageAction_ExecuteJs() when executeJs != null:
+return executeJs(_that);case PageAction_Scrape() when scrape != null:
+return scrape(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( PageAction_Click value)  click,required TResult Function( PageAction_TypeText value)  typeText,required TResult Function( PageAction_Press value)  press,required TResult Function( PageAction_Scroll value)  scroll,required TResult Function( PageAction_Wait value)  wait,required TResult Function( PageAction_Screenshot value)  screenshot,required TResult Function( PageAction_ExecuteJs value)  executeJs,required TResult Function( PageAction_Scrape value)  scrape,}){
+final _that = this;
+switch (_that) {
+case PageAction_Click():
+return click(_that);case PageAction_TypeText():
+return typeText(_that);case PageAction_Press():
+return press(_that);case PageAction_Scroll():
+return scroll(_that);case PageAction_Wait():
+return wait(_that);case PageAction_Screenshot():
+return screenshot(_that);case PageAction_ExecuteJs():
+return executeJs(_that);case PageAction_Scrape():
+return scrape(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( PageAction_Click value)?  click,TResult? Function( PageAction_TypeText value)?  typeText,TResult? Function( PageAction_Press value)?  press,TResult? Function( PageAction_Scroll value)?  scroll,TResult? Function( PageAction_Wait value)?  wait,TResult? Function( PageAction_Screenshot value)?  screenshot,TResult? Function( PageAction_ExecuteJs value)?  executeJs,TResult? Function( PageAction_Scrape value)?  scrape,}){
+final _that = this;
+switch (_that) {
+case PageAction_Click() when click != null:
+return click(_that);case PageAction_TypeText() when typeText != null:
+return typeText(_that);case PageAction_Press() when press != null:
+return press(_that);case PageAction_Scroll() when scroll != null:
+return scroll(_that);case PageAction_Wait() when wait != null:
+return wait(_that);case PageAction_Screenshot() when screenshot != null:
+return screenshot(_that);case PageAction_ExecuteJs() when executeJs != null:
+return executeJs(_that);case PageAction_Scrape() when scrape != null:
+return scrape(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String selector)?  click,TResult Function( String selector,  String text)?  typeText,TResult Function( String key)?  press,TResult Function( ScrollDirection direction,  String selector,  PlatformInt64 amount)?  scroll,TResult Function( PlatformInt64 milliseconds,  String selector)?  wait,TResult Function( bool fullPage)?  screenshot,TResult Function( String script)?  executeJs,TResult Function()?  scrape,required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case PageAction_Click() when click != null:
+return click(_that.selector);case PageAction_TypeText() when typeText != null:
+return typeText(_that.selector,_that.text);case PageAction_Press() when press != null:
+return press(_that.key);case PageAction_Scroll() when scroll != null:
+return scroll(_that.direction,_that.selector,_that.amount);case PageAction_Wait() when wait != null:
+return wait(_that.milliseconds,_that.selector);case PageAction_Screenshot() when screenshot != null:
+return screenshot(_that.fullPage);case PageAction_ExecuteJs() when executeJs != null:
+return executeJs(_that.script);case PageAction_Scrape() when scrape != null:
+return scrape();case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String selector)  click,required TResult Function( String selector,  String text)  typeText,required TResult Function( String key)  press,required TResult Function( ScrollDirection direction,  String selector,  PlatformInt64 amount)  scroll,required TResult Function( PlatformInt64 milliseconds,  String selector)  wait,required TResult Function( bool fullPage)  screenshot,required TResult Function( String script)  executeJs,required TResult Function()  scrape,}) {final _that = this;
+switch (_that) {
+case PageAction_Click():
+return click(_that.selector);case PageAction_TypeText():
+return typeText(_that.selector,_that.text);case PageAction_Press():
+return press(_that.key);case PageAction_Scroll():
+return scroll(_that.direction,_that.selector,_that.amount);case PageAction_Wait():
+return wait(_that.milliseconds,_that.selector);case PageAction_Screenshot():
+return screenshot(_that.fullPage);case PageAction_ExecuteJs():
+return executeJs(_that.script);case PageAction_Scrape():
+return scrape();}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String selector)?  click,TResult? Function( String selector,  String text)?  typeText,TResult? Function( String key)?  press,TResult? Function( ScrollDirection direction,  String selector,  PlatformInt64 amount)?  scroll,TResult? Function( PlatformInt64 milliseconds,  String selector)?  wait,TResult? Function( bool fullPage)?  screenshot,TResult? Function( String script)?  executeJs,TResult? Function()?  scrape,}) {final _that = this;
+switch (_that) {
+case PageAction_Click() when click != null:
+return click(_that.selector);case PageAction_TypeText() when typeText != null:
+return typeText(_that.selector,_that.text);case PageAction_Press() when press != null:
+return press(_that.key);case PageAction_Scroll() when scroll != null:
+return scroll(_that.direction,_that.selector,_that.amount);case PageAction_Wait() when wait != null:
+return wait(_that.milliseconds,_that.selector);case PageAction_Screenshot() when screenshot != null:
+return screenshot(_that.fullPage);case PageAction_ExecuteJs() when executeJs != null:
+return executeJs(_that.script);case PageAction_Scrape() when scrape != null:
+return scrape();case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class PageAction_Click extends PageAction {
+  const PageAction_Click({required this.selector}): super._();
+
+
+/// CSS selector for the element to click.
+ final  String selector;
+
+/// Create a copy of PageAction
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$PageAction_ClickCopyWith<PageAction_Click> get copyWith => _$PageAction_ClickCopyWithImpl<PageAction_Click>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PageAction_Click&&(identical(other.selector, selector) || other.selector == selector));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,selector);
+
+@override
+String toString() {
+  return 'PageAction.click(selector: $selector)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $PageAction_ClickCopyWith<$Res> implements $PageActionCopyWith<$Res> {
+  factory $PageAction_ClickCopyWith(PageAction_Click value, $Res Function(PageAction_Click) _then) = _$PageAction_ClickCopyWithImpl;
+@useResult
+$Res call({
+ String selector
+});
+
+
+
+
+}
+/// @nodoc
+class _$PageAction_ClickCopyWithImpl<$Res>
+    implements $PageAction_ClickCopyWith<$Res> {
+  _$PageAction_ClickCopyWithImpl(this._self, this._then);
+
+  final PageAction_Click _self;
+  final $Res Function(PageAction_Click) _then;
+
+/// Create a copy of PageAction
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? selector = null,}) {
+  return _then(PageAction_Click(
+selector: null == selector ? _self.selector : selector // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class PageAction_TypeText extends PageAction {
+  const PageAction_TypeText({required this.selector, required this.text}): super._();
+
+
+/// CSS selector for the input element.
+ final  String selector;
+/// Text to type into the element.
+ final  String text;
+
+/// Create a copy of PageAction
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$PageAction_TypeTextCopyWith<PageAction_TypeText> get copyWith => _$PageAction_TypeTextCopyWithImpl<PageAction_TypeText>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PageAction_TypeText&&(identical(other.selector, selector) || other.selector == selector)&&(identical(other.text, text) || other.text == text));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,selector,text);
+
+@override
+String toString() {
+  return 'PageAction.typeText(selector: $selector, text: $text)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $PageAction_TypeTextCopyWith<$Res> implements $PageActionCopyWith<$Res> {
+  factory $PageAction_TypeTextCopyWith(PageAction_TypeText value, $Res Function(PageAction_TypeText) _then) = _$PageAction_TypeTextCopyWithImpl;
+@useResult
+$Res call({
+ String selector, String text
+});
+
+
+
+
+}
+/// @nodoc
+class _$PageAction_TypeTextCopyWithImpl<$Res>
+    implements $PageAction_TypeTextCopyWith<$Res> {
+  _$PageAction_TypeTextCopyWithImpl(this._self, this._then);
+
+  final PageAction_TypeText _self;
+  final $Res Function(PageAction_TypeText) _then;
+
+/// Create a copy of PageAction
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? selector = null,Object? text = null,}) {
+  return _then(PageAction_TypeText(
+selector: null == selector ? _self.selector : selector // ignore: cast_nullable_to_non_nullable
+as String,text: null == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class PageAction_Press extends PageAction {
+  const PageAction_Press({required this.key}): super._();
+
+
+/// Key name to press.
+ final  String key;
+
+/// Create a copy of PageAction
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$PageAction_PressCopyWith<PageAction_Press> get copyWith => _$PageAction_PressCopyWithImpl<PageAction_Press>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PageAction_Press&&(identical(other.key, key) || other.key == key));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,key);
+
+@override
+String toString() {
+  return 'PageAction.press(key: $key)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $PageAction_PressCopyWith<$Res> implements $PageActionCopyWith<$Res> {
+  factory $PageAction_PressCopyWith(PageAction_Press value, $Res Function(PageAction_Press) _then) = _$PageAction_PressCopyWithImpl;
+@useResult
+$Res call({
+ String key
+});
+
+
+
+
+}
+/// @nodoc
+class _$PageAction_PressCopyWithImpl<$Res>
+    implements $PageAction_PressCopyWith<$Res> {
+  _$PageAction_PressCopyWithImpl(this._self, this._then);
+
+  final PageAction_Press _self;
+  final $Res Function(PageAction_Press) _then;
+
+/// Create a copy of PageAction
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? key = null,}) {
+  return _then(PageAction_Press(
+key: null == key ? _self.key : key // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class PageAction_Scroll extends PageAction {
+  const PageAction_Scroll({required this.direction, required this.selector, required this.amount}): super._();
+
+
+/// Direction to scroll.
+ final  ScrollDirection direction;
+/// Optional CSS selector for a scrollable element. Scrolls the page if absent.
+ final  String selector;
+/// Optional pixel amount to scroll. Uses a default if absent.
+ final  PlatformInt64 amount;
+
+/// Create a copy of PageAction
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$PageAction_ScrollCopyWith<PageAction_Scroll> get copyWith => _$PageAction_ScrollCopyWithImpl<PageAction_Scroll>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PageAction_Scroll&&(identical(other.direction, direction) || other.direction == direction)&&(identical(other.selector, selector) || other.selector == selector)&&(identical(other.amount, amount) || other.amount == amount));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,direction,selector,amount);
+
+@override
+String toString() {
+  return 'PageAction.scroll(direction: $direction, selector: $selector, amount: $amount)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $PageAction_ScrollCopyWith<$Res> implements $PageActionCopyWith<$Res> {
+  factory $PageAction_ScrollCopyWith(PageAction_Scroll value, $Res Function(PageAction_Scroll) _then) = _$PageAction_ScrollCopyWithImpl;
+@useResult
+$Res call({
+ ScrollDirection direction, String selector, PlatformInt64 amount
+});
+
+
+
+
+}
+/// @nodoc
+class _$PageAction_ScrollCopyWithImpl<$Res>
+    implements $PageAction_ScrollCopyWith<$Res> {
+  _$PageAction_ScrollCopyWithImpl(this._self, this._then);
+
+  final PageAction_Scroll _self;
+  final $Res Function(PageAction_Scroll) _then;
+
+/// Create a copy of PageAction
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? direction = null,Object? selector = null,Object? amount = null,}) {
+  return _then(PageAction_Scroll(
+direction: null == direction ? _self.direction : direction // ignore: cast_nullable_to_non_nullable
+as ScrollDirection,selector: null == selector ? _self.selector : selector // ignore: cast_nullable_to_non_nullable
+as String,amount: null == amount ? _self.amount : amount // ignore: cast_nullable_to_non_nullable
+as PlatformInt64,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class PageAction_Wait extends PageAction {
+  const PageAction_Wait({required this.milliseconds, required this.selector}): super._();
+
+
+/// Milliseconds to wait. Ignored if `selector` is provided.
+ final  PlatformInt64 milliseconds;
+/// CSS selector to wait for.
+ final  String selector;
+
+/// Create a copy of PageAction
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$PageAction_WaitCopyWith<PageAction_Wait> get copyWith => _$PageAction_WaitCopyWithImpl<PageAction_Wait>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PageAction_Wait&&(identical(other.milliseconds, milliseconds) || other.milliseconds == milliseconds)&&(identical(other.selector, selector) || other.selector == selector));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,milliseconds,selector);
+
+@override
+String toString() {
+  return 'PageAction.wait(milliseconds: $milliseconds, selector: $selector)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $PageAction_WaitCopyWith<$Res> implements $PageActionCopyWith<$Res> {
+  factory $PageAction_WaitCopyWith(PageAction_Wait value, $Res Function(PageAction_Wait) _then) = _$PageAction_WaitCopyWithImpl;
+@useResult
+$Res call({
+ PlatformInt64 milliseconds, String selector
+});
+
+
+
+
+}
+/// @nodoc
+class _$PageAction_WaitCopyWithImpl<$Res>
+    implements $PageAction_WaitCopyWith<$Res> {
+  _$PageAction_WaitCopyWithImpl(this._self, this._then);
+
+  final PageAction_Wait _self;
+  final $Res Function(PageAction_Wait) _then;
+
+/// Create a copy of PageAction
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? milliseconds = null,Object? selector = null,}) {
+  return _then(PageAction_Wait(
+milliseconds: null == milliseconds ? _self.milliseconds : milliseconds // ignore: cast_nullable_to_non_nullable
+as PlatformInt64,selector: null == selector ? _self.selector : selector // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class PageAction_Screenshot extends PageAction {
+  const PageAction_Screenshot({required this.fullPage}): super._();
+
+
+/// Whether to capture the full scrollable page. Defaults to viewport only.
+ final  bool fullPage;
+
+/// Create a copy of PageAction
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$PageAction_ScreenshotCopyWith<PageAction_Screenshot> get copyWith => _$PageAction_ScreenshotCopyWithImpl<PageAction_Screenshot>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PageAction_Screenshot&&(identical(other.fullPage, fullPage) || other.fullPage == fullPage));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,fullPage);
+
+@override
+String toString() {
+  return 'PageAction.screenshot(fullPage: $fullPage)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $PageAction_ScreenshotCopyWith<$Res> implements $PageActionCopyWith<$Res> {
+  factory $PageAction_ScreenshotCopyWith(PageAction_Screenshot value, $Res Function(PageAction_Screenshot) _then) = _$PageAction_ScreenshotCopyWithImpl;
+@useResult
+$Res call({
+ bool fullPage
+});
+
+
+
+
+}
+/// @nodoc
+class _$PageAction_ScreenshotCopyWithImpl<$Res>
+    implements $PageAction_ScreenshotCopyWith<$Res> {
+  _$PageAction_ScreenshotCopyWithImpl(this._self, this._then);
+
+  final PageAction_Screenshot _self;
+  final $Res Function(PageAction_Screenshot) _then;
+
+/// Create a copy of PageAction
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? fullPage = null,}) {
+  return _then(PageAction_Screenshot(
+fullPage: null == fullPage ? _self.fullPage : fullPage // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class PageAction_ExecuteJs extends PageAction {
+  const PageAction_ExecuteJs({required this.script}): super._();
+
+
+/// JavaScript source code to execute. Max 1 MB.
+ final  String script;
+
+/// Create a copy of PageAction
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$PageAction_ExecuteJsCopyWith<PageAction_ExecuteJs> get copyWith => _$PageAction_ExecuteJsCopyWithImpl<PageAction_ExecuteJs>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PageAction_ExecuteJs&&(identical(other.script, script) || other.script == script));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,script);
+
+@override
+String toString() {
+  return 'PageAction.executeJs(script: $script)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $PageAction_ExecuteJsCopyWith<$Res> implements $PageActionCopyWith<$Res> {
+  factory $PageAction_ExecuteJsCopyWith(PageAction_ExecuteJs value, $Res Function(PageAction_ExecuteJs) _then) = _$PageAction_ExecuteJsCopyWithImpl;
+@useResult
+$Res call({
+ String script
+});
+
+
+
+
+}
+/// @nodoc
+class _$PageAction_ExecuteJsCopyWithImpl<$Res>
+    implements $PageAction_ExecuteJsCopyWith<$Res> {
+  _$PageAction_ExecuteJsCopyWithImpl(this._self, this._then);
+
+  final PageAction_ExecuteJs _self;
+  final $Res Function(PageAction_ExecuteJs) _then;
+
+/// Create a copy of PageAction
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? script = null,}) {
+  return _then(PageAction_ExecuteJs(
+script: null == script ? _self.script : script // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class PageAction_Scrape extends PageAction {
+  const PageAction_Scrape(): super._();
+
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PageAction_Scrape);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'PageAction.scrape()';
+}
+
+
+}
+
+
+
 
 // dart format on

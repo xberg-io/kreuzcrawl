@@ -112,8 +112,11 @@ pub struct BrowserConfig {
     /// wildcards. Useful for skipping ads/analytics/large images. Honored by
     /// `BrowserBackend::Native`; chromiumoxide ignores this field today.
     pub block_url_patterns: Vec<String>,
-    /// JavaScript snippet evaluated after navigation completes. Result is
-    /// captured in `ScrapeResult.browser.eval_result`. Native only.
+    /// JavaScript snippet evaluated after navigation completes.
+    ///
+    /// Scraping captures the native backend result in `ScrapeResult.browser.eval_result`.
+    /// Interactions run this script before page actions on both browser backends but do
+    /// not include the script result in `InteractionResult`.
     pub eval_script: Option<String>,
     /// User-agent used when fetching robots.txt. Defaults to `BrowserConfig.user_agent`
     /// (or kreuzcrawl's default) if unset. Native only.
@@ -241,6 +244,32 @@ pub struct DownloadedDocument {
     pub content_hash: String,
     /// Selected response headers.
     pub headers: std::collections::HashMap<String, String>,
+}
+
+/// Result of executing a sequence of page interaction actions.
+#[frb(mirror(InteractionResult))]
+pub struct InteractionResult {
+    /// Results from each executed action.
+    pub action_results: Vec<ActionResult>,
+    /// Final page HTML after all actions completed.
+    pub final_html: String,
+    /// Final page URL (may have changed due to navigation).
+    pub final_url: String,
+}
+
+/// Result from a single page action execution.
+#[frb(mirror(ActionResult))]
+pub struct ActionResult {
+    /// Zero-based index of the action in the sequence.
+    pub action_index: i64,
+    /// The type of action that was executed.
+    pub action_type: String,
+    /// Whether the action completed successfully.
+    pub success: bool,
+    /// Action-specific return data (screenshot bytes, JS return value, scraped HTML).
+    pub data: Option<String>,
+    /// Error message if the action failed.
+    pub error: Option<String>,
 }
 
 /// The result of a single-page scrape operation.
@@ -821,6 +850,73 @@ pub enum AssetCategory {
     Other,
 }
 
+/// A single page interaction action.
+///
+/// Actions are serialized with a `type` tag using camelCase naming,
+/// except `ExecuteJs` which is explicitly renamed to `"executeJs"`.
+#[frb(mirror(PageAction))]
+pub enum PageAction {
+    /// Click on an element matching the given CSS selector.
+    Click {
+        /// CSS selector for the element to click.
+        selector: String,
+    },
+    /// Type text into an element matching the given CSS selector.
+    TypeText {
+        /// CSS selector for the input element.
+        selector: String,
+        /// Text to type into the element.
+        text: String,
+    },
+    /// Press a keyboard key (e.g. "Enter", "Tab", "Escape").
+    Press {
+        /// Key name to press.
+        key: String,
+    },
+    /// Scroll the page or a specific element.
+    Scroll {
+        /// Direction to scroll.
+        direction: ScrollDirection,
+        /// Optional CSS selector for a scrollable element. Scrolls the page if absent.
+        selector: String,
+        /// Optional pixel amount to scroll. Uses a default if absent.
+        amount: i64,
+    },
+    /// Wait for a duration or for an element to appear.
+    Wait {
+        /// Milliseconds to wait. Ignored if `selector` is provided.
+        milliseconds: i64,
+        /// CSS selector to wait for.
+        selector: String,
+    },
+    /// Take a screenshot of the current page.
+    Screenshot {
+        /// Whether to capture the full scrollable page. Defaults to viewport only.
+        full_page: bool,
+    },
+    /// Execute arbitrary JavaScript in the page context.
+    ///
+    /// # Safety
+    ///
+    /// The script runs with full page privileges in the browser context.
+    /// Only execute scripts from trusted sources.
+    ExecuteJs {
+        /// JavaScript source code to execute. Max 1 MB.
+        script: String,
+    },
+    /// Scrape the current page HTML.
+    Scrape,
+}
+
+/// Direction for a scroll action.
+#[frb(mirror(ScrollDirection))]
+pub enum ScrollDirection {
+    /// Scroll upward.
+    Up,
+    /// Scroll downward.
+    Down,
+}
+
 // From<SourceT> conversions for bridge return types.
 
 impl From<kreuzcrawl::ExtractionMeta> for ExtractionMeta {
@@ -950,6 +1046,28 @@ impl From<kreuzcrawl::DownloadedDocument> for DownloadedDocument {
             filename: Default::default(),
             content_hash: Default::default(),
             headers: v.headers.into_iter().map(|(k, v)| (k.into(), v.into())).collect(),
+        }
+    }
+}
+
+impl From<kreuzcrawl::InteractionResult> for InteractionResult {
+    fn from(v: kreuzcrawl::InteractionResult) -> Self {
+        InteractionResult {
+            action_results: v.action_results.into_iter().map(ActionResult::from).collect(),
+            final_html: v.final_html.into(),
+            final_url: v.final_url.into(),
+        }
+    }
+}
+
+impl From<kreuzcrawl::ActionResult> for ActionResult {
+    fn from(v: kreuzcrawl::ActionResult) -> Self {
+        ActionResult {
+            action_index: v.action_index as _,
+            action_type: v.action_type.into_owned(),
+            success: v.success as _,
+            data: v.data.map(|j| serde_json::to_string(&j).unwrap_or_default()),
+            error: v.error.map(|s| s.into()),
         }
     }
 }
@@ -1370,6 +1488,43 @@ impl From<kreuzcrawl::AssetCategory> for AssetCategory {
     }
 }
 
+impl From<kreuzcrawl::PageAction> for PageAction {
+    fn from(v: kreuzcrawl::PageAction) -> Self {
+        match v {
+            kreuzcrawl::PageAction::Click { selector } => PageAction::Click { selector },
+            kreuzcrawl::PageAction::TypeText { selector, text } => PageAction::TypeText { selector, text },
+            kreuzcrawl::PageAction::Press { key } => PageAction::Press { key },
+            kreuzcrawl::PageAction::Scroll {
+                direction,
+                selector,
+                amount,
+            } => PageAction::Scroll {
+                direction: ScrollDirection::from(direction),
+                selector: selector.unwrap_or_default(),
+                amount: amount.map(|x| x as _).unwrap_or_default(),
+            },
+            kreuzcrawl::PageAction::Wait { milliseconds, selector } => PageAction::Wait {
+                milliseconds: milliseconds.map(|x| x as _).unwrap_or_default(),
+                selector: selector.unwrap_or_default(),
+            },
+            kreuzcrawl::PageAction::Screenshot { full_page } => PageAction::Screenshot {
+                full_page: full_page.map(|x| x as _).unwrap_or_default(),
+            },
+            kreuzcrawl::PageAction::ExecuteJs { script } => PageAction::ExecuteJs { script },
+            kreuzcrawl::PageAction::Scrape => PageAction::Scrape,
+        }
+    }
+}
+
+impl From<kreuzcrawl::ScrollDirection> for ScrollDirection {
+    fn from(v: kreuzcrawl::ScrollDirection) -> Self {
+        match v {
+            kreuzcrawl::ScrollDirection::Up => ScrollDirection::Up,
+            kreuzcrawl::ScrollDirection::Down => ScrollDirection::Down,
+        }
+    }
+}
+
 // From<T> for SourceT conversions (mirror-to-core direction).
 // Used in bridge functions for types with sanitized fields, and by
 // nested conversions within those types.
@@ -1571,6 +1726,20 @@ pub async fn map_urls(engine: CrawlEngineHandle, url: String) -> Result<MapResul
         .map_err(|e| e.to_string())
 }
 
+/// Execute browser actions on a single page.
+pub async fn interact(
+    engine: CrawlEngineHandle,
+    url: String,
+    actions: Vec<PageAction>,
+) -> Result<InteractionResult, String> {
+    kreuzcrawl::interact(&engine.inner, &url, unsafe {
+        std::mem::transmute::<Vec<PageAction>, Vec<kreuzcrawl::PageAction>>(actions)
+    })
+    .await
+    .map(InteractionResult::from)
+    .map_err(|e| e.to_string())
+}
+
 /// Scrape multiple URLs concurrently.
 pub async fn batch_scrape(engine: CrawlEngineHandle, urls: Vec<String>) -> Result<Vec<BatchScrapeResult>, String> {
     kreuzcrawl::batch_scrape(&engine.inner, urls)
@@ -1635,6 +1804,20 @@ pub fn create_browser_extras_from_json(json: String) -> Result<BrowserExtras, St
 pub fn create_downloaded_document_from_json(json: String) -> Result<DownloadedDocument, String> {
     serde_json::from_str::<kreuzcrawl::DownloadedDocument>(&json)
         .map(DownloadedDocument::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_interaction_result_from_json(json: String) -> Result<InteractionResult, String> {
+    serde_json::from_str::<kreuzcrawl::InteractionResult>(&json)
+        .map(InteractionResult::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_action_result_from_json(json: String) -> Result<ActionResult, String> {
+    serde_json::from_str::<kreuzcrawl::ActionResult>(&json)
+        .map(ActionResult::from)
         .map_err(|e| e.to_string())
 }
 

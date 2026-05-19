@@ -20,8 +20,7 @@ object KreuzcrawlBridge {
     @Throws(KreuzcrawlBridgeException::class)
     external fun nativeGenerateCitations(markdown: String): String
 
-    @Throws(KreuzcrawlBridgeException::class)
-    external fun nativeCreateEngine(config: String): Long
+    @Throws(KreuzcrawlBridgeException::class) external fun nativeCreateEngine(config: String): Long
 
     @Throws(KreuzcrawlBridgeException::class)
     external fun nativeScrape(engine: Long, url: String): String
@@ -31,6 +30,9 @@ object KreuzcrawlBridge {
 
     @Throws(KreuzcrawlBridgeException::class)
     external fun nativeMapUrls(engine: Long, url: String): String
+
+    @Throws(KreuzcrawlBridgeException::class)
+    external fun nativeInteract(engine: Long, url: String, actions: String): String
 
     @Throws(KreuzcrawlBridgeException::class)
     external fun nativeBatchScrape(engine: Long, urls: String): String

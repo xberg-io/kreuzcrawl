@@ -257,6 +257,30 @@ void* __swift_bridge__$Vec_DownloadedDocument$get_mut(void* vec_ptr, uintptr_t i
 uintptr_t __swift_bridge__$Vec_DownloadedDocument$len(void* vec_ptr);
 void* __swift_bridge__$Vec_DownloadedDocument$as_ptr(void* vec_ptr);
 
+typedef struct InteractionResult InteractionResult;
+void __swift_bridge__$InteractionResult$_free(void* self);
+
+void* __swift_bridge__$Vec_InteractionResult$new(void);
+void __swift_bridge__$Vec_InteractionResult$drop(void* vec_ptr);
+void __swift_bridge__$Vec_InteractionResult$push(void* vec_ptr, void* item_ptr);
+void* __swift_bridge__$Vec_InteractionResult$pop(void* vec_ptr);
+void* __swift_bridge__$Vec_InteractionResult$get(void* vec_ptr, uintptr_t index);
+void* __swift_bridge__$Vec_InteractionResult$get_mut(void* vec_ptr, uintptr_t index);
+uintptr_t __swift_bridge__$Vec_InteractionResult$len(void* vec_ptr);
+void* __swift_bridge__$Vec_InteractionResult$as_ptr(void* vec_ptr);
+
+typedef struct ActionResult ActionResult;
+void __swift_bridge__$ActionResult$_free(void* self);
+
+void* __swift_bridge__$Vec_ActionResult$new(void);
+void __swift_bridge__$Vec_ActionResult$drop(void* vec_ptr);
+void __swift_bridge__$Vec_ActionResult$push(void* vec_ptr, void* item_ptr);
+void* __swift_bridge__$Vec_ActionResult$pop(void* vec_ptr);
+void* __swift_bridge__$Vec_ActionResult$get(void* vec_ptr, uintptr_t index);
+void* __swift_bridge__$Vec_ActionResult$get_mut(void* vec_ptr, uintptr_t index);
+uintptr_t __swift_bridge__$Vec_ActionResult$len(void* vec_ptr);
+void* __swift_bridge__$Vec_ActionResult$as_ptr(void* vec_ptr);
+
 typedef struct ScrapeResult ScrapeResult;
 void __swift_bridge__$ScrapeResult$_free(void* self);
 
@@ -629,6 +653,30 @@ void* __swift_bridge__$Vec_AssetCategory$get_mut(void* vec_ptr, uintptr_t index)
 uintptr_t __swift_bridge__$Vec_AssetCategory$len(void* vec_ptr);
 void* __swift_bridge__$Vec_AssetCategory$as_ptr(void* vec_ptr);
 
+typedef struct PageAction PageAction;
+void __swift_bridge__$PageAction$_free(void* self);
+
+void* __swift_bridge__$Vec_PageAction$new(void);
+void __swift_bridge__$Vec_PageAction$drop(void* vec_ptr);
+void __swift_bridge__$Vec_PageAction$push(void* vec_ptr, void* item_ptr);
+void* __swift_bridge__$Vec_PageAction$pop(void* vec_ptr);
+void* __swift_bridge__$Vec_PageAction$get(void* vec_ptr, uintptr_t index);
+void* __swift_bridge__$Vec_PageAction$get_mut(void* vec_ptr, uintptr_t index);
+uintptr_t __swift_bridge__$Vec_PageAction$len(void* vec_ptr);
+void* __swift_bridge__$Vec_PageAction$as_ptr(void* vec_ptr);
+
+typedef struct ScrollDirection ScrollDirection;
+void __swift_bridge__$ScrollDirection$_free(void* self);
+
+void* __swift_bridge__$Vec_ScrollDirection$new(void);
+void __swift_bridge__$Vec_ScrollDirection$drop(void* vec_ptr);
+void __swift_bridge__$Vec_ScrollDirection$push(void* vec_ptr, void* item_ptr);
+void* __swift_bridge__$Vec_ScrollDirection$pop(void* vec_ptr);
+void* __swift_bridge__$Vec_ScrollDirection$get(void* vec_ptr, uintptr_t index);
+void* __swift_bridge__$Vec_ScrollDirection$get_mut(void* vec_ptr, uintptr_t index);
+uintptr_t __swift_bridge__$Vec_ScrollDirection$len(void* vec_ptr);
+void* __swift_bridge__$Vec_ScrollDirection$as_ptr(void* vec_ptr);
+
 void* __swift_bridge__$ExtractionMeta$new(struct __private__OptionF64 cost, struct __private__OptionU64 prompt_tokens, struct __private__OptionU64 completion_tokens, void* model, uintptr_t chunks_processed);
 struct __private__OptionF64 __swift_bridge__$ExtractionMeta$cost(void* self);
 struct __private__OptionU64 __swift_bridge__$ExtractionMeta$prompt_tokens(void* self);
@@ -714,6 +762,16 @@ uintptr_t __swift_bridge__$DownloadedDocument$size(void* self);
 void* __swift_bridge__$DownloadedDocument$filename(void* self);
 void* __swift_bridge__$DownloadedDocument$content_hash(void* self);
 void* __swift_bridge__$DownloadedDocument$headers(void* self);
+void* __swift_bridge__$InteractionResult$new(void* action_results, void* final_html, void* final_url);
+void* __swift_bridge__$InteractionResult$action_results(void* self);
+void* __swift_bridge__$InteractionResult$final_html(void* self);
+void* __swift_bridge__$InteractionResult$final_url(void* self);
+void* __swift_bridge__$ActionResult$new(uintptr_t action_index, void* action_type, bool success, void* data, void* error);
+uintptr_t __swift_bridge__$ActionResult$action_index(void* self);
+void* __swift_bridge__$ActionResult$action_type(void* self);
+bool __swift_bridge__$ActionResult$success(void* self);
+void* __swift_bridge__$ActionResult$data(void* self);
+void* __swift_bridge__$ActionResult$error(void* self);
 void* __swift_bridge__$ScrapeResult$new(uint16_t status_code, void* content_type, void* html, uintptr_t body_size, void* metadata, void* links, void* images, void* feeds, void* json_ld, bool is_allowed, struct __private__OptionU64 crawl_delay, bool noindex_detected, bool nofollow_detected, void* x_robots_tag, bool is_pdf, bool was_skipped, void* detected_charset, bool auth_header_sent, void* response_meta, void* assets, bool js_render_hint, bool browser_used, void* markdown, void* extracted_data, void* extraction_meta, void* downloaded_document, void* browser);
 uint16_t __swift_bridge__$ScrapeResult$status_code(void* self);
 void* __swift_bridge__$ScrapeResult$content_type(void* self);
@@ -908,11 +966,14 @@ void* __swift_bridge__$LinkType$to_string(void* self);
 void* __swift_bridge__$ImageSource$to_string(void* self);
 void* __swift_bridge__$FeedType$to_string(void* self);
 void* __swift_bridge__$AssetCategory$to_string(void* self);
+void* __swift_bridge__$PageAction$to_string(void* self);
+void* __swift_bridge__$ScrollDirection$to_string(void* self);
 void* __swift_bridge__$generate_citations(void* markdown);
 struct __private__ResultPtrAndPtr __swift_bridge__$create_engine(void* config);
 struct __private__ResultPtrAndPtr __swift_bridge__$scrape(void* engine, void* url);
 struct __private__ResultPtrAndPtr __swift_bridge__$crawl(void* engine, void* url);
 struct __private__ResultPtrAndPtr __swift_bridge__$map_urls(void* engine, void* url);
+struct __private__ResultPtrAndPtr __swift_bridge__$interact(void* engine, void* url, void* actions);
 struct __private__ResultPtrAndPtr __swift_bridge__$batch_scrape(void* engine, void* urls);
 struct __private__ResultPtrAndPtr __swift_bridge__$batch_crawl(void* engine, void* urls);
 struct __private__ResultPtrAndPtr __swift_bridge__$crawl_config_from_json(void* json);

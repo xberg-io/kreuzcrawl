@@ -1,10 +1,10 @@
 # Architecture
 
-Kreuzcrawl is a Rust core crate (`kreuzcrawl`) with a small public surface, surrounded by polyglot bindings that all wrap the same core. The runtime is Tokio; HTTP fetching uses `reqwest`; the optional headless browser path uses `chromiumoxide`.
+Kreuzcrawl is a Rust core crate (`kreuzcrawl`) with a small public surface, surrounded by polyglot bindings that all wrap the same core. The runtime is Tokio; HTTP fetching uses `reqwest`; browser-backed rendering and interaction can use either the chromiumoxide CDP backend or the in-process native backend.
 
 ## Public surface
 
-The crate root exports six free functions over an opaque handle, plus serialisable configuration and result types:
+The crate root exports seven free functions over an opaque handle, plus serialisable configuration and result types:
 
 | Symbol                                                                                | Purpose                                                      |
 | ------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
@@ -12,6 +12,7 @@ The crate root exports six free functions over an opaque handle, plus serialisab
 | `scrape(&engine, url) -> Result<ScrapeResult, _>`                                     | Fetch and extract a single page.                             |
 | `crawl(&engine, url) -> Result<CrawlResult, _>`                                       | Follow links from a seed up to `max_depth` / `max_pages`.    |
 | `map_urls(&engine, url) -> Result<MapResult, _>`                                      | Discover URLs via sitemaps and link extraction.              |
+| `interact(&engine, url, actions) -> Result<InteractionResult, _>`                     | Navigate once and run ordered page actions.                  |
 | `batch_scrape(&engine, urls) -> Result<Vec<BatchScrapeResult>, _>`                    | Scrape many URLs concurrently.                               |
 | `batch_crawl(&engine, urls) -> Result<Vec<BatchCrawlResult>, _>`                      | Crawl many seeds concurrently.                               |
 | `serve_api(...)` (feature `api`) / `start_mcp_server(...)` (feature `mcp`)            | Long-running REST and MCP servers backed by the same engine. |
@@ -23,7 +24,7 @@ All other items in the source tree are internal — the public crate surface is 
 ```mermaid
 graph LR
     A[create_engine] --> B[CrawlEngineHandle]
-    B --> S[scrape / crawl / map_urls / batch_*]
+    B --> S[scrape / crawl / map_urls / interact / batch_*]
     S --> H[HTTP fetch + middleware]
     H --> R{Content type}
     R -->|HTML| E[Extraction pipeline]
@@ -33,7 +34,7 @@ graph LR
     D --> O
 ```
 
-The middleware stack between the engine and the network applies per-domain rate limiting, conditional caching, and User-Agent rotation, plus optional `tracing` spans. WAF responses can trigger an automatic browser fallback when `BrowserMode::Auto` is set. The extraction pipeline is described in detail in [Content Extraction](content-extraction.md).
+The middleware stack between the engine and the network applies per-domain rate limiting, conditional caching, and User-Agent rotation, plus optional `tracing` spans. WAF responses can trigger an automatic browser fallback when `BrowserMode::Auto` is set. `interact()` bypasses the crawl/extraction pipeline and keeps one browser page open while it executes `PageAction` values such as click, type, wait, screenshot, JavaScript evaluation, and scrape. Chromiumoxide supports the full action set; the native backend supports DOM/JS actions and reports screenshot actions as unsupported because it has no visual layout renderer. The extraction pipeline is described in detail in [Content Extraction](content-extraction.md).
 
 ## Bindings
 
@@ -60,11 +61,13 @@ Every binding consumes the same Rust core via FFI. The per-binding glue is gener
 
 Cargo features keep the default build minimal — the default feature set is empty. The user-facing features are:
 
-| Feature    | Capability                                                                        |
-| ---------- | --------------------------------------------------------------------------------- |
-| `browser`  | Headless-Chrome fallback for JS-heavy or WAF-protected pages.                     |
-| `tracing`  | OpenTelemetry-compatible request spans.                                           |
-| `api`      | `serve_api(...)` — Firecrawl v1-compatible REST server.                           |
-| `mcp`      | `start_mcp_server(...)` — Model Context Protocol server for AI-agent integration. |
-| `mcp-http` | MCP over HTTP transport (implies `mcp` + `api`).                                  |
-| `warc`     | WARC 1.1 output via `CrawlConfig::warc_output`.                                   |
+| Feature          | Capability                                                                                  |
+| ---------------- | ------------------------------------------------------------------------------------------- |
+| `browser`        | Headless-Chrome fallback for JS-heavy or WAF-protected pages.                               |
+| `browser-native` | In-process native browser backend for rendering and page interaction.                       |
+| `interact`       | Compatibility alias for browser-backed page interaction. The public API is always compiled. |
+| `tracing`        | OpenTelemetry-compatible request spans.                                                     |
+| `api`            | `serve_api(...)` — Firecrawl v1-compatible REST server.                                     |
+| `mcp`            | `start_mcp_server(...)` — Model Context Protocol server for AI-agent integration.           |
+| `mcp-http`       | MCP over HTTP transport (implies `mcp` + `api`).                                            |
+| `warc`           | WARC 1.1 output via `CrawlConfig::warc_output`.                                             |

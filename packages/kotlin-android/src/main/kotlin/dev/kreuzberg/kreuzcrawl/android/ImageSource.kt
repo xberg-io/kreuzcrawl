@@ -21,24 +21,14 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/**
- * The source of an image reference.
- */
+/** The source of an image reference. */
 enum class ImageSource {
-    /**
-     * An `<img>` tag.
-     */
+    /** An `<img>` tag. */
     IMG,
-    /**
-     * A `<source>` tag inside `<picture>`.
-     */
+    /** A `<source>` tag inside `<picture>`. */
     PICTURE_SOURCE,
-    /**
-     * An `og:image` meta tag.
-     */
+    /** An `og:image` meta tag. */
     OG_IMAGE,
-    /**
-     * A `twitter:image` meta tag.
-     */
-    TWITTER_IMAGE;
+    /** A `twitter:image` meta tag. */
+    TWITTER_IMAGE,
 }

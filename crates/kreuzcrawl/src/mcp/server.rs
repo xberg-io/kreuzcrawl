@@ -334,18 +334,30 @@ impl KreuzcrawlMcp {
 
     /// Execute browser actions on a page.
     #[tool(
-        description = "Execute browser actions on a page.",
-        annotations(title = "Interact", read_only_hint = true)
+        description = "Execute browser actions on a page. Actions may mutate page or application state.",
+        annotations(title = "Interact", read_only_hint = false)
     )]
     async fn interact(
         &self,
         Parameters(params): Parameters<super::params::InteractParams>,
     ) -> Result<CallToolResult, rmcp::ErrorData> {
-        validate_url(&params.url)?;
+        use super::errors::map_crawl_error;
 
-        Ok(CallToolResult::success(vec![Content::text(
-            "Interact tool is not yet implemented in the MCP adapter.",
-        )]))
+        validate_url(&params.url)?;
+        let actions = params
+            .actions
+            .into_iter()
+            .map(serde_json::from_value)
+            .collect::<Result<Vec<crate::PageAction>, _>>()
+            .map_err(|e| rmcp::ErrorData::invalid_params(format!("invalid action payload: {e}"), None))?;
+
+        let engine = self.build_engine(self.config.clone())?;
+        let result = engine.interact(&params.url, &actions).await.map_err(map_crawl_error)?;
+        let response = serde_json::to_string_pretty(&result).map_err(|e| {
+            rmcp::ErrorData::internal_error(format!("Failed to serialize interaction result: {e}"), None)
+        })?;
+
+        Ok(CallToolResult::success(vec![Content::text(response)]))
     }
 
     /// AI-driven research across multiple pages (requires ai feature).

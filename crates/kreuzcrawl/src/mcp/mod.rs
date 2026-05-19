@@ -10,12 +10,12 @@
 //! - **map**: Discover all pages on a website via links and sitemaps
 //! - **batch_scrape**: Scrape multiple URLs concurrently
 //! - **download**: Download a document from a URL
+//! - **interact**: Execute browser actions on a page
 //! - **get_version**: Get the current kreuzcrawl library version
 //!
 //! # Planned Tools (stubs registered, not yet implemented)
 //!
 //! - **screenshot**: Capture a screenshot of a URL (requires browser feature)
-//! - **interact**: Execute browser actions on a page (MCP adapter not yet implemented)
 //! - **research**: AI-driven research across multiple pages (requires ai feature)
 //! - **crawl_status**: Check the status of a crawl job (requires job registry)
 //!

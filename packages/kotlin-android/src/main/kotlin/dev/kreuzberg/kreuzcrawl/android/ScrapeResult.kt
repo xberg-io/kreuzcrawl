@@ -21,121 +21,68 @@
 
 package dev.kreuzberg.kreuzcrawl.android
 
-/**
- * The result of a single-page scrape operation.
- */
+/** The result of a single-page scrape operation. */
 data class ScrapeResult(
-    /**
-     * The HTTP status code of the response.
-     */
+    /** The HTTP status code of the response. */
     val statusCode: Short,
-    /**
-     * The Content-Type header value.
-     */
+    /** The Content-Type header value. */
     val contentType: String,
-    /**
-     * The HTML body of the response.
-     */
+    /** The HTML body of the response. */
     val html: String,
-    /**
-     * The size of the response body in bytes.
-     */
+    /** The size of the response body in bytes. */
     val bodySize: Long,
-    /**
-     * Extracted metadata from the page.
-     */
+    /** Extracted metadata from the page. */
     val metadata: PageMetadata,
-    /**
-     * Links found on the page.
-     */
+    /** Links found on the page. */
     val links: List<LinkInfo>,
-    /**
-     * Images found on the page.
-     */
+    /** Images found on the page. */
     val images: List<ImageInfo>,
-    /**
-     * Feed links found on the page.
-     */
+    /** Feed links found on the page. */
     val feeds: List<FeedInfo>,
-    /**
-     * JSON-LD entries found on the page.
-     */
+    /** JSON-LD entries found on the page. */
     val jsonLd: List<JsonLdEntry>,
-    /**
-     * Whether the URL is allowed by robots.txt.
-     */
+    /** Whether the URL is allowed by robots.txt. */
     val isAllowed: Boolean,
-    /**
-     * The crawl delay from robots.txt, in seconds.
-     */
+    /** The crawl delay from robots.txt, in seconds. */
     val crawlDelay: Long?,
-    /**
-     * Whether a noindex directive was detected.
-     */
+    /** Whether a noindex directive was detected. */
     val noindexDetected: Boolean,
-    /**
-     * Whether a nofollow directive was detected.
-     */
+    /** Whether a nofollow directive was detected. */
     val nofollowDetected: Boolean,
-    /**
-     * The X-Robots-Tag header value, if present.
-     */
+    /** The X-Robots-Tag header value, if present. */
     val xRobotsTag: String?,
-    /**
-     * Whether the content is a PDF.
-     */
+    /** Whether the content is a PDF. */
     val isPdf: Boolean,
-    /**
-     * Whether the page was skipped (binary or PDF content).
-     */
+    /** Whether the page was skipped (binary or PDF content). */
     val wasSkipped: Boolean,
-    /**
-     * The detected character set encoding.
-     */
+    /** The detected character set encoding. */
     val detectedCharset: String?,
-    /**
-     * Whether an authentication header was sent with the request.
-     */
+    /** Whether an authentication header was sent with the request. */
     val authHeaderSent: Boolean,
-    /**
-     * Response metadata extracted from HTTP headers.
-     */
+    /** Response metadata extracted from HTTP headers. */
     val responseMeta: ResponseMeta?,
-    /**
-     * Downloaded assets from the page.
-     */
+    /** Downloaded assets from the page. */
     val assets: List<DownloadedAsset>,
-    /**
-     * Whether the page content suggests JavaScript rendering is needed.
-     */
+    /** Whether the page content suggests JavaScript rendering is needed. */
     val jsRenderHint: Boolean,
-    /**
-     * Whether the browser fallback was used to fetch this page.
-     */
+    /** Whether the browser fallback was used to fetch this page. */
     val browserUsed: Boolean,
-    /**
-     * Markdown conversion of the page content.
-     */
+    /** Markdown conversion of the page content. */
     val markdown: MarkdownResult?,
-    /**
-     * Structured data extracted by LLM. Populated when extraction is configured.
-     */
+    /** Structured data extracted by LLM. Populated when extraction is configured. */
     val extractedData: String?,
-    /**
-     * Metadata about the LLM extraction pass (cost, tokens, model).
-     */
+    /** Metadata about the LLM extraction pass (cost, tokens, model). */
     val extractionMeta: ExtractionMeta?,
     /**
-     * Screenshot of the page as PNG bytes. Populated when browser is used and capture_screenshot is enabled.
+     * Screenshot of the page as PNG bytes. Populated when browser is used and capture_screenshot is
+     * enabled.
      */
     val screenshot: ByteArray?,
-    /**
-     * Downloaded non-HTML document (PDF, DOCX, image, code, etc.).
-     */
+    /** Downloaded non-HTML document (PDF, DOCX, image, code, etc.). */
     val downloadedDocument: DownloadedDocument?,
     /**
-     * Browser-specific extras (eval result, network events, cookies). Only
-     * populated when `BrowserBackend.Native` was used for this request.
+     * Browser-specific extras (eval result, network events, cookies). Only populated when
+     * `BrowserBackend.Native` was used for this request.
      */
-    val browser: BrowserExtras?
+    val browser: BrowserExtras?,
 )
