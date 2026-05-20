@@ -40,6 +40,135 @@ public func crawlStreamRequestFromJson<GenericIntoRustString: IntoRustString>(_ 
 public func batchCrawlStreamRequestFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> BatchCrawlStreamRequest {
     try { let val = __swift_bridge__$batch_crawl_stream_request_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return BatchCrawlStreamRequest(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
+public func extractionMetaFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> ExtractionMeta {
+    try { let val = __swift_bridge__$extraction_meta_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return ExtractionMeta(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func proxyConfigFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> ProxyConfig {
+    try { let val = __swift_bridge__$proxy_config_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return ProxyConfig(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func contentConfigFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> ContentConfig {
+    try { let val = __swift_bridge__$content_config_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return ContentConfig(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func browserConfigFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> BrowserConfig {
+    try { let val = __swift_bridge__$browser_config_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return BrowserConfig(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func browserExtrasFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> BrowserExtras {
+    try { let val = __swift_bridge__$browser_extras_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return BrowserExtras(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func downloadedDocumentFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> DownloadedDocument {
+    try { let val = __swift_bridge__$downloaded_document_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return DownloadedDocument(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func interactionResultFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> InteractionResult {
+    try { let val = __swift_bridge__$interaction_result_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return InteractionResult(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func actionResultFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> ActionResult {
+    try { let val = __swift_bridge__$action_result_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return ActionResult(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func scrapeResultFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> ScrapeResult {
+    try { let val = __swift_bridge__$scrape_result_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return ScrapeResult(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func crawlPageResultFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> CrawlPageResult {
+    try { let val = __swift_bridge__$crawl_page_result_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return CrawlPageResult(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func crawlResultFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> CrawlResult {
+    try { let val = __swift_bridge__$crawl_result_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return CrawlResult(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func sitemapUrlFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> SitemapUrl {
+    try { let val = __swift_bridge__$sitemap_url_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return SitemapUrl(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func mapResultFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> MapResult {
+    try { let val = __swift_bridge__$map_result_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return MapResult(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func markdownResultFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> MarkdownResult {
+    try { let val = __swift_bridge__$markdown_result_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return MarkdownResult(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func linkInfoFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> LinkInfo {
+    try { let val = __swift_bridge__$link_info_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return LinkInfo(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func imageInfoFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> ImageInfo {
+    try { let val = __swift_bridge__$image_info_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return ImageInfo(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func feedInfoFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> FeedInfo {
+    try { let val = __swift_bridge__$feed_info_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return FeedInfo(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func jsonLdEntryFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> JsonLdEntry {
+    try { let val = __swift_bridge__$json_ld_entry_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return JsonLdEntry(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func cookieInfoFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> CookieInfo {
+    try { let val = __swift_bridge__$cookie_info_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return CookieInfo(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func downloadedAssetFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> DownloadedAsset {
+    try { let val = __swift_bridge__$downloaded_asset_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return DownloadedAsset(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func articleMetadataFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> ArticleMetadata {
+    try { let val = __swift_bridge__$article_metadata_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return ArticleMetadata(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func hreflangEntryFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> HreflangEntry {
+    try { let val = __swift_bridge__$hreflang_entry_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return HreflangEntry(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func faviconInfoFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> FaviconInfo {
+    try { let val = __swift_bridge__$favicon_info_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return FaviconInfo(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func headingInfoFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> HeadingInfo {
+    try { let val = __swift_bridge__$heading_info_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return HeadingInfo(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func responseMetaFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> ResponseMeta {
+    try { let val = __swift_bridge__$response_meta_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return ResponseMeta(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func pageMetadataFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> PageMetadata {
+    try { let val = __swift_bridge__$page_metadata_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return PageMetadata(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func citationResultFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> CitationResult {
+    try { let val = __swift_bridge__$citation_result_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return CitationResult(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func citationReferenceFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> CitationReference {
+    try { let val = __swift_bridge__$citation_reference_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return CitationReference(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func batchScrapeResultFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> BatchScrapeResult {
+    try { let val = __swift_bridge__$batch_scrape_result_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return BatchScrapeResult(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func batchCrawlResultFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> BatchCrawlResult {
+    try { let val = __swift_bridge__$batch_crawl_result_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return BatchCrawlResult(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func batchScrapeResultsFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> BatchScrapeResults {
+    try { let val = __swift_bridge__$batch_scrape_results_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return BatchScrapeResults(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func batchCrawlResultsFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> BatchCrawlResults {
+    try { let val = __swift_bridge__$batch_crawl_results_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return BatchCrawlResults(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func browserModeFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> BrowserMode {
+    try { let val = __swift_bridge__$browser_mode_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return BrowserMode(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func browserWaitFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> BrowserWait {
+    try { let val = __swift_bridge__$browser_wait_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return BrowserWait(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func browserBackendFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> BrowserBackend {
+    try { let val = __swift_bridge__$browser_backend_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return BrowserBackend(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func authConfigFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> AuthConfig {
+    try { let val = __swift_bridge__$auth_config_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return AuthConfig(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func linkTypeFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> LinkType {
+    try { let val = __swift_bridge__$link_type_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return LinkType(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func imageSourceFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> ImageSource {
+    try { let val = __swift_bridge__$image_source_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return ImageSource(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func feedTypeFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> FeedType {
+    try { let val = __swift_bridge__$feed_type_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return FeedType(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func assetCategoryFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> AssetCategory {
+    try { let val = __swift_bridge__$asset_category_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return AssetCategory(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func crawlEventFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> CrawlEvent {
+    try { let val = __swift_bridge__$crawl_event_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return CrawlEvent(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func pageActionFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> PageAction {
+    try { let val = __swift_bridge__$page_action_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return PageAction(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
+public func scrollDirectionFromJson<GenericIntoRustString: IntoRustString>(_ json: GenericIntoRustString) throws -> ScrollDirection {
+    try { let val = __swift_bridge__$scroll_direction_from_json({ let rustString = json.intoRustString(); rustString.isOwned = false; return rustString.ptr }()); if val.is_ok { return ScrollDirection(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+}
 
 public class ExtractionMeta: ExtractionMetaRefMut {
     var isOwned: Bool = true
@@ -76,11 +205,11 @@ extension ExtractionMetaRef {
         __swift_bridge__$ExtractionMeta$cost(ptr).intoSwiftRepr()
     }
 
-    public func prompt_tokens() -> Optional<UInt64> {
+    public func promptTokens() -> Optional<UInt64> {
         __swift_bridge__$ExtractionMeta$prompt_tokens(ptr).intoSwiftRepr()
     }
 
-    public func completion_tokens() -> Optional<UInt64> {
+    public func completionTokens() -> Optional<UInt64> {
         __swift_bridge__$ExtractionMeta$completion_tokens(ptr).intoSwiftRepr()
     }
 
@@ -88,7 +217,7 @@ extension ExtractionMetaRef {
         { let val = __swift_bridge__$ExtractionMeta$model(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func chunks_processed() -> UInt {
+    public func chunksProcessed() -> UInt {
         __swift_bridge__$ExtractionMeta$chunks_processed(ptr)
     }
 }
@@ -266,39 +395,39 @@ public class ContentConfigRef {
     }
 }
 extension ContentConfigRef {
-    public func output_format() -> RustString {
+    public func outputFormat() -> RustString {
         RustString(ptr: __swift_bridge__$ContentConfig$output_format(ptr))
     }
 
-    public func preprocessing_preset() -> RustString {
+    public func preprocessingPreset() -> RustString {
         RustString(ptr: __swift_bridge__$ContentConfig$preprocessing_preset(ptr))
     }
 
-    public func remove_navigation() -> Bool {
+    public func removeNavigation() -> Bool {
         __swift_bridge__$ContentConfig$remove_navigation(ptr)
     }
 
-    public func remove_forms() -> Bool {
+    public func removeForms() -> Bool {
         __swift_bridge__$ContentConfig$remove_forms(ptr)
     }
 
-    public func strip_tags() -> RustVec<RustString> {
+    public func stripTags() -> RustVec<RustString> {
         RustVec(ptr: __swift_bridge__$ContentConfig$strip_tags(ptr))
     }
 
-    public func preserve_tags() -> RustVec<RustString> {
+    public func preserveTags() -> RustVec<RustString> {
         RustVec(ptr: __swift_bridge__$ContentConfig$preserve_tags(ptr))
     }
 
-    public func exclude_selectors() -> RustVec<RustString> {
+    public func excludeSelectors() -> RustVec<RustString> {
         RustVec(ptr: __swift_bridge__$ContentConfig$exclude_selectors(ptr))
     }
 
-    public func skip_images() -> Bool {
+    public func skipImages() -> Bool {
         __swift_bridge__$ContentConfig$skip_images(ptr)
     }
 
-    public func max_depth() -> Optional<UInt> {
+    public func maxDepth() -> Optional<UInt> {
         __swift_bridge__$ContentConfig$max_depth(ptr).intoSwiftRepr()
     }
 
@@ -306,11 +435,11 @@ extension ContentConfigRef {
         __swift_bridge__$ContentConfig$wrap(ptr)
     }
 
-    public func wrap_width() -> UInt {
+    public func wrapWidth() -> UInt {
         __swift_bridge__$ContentConfig$wrap_width(ptr)
     }
 
-    public func include_document_structure() -> Bool {
+    public func includeDocumentStructure() -> Bool {
         __swift_bridge__$ContentConfig$include_document_structure(ptr)
     }
 }
@@ -415,11 +544,11 @@ extension BrowserConfigRef {
         RustString(ptr: __swift_bridge__$BrowserConfig$wait(ptr))
     }
 
-    public func wait_selector() -> Optional<RustString> {
+    public func waitSelector() -> Optional<RustString> {
         { let val = __swift_bridge__$BrowserConfig$wait_selector(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func extra_wait() -> Optional<UInt64> {
+    public func extraWait() -> Optional<UInt64> {
         __swift_bridge__$BrowserConfig$extra_wait(ptr).intoSwiftRepr()
     }
 
@@ -431,19 +560,19 @@ extension BrowserConfigRef {
         { let val = __swift_bridge__$BrowserConfig$proxy(ptr); if val != nil { return ProxyConfig(ptr: val!) } else { return nil } }()
     }
 
-    public func block_url_patterns() -> RustVec<RustString> {
+    public func blockUrlPatterns() -> RustVec<RustString> {
         RustVec(ptr: __swift_bridge__$BrowserConfig$block_url_patterns(ptr))
     }
 
-    public func eval_script() -> Optional<RustString> {
+    public func evalScript() -> Optional<RustString> {
         { let val = __swift_bridge__$BrowserConfig$eval_script(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func robots_user_agent() -> Optional<RustString> {
+    public func robotsUserAgent() -> Optional<RustString> {
         { let val = __swift_bridge__$BrowserConfig$robots_user_agent(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func capture_network_events() -> Bool {
+    public func captureNetworkEvents() -> Bool {
         __swift_bridge__$BrowserConfig$capture_network_events(ptr)
     }
 }
@@ -528,71 +657,71 @@ public class CrawlConfigRef {
     }
 }
 extension CrawlConfigRef {
-    public func max_depth() -> Optional<UInt> {
+    public func maxDepth() -> Optional<UInt> {
         __swift_bridge__$CrawlConfig$max_depth(ptr).intoSwiftRepr()
     }
 
-    public func max_pages() -> Optional<UInt> {
+    public func maxPages() -> Optional<UInt> {
         __swift_bridge__$CrawlConfig$max_pages(ptr).intoSwiftRepr()
     }
 
-    public func max_concurrent() -> Optional<UInt> {
+    public func maxConcurrent() -> Optional<UInt> {
         __swift_bridge__$CrawlConfig$max_concurrent(ptr).intoSwiftRepr()
     }
 
-    public func respect_robots_txt() -> Bool {
+    public func respectRobotsTxt() -> Bool {
         __swift_bridge__$CrawlConfig$respect_robots_txt(ptr)
     }
 
-    public func soft_http_errors() -> Bool {
+    public func softHttpErrors() -> Bool {
         __swift_bridge__$CrawlConfig$soft_http_errors(ptr)
     }
 
-    public func user_agent() -> Optional<RustString> {
+    public func userAgent() -> Optional<RustString> {
         { let val = __swift_bridge__$CrawlConfig$user_agent(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func stay_on_domain() -> Bool {
+    public func stayOnDomain() -> Bool {
         __swift_bridge__$CrawlConfig$stay_on_domain(ptr)
     }
 
-    public func allow_subdomains() -> Bool {
+    public func allowSubdomains() -> Bool {
         __swift_bridge__$CrawlConfig$allow_subdomains(ptr)
     }
 
-    public func include_paths() -> RustVec<RustString> {
+    public func includePaths() -> RustVec<RustString> {
         RustVec(ptr: __swift_bridge__$CrawlConfig$include_paths(ptr))
     }
 
-    public func exclude_paths() -> RustVec<RustString> {
+    public func excludePaths() -> RustVec<RustString> {
         RustVec(ptr: __swift_bridge__$CrawlConfig$exclude_paths(ptr))
     }
 
-    public func custom_headers() -> RustString {
+    public func customHeaders() -> RustString {
         RustString(ptr: __swift_bridge__$CrawlConfig$custom_headers(ptr))
     }
 
-    public func request_timeout() -> UInt64 {
+    public func requestTimeout() -> UInt64 {
         __swift_bridge__$CrawlConfig$request_timeout(ptr)
     }
 
-    public func rate_limit_ms() -> Optional<UInt64> {
+    public func rateLimitMs() -> Optional<UInt64> {
         __swift_bridge__$CrawlConfig$rate_limit_ms(ptr).intoSwiftRepr()
     }
 
-    public func max_redirects() -> UInt {
+    public func maxRedirects() -> UInt {
         __swift_bridge__$CrawlConfig$max_redirects(ptr)
     }
 
-    public func retry_count() -> UInt {
+    public func retryCount() -> UInt {
         __swift_bridge__$CrawlConfig$retry_count(ptr)
     }
 
-    public func retry_codes() -> RustVec<UInt16> {
+    public func retryCodes() -> RustVec<UInt16> {
         RustVec(ptr: __swift_bridge__$CrawlConfig$retry_codes(ptr))
     }
 
-    public func cookies_enabled() -> Bool {
+    public func cookiesEnabled() -> Bool {
         __swift_bridge__$CrawlConfig$cookies_enabled(ptr)
     }
 
@@ -600,11 +729,11 @@ extension CrawlConfigRef {
         { let val = __swift_bridge__$CrawlConfig$auth(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func max_body_size() -> Optional<UInt> {
+    public func maxBodySize() -> Optional<UInt> {
         __swift_bridge__$CrawlConfig$max_body_size(ptr).intoSwiftRepr()
     }
 
-    public func remove_tags() -> RustVec<RustString> {
+    public func removeTags() -> RustVec<RustString> {
         RustVec(ptr: __swift_bridge__$CrawlConfig$remove_tags(ptr))
     }
 
@@ -612,23 +741,23 @@ extension CrawlConfigRef {
         ContentConfig(ptr: __swift_bridge__$CrawlConfig$content(ptr))
     }
 
-    public func map_limit() -> Optional<UInt> {
+    public func mapLimit() -> Optional<UInt> {
         __swift_bridge__$CrawlConfig$map_limit(ptr).intoSwiftRepr()
     }
 
-    public func map_search() -> Optional<RustString> {
+    public func mapSearch() -> Optional<RustString> {
         { let val = __swift_bridge__$CrawlConfig$map_search(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func download_assets() -> Bool {
+    public func downloadAssets() -> Bool {
         __swift_bridge__$CrawlConfig$download_assets(ptr)
     }
 
-    public func asset_types() -> RustVec<RustString> {
+    public func assetTypes() -> RustVec<RustString> {
         RustVec(ptr: __swift_bridge__$CrawlConfig$asset_types(ptr))
     }
 
-    public func max_asset_size() -> Optional<UInt> {
+    public func maxAssetSize() -> Optional<UInt> {
         __swift_bridge__$CrawlConfig$max_asset_size(ptr).intoSwiftRepr()
     }
 
@@ -640,35 +769,35 @@ extension CrawlConfigRef {
         { let val = __swift_bridge__$CrawlConfig$proxy(ptr); if val != nil { return ProxyConfig(ptr: val!) } else { return nil } }()
     }
 
-    public func user_agents() -> RustVec<RustString> {
+    public func userAgents() -> RustVec<RustString> {
         RustVec(ptr: __swift_bridge__$CrawlConfig$user_agents(ptr))
     }
 
-    public func capture_screenshot() -> Bool {
+    public func captureScreenshot() -> Bool {
         __swift_bridge__$CrawlConfig$capture_screenshot(ptr)
     }
 
-    public func download_documents() -> Bool {
+    public func downloadDocuments() -> Bool {
         __swift_bridge__$CrawlConfig$download_documents(ptr)
     }
 
-    public func document_max_size() -> Optional<UInt> {
+    public func documentMaxSize() -> Optional<UInt> {
         __swift_bridge__$CrawlConfig$document_max_size(ptr).intoSwiftRepr()
     }
 
-    public func document_mime_types() -> RustVec<RustString> {
+    public func documentMimeTypes() -> RustVec<RustString> {
         RustVec(ptr: __swift_bridge__$CrawlConfig$document_mime_types(ptr))
     }
 
-    public func warc_output() -> Optional<RustString> {
+    public func warcOutput() -> Optional<RustString> {
         { let val = __swift_bridge__$CrawlConfig$warc_output(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func browser_profile() -> Optional<RustString> {
+    public func browserProfile() -> Optional<RustString> {
         { let val = __swift_bridge__$CrawlConfig$browser_profile(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func save_browser_profile() -> Bool {
+    public func saveBrowserProfile() -> Bool {
         __swift_bridge__$CrawlConfig$save_browser_profile(ptr)
     }
 }
@@ -753,11 +882,11 @@ public class BrowserExtrasRef {
     }
 }
 extension BrowserExtrasRef {
-    public func eval_result() -> Optional<RustString> {
+    public func evalResult() -> Optional<RustString> {
         { let val = __swift_bridge__$BrowserExtras$eval_result(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func network_events() -> RustVec<ResponseMeta> {
+    public func networkEvents() -> RustVec<ResponseMeta> {
         RustVec(ptr: __swift_bridge__$BrowserExtras$network_events(ptr))
     }
 
@@ -850,7 +979,7 @@ extension DownloadedDocumentRef {
         RustString(ptr: __swift_bridge__$DownloadedDocument$url(ptr))
     }
 
-    public func mime_type() -> RustString {
+    public func mimeType() -> RustString {
         RustString(ptr: __swift_bridge__$DownloadedDocument$mime_type(ptr))
     }
 
@@ -862,7 +991,7 @@ extension DownloadedDocumentRef {
         { let val = __swift_bridge__$DownloadedDocument$filename(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func content_hash() -> RustString {
+    public func contentHash() -> RustString {
         RustString(ptr: __swift_bridge__$DownloadedDocument$content_hash(ptr))
     }
 
@@ -951,15 +1080,15 @@ public class InteractionResultRef {
     }
 }
 extension InteractionResultRef {
-    public func action_results() -> RustVec<ActionResult> {
+    public func actionResults() -> RustVec<ActionResult> {
         RustVec(ptr: __swift_bridge__$InteractionResult$action_results(ptr))
     }
 
-    public func final_html() -> RustString {
+    public func finalHtml() -> RustString {
         RustString(ptr: __swift_bridge__$InteractionResult$final_html(ptr))
     }
 
-    public func final_url() -> RustString {
+    public func finalUrl() -> RustString {
         RustString(ptr: __swift_bridge__$InteractionResult$final_url(ptr))
     }
 }
@@ -1044,11 +1173,11 @@ public class ActionResultRef {
     }
 }
 extension ActionResultRef {
-    public func action_index() -> UInt {
+    public func actionIndex() -> UInt {
         __swift_bridge__$ActionResult$action_index(ptr)
     }
 
-    public func action_type() -> RustString {
+    public func actionType() -> RustString {
         RustString(ptr: __swift_bridge__$ActionResult$action_type(ptr))
     }
 
@@ -1145,11 +1274,11 @@ public class ScrapeResultRef {
     }
 }
 extension ScrapeResultRef {
-    public func status_code() -> UInt16 {
+    public func statusCode() -> UInt16 {
         __swift_bridge__$ScrapeResult$status_code(ptr)
     }
 
-    public func content_type() -> RustString {
+    public func contentType() -> RustString {
         RustString(ptr: __swift_bridge__$ScrapeResult$content_type(ptr))
     }
 
@@ -1157,7 +1286,7 @@ extension ScrapeResultRef {
         RustString(ptr: __swift_bridge__$ScrapeResult$html(ptr))
     }
 
-    public func body_size() -> UInt {
+    public func bodySize() -> UInt {
         __swift_bridge__$ScrapeResult$body_size(ptr)
     }
 
@@ -1177,47 +1306,47 @@ extension ScrapeResultRef {
         RustVec(ptr: __swift_bridge__$ScrapeResult$feeds(ptr))
     }
 
-    public func json_ld() -> RustVec<JsonLdEntry> {
+    public func jsonLd() -> RustVec<JsonLdEntry> {
         RustVec(ptr: __swift_bridge__$ScrapeResult$json_ld(ptr))
     }
 
-    public func is_allowed() -> Bool {
+    public func isAllowed() -> Bool {
         __swift_bridge__$ScrapeResult$is_allowed(ptr)
     }
 
-    public func crawl_delay() -> Optional<UInt64> {
+    public func crawlDelay() -> Optional<UInt64> {
         __swift_bridge__$ScrapeResult$crawl_delay(ptr).intoSwiftRepr()
     }
 
-    public func noindex_detected() -> Bool {
+    public func noindexDetected() -> Bool {
         __swift_bridge__$ScrapeResult$noindex_detected(ptr)
     }
 
-    public func nofollow_detected() -> Bool {
+    public func nofollowDetected() -> Bool {
         __swift_bridge__$ScrapeResult$nofollow_detected(ptr)
     }
 
-    public func x_robots_tag() -> Optional<RustString> {
+    public func xRobotsTag() -> Optional<RustString> {
         { let val = __swift_bridge__$ScrapeResult$x_robots_tag(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func is_pdf() -> Bool {
+    public func isPdf() -> Bool {
         __swift_bridge__$ScrapeResult$is_pdf(ptr)
     }
 
-    public func was_skipped() -> Bool {
+    public func wasSkipped() -> Bool {
         __swift_bridge__$ScrapeResult$was_skipped(ptr)
     }
 
-    public func detected_charset() -> Optional<RustString> {
+    public func detectedCharset() -> Optional<RustString> {
         { let val = __swift_bridge__$ScrapeResult$detected_charset(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func auth_header_sent() -> Bool {
+    public func authHeaderSent() -> Bool {
         __swift_bridge__$ScrapeResult$auth_header_sent(ptr)
     }
 
-    public func response_meta() -> Optional<ResponseMeta> {
+    public func responseMeta() -> Optional<ResponseMeta> {
         { let val = __swift_bridge__$ScrapeResult$response_meta(ptr); if val != nil { return ResponseMeta(ptr: val!) } else { return nil } }()
     }
 
@@ -1225,11 +1354,11 @@ extension ScrapeResultRef {
         RustVec(ptr: __swift_bridge__$ScrapeResult$assets(ptr))
     }
 
-    public func js_render_hint() -> Bool {
+    public func jsRenderHint() -> Bool {
         __swift_bridge__$ScrapeResult$js_render_hint(ptr)
     }
 
-    public func browser_used() -> Bool {
+    public func browserUsed() -> Bool {
         __swift_bridge__$ScrapeResult$browser_used(ptr)
     }
 
@@ -1237,15 +1366,15 @@ extension ScrapeResultRef {
         { let val = __swift_bridge__$ScrapeResult$markdown(ptr); if val != nil { return MarkdownResult(ptr: val!) } else { return nil } }()
     }
 
-    public func extracted_data() -> Optional<RustString> {
+    public func extractedData() -> Optional<RustString> {
         { let val = __swift_bridge__$ScrapeResult$extracted_data(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func extraction_meta() -> Optional<ExtractionMeta> {
+    public func extractionMeta() -> Optional<ExtractionMeta> {
         { let val = __swift_bridge__$ScrapeResult$extraction_meta(ptr); if val != nil { return ExtractionMeta(ptr: val!) } else { return nil } }()
     }
 
-    public func downloaded_document() -> Optional<DownloadedDocument> {
+    public func downloadedDocument() -> Optional<DownloadedDocument> {
         { let val = __swift_bridge__$ScrapeResult$downloaded_document(ptr); if val != nil { return DownloadedDocument(ptr: val!) } else { return nil } }()
     }
 
@@ -1338,15 +1467,15 @@ extension CrawlPageResultRef {
         RustString(ptr: __swift_bridge__$CrawlPageResult$url(ptr))
     }
 
-    public func normalized_url() -> RustString {
+    public func normalizedUrl() -> RustString {
         RustString(ptr: __swift_bridge__$CrawlPageResult$normalized_url(ptr))
     }
 
-    public func status_code() -> UInt16 {
+    public func statusCode() -> UInt16 {
         __swift_bridge__$CrawlPageResult$status_code(ptr)
     }
 
-    public func content_type() -> RustString {
+    public func contentType() -> RustString {
         RustString(ptr: __swift_bridge__$CrawlPageResult$content_type(ptr))
     }
 
@@ -1354,7 +1483,7 @@ extension CrawlPageResultRef {
         RustString(ptr: __swift_bridge__$CrawlPageResult$html(ptr))
     }
 
-    public func body_size() -> UInt {
+    public func bodySize() -> UInt {
         __swift_bridge__$CrawlPageResult$body_size(ptr)
     }
 
@@ -1374,7 +1503,7 @@ extension CrawlPageResultRef {
         RustVec(ptr: __swift_bridge__$CrawlPageResult$feeds(ptr))
     }
 
-    public func json_ld() -> RustVec<JsonLdEntry> {
+    public func jsonLd() -> RustVec<JsonLdEntry> {
         RustVec(ptr: __swift_bridge__$CrawlPageResult$json_ld(ptr))
     }
 
@@ -1382,19 +1511,19 @@ extension CrawlPageResultRef {
         __swift_bridge__$CrawlPageResult$depth(ptr)
     }
 
-    public func stayed_on_domain() -> Bool {
+    public func stayedOnDomain() -> Bool {
         __swift_bridge__$CrawlPageResult$stayed_on_domain(ptr)
     }
 
-    public func was_skipped() -> Bool {
+    public func wasSkipped() -> Bool {
         __swift_bridge__$CrawlPageResult$was_skipped(ptr)
     }
 
-    public func is_pdf() -> Bool {
+    public func isPdf() -> Bool {
         __swift_bridge__$CrawlPageResult$is_pdf(ptr)
     }
 
-    public func detected_charset() -> Optional<RustString> {
+    public func detectedCharset() -> Optional<RustString> {
         { let val = __swift_bridge__$CrawlPageResult$detected_charset(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
@@ -1402,15 +1531,15 @@ extension CrawlPageResultRef {
         { let val = __swift_bridge__$CrawlPageResult$markdown(ptr); if val != nil { return MarkdownResult(ptr: val!) } else { return nil } }()
     }
 
-    public func extracted_data() -> Optional<RustString> {
+    public func extractedData() -> Optional<RustString> {
         { let val = __swift_bridge__$CrawlPageResult$extracted_data(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func extraction_meta() -> Optional<ExtractionMeta> {
+    public func extractionMeta() -> Optional<ExtractionMeta> {
         { let val = __swift_bridge__$CrawlPageResult$extraction_meta(ptr); if val != nil { return ExtractionMeta(ptr: val!) } else { return nil } }()
     }
 
-    public func downloaded_document() -> Optional<DownloadedDocument> {
+    public func downloadedDocument() -> Optional<DownloadedDocument> {
         { let val = __swift_bridge__$CrawlPageResult$downloaded_document(ptr); if val != nil { return DownloadedDocument(ptr: val!) } else { return nil } }()
     }
 }
@@ -1499,15 +1628,15 @@ extension CrawlResultRef {
         RustVec(ptr: __swift_bridge__$CrawlResult$pages(ptr))
     }
 
-    public func final_url() -> RustString {
+    public func finalUrl() -> RustString {
         RustString(ptr: __swift_bridge__$CrawlResult$final_url(ptr))
     }
 
-    public func redirect_count() -> UInt {
+    public func redirectCount() -> UInt {
         __swift_bridge__$CrawlResult$redirect_count(ptr)
     }
 
-    public func was_skipped() -> Bool {
+    public func wasSkipped() -> Bool {
         __swift_bridge__$CrawlResult$was_skipped(ptr)
     }
 
@@ -1786,7 +1915,7 @@ extension MarkdownResultRef {
         RustString(ptr: __swift_bridge__$MarkdownResult$content(ptr))
     }
 
-    public func document_structure() -> Optional<RustString> {
+    public func documentStructure() -> Optional<RustString> {
         { let val = __swift_bridge__$MarkdownResult$document_structure(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
@@ -1802,7 +1931,7 @@ extension MarkdownResultRef {
         { let val = __swift_bridge__$MarkdownResult$citations(ptr); if val != nil { return CitationResult(ptr: val!) } else { return nil } }()
     }
 
-    public func fit_content() -> Optional<RustString> {
+    public func fitContent() -> Optional<RustString> {
         { let val = __swift_bridge__$MarkdownResult$fit_content(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 }
@@ -1895,7 +2024,7 @@ extension LinkInfoRef {
         RustString(ptr: __swift_bridge__$LinkInfo$text(ptr))
     }
 
-    public func link_type() -> RustString {
+    public func linkType() -> RustString {
         RustString(ptr: __swift_bridge__$LinkInfo$link_type(ptr))
     }
 
@@ -2097,7 +2226,7 @@ extension FeedInfoRef {
         { let val = __swift_bridge__$FeedInfo$title(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func feed_type() -> RustString {
+    public func feedType() -> RustString {
         RustString(ptr: __swift_bridge__$FeedInfo$feed_type(ptr))
     }
 }
@@ -2182,7 +2311,7 @@ public class JsonLdEntryRef {
     }
 }
 extension JsonLdEntryRef {
-    public func schema_type() -> RustString {
+    public func schemaType() -> RustString {
         RustString(ptr: __swift_bridge__$JsonLdEntry$schema_type(ptr))
     }
 
@@ -2376,11 +2505,11 @@ extension DownloadedAssetRef {
         RustString(ptr: __swift_bridge__$DownloadedAsset$url(ptr))
     }
 
-    public func content_hash() -> RustString {
+    public func contentHash() -> RustString {
         RustString(ptr: __swift_bridge__$DownloadedAsset$content_hash(ptr))
     }
 
-    public func mime_type() -> Optional<RustString> {
+    public func mimeType() -> Optional<RustString> {
         { let val = __swift_bridge__$DownloadedAsset$mime_type(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
@@ -2388,11 +2517,11 @@ extension DownloadedAssetRef {
         __swift_bridge__$DownloadedAsset$size(ptr)
     }
 
-    public func asset_category() -> RustString {
+    public func assetCategory() -> RustString {
         RustString(ptr: __swift_bridge__$DownloadedAsset$asset_category(ptr))
     }
 
-    public func html_tag() -> Optional<RustString> {
+    public func htmlTag() -> Optional<RustString> {
         { let val = __swift_bridge__$DownloadedAsset$html_tag(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 }
@@ -2477,11 +2606,11 @@ public class ArticleMetadataRef {
     }
 }
 extension ArticleMetadataRef {
-    public func published_time() -> Optional<RustString> {
+    public func publishedTime() -> Optional<RustString> {
         { let val = __swift_bridge__$ArticleMetadata$published_time(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func modified_time() -> Optional<RustString> {
+    public func modifiedTime() -> Optional<RustString> {
         { let val = __swift_bridge__$ArticleMetadata$modified_time(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
@@ -2679,7 +2808,7 @@ extension FaviconInfoRef {
         { let val = __swift_bridge__$FaviconInfo$sizes(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func mime_type() -> Optional<RustString> {
+    public func mimeType() -> Optional<RustString> {
         { let val = __swift_bridge__$FaviconInfo$mime_type(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 }
@@ -2857,11 +2986,11 @@ extension ResponseMetaRef {
         { let val = __swift_bridge__$ResponseMeta$etag(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func last_modified() -> Optional<RustString> {
+    public func lastModified() -> Optional<RustString> {
         { let val = __swift_bridge__$ResponseMeta$last_modified(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func cache_control() -> Optional<RustString> {
+    public func cacheControl() -> Optional<RustString> {
         { let val = __swift_bridge__$ResponseMeta$cache_control(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
@@ -2869,15 +2998,15 @@ extension ResponseMetaRef {
         { let val = __swift_bridge__$ResponseMeta$server(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func x_powered_by() -> Optional<RustString> {
+    public func xPoweredBy() -> Optional<RustString> {
         { let val = __swift_bridge__$ResponseMeta$x_powered_by(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func content_language() -> Optional<RustString> {
+    public func contentLanguage() -> Optional<RustString> {
         { let val = __swift_bridge__$ResponseMeta$content_language(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func content_encoding() -> Optional<RustString> {
+    public func contentEncoding() -> Optional<RustString> {
         { let val = __swift_bridge__$ResponseMeta$content_encoding(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 }
@@ -2970,7 +3099,7 @@ extension PageMetadataRef {
         { let val = __swift_bridge__$PageMetadata$description(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func canonical_url() -> Optional<RustString> {
+    public func canonicalUrl() -> Optional<RustString> {
         { let val = __swift_bridge__$PageMetadata$canonical_url(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
@@ -2986,7 +3115,7 @@ extension PageMetadataRef {
         { let val = __swift_bridge__$PageMetadata$viewport(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func theme_color() -> Optional<RustString> {
+    public func themeColor() -> Optional<RustString> {
         { let val = __swift_bridge__$PageMetadata$theme_color(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
@@ -2998,119 +3127,119 @@ extension PageMetadataRef {
         { let val = __swift_bridge__$PageMetadata$robots(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func html_lang() -> Optional<RustString> {
+    public func htmlLang() -> Optional<RustString> {
         { let val = __swift_bridge__$PageMetadata$html_lang(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func html_dir() -> Optional<RustString> {
+    public func htmlDir() -> Optional<RustString> {
         { let val = __swift_bridge__$PageMetadata$html_dir(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func og_title() -> Optional<RustString> {
+    public func ogTitle() -> Optional<RustString> {
         { let val = __swift_bridge__$PageMetadata$og_title(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func og_type() -> Optional<RustString> {
+    public func ogType() -> Optional<RustString> {
         { let val = __swift_bridge__$PageMetadata$og_type(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func og_image() -> Optional<RustString> {
+    public func ogImage() -> Optional<RustString> {
         { let val = __swift_bridge__$PageMetadata$og_image(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func og_description() -> Optional<RustString> {
+    public func ogDescription() -> Optional<RustString> {
         { let val = __swift_bridge__$PageMetadata$og_description(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func og_url() -> Optional<RustString> {
+    public func ogUrl() -> Optional<RustString> {
         { let val = __swift_bridge__$PageMetadata$og_url(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func og_site_name() -> Optional<RustString> {
+    public func ogSiteName() -> Optional<RustString> {
         { let val = __swift_bridge__$PageMetadata$og_site_name(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func og_locale() -> Optional<RustString> {
+    public func ogLocale() -> Optional<RustString> {
         { let val = __swift_bridge__$PageMetadata$og_locale(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func og_video() -> Optional<RustString> {
+    public func ogVideo() -> Optional<RustString> {
         { let val = __swift_bridge__$PageMetadata$og_video(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func og_audio() -> Optional<RustString> {
+    public func ogAudio() -> Optional<RustString> {
         { let val = __swift_bridge__$PageMetadata$og_audio(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func og_locale_alternates() -> Optional<RustVec<RustString>> {
+    public func ogLocaleAlternates() -> Optional<RustVec<RustString>> {
         { let val = __swift_bridge__$PageMetadata$og_locale_alternates(ptr); if val != nil { return RustVec(ptr: val!) } else { return nil } }()
     }
 
-    public func twitter_card() -> Optional<RustString> {
+    public func twitterCard() -> Optional<RustString> {
         { let val = __swift_bridge__$PageMetadata$twitter_card(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func twitter_title() -> Optional<RustString> {
+    public func twitterTitle() -> Optional<RustString> {
         { let val = __swift_bridge__$PageMetadata$twitter_title(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func twitter_description() -> Optional<RustString> {
+    public func twitterDescription() -> Optional<RustString> {
         { let val = __swift_bridge__$PageMetadata$twitter_description(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func twitter_image() -> Optional<RustString> {
+    public func twitterImage() -> Optional<RustString> {
         { let val = __swift_bridge__$PageMetadata$twitter_image(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func twitter_site() -> Optional<RustString> {
+    public func twitterSite() -> Optional<RustString> {
         { let val = __swift_bridge__$PageMetadata$twitter_site(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func twitter_creator() -> Optional<RustString> {
+    public func twitterCreator() -> Optional<RustString> {
         { let val = __swift_bridge__$PageMetadata$twitter_creator(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func dc_title() -> Optional<RustString> {
+    public func dcTitle() -> Optional<RustString> {
         { let val = __swift_bridge__$PageMetadata$dc_title(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func dc_creator() -> Optional<RustString> {
+    public func dcCreator() -> Optional<RustString> {
         { let val = __swift_bridge__$PageMetadata$dc_creator(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func dc_subject() -> Optional<RustString> {
+    public func dcSubject() -> Optional<RustString> {
         { let val = __swift_bridge__$PageMetadata$dc_subject(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func dc_description() -> Optional<RustString> {
+    public func dcDescription() -> Optional<RustString> {
         { let val = __swift_bridge__$PageMetadata$dc_description(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func dc_publisher() -> Optional<RustString> {
+    public func dcPublisher() -> Optional<RustString> {
         { let val = __swift_bridge__$PageMetadata$dc_publisher(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func dc_date() -> Optional<RustString> {
+    public func dcDate() -> Optional<RustString> {
         { let val = __swift_bridge__$PageMetadata$dc_date(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func dc_type() -> Optional<RustString> {
+    public func dcType() -> Optional<RustString> {
         { let val = __swift_bridge__$PageMetadata$dc_type(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func dc_format() -> Optional<RustString> {
+    public func dcFormat() -> Optional<RustString> {
         { let val = __swift_bridge__$PageMetadata$dc_format(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func dc_identifier() -> Optional<RustString> {
+    public func dcIdentifier() -> Optional<RustString> {
         { let val = __swift_bridge__$PageMetadata$dc_identifier(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func dc_language() -> Optional<RustString> {
+    public func dcLanguage() -> Optional<RustString> {
         { let val = __swift_bridge__$PageMetadata$dc_language(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
-    public func dc_rights() -> Optional<RustString> {
+    public func dcRights() -> Optional<RustString> {
         { let val = __swift_bridge__$PageMetadata$dc_rights(ptr); if val != nil { return RustString(ptr: val!) } else { return nil } }()
     }
 
@@ -3130,7 +3259,7 @@ extension PageMetadataRef {
         { let val = __swift_bridge__$PageMetadata$headings(ptr); if val != nil { return RustVec(ptr: val!) } else { return nil } }()
     }
 
-    public func word_count() -> Optional<UInt> {
+    public func wordCount() -> Optional<UInt> {
         __swift_bridge__$PageMetadata$word_count(ptr).intoSwiftRepr()
     }
 }
@@ -3832,15 +3961,15 @@ extension BatchScrapeResultsRef {
         RustVec(ptr: __swift_bridge__$BatchScrapeResults$results(ptr))
     }
 
-    public func total_count() -> UInt {
+    public func totalCount() -> UInt {
         __swift_bridge__$BatchScrapeResults$total_count(ptr)
     }
 
-    public func completed_count() -> UInt {
+    public func completedCount() -> UInt {
         __swift_bridge__$BatchScrapeResults$completed_count(ptr)
     }
 
-    public func failed_count() -> UInt {
+    public func failedCount() -> UInt {
         __swift_bridge__$BatchScrapeResults$failed_count(ptr)
     }
 }
@@ -3929,15 +4058,15 @@ extension BatchCrawlResultsRef {
         RustVec(ptr: __swift_bridge__$BatchCrawlResults$results(ptr))
     }
 
-    public func total_count() -> UInt {
+    public func totalCount() -> UInt {
         __swift_bridge__$BatchCrawlResults$total_count(ptr)
     }
 
-    public func completed_count() -> UInt {
+    public func completedCount() -> UInt {
         __swift_bridge__$BatchCrawlResults$completed_count(ptr)
     }
 
-    public func failed_count() -> UInt {
+    public func failedCount() -> UInt {
         __swift_bridge__$BatchCrawlResults$failed_count(ptr)
     }
 }

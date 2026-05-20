@@ -24,8 +24,8 @@ package dev.kreuzberg.kreuzcrawl.android
 /**
  * Aggregate result of a batch crawl, exposing per-URL results plus precomputed counts.
  *
- * The counts are derived once at construction so every binding language can read them as plain
- * integer fields without re-iterating the `results` vector.
+ * The counts are derived once at construction so every binding language can read them
+ * as plain integer fields without re-iterating the `results` vector.
  */
 data class BatchCrawlResults(
     /** Per-URL crawl results, in the order seed URLs were submitted. */
@@ -35,5 +35,5 @@ data class BatchCrawlResults(
     /** Number of seed URLs whose crawl succeeded (`error` is `null`). */
     val completedCount: Long,
     /** Number of seed URLs whose crawl failed (`error` is `Some`). */
-    val failedCount: Long,
+    val failedCount: Long
 )

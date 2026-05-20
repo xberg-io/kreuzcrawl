@@ -2,6 +2,28 @@
 
 All notable changes to kreuzcrawl are documented here.
 
+## [Unreleased]
+
+### Changed
+
+- **Regenerated all alef bindings against `alef 0.17.8`** (was `0.17.2`). Two
+  behaviour changes flow through to the per-language bindings:
+  - Rustdoc intra-doc links of the form `[Type::method]` are now emitted as
+    plain ``Type.method`` in non-Rust binding source comments. The previous
+    output left raw `[CrawlConfig::default()]` markers that rustdoc could not
+    resolve in the binding crates (no `CrawlConfig` symbol in scope), causing
+    `clippy::doc-link-with-quotes` and `rustdoc::broken-intra-doc-links`
+    warnings on the binding crates.
+  - PHP binding: `CrawlEngineHandle::batchCrawlStream` was renamed to
+    `crawlStream` to match the canonical method name on the core engine.
+    Affects callers of the PHP package only; no impact on other bindings.
+- **Swift binding surface** expanded — `RustBridgeC.h` and
+  `RustBridge/kreuzcrawl-swift.swift` now include the full pluggable-component
+  surface (was partial in rc.23).
+- **Reference docs (`docs/reference/api-*.md`, `configuration.md`, `types.md`,
+  `errors.md`)** regenerated with the new alef table renderer — content is
+  identical, table formatting is the new canonical style.
+
 ## [0.3.0-rc.23] - 2026-05-20
 
 ### Fixed

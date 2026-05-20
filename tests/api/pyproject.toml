@@ -1,6 +1,6 @@
 [build-system]
 build-backend = "setuptools.build_meta"
-requires = [ "setuptools>=68", "wheel" ]
+requires = ["setuptools>=68", "wheel"]
 
 [project]
 name = "kreuzcrawl-api-tests"
@@ -15,15 +15,15 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
 ]
-dependencies = [ "pytest>=7.4", "requests>=2.31", "schemathesis>=3.38" ]
+dependencies = ["pytest>=7.4", "requests>=2.31", "schemathesis>=3.38"]
 
 [tool.setuptools]
 packages = []
 
 [tool.pytest]
-ini_options.testpaths = [ "." ]
+ini_options.testpaths = ["."]
 ini_options.python_files = "test_*.py"
 ini_options.python_functions = "test_*"
 ini_options.addopts = "-v --tb=short"
 # Schemathesis default hypothesis settings
-ini_options.markers = [ "slow: marks tests as slow (deselect with '-m \"not slow\"')" ]
+ini_options.markers = ["slow: marks tests as slow (deselect with '-m \"not slow\"')"]

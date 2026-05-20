@@ -1061,7 +1061,7 @@ extension BrowserBackend {
 }
 
 /// Authentication configuration.
-public enum AuthConfig {
+public enum AuthConfig: Codable, Sendable, Hashable {
     /// HTTP Basic authentication.
     case basic(username: String, password: String)
     /// Bearer token authentication.
@@ -1172,27 +1172,13 @@ extension AssetCategory {
 /// `crawl_stream` / `batch_crawl_stream` binding wrappers in `bindings.rs`
 /// expose this as the per-language streaming idiom (Python `AsyncIterator`,
 /// Ruby `Enumerator`, PHP `Generator`, Elixir `Stream.unfold`, etc.).
-public enum CrawlEvent {
-    /// A single page has been crawled.
-    case page(result: CrawlPageResult)
-    /// An error occurred while crawling a URL.
-    case error(url: String, error: String)
-    /// The crawl has completed.
-    case complete(pagesCrawled: UInt)
-}
-extension CrawlEvent {
-    func intoRust() throws -> RustBridge.CrawlEvent {
-        let data = try JSONEncoder().encode(self)
-        let json = String(data: data, encoding: .utf8) ?? "null"
-        return try RustBridge.crawlEventFromJson(json)
-    }
-}
+public typealias CrawlEvent = RustBridge.CrawlEvent
 
 /// A single page interaction action.
 ///
 /// Actions are serialized with a `type` tag using camelCase naming,
 /// except `ExecuteJs` which is explicitly renamed to `"executeJs"`.
-public enum PageAction {
+public enum PageAction: Codable, Sendable, Hashable {
     /// Click on an element matching the given CSS selector.
     case click(selector: String)
     /// Type text into an element matching the given CSS selector.
@@ -1485,8 +1471,7 @@ public func assetCategoryFromJson(_ json: String) throws -> AssetCategory {
 }
 
 public func crawlEventFromJson(_ json: String) throws -> CrawlEvent {
-    let data = json.data(using: .utf8) ?? Data()
-    return try JSONDecoder().decode(CrawlEvent.self, from: data)
+    return try RustBridge.crawlEventFromJson(json)
 }
 
 public func pageActionFromJson(_ json: String) throws -> PageAction {
@@ -1510,8 +1495,9 @@ public func scrollDirectionFromJson(_ json: String) throws -> ScrollDirection {
 /// `[Example](https://example.com)` becomes `Example[1]`
 /// with `[1]: https://example.com` in the reference list.
 /// Images `![alt](url)` are preserved unchanged.
-public func generateCitations(markdown: String) -> CitationResult {
-    return RustBridge.generateCitations(markdown)
+public func generateCitations(markdown: String) throws -> CitationResult {
+    let _rb = RustBridge.generateCitations(markdown)
+    return try CitationResult(_rb)
 }
 
 /// Create a new crawl engine with the given configuration.
