@@ -224,6 +224,7 @@ pub struct CrawlResult {
 
 impl CrawlResult {
     /// Create a new `CrawlResult` with the given fields.
+    #[allow(clippy::too_many_arguments)]
     pub(crate) fn new(
         pages: Vec<CrawlPageResult>,
         final_url: String,
