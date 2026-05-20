@@ -2,6 +2,18 @@
 
 All notable changes to kreuzcrawl are documented here.
 
+## [0.3.0-rc.23] - 2026-05-20
+
+### Fixed
+
+- **Per-binding READMEs in `packages/*/README.md` and `crates/kreuzcrawl-{node,wasm}/README.md`**
+  refreshed so the badge `filter=v{{ version }}` and install snippets resolve to `0.3.0-rc.23`.
+  The rc.22 release regenerated package manifests but the README cache in `.alef/` was not
+  invalidated by the version bump, leaving stale `rc.21` badges that failed CI's
+  "Check README freshness" step. Workaround applied locally: `alef cache clear && alef readme`.
+  Upstream fix tracked in alef so future `alef sync-versions --set …` bumps also invalidate
+  the README cache automatically.
+
 ## [0.3.0-rc.22] - 2026-05-20
 
 ### Fixed

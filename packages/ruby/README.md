@@ -18,7 +18,7 @@
     <img src="https://img.shields.io/maven-central/v/dev.kreuzberg.kreuzcrawl/kreuzcrawl?label=Java&color=007ec6" alt="Java">
   </a>
   <a href="https://pkg.go.dev/github.com/kreuzberg-dev/kreuzcrawl/packages/go">
-    <img src="https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzcrawl?label=Go&color=007ec6&filter=v0.3.0-rc.21" alt="Go">
+    <img src="https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzcrawl?label=Go&color=007ec6&filter=v0.3.0-rc.23" alt="Go">
   </a>
   <a href="https://www.nuget.org/packages/Kreuzcrawl/">
     <img src="https://img.shields.io/nuget/v/Kreuzcrawl?label=C%23&color=007ec6" alt="C#">
@@ -61,7 +61,6 @@ Magnus with native Ruby objects, full metadata extraction, and Markdown conversi
 ```bash
 gem install kreuzcrawl
 ```
-
 ## Quick Start
 
 ```ruby title="Ruby"
@@ -80,7 +79,6 @@ crawl_engine = Kreuzcrawl.create_engine(config)
 crawl_result = Kreuzcrawl.crawl(crawl_engine, "https://en.wikipedia.org/wiki/Web_scraping")
 puts "Pages crawled: #{crawl_result.pages.length}"
 ```
-
 ## API Reference
 
 Full API documentation is available at [docs.kreuzcrawl.kreuzberg.dev](https://docs.kreuzcrawl.kreuzberg.dev).

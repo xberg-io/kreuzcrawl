@@ -18,7 +18,7 @@
     <img src="https://img.shields.io/maven-central/v/dev.kreuzberg.kreuzcrawl/kreuzcrawl?label=Java&color=007ec6" alt="Java">
   </a>
   <a href="https://pkg.go.dev/github.com/kreuzberg-dev/kreuzcrawl/packages/go">
-    <img src="https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzcrawl?label=Go&color=007ec6&filter=v0.3.0-rc.21" alt="Go">
+    <img src="https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzcrawl?label=Go&color=007ec6&filter=v0.3.0-rc.23" alt="Go">
   </a>
   <a href="https://www.nuget.org/packages/Kreuzcrawl/">
     <img src="https://img.shields.io/nuget/v/Kreuzcrawl?label=C%23&color=007ec6" alt="C#">
@@ -60,10 +60,10 @@ NIFs for native BEAM integration with OTP-compatible error tuples and ResourceAr
 
 ```bash
 def deps do
-  [{:kreuzcrawl, "~> 0.3.0-rc.21"}]
+  [{:kreuzcrawl, "~> 0.3.0-rc.23"}]
 end
-```
 
+```
 ## Quick Start
 
 ```elixir title="Elixir"
@@ -83,7 +83,6 @@ config_json = Jason.encode!(%Kreuzcrawl.CrawlConfig{max_depth: 1, max_pages: 5})
 crawl = Jason.decode!(crawl_json)
 IO.puts("Pages crawled: #{length(crawl["pages"] || [])}")
 ```
-
 ## API Reference
 
 Full API documentation is available at [docs.kreuzcrawl.kreuzberg.dev](https://docs.kreuzcrawl.kreuzberg.dev).
