@@ -44,9 +44,12 @@ mod ffi {
             chunks_processed: usize,
         ) -> ExtractionMeta;
         fn cost(&self) -> Option<f64>;
+        #[swift_bridge(swift_name = "promptTokens")]
         fn prompt_tokens(&self) -> Option<u64>;
+        #[swift_bridge(swift_name = "completionTokens")]
         fn completion_tokens(&self) -> Option<u64>;
         fn model(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "chunksProcessed")]
         fn chunks_processed(&self) -> usize;
     }
 
@@ -76,17 +79,28 @@ mod ffi {
             wrap_width: usize,
             include_document_structure: bool,
         ) -> ContentConfig;
+        #[swift_bridge(swift_name = "outputFormat")]
         fn output_format(&self) -> String;
+        #[swift_bridge(swift_name = "preprocessingPreset")]
         fn preprocessing_preset(&self) -> String;
+        #[swift_bridge(swift_name = "removeNavigation")]
         fn remove_navigation(&self) -> bool;
+        #[swift_bridge(swift_name = "removeForms")]
         fn remove_forms(&self) -> bool;
+        #[swift_bridge(swift_name = "stripTags")]
         fn strip_tags(&self) -> Vec<String>;
+        #[swift_bridge(swift_name = "preserveTags")]
         fn preserve_tags(&self) -> Vec<String>;
+        #[swift_bridge(swift_name = "excludeSelectors")]
         fn exclude_selectors(&self) -> Vec<String>;
+        #[swift_bridge(swift_name = "skipImages")]
         fn skip_images(&self) -> bool;
+        #[swift_bridge(swift_name = "maxDepth")]
         fn max_depth(&self) -> Option<usize>;
         fn wrap(&self) -> bool;
+        #[swift_bridge(swift_name = "wrapWidth")]
         fn wrap_width(&self) -> usize;
+        #[swift_bridge(swift_name = "includeDocumentStructure")]
         fn include_document_structure(&self) -> bool;
     }
 
@@ -113,13 +127,19 @@ mod ffi {
         fn endpoint(&self) -> Option<String>;
         fn timeout(&self) -> u64;
         fn wait(&self) -> String;
+        #[swift_bridge(swift_name = "waitSelector")]
         fn wait_selector(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "extraWait")]
         fn extra_wait(&self) -> Option<u64>;
         fn stealth(&self) -> bool;
         fn proxy(&self) -> Option<ProxyConfig>;
+        #[swift_bridge(swift_name = "blockUrlPatterns")]
         fn block_url_patterns(&self) -> Vec<String>;
+        #[swift_bridge(swift_name = "evalScript")]
         fn eval_script(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "robotsUserAgent")]
         fn robots_user_agent(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "captureNetworkEvents")]
         fn capture_network_events(&self) -> bool;
     }
 
@@ -164,41 +184,73 @@ mod ffi {
             browser_profile: Option<String>,
             save_browser_profile: bool,
         ) -> CrawlConfig;
+        #[swift_bridge(swift_name = "maxDepth")]
         fn max_depth(&self) -> Option<usize>;
+        #[swift_bridge(swift_name = "maxPages")]
         fn max_pages(&self) -> Option<usize>;
+        #[swift_bridge(swift_name = "maxConcurrent")]
         fn max_concurrent(&self) -> Option<usize>;
+        #[swift_bridge(swift_name = "respectRobotsTxt")]
         fn respect_robots_txt(&self) -> bool;
+        #[swift_bridge(swift_name = "softHttpErrors")]
         fn soft_http_errors(&self) -> bool;
+        #[swift_bridge(swift_name = "userAgent")]
         fn user_agent(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "stayOnDomain")]
         fn stay_on_domain(&self) -> bool;
+        #[swift_bridge(swift_name = "allowSubdomains")]
         fn allow_subdomains(&self) -> bool;
+        #[swift_bridge(swift_name = "includePaths")]
         fn include_paths(&self) -> Vec<String>;
+        #[swift_bridge(swift_name = "excludePaths")]
         fn exclude_paths(&self) -> Vec<String>;
+        #[swift_bridge(swift_name = "customHeaders")]
         fn custom_headers(&self) -> String;
+        #[swift_bridge(swift_name = "requestTimeout")]
         fn request_timeout(&self) -> u64;
+        #[swift_bridge(swift_name = "rateLimitMs")]
         fn rate_limit_ms(&self) -> Option<u64>;
+        #[swift_bridge(swift_name = "maxRedirects")]
         fn max_redirects(&self) -> usize;
+        #[swift_bridge(swift_name = "retryCount")]
         fn retry_count(&self) -> usize;
+        #[swift_bridge(swift_name = "retryCodes")]
         fn retry_codes(&self) -> Vec<u16>;
+        #[swift_bridge(swift_name = "cookiesEnabled")]
         fn cookies_enabled(&self) -> bool;
         fn auth(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "maxBodySize")]
         fn max_body_size(&self) -> Option<usize>;
+        #[swift_bridge(swift_name = "removeTags")]
         fn remove_tags(&self) -> Vec<String>;
         fn content(&self) -> ContentConfig;
+        #[swift_bridge(swift_name = "mapLimit")]
         fn map_limit(&self) -> Option<usize>;
+        #[swift_bridge(swift_name = "mapSearch")]
         fn map_search(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "downloadAssets")]
         fn download_assets(&self) -> bool;
+        #[swift_bridge(swift_name = "assetTypes")]
         fn asset_types(&self) -> Vec<String>;
+        #[swift_bridge(swift_name = "maxAssetSize")]
         fn max_asset_size(&self) -> Option<usize>;
         fn browser(&self) -> BrowserConfig;
         fn proxy(&self) -> Option<ProxyConfig>;
+        #[swift_bridge(swift_name = "userAgents")]
         fn user_agents(&self) -> Vec<String>;
+        #[swift_bridge(swift_name = "captureScreenshot")]
         fn capture_screenshot(&self) -> bool;
+        #[swift_bridge(swift_name = "downloadDocuments")]
         fn download_documents(&self) -> bool;
+        #[swift_bridge(swift_name = "documentMaxSize")]
         fn document_max_size(&self) -> Option<usize>;
+        #[swift_bridge(swift_name = "documentMimeTypes")]
         fn document_mime_types(&self) -> Vec<String>;
+        #[swift_bridge(swift_name = "warcOutput")]
         fn warc_output(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "browserProfile")]
         fn browser_profile(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "saveBrowserProfile")]
         fn save_browser_profile(&self) -> bool;
     }
 
@@ -210,7 +262,9 @@ mod ffi {
             network_events: Vec<ResponseMeta>,
             cookies: Vec<CookieInfo>,
         ) -> BrowserExtras;
+        #[swift_bridge(swift_name = "evalResult")]
         fn eval_result(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "networkEvents")]
         fn network_events(&self) -> Vec<ResponseMeta>;
         fn cookies(&self) -> Vec<CookieInfo>;
     }
@@ -227,9 +281,11 @@ mod ffi {
             headers: String,
         ) -> DownloadedDocument;
         fn url(&self) -> String;
+        #[swift_bridge(swift_name = "mimeType")]
         fn mime_type(&self) -> String;
         fn size(&self) -> usize;
         fn filename(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "contentHash")]
         fn content_hash(&self) -> String;
         fn headers(&self) -> String;
     }
@@ -238,8 +294,11 @@ mod ffi {
         type InteractionResult;
         #[swift_bridge(init)]
         fn new(action_results: Vec<ActionResult>, final_html: String, final_url: String) -> InteractionResult;
+        #[swift_bridge(swift_name = "actionResults")]
         fn action_results(&self) -> Vec<ActionResult>;
+        #[swift_bridge(swift_name = "finalHtml")]
         fn final_html(&self) -> String;
+        #[swift_bridge(swift_name = "finalUrl")]
         fn final_url(&self) -> String;
     }
 
@@ -253,7 +312,9 @@ mod ffi {
             data: Option<String>,
             error: Option<String>,
         ) -> ActionResult;
+        #[swift_bridge(swift_name = "actionIndex")]
         fn action_index(&self) -> usize;
+        #[swift_bridge(swift_name = "actionType")]
         fn action_type(&self) -> String;
         fn success(&self) -> bool;
         fn data(&self) -> Option<String>;
@@ -292,31 +353,50 @@ mod ffi {
             downloaded_document: Option<DownloadedDocument>,
             browser: Option<BrowserExtras>,
         ) -> ScrapeResult;
+        #[swift_bridge(swift_name = "statusCode")]
         fn status_code(&self) -> u16;
+        #[swift_bridge(swift_name = "contentType")]
         fn content_type(&self) -> String;
         fn html(&self) -> String;
+        #[swift_bridge(swift_name = "bodySize")]
         fn body_size(&self) -> usize;
         fn metadata(&self) -> PageMetadata;
         fn links(&self) -> Vec<LinkInfo>;
         fn images(&self) -> Vec<ImageInfo>;
         fn feeds(&self) -> Vec<FeedInfo>;
+        #[swift_bridge(swift_name = "jsonLd")]
         fn json_ld(&self) -> Vec<JsonLdEntry>;
+        #[swift_bridge(swift_name = "isAllowed")]
         fn is_allowed(&self) -> bool;
+        #[swift_bridge(swift_name = "crawlDelay")]
         fn crawl_delay(&self) -> Option<u64>;
+        #[swift_bridge(swift_name = "noindexDetected")]
         fn noindex_detected(&self) -> bool;
+        #[swift_bridge(swift_name = "nofollowDetected")]
         fn nofollow_detected(&self) -> bool;
+        #[swift_bridge(swift_name = "xRobotsTag")]
         fn x_robots_tag(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "isPdf")]
         fn is_pdf(&self) -> bool;
+        #[swift_bridge(swift_name = "wasSkipped")]
         fn was_skipped(&self) -> bool;
+        #[swift_bridge(swift_name = "detectedCharset")]
         fn detected_charset(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "authHeaderSent")]
         fn auth_header_sent(&self) -> bool;
+        #[swift_bridge(swift_name = "responseMeta")]
         fn response_meta(&self) -> Option<ResponseMeta>;
         fn assets(&self) -> Vec<DownloadedAsset>;
+        #[swift_bridge(swift_name = "jsRenderHint")]
         fn js_render_hint(&self) -> bool;
+        #[swift_bridge(swift_name = "browserUsed")]
         fn browser_used(&self) -> bool;
         fn markdown(&self) -> Option<MarkdownResult>;
+        #[swift_bridge(swift_name = "extractedData")]
         fn extracted_data(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "extractionMeta")]
         fn extraction_meta(&self) -> Option<ExtractionMeta>;
+        #[swift_bridge(swift_name = "downloadedDocument")]
         fn downloaded_document(&self) -> Option<DownloadedDocument>;
         fn browser(&self) -> Option<BrowserExtras>;
     }
@@ -347,24 +427,36 @@ mod ffi {
             downloaded_document: Option<DownloadedDocument>,
         ) -> CrawlPageResult;
         fn url(&self) -> String;
+        #[swift_bridge(swift_name = "normalizedUrl")]
         fn normalized_url(&self) -> String;
+        #[swift_bridge(swift_name = "statusCode")]
         fn status_code(&self) -> u16;
+        #[swift_bridge(swift_name = "contentType")]
         fn content_type(&self) -> String;
         fn html(&self) -> String;
+        #[swift_bridge(swift_name = "bodySize")]
         fn body_size(&self) -> usize;
         fn metadata(&self) -> PageMetadata;
         fn links(&self) -> Vec<LinkInfo>;
         fn images(&self) -> Vec<ImageInfo>;
         fn feeds(&self) -> Vec<FeedInfo>;
+        #[swift_bridge(swift_name = "jsonLd")]
         fn json_ld(&self) -> Vec<JsonLdEntry>;
         fn depth(&self) -> usize;
+        #[swift_bridge(swift_name = "stayedOnDomain")]
         fn stayed_on_domain(&self) -> bool;
+        #[swift_bridge(swift_name = "wasSkipped")]
         fn was_skipped(&self) -> bool;
+        #[swift_bridge(swift_name = "isPdf")]
         fn is_pdf(&self) -> bool;
+        #[swift_bridge(swift_name = "detectedCharset")]
         fn detected_charset(&self) -> Option<String>;
         fn markdown(&self) -> Option<MarkdownResult>;
+        #[swift_bridge(swift_name = "extractedData")]
         fn extracted_data(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "extractionMeta")]
         fn extraction_meta(&self) -> Option<ExtractionMeta>;
+        #[swift_bridge(swift_name = "downloadedDocument")]
         fn downloaded_document(&self) -> Option<DownloadedDocument>;
     }
 
@@ -380,8 +472,11 @@ mod ffi {
             cookies: Vec<CookieInfo>,
         ) -> CrawlResult;
         fn pages(&self) -> Vec<CrawlPageResult>;
+        #[swift_bridge(swift_name = "finalUrl")]
         fn final_url(&self) -> String;
+        #[swift_bridge(swift_name = "redirectCount")]
         fn redirect_count(&self) -> usize;
+        #[swift_bridge(swift_name = "wasSkipped")]
         fn was_skipped(&self) -> bool;
         fn error(&self) -> Option<String>;
         fn cookies(&self) -> Vec<CookieInfo>;
@@ -421,10 +516,12 @@ mod ffi {
             fit_content: Option<String>,
         ) -> MarkdownResult;
         fn content(&self) -> String;
+        #[swift_bridge(swift_name = "documentStructure")]
         fn document_structure(&self) -> Option<String>;
         fn tables(&self) -> Vec<String>;
         fn warnings(&self) -> Vec<String>;
         fn citations(&self) -> Option<CitationResult>;
+        #[swift_bridge(swift_name = "fitContent")]
         fn fit_content(&self) -> Option<String>;
     }
 
@@ -434,6 +531,7 @@ mod ffi {
         fn new(url: String, text: String, link_type: LinkType, rel: Option<String>, nofollow: bool) -> LinkInfo;
         fn url(&self) -> String;
         fn text(&self) -> String;
+        #[swift_bridge(swift_name = "linkType")]
         fn link_type(&self) -> String;
         fn rel(&self) -> Option<String>;
         fn nofollow(&self) -> bool;
@@ -462,6 +560,7 @@ mod ffi {
         fn new(url: String, title: Option<String>, feed_type: FeedType) -> FeedInfo;
         fn url(&self) -> String;
         fn title(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "feedType")]
         fn feed_type(&self) -> String;
     }
 
@@ -469,6 +568,7 @@ mod ffi {
         type JsonLdEntry;
         #[swift_bridge(init)]
         fn new(schema_type: String, name: Option<String>, raw: String) -> JsonLdEntry;
+        #[swift_bridge(swift_name = "schemaType")]
         fn schema_type(&self) -> String;
         fn name(&self) -> Option<String>;
         fn raw(&self) -> String;
@@ -496,10 +596,14 @@ mod ffi {
             html_tag: Option<String>,
         ) -> DownloadedAsset;
         fn url(&self) -> String;
+        #[swift_bridge(swift_name = "contentHash")]
         fn content_hash(&self) -> String;
+        #[swift_bridge(swift_name = "mimeType")]
         fn mime_type(&self) -> Option<String>;
         fn size(&self) -> usize;
+        #[swift_bridge(swift_name = "assetCategory")]
         fn asset_category(&self) -> String;
+        #[swift_bridge(swift_name = "htmlTag")]
         fn html_tag(&self) -> Option<String>;
     }
 
@@ -513,7 +617,9 @@ mod ffi {
             section: Option<String>,
             tags: Vec<String>,
         ) -> ArticleMetadata;
+        #[swift_bridge(swift_name = "publishedTime")]
         fn published_time(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "modifiedTime")]
         fn modified_time(&self) -> Option<String>;
         fn author(&self) -> Option<String>;
         fn section(&self) -> Option<String>;
@@ -535,6 +641,7 @@ mod ffi {
         fn url(&self) -> String;
         fn rel(&self) -> String;
         fn sizes(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "mimeType")]
         fn mime_type(&self) -> Option<String>;
     }
 
@@ -559,11 +666,16 @@ mod ffi {
             content_encoding: Option<String>,
         ) -> ResponseMeta;
         fn etag(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "lastModified")]
         fn last_modified(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "cacheControl")]
         fn cache_control(&self) -> Option<String>;
         fn server(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "xPoweredBy")]
         fn x_powered_by(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "contentLanguage")]
         fn content_language(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "contentEncoding")]
         fn content_encoding(&self) -> Option<String>;
     }
 
@@ -617,46 +729,78 @@ mod ffi {
         ) -> PageMetadata;
         fn title(&self) -> Option<String>;
         fn description(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "canonicalUrl")]
         fn canonical_url(&self) -> Option<String>;
         fn keywords(&self) -> Option<String>;
         fn author(&self) -> Option<String>;
         fn viewport(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "themeColor")]
         fn theme_color(&self) -> Option<String>;
         fn generator(&self) -> Option<String>;
         fn robots(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "htmlLang")]
         fn html_lang(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "htmlDir")]
         fn html_dir(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "ogTitle")]
         fn og_title(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "ogType")]
         fn og_type(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "ogImage")]
         fn og_image(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "ogDescription")]
         fn og_description(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "ogUrl")]
         fn og_url(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "ogSiteName")]
         fn og_site_name(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "ogLocale")]
         fn og_locale(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "ogVideo")]
         fn og_video(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "ogAudio")]
         fn og_audio(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "ogLocaleAlternates")]
         fn og_locale_alternates(&self) -> Option<Vec<String>>;
+        #[swift_bridge(swift_name = "twitterCard")]
         fn twitter_card(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "twitterTitle")]
         fn twitter_title(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "twitterDescription")]
         fn twitter_description(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "twitterImage")]
         fn twitter_image(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "twitterSite")]
         fn twitter_site(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "twitterCreator")]
         fn twitter_creator(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "dcTitle")]
         fn dc_title(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "dcCreator")]
         fn dc_creator(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "dcSubject")]
         fn dc_subject(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "dcDescription")]
         fn dc_description(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "dcPublisher")]
         fn dc_publisher(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "dcDate")]
         fn dc_date(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "dcType")]
         fn dc_type(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "dcFormat")]
         fn dc_format(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "dcIdentifier")]
         fn dc_identifier(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "dcLanguage")]
         fn dc_language(&self) -> Option<String>;
+        #[swift_bridge(swift_name = "dcRights")]
         fn dc_rights(&self) -> Option<String>;
         fn article(&self) -> Option<ArticleMetadata>;
         fn hreflangs(&self) -> Option<Vec<HreflangEntry>>;
         fn favicons(&self) -> Option<Vec<FaviconInfo>>;
         fn headings(&self) -> Option<Vec<HeadingInfo>>;
+        #[swift_bridge(swift_name = "wordCount")]
         fn word_count(&self) -> Option<usize>;
     }
 
@@ -723,8 +867,11 @@ mod ffi {
             failed_count: usize,
         ) -> BatchScrapeResults;
         fn results(&self) -> Vec<BatchScrapeResult>;
+        #[swift_bridge(swift_name = "totalCount")]
         fn total_count(&self) -> usize;
+        #[swift_bridge(swift_name = "completedCount")]
         fn completed_count(&self) -> usize;
+        #[swift_bridge(swift_name = "failedCount")]
         fn failed_count(&self) -> usize;
     }
 
@@ -738,8 +885,11 @@ mod ffi {
             failed_count: usize,
         ) -> BatchCrawlResults;
         fn results(&self) -> Vec<BatchCrawlResult>;
+        #[swift_bridge(swift_name = "totalCount")]
         fn total_count(&self) -> usize;
+        #[swift_bridge(swift_name = "completedCount")]
         fn completed_count(&self) -> usize;
+        #[swift_bridge(swift_name = "failedCount")]
         fn failed_count(&self) -> usize;
     }
 

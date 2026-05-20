@@ -36,10 +36,10 @@ public struct ExtractionMeta: Codable, Sendable, Hashable {
 internal extension ExtractionMeta {
     init(_ rb: RustBridge.ExtractionMetaRef) throws {
         self.cost = rb.cost()
-        self.promptTokens = rb.prompt_tokens()
-        self.completionTokens = rb.completion_tokens()
+        self.promptTokens = rb.promptTokens()
+        self.completionTokens = rb.completionTokens()
         self.model = rb.model()?.toString()
-        self.chunksProcessed = rb.chunks_processed()
+        self.chunksProcessed = rb.chunksProcessed()
     }
     func intoRust() throws -> RustBridge.ExtractionMeta {
         return RustBridge.ExtractionMeta(self.cost, self.promptTokens, self.completionTokens, self.model, self.chunksProcessed)
@@ -147,18 +147,18 @@ public struct ContentConfig: Codable, Sendable, Hashable {
 // MARK: - Internal FFI conversions for ContentConfig
 internal extension ContentConfig {
     init(_ rb: RustBridge.ContentConfigRef) throws {
-        self.outputFormat = rb.output_format().toString()
-        self.preprocessingPreset = rb.preprocessing_preset().toString()
-        self.removeNavigation = rb.remove_navigation()
-        self.removeForms = rb.remove_forms()
-        self.stripTags = rb.strip_tags().map { $0.as_str().toString() }
-        self.preserveTags = rb.preserve_tags().map { $0.as_str().toString() }
-        self.excludeSelectors = rb.exclude_selectors().map { $0.as_str().toString() }
-        self.skipImages = rb.skip_images()
-        self.maxDepth = rb.max_depth()
+        self.outputFormat = rb.outputFormat().toString()
+        self.preprocessingPreset = rb.preprocessingPreset().toString()
+        self.removeNavigation = rb.removeNavigation()
+        self.removeForms = rb.removeForms()
+        self.stripTags = rb.stripTags().map { $0.as_str().toString() }
+        self.preserveTags = rb.preserveTags().map { $0.as_str().toString() }
+        self.excludeSelectors = rb.excludeSelectors().map { $0.as_str().toString() }
+        self.skipImages = rb.skipImages()
+        self.maxDepth = rb.maxDepth()
         self.wrap = rb.wrap()
-        self.wrapWidth = rb.wrap_width()
-        self.includeDocumentStructure = rb.include_document_structure()
+        self.wrapWidth = rb.wrapWidth()
+        self.includeDocumentStructure = rb.includeDocumentStructure()
     }
     func intoRust() throws -> RustBridge.ContentConfig {
         let __stripTags = RustVec<RustString>()
@@ -292,7 +292,7 @@ internal extension LinkInfo {
     init(_ rb: RustBridge.LinkInfoRef) throws {
         self.url = rb.url().toString()
         self.text = rb.text().toString()
-        self.linkType = LinkType(rawValue: rb.link_type().toString()) ?? { fatalError("Unknown LinkType: \(rb.link_type().toString())") }()
+        self.linkType = LinkType(rawValue: rb.linkType().toString()) ?? { fatalError("Unknown LinkType: \(rb.linkType().toString())") }()
         self.rel = rb.rel()?.toString()
         self.nofollow = rb.nofollow()
     }
@@ -361,7 +361,7 @@ internal extension FeedInfo {
     init(_ rb: RustBridge.FeedInfoRef) throws {
         self.url = rb.url().toString()
         self.title = rb.title()?.toString()
-        self.feedType = FeedType(rawValue: rb.feed_type().toString()) ?? { fatalError("Unknown FeedType: \(rb.feed_type().toString())") }()
+        self.feedType = FeedType(rawValue: rb.feedType().toString()) ?? { fatalError("Unknown FeedType: \(rb.feedType().toString())") }()
     }
     func intoRust() throws -> RustBridge.FeedInfo {
         return RustBridge.FeedInfo(self.url, self.title, try self.feedType.intoRust())
@@ -391,7 +391,7 @@ public struct JsonLdEntry: Codable, Sendable, Hashable {
 // MARK: - Internal FFI conversions for JsonLdEntry
 internal extension JsonLdEntry {
     init(_ rb: RustBridge.JsonLdEntryRef) throws {
-        self.schemaType = rb.schema_type().toString()
+        self.schemaType = rb.schemaType().toString()
         self.name = rb.name()?.toString()
         self.raw = rb.raw().toString()
     }
@@ -467,11 +467,11 @@ public struct DownloadedAsset: Codable, Sendable, Hashable {
 internal extension DownloadedAsset {
     init(_ rb: RustBridge.DownloadedAssetRef) throws {
         self.url = rb.url().toString()
-        self.contentHash = rb.content_hash().toString()
-        self.mimeType = rb.mime_type()?.toString()
+        self.contentHash = rb.contentHash().toString()
+        self.mimeType = rb.mimeType()?.toString()
         self.size = rb.size()
-        self.assetCategory = AssetCategory(rawValue: rb.asset_category().toString()) ?? { fatalError("Unknown AssetCategory: \(rb.asset_category().toString())") }()
-        self.htmlTag = rb.html_tag()?.toString()
+        self.assetCategory = AssetCategory(rawValue: rb.assetCategory().toString()) ?? { fatalError("Unknown AssetCategory: \(rb.assetCategory().toString())") }()
+        self.htmlTag = rb.htmlTag()?.toString()
     }
     func intoRust() throws -> RustBridge.DownloadedAsset {
         return RustBridge.DownloadedAsset(self.url, self.contentHash, self.mimeType, self.size, try self.assetCategory.intoRust(), self.htmlTag)
@@ -509,8 +509,8 @@ public struct ArticleMetadata: Codable, Sendable, Hashable {
 // MARK: - Internal FFI conversions for ArticleMetadata
 internal extension ArticleMetadata {
     init(_ rb: RustBridge.ArticleMetadataRef) throws {
-        self.publishedTime = rb.published_time()?.toString()
-        self.modifiedTime = rb.modified_time()?.toString()
+        self.publishedTime = rb.publishedTime()?.toString()
+        self.modifiedTime = rb.modifiedTime()?.toString()
         self.author = rb.author()?.toString()
         self.section = rb.section()?.toString()
         self.tags = rb.tags().map { $0.as_str().toString() }
@@ -575,7 +575,7 @@ internal extension FaviconInfo {
         self.url = rb.url().toString()
         self.rel = rb.rel().toString()
         self.sizes = rb.sizes()?.toString()
-        self.mimeType = rb.mime_type()?.toString()
+        self.mimeType = rb.mimeType()?.toString()
     }
     func intoRust() throws -> RustBridge.FaviconInfo {
         return RustBridge.FaviconInfo(self.url, self.rel, self.sizes, self.mimeType)
@@ -645,12 +645,12 @@ public struct ResponseMeta: Codable, Sendable, Hashable {
 internal extension ResponseMeta {
     init(_ rb: RustBridge.ResponseMetaRef) throws {
         self.etag = rb.etag()?.toString()
-        self.lastModified = rb.last_modified()?.toString()
-        self.cacheControl = rb.cache_control()?.toString()
+        self.lastModified = rb.lastModified()?.toString()
+        self.cacheControl = rb.cacheControl()?.toString()
         self.server = rb.server()?.toString()
-        self.xPoweredBy = rb.x_powered_by()?.toString()
-        self.contentLanguage = rb.content_language()?.toString()
-        self.contentEncoding = rb.content_encoding()?.toString()
+        self.xPoweredBy = rb.xPoweredBy()?.toString()
+        self.contentLanguage = rb.contentLanguage()?.toString()
+        self.contentEncoding = rb.contentEncoding()?.toString()
     }
     func intoRust() throws -> RustBridge.ResponseMeta {
         return RustBridge.ResponseMeta(self.etag, self.lastModified, self.cacheControl, self.server, self.xPoweredBy, self.contentLanguage, self.contentEncoding)
@@ -842,47 +842,47 @@ internal extension PageMetadata {
     init(_ rb: RustBridge.PageMetadataRef) throws {
         self.title = rb.title()?.toString()
         self.description = rb.description()?.toString()
-        self.canonicalUrl = rb.canonical_url()?.toString()
+        self.canonicalUrl = rb.canonicalUrl()?.toString()
         self.keywords = rb.keywords()?.toString()
         self.author = rb.author()?.toString()
         self.viewport = rb.viewport()?.toString()
-        self.themeColor = rb.theme_color()?.toString()
+        self.themeColor = rb.themeColor()?.toString()
         self.generator = rb.generator()?.toString()
         self.robots = rb.robots()?.toString()
-        self.htmlLang = rb.html_lang()?.toString()
-        self.htmlDir = rb.html_dir()?.toString()
-        self.ogTitle = rb.og_title()?.toString()
-        self.ogType = rb.og_type()?.toString()
-        self.ogImage = rb.og_image()?.toString()
-        self.ogDescription = rb.og_description()?.toString()
-        self.ogUrl = rb.og_url()?.toString()
-        self.ogSiteName = rb.og_site_name()?.toString()
-        self.ogLocale = rb.og_locale()?.toString()
-        self.ogVideo = rb.og_video()?.toString()
-        self.ogAudio = rb.og_audio()?.toString()
-        self.ogLocaleAlternates = rb.og_locale_alternates()?.map { $0.as_str().toString() }
-        self.twitterCard = rb.twitter_card()?.toString()
-        self.twitterTitle = rb.twitter_title()?.toString()
-        self.twitterDescription = rb.twitter_description()?.toString()
-        self.twitterImage = rb.twitter_image()?.toString()
-        self.twitterSite = rb.twitter_site()?.toString()
-        self.twitterCreator = rb.twitter_creator()?.toString()
-        self.dcTitle = rb.dc_title()?.toString()
-        self.dcCreator = rb.dc_creator()?.toString()
-        self.dcSubject = rb.dc_subject()?.toString()
-        self.dcDescription = rb.dc_description()?.toString()
-        self.dcPublisher = rb.dc_publisher()?.toString()
-        self.dcDate = rb.dc_date()?.toString()
-        self.dcType = rb.dc_type()?.toString()
-        self.dcFormat = rb.dc_format()?.toString()
-        self.dcIdentifier = rb.dc_identifier()?.toString()
-        self.dcLanguage = rb.dc_language()?.toString()
-        self.dcRights = rb.dc_rights()?.toString()
+        self.htmlLang = rb.htmlLang()?.toString()
+        self.htmlDir = rb.htmlDir()?.toString()
+        self.ogTitle = rb.ogTitle()?.toString()
+        self.ogType = rb.ogType()?.toString()
+        self.ogImage = rb.ogImage()?.toString()
+        self.ogDescription = rb.ogDescription()?.toString()
+        self.ogUrl = rb.ogUrl()?.toString()
+        self.ogSiteName = rb.ogSiteName()?.toString()
+        self.ogLocale = rb.ogLocale()?.toString()
+        self.ogVideo = rb.ogVideo()?.toString()
+        self.ogAudio = rb.ogAudio()?.toString()
+        self.ogLocaleAlternates = rb.ogLocaleAlternates()?.map { $0.as_str().toString() }
+        self.twitterCard = rb.twitterCard()?.toString()
+        self.twitterTitle = rb.twitterTitle()?.toString()
+        self.twitterDescription = rb.twitterDescription()?.toString()
+        self.twitterImage = rb.twitterImage()?.toString()
+        self.twitterSite = rb.twitterSite()?.toString()
+        self.twitterCreator = rb.twitterCreator()?.toString()
+        self.dcTitle = rb.dcTitle()?.toString()
+        self.dcCreator = rb.dcCreator()?.toString()
+        self.dcSubject = rb.dcSubject()?.toString()
+        self.dcDescription = rb.dcDescription()?.toString()
+        self.dcPublisher = rb.dcPublisher()?.toString()
+        self.dcDate = rb.dcDate()?.toString()
+        self.dcType = rb.dcType()?.toString()
+        self.dcFormat = rb.dcFormat()?.toString()
+        self.dcIdentifier = rb.dcIdentifier()?.toString()
+        self.dcLanguage = rb.dcLanguage()?.toString()
+        self.dcRights = rb.dcRights()?.toString()
         self.article = try rb.article().map { try ArticleMetadata($0) }
         self.hreflangs = try rb.hreflangs()?.map { try HreflangEntry($0) }
         self.favicons = try rb.favicons()?.map { try FaviconInfo($0) }
         self.headings = try rb.headings()?.map { try HeadingInfo($0) }
-        self.wordCount = rb.word_count()
+        self.wordCount = rb.wordCount()
     }
     func intoRust() throws -> RustBridge.PageMetadata {
         let data = try JSONEncoder().encode(self)
