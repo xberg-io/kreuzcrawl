@@ -26,5 +26,5 @@ data class HreflangEntry(
     /** The language code (e.g., "en", "fr", "x-default"). */
     val lang: String,
     /** The URL for this language variant. */
-    val url: String
+    val url: String,
 )

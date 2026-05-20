@@ -36,5 +36,5 @@ data class CrawlResult(
     /** Cookies collected during the crawl. */
     val cookies: List<CookieInfo>,
     /** Normalized URLs encountered during crawling (for deduplication counting). */
-    val normalizedUrls: List<String>
+    val normalizedUrls: List<String>,
 )

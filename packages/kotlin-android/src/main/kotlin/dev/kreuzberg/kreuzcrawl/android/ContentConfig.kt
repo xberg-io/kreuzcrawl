@@ -24,9 +24,8 @@ package dev.kreuzberg.kreuzcrawl.android
 /**
  * Content extraction and conversion configuration.
  *
- * Controls how HTML is converted to the output format. Uses
- * html-to-markdown-rs as the conversion engine for all formats
- * (markdown, plain text, djot).
+ * Controls how HTML is converted to the output format. Uses html-to-markdown-rs as the conversion
+ * engine for all formats (markdown, plain text, djot).
  */
 data class ContentConfig(
     /** Output format: `"markdown"` (default), `"plain"`, `"djot"`. */
@@ -44,8 +43,8 @@ data class ContentConfig(
     /** Remove form elements. Default: `true`. */
     val removeForms: Boolean,
     /**
-     * HTML tag names to strip (render children only, remove the tag wrapper).
-     * Default: `["noscript"]`.
+     * HTML tag names to strip (render children only, remove the tag wrapper). Default:
+     * `["noscript"]`.
      */
     val stripTags: List<String>,
     /** HTML tag names to preserve as raw HTML in output. */
@@ -53,9 +52,9 @@ data class ContentConfig(
     /**
      * CSS selectors for elements to exclude entirely (element + all content).
      *
-     * Unlike `strip_tags` (which removes the wrapper but keeps children),
-     * excluded elements and all descendants are dropped. Supports CSS selectors:
-     * `.class`, `#id`, `[attribute]`, compound selectors.
+     * Unlike `strip_tags` (which removes the wrapper but keeps children), excluded elements and all
+     * descendants are dropped. Supports CSS selectors: `.class`, `#id`, `[attribute]`, compound
+     * selectors.
      *
      * Example: `[".cookie-banner", "#ad-container", "[role='complementary']"]`
      */
@@ -69,5 +68,5 @@ data class ContentConfig(
     /** Wrap width when `wrap` is enabled. Default: `80`. */
     val wrapWidth: Long,
     /** Include document structure tree in output. Default: `true`. */
-    val includeDocumentStructure: Boolean
+    val includeDocumentStructure: Boolean,
 )

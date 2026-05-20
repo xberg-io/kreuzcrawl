@@ -26,5 +26,5 @@ enum class BrowserBackend {
     /** Existing Chromium/CDP backend powered by chromiumoxide. */
     CHROMIUMOXIDE,
     /** Kreuzcrawl-owned native browser backend derived from Obscura. */
-    NATIVE;
+    NATIVE,
 }

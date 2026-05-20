@@ -150,7 +150,7 @@ Scrape multiple URLs concurrently.
 **Signature:**
 
 ```typescript
-function batchScrape(engine: CrawlEngineHandle, urls: Array<string>): Promise<string>
+function batchScrape(engine: CrawlEngineHandle, urls: Array<string>): Promise<BatchScrapeResults>
 ```
 
 **Parameters:**
@@ -160,7 +160,7 @@ function batchScrape(engine: CrawlEngineHandle, urls: Array<string>): Promise<st
 | `engine` | `CrawlEngineHandle` | Yes | The crawl engine handle |
 | `urls` | `Array<string>` | Yes | The urls |
 
-**Returns:** `string`
+**Returns:** `BatchScrapeResults`
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -172,7 +172,7 @@ Crawl multiple seed URLs concurrently, each following links to configured depth.
 **Signature:**
 
 ```typescript
-function batchCrawl(engine: CrawlEngineHandle, urls: Array<string>): Promise<string>
+function batchCrawl(engine: CrawlEngineHandle, urls: Array<string>): Promise<BatchCrawlResults>
 ```
 
 **Parameters:**
@@ -182,7 +182,7 @@ function batchCrawl(engine: CrawlEngineHandle, urls: Array<string>): Promise<str
 | `engine` | `CrawlEngineHandle` | Yes | The crawl engine handle |
 | `urls` | `Array<string>` | Yes | The urls |
 
-**Returns:** `string`
+**Returns:** `BatchCrawlResults`
 **Errors:** Throws `Error` with a descriptive message.
 
 ---
@@ -235,6 +235,24 @@ Result from a single URL in a batch crawl operation.
 
 ---
 
+#### BatchCrawlResults
+
+Aggregate result of a batch crawl, exposing per-URL results plus precomputed counts.
+
+The counts are derived once at construction so every binding language can read them
+as plain integer fields without re-iterating the `results` vector.
+
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `results` | `Array<BatchCrawlResult>` | `[]` | Per-URL crawl results, in the order seed URLs were submitted. |
+| `totalCount` | `number` | — | Total number of seed URLs in the batch (equal to `results.len()`). |
+| `completedCount` | `number` | — | Number of seed URLs whose crawl succeeded (`error` is `null`). |
+| `failedCount` | `number` | — | Number of seed URLs whose crawl failed (`error` is `Some`). |
+
+
+---
+
 #### BatchCrawlStreamRequest
 
 Request to begin a multi-URL streaming crawl.
@@ -261,6 +279,24 @@ Result from a single URL in a batch scrape operation.
 | `url` | `string` | — | The URL that was scraped. |
 | `result` | `ScrapeResult \| null` | `null` | The scrape result, if successful. |
 | `error` | `string \| null` | `null` | The error message, if the scrape failed. |
+
+
+---
+
+#### BatchScrapeResults
+
+Aggregate result of a batch scrape, exposing per-URL results plus precomputed counts.
+
+The counts are derived once at construction so every binding language can read them
+as plain integer fields without re-iterating the `results` vector.
+
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `results` | `Array<BatchScrapeResult>` | `[]` | Per-URL scrape results, in the order URLs were submitted. |
+| `totalCount` | `number` | — | Total number of URLs in the batch (equal to `results.len()`). |
+| `completedCount` | `number` | — | Number of URLs whose scrape succeeded (`error` is `null`). |
+| `failedCount` | `number` | — | Number of URLs whose scrape failed (`error` is `Some`). |
 
 
 ---

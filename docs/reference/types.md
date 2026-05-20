@@ -187,6 +187,40 @@ Result from a single URL in a batch crawl operation.
 
 ---
 
+#### BatchScrapeResults
+
+Aggregate result of a batch scrape, exposing per-URL results plus precomputed counts.
+
+The counts are derived once at construction so every binding language can read them
+as plain integer fields without re-iterating the `results` vector.
+
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `results` | `Vec<BatchScrapeResult>` | `vec![]` | Per-URL scrape results, in the order URLs were submitted. |
+| `total_count` | `usize` | — | Total number of URLs in the batch (equal to `results.len()`). |
+| `completed_count` | `usize` | — | Number of URLs whose scrape succeeded (`error` is `None`). |
+| `failed_count` | `usize` | — | Number of URLs whose scrape failed (`error` is `Some`). |
+
+---
+
+#### BatchCrawlResults
+
+Aggregate result of a batch crawl, exposing per-URL results plus precomputed counts.
+
+The counts are derived once at construction so every binding language can read them
+as plain integer fields without re-iterating the `results` vector.
+
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `results` | `Vec<BatchCrawlResult>` | `vec![]` | Per-URL crawl results, in the order seed URLs were submitted. |
+| `total_count` | `usize` | — | Total number of seed URLs in the batch (equal to `results.len()`). |
+| `completed_count` | `usize` | — | Number of seed URLs whose crawl succeeded (`error` is `None`). |
+| `failed_count` | `usize` | — | Number of seed URLs whose crawl failed (`error` is `Some`). |
+
+---
+
 ### Configuration Types
 
 See [Configuration Reference](configuration.md) for detailed defaults and language-specific representations.

@@ -326,6 +326,108 @@ pub unsafe extern "system" fn Java_dev_kreuzberg_kreuzcrawl_android_KreuzcrawlBr
 }
 
 #[unsafe(no_mangle)]
+pub unsafe extern "system" fn Java_dev_kreuzberg_kreuzcrawl_android_KreuzcrawlBridge_nativeBatchScrape(
+    mut env: EnvUnowned,
+    _class: JClass,
+    engine: jlong,
+    urls: JString,
+) -> jstring {
+    // SAFETY: env is a valid EnvUnowned passed by the JVM for this native call frame.
+    let mut __jni_attach_guard = unsafe { jni::AttachGuard::from_unowned(env.as_raw()) };
+    let env = __jni_attach_guard.borrow_env_mut();
+    // SAFETY: engine was allocated by the matching constructor shim and
+    // remains valid until the destructor shim is called.
+    let engine: &core_crate::CrawlEngineHandle = unsafe { &*(engine as *const core_crate::CrawlEngineHandle) };
+    let urls_str = match jstring_to_string(env, urls) {
+        Ok(s) => s,
+        Err(e) => {
+            throw_jni_error(env, &format!("{e}"));
+            return std::ptr::null_mut();
+        }
+    };
+    let urls: Vec<String> = match serde_json::from_str(&urls_str) {
+        Ok(v) => v,
+        Err(e) => {
+            throw_jni_error(env, &format!("deserialize: {e}"));
+            return std::ptr::null_mut();
+        }
+    };
+    let Some(result) = run_or_throw(
+        env,
+        std::panic::AssertUnwindSafe(|| runtime().block_on(core_crate::batch_scrape(engine, urls))),
+    ) else {
+        return std::ptr::null_mut();
+    };
+    match result {
+        Err(e) => {
+            throw_jni_error(env, &format!("{e}"));
+            std::ptr::null_mut()
+        }
+        Ok(v) => {
+            let s = match serde_json::to_string(&v) {
+                Ok(s) => s,
+                Err(e) => {
+                    throw_jni_error(env, &format!("serialize: {e}"));
+                    return std::ptr::null_mut();
+                }
+            };
+            string_to_jstring(env, &s)
+        }
+    }
+}
+
+#[unsafe(no_mangle)]
+pub unsafe extern "system" fn Java_dev_kreuzberg_kreuzcrawl_android_KreuzcrawlBridge_nativeBatchCrawl(
+    mut env: EnvUnowned,
+    _class: JClass,
+    engine: jlong,
+    urls: JString,
+) -> jstring {
+    // SAFETY: env is a valid EnvUnowned passed by the JVM for this native call frame.
+    let mut __jni_attach_guard = unsafe { jni::AttachGuard::from_unowned(env.as_raw()) };
+    let env = __jni_attach_guard.borrow_env_mut();
+    // SAFETY: engine was allocated by the matching constructor shim and
+    // remains valid until the destructor shim is called.
+    let engine: &core_crate::CrawlEngineHandle = unsafe { &*(engine as *const core_crate::CrawlEngineHandle) };
+    let urls_str = match jstring_to_string(env, urls) {
+        Ok(s) => s,
+        Err(e) => {
+            throw_jni_error(env, &format!("{e}"));
+            return std::ptr::null_mut();
+        }
+    };
+    let urls: Vec<String> = match serde_json::from_str(&urls_str) {
+        Ok(v) => v,
+        Err(e) => {
+            throw_jni_error(env, &format!("deserialize: {e}"));
+            return std::ptr::null_mut();
+        }
+    };
+    let Some(result) = run_or_throw(
+        env,
+        std::panic::AssertUnwindSafe(|| runtime().block_on(core_crate::batch_crawl(engine, urls))),
+    ) else {
+        return std::ptr::null_mut();
+    };
+    match result {
+        Err(e) => {
+            throw_jni_error(env, &format!("{e}"));
+            std::ptr::null_mut()
+        }
+        Ok(v) => {
+            let s = match serde_json::to_string(&v) {
+                Ok(s) => s,
+                Err(e) => {
+                    throw_jni_error(env, &format!("serialize: {e}"));
+                    return std::ptr::null_mut();
+                }
+            };
+            string_to_jstring(env, &s)
+        }
+    }
+}
+
+#[unsafe(no_mangle)]
 pub unsafe extern "system" fn Java_dev_kreuzberg_kreuzcrawl_android_KreuzcrawlBridge_nativeFreeCrawlEngineHandle(
     _env: EnvUnowned,
     _class: JClass,

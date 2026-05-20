@@ -32,5 +32,5 @@ data class LinkInfo(
     /** The `rel` attribute value, if present. */
     val rel: String?,
     /** Whether the link has `rel="nofollow"`. */
-    val nofollow: Boolean
+    val nofollow: Boolean,
 )

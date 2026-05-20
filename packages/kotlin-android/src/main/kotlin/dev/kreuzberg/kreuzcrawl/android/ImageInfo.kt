@@ -32,5 +32,5 @@ data class ImageInfo(
     /** The height attribute, if present and parseable. */
     val height: Int?,
     /** The source of the image reference. */
-    val source: ImageSource
+    val source: ImageSource,
 )

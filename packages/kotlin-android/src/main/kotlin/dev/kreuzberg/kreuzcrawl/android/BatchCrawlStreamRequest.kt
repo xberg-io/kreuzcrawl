@@ -24,14 +24,14 @@ package dev.kreuzberg.kreuzcrawl.android
 /**
  * Request to begin a multi-URL streaming crawl.
  *
- * Wraps a set of seed URLs for delivery through the streaming-adapter binding
- * surface. Required as a struct because alef's streaming adapter requires a
- * named request type — primitives are not supported.
+ * Wraps a set of seed URLs for delivery through the streaming-adapter binding surface. Required as
+ * a struct because alef's streaming adapter requires a named request type — primitives are not
+ * supported.
  */
 data class BatchCrawlStreamRequest(
     /**
-     * The seed URLs to crawl. Each URL is followed independently up to the
-     * engine's configured depth.
+     * The seed URLs to crawl. Each URL is followed independently up to the engine's configured
+     * depth.
      */
     val urls: List<String>
 )

@@ -34,7 +34,7 @@ public struct ExtractionMeta: Codable, Sendable, Hashable {
 
 // MARK: - Internal FFI conversions for ExtractionMeta
 internal extension ExtractionMeta {
-    init(_ rb: RustBridge.ExtractionMeta) throws {
+    init(_ rb: RustBridge.ExtractionMetaRef) throws {
         self.cost = rb.cost()
         self.promptTokens = rb.prompt_tokens()
         self.completionTokens = rb.completion_tokens()
@@ -63,7 +63,7 @@ public struct ProxyConfig: Codable, Sendable, Hashable {
 
 // MARK: - Internal FFI conversions for ProxyConfig
 internal extension ProxyConfig {
-    init(_ rb: RustBridge.ProxyConfig) throws {
+    init(_ rb: RustBridge.ProxyConfigRef) throws {
         self.url = rb.url().toString()
         self.username = rb.username()?.toString()
         self.password = rb.password()?.toString()
@@ -146,7 +146,7 @@ public struct ContentConfig: Codable, Sendable, Hashable {
 
 // MARK: - Internal FFI conversions for ContentConfig
 internal extension ContentConfig {
-    init(_ rb: RustBridge.ContentConfig) throws {
+    init(_ rb: RustBridge.ContentConfigRef) throws {
         self.outputFormat = rb.output_format().toString()
         self.preprocessingPreset = rb.preprocessing_preset().toString()
         self.removeNavigation = rb.remove_navigation()
@@ -161,12 +161,12 @@ internal extension ContentConfig {
         self.includeDocumentStructure = rb.include_document_structure()
     }
     func intoRust() throws -> RustBridge.ContentConfig {
-        let __stripTags = RustVec<String>()
-        for __elem in self.stripTags { __stripTags.push(value: __elem) }
-        let __preserveTags = RustVec<String>()
-        for __elem in self.preserveTags { __preserveTags.push(value: __elem) }
-        let __excludeSelectors = RustVec<String>()
-        for __elem in self.excludeSelectors { __excludeSelectors.push(value: __elem) }
+        let __stripTags = RustVec<RustString>()
+        for __elem in self.stripTags { __stripTags.push(value: RustString(__elem)) }
+        let __preserveTags = RustVec<RustString>()
+        for __elem in self.preserveTags { __preserveTags.push(value: RustString(__elem)) }
+        let __excludeSelectors = RustVec<RustString>()
+        for __elem in self.excludeSelectors { __excludeSelectors.push(value: RustString(__elem)) }
         return RustBridge.ContentConfig(self.outputFormat, self.preprocessingPreset, self.removeNavigation, self.removeForms, __stripTags, __preserveTags, __excludeSelectors, self.skipImages, self.maxDepth, self.wrap, self.wrapWidth, self.includeDocumentStructure)
     }
 }
@@ -224,7 +224,7 @@ public struct SitemapUrl: Codable, Sendable, Hashable {
 
 // MARK: - Internal FFI conversions for SitemapUrl
 internal extension SitemapUrl {
-    init(_ rb: RustBridge.SitemapUrl) throws {
+    init(_ rb: RustBridge.SitemapUrlRef) throws {
         self.url = rb.url().toString()
         self.lastmod = rb.lastmod()?.toString()
         self.changefreq = rb.changefreq()?.toString()
@@ -246,7 +246,7 @@ public struct MapResult: Codable, Sendable, Hashable {
 
 // MARK: - Internal FFI conversions for MapResult
 internal extension MapResult {
-    init(_ rb: RustBridge.MapResult) throws {
+    init(_ rb: RustBridge.MapResultRef) throws {
         self.urls = try rb.urls().map { try SitemapUrl($0) }
     }
     func intoRust() throws -> RustBridge.MapResult {
@@ -289,7 +289,7 @@ public struct LinkInfo: Codable, Sendable, Hashable {
 
 // MARK: - Internal FFI conversions for LinkInfo
 internal extension LinkInfo {
-    init(_ rb: RustBridge.LinkInfo) throws {
+    init(_ rb: RustBridge.LinkInfoRef) throws {
         self.url = rb.url().toString()
         self.text = rb.text().toString()
         self.linkType = LinkType(rawValue: rb.link_type().toString()) ?? { fatalError("Unknown LinkType: \(rb.link_type().toString())") }()
@@ -324,7 +324,7 @@ public struct ImageInfo: Codable, Sendable, Hashable {
 
 // MARK: - Internal FFI conversions for ImageInfo
 internal extension ImageInfo {
-    init(_ rb: RustBridge.ImageInfo) throws {
+    init(_ rb: RustBridge.ImageInfoRef) throws {
         self.url = rb.url().toString()
         self.alt = rb.alt()?.toString()
         self.width = rb.width()
@@ -358,7 +358,7 @@ public struct FeedInfo: Codable, Sendable, Hashable {
 
 // MARK: - Internal FFI conversions for FeedInfo
 internal extension FeedInfo {
-    init(_ rb: RustBridge.FeedInfo) throws {
+    init(_ rb: RustBridge.FeedInfoRef) throws {
         self.url = rb.url().toString()
         self.title = rb.title()?.toString()
         self.feedType = FeedType(rawValue: rb.feed_type().toString()) ?? { fatalError("Unknown FeedType: \(rb.feed_type().toString())") }()
@@ -390,7 +390,7 @@ public struct JsonLdEntry: Codable, Sendable, Hashable {
 
 // MARK: - Internal FFI conversions for JsonLdEntry
 internal extension JsonLdEntry {
-    init(_ rb: RustBridge.JsonLdEntry) throws {
+    init(_ rb: RustBridge.JsonLdEntryRef) throws {
         self.schemaType = rb.schema_type().toString()
         self.name = rb.name()?.toString()
         self.raw = rb.raw().toString()
@@ -420,7 +420,7 @@ public struct CookieInfo: Codable, Sendable, Hashable {
 
 // MARK: - Internal FFI conversions for CookieInfo
 internal extension CookieInfo {
-    init(_ rb: RustBridge.CookieInfo) throws {
+    init(_ rb: RustBridge.CookieInfoRef) throws {
         self.name = rb.name().toString()
         self.value = rb.value().toString()
         self.domain = rb.domain()?.toString()
@@ -465,7 +465,7 @@ public struct DownloadedAsset: Codable, Sendable, Hashable {
 
 // MARK: - Internal FFI conversions for DownloadedAsset
 internal extension DownloadedAsset {
-    init(_ rb: RustBridge.DownloadedAsset) throws {
+    init(_ rb: RustBridge.DownloadedAssetRef) throws {
         self.url = rb.url().toString()
         self.contentHash = rb.content_hash().toString()
         self.mimeType = rb.mime_type()?.toString()
@@ -508,7 +508,7 @@ public struct ArticleMetadata: Codable, Sendable, Hashable {
 
 // MARK: - Internal FFI conversions for ArticleMetadata
 internal extension ArticleMetadata {
-    init(_ rb: RustBridge.ArticleMetadata) throws {
+    init(_ rb: RustBridge.ArticleMetadataRef) throws {
         self.publishedTime = rb.published_time()?.toString()
         self.modifiedTime = rb.modified_time()?.toString()
         self.author = rb.author()?.toString()
@@ -516,8 +516,8 @@ internal extension ArticleMetadata {
         self.tags = rb.tags().map { $0.as_str().toString() }
     }
     func intoRust() throws -> RustBridge.ArticleMetadata {
-        let __tags = RustVec<String>()
-        for __elem in self.tags { __tags.push(value: __elem) }
+        let __tags = RustVec<RustString>()
+        for __elem in self.tags { __tags.push(value: RustString(__elem)) }
         return RustBridge.ArticleMetadata(self.publishedTime, self.modifiedTime, self.author, self.section, __tags)
     }
 }
@@ -536,7 +536,7 @@ public struct HreflangEntry: Codable, Sendable, Hashable {
 
 // MARK: - Internal FFI conversions for HreflangEntry
 internal extension HreflangEntry {
-    init(_ rb: RustBridge.HreflangEntry) throws {
+    init(_ rb: RustBridge.HreflangEntryRef) throws {
         self.lang = rb.lang().toString()
         self.url = rb.url().toString()
     }
@@ -571,7 +571,7 @@ public struct FaviconInfo: Codable, Sendable, Hashable {
 
 // MARK: - Internal FFI conversions for FaviconInfo
 internal extension FaviconInfo {
-    init(_ rb: RustBridge.FaviconInfo) throws {
+    init(_ rb: RustBridge.FaviconInfoRef) throws {
         self.url = rb.url().toString()
         self.rel = rb.rel().toString()
         self.sizes = rb.sizes()?.toString()
@@ -596,7 +596,7 @@ public struct HeadingInfo: Codable, Sendable, Hashable {
 
 // MARK: - Internal FFI conversions for HeadingInfo
 internal extension HeadingInfo {
-    init(_ rb: RustBridge.HeadingInfo) throws {
+    init(_ rb: RustBridge.HeadingInfoRef) throws {
         self.level = rb.level()
         self.text = rb.text().toString()
     }
@@ -643,7 +643,7 @@ public struct ResponseMeta: Codable, Sendable, Hashable {
 
 // MARK: - Internal FFI conversions for ResponseMeta
 internal extension ResponseMeta {
-    init(_ rb: RustBridge.ResponseMeta) throws {
+    init(_ rb: RustBridge.ResponseMetaRef) throws {
         self.etag = rb.etag()?.toString()
         self.lastModified = rb.last_modified()?.toString()
         self.cacheControl = rb.cache_control()?.toString()
@@ -839,7 +839,7 @@ public struct PageMetadata: Codable, Sendable, Hashable {
 
 // MARK: - Internal FFI conversions for PageMetadata
 internal extension PageMetadata {
-    init(_ rb: RustBridge.PageMetadata) throws {
+    init(_ rb: RustBridge.PageMetadataRef) throws {
         self.title = rb.title()?.toString()
         self.description = rb.description()?.toString()
         self.canonicalUrl = rb.canonical_url()?.toString()
@@ -906,7 +906,7 @@ public struct CrawlStreamRequest: Codable, Sendable, Hashable {
 
 // MARK: - Internal FFI conversions for CrawlStreamRequest
 internal extension CrawlStreamRequest {
-    init(_ rb: RustBridge.CrawlStreamRequest) throws {
+    init(_ rb: RustBridge.CrawlStreamRequestRef) throws {
         self.url = rb.url().toString()
     }
     func intoRust() throws -> RustBridge.CrawlStreamRequest {
@@ -930,12 +930,12 @@ public struct BatchCrawlStreamRequest: Codable, Sendable, Hashable {
 
 // MARK: - Internal FFI conversions for BatchCrawlStreamRequest
 internal extension BatchCrawlStreamRequest {
-    init(_ rb: RustBridge.BatchCrawlStreamRequest) throws {
+    init(_ rb: RustBridge.BatchCrawlStreamRequestRef) throws {
         self.urls = rb.urls().map { $0.as_str().toString() }
     }
     func intoRust() throws -> RustBridge.BatchCrawlStreamRequest {
-        let __urls = RustVec<String>()
-        for __elem in self.urls { __urls.push(value: __elem) }
+        let __urls = RustVec<RustString>()
+        for __elem in self.urls { __urls.push(value: RustString(__elem)) }
         return RustBridge.BatchCrawlStreamRequest(__urls)
     }
 }
@@ -954,7 +954,7 @@ public struct CitationResult: Codable, Sendable, Hashable {
 
 // MARK: - Internal FFI conversions for CitationResult
 internal extension CitationResult {
-    init(_ rb: RustBridge.CitationResult) throws {
+    init(_ rb: RustBridge.CitationResultRef) throws {
         self.content = rb.content().toString()
         self.references = try rb.references().map { try CitationReference($0) }
     }
@@ -983,7 +983,7 @@ public struct CitationReference: Codable, Sendable, Hashable {
 
 // MARK: - Internal FFI conversions for CitationReference
 internal extension CitationReference {
-    init(_ rb: RustBridge.CitationReference) throws {
+    init(_ rb: RustBridge.CitationReferenceRef) throws {
         self.index = rb.index()
         self.url = rb.url().toString()
         self.text = rb.text().toString()
@@ -999,6 +999,18 @@ public typealias BatchScrapeResult = RustBridge.BatchScrapeResult
 /// Result from a single URL in a batch crawl operation.
 public typealias BatchCrawlResult = RustBridge.BatchCrawlResult
 
+/// Aggregate result of a batch scrape, exposing per-URL results plus precomputed counts.
+///
+/// The counts are derived once at construction so every binding language can read them
+/// as plain integer fields without re-iterating the `results` vector.
+public typealias BatchScrapeResults = RustBridge.BatchScrapeResults
+
+/// Aggregate result of a batch crawl, exposing per-URL results plus precomputed counts.
+///
+/// The counts are derived once at construction so every binding language can read them
+/// as plain integer fields without re-iterating the `results` vector.
+public typealias BatchCrawlResults = RustBridge.BatchCrawlResults
+
 /// When to use the headless browser fallback.
 public enum BrowserMode: String, Codable, Sendable, Hashable {
     /// Automatically detect when JS rendering is needed and fall back to browser.
@@ -1007,6 +1019,13 @@ public enum BrowserMode: String, Codable, Sendable, Hashable {
     case always
     /// Never use the browser fallback.
     case never
+}
+extension BrowserMode {
+    func intoRust() throws -> RustBridge.BrowserMode {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "null"
+        return try RustBridge.browserModeFromJson(json)
+    }
 }
 
 /// Wait strategy for browser page rendering.
@@ -1018,6 +1037,13 @@ public enum BrowserWait: String, Codable, Sendable, Hashable {
     /// Wait for a fixed duration after navigation.
     case fixed
 }
+extension BrowserWait {
+    func intoRust() throws -> RustBridge.BrowserWait {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "null"
+        return try RustBridge.browserWaitFromJson(json)
+    }
+}
 
 /// Browser backend used for JavaScript rendering.
 public enum BrowserBackend: String, Codable, Sendable, Hashable {
@@ -1025,6 +1051,13 @@ public enum BrowserBackend: String, Codable, Sendable, Hashable {
     case chromiumoxide
     /// Kreuzcrawl-owned native browser backend derived from Obscura.
     case native
+}
+extension BrowserBackend {
+    func intoRust() throws -> RustBridge.BrowserBackend {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "null"
+        return try RustBridge.browserBackendFromJson(json)
+    }
 }
 
 /// Authentication configuration.
@@ -1035,6 +1068,13 @@ public enum AuthConfig {
     case bearer(token: String)
     /// Custom authentication header.
     case header(name: String, value: String)
+}
+extension AuthConfig {
+    func intoRust() throws -> RustBridge.AuthConfig {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "null"
+        return try RustBridge.authConfigFromJson(json)
+    }
 }
 
 /// The classification of a link.
@@ -1048,6 +1088,13 @@ public enum LinkType: String, Codable, Sendable, Hashable {
     /// A link to a downloadable document (PDF, DOC, etc.).
     case document
 }
+extension LinkType {
+    func intoRust() throws -> RustBridge.LinkType {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "null"
+        return try RustBridge.linkTypeFromJson(json)
+    }
+}
 
 /// The source of an image reference.
 public enum ImageSource: String, Codable, Sendable, Hashable {
@@ -1060,6 +1107,13 @@ public enum ImageSource: String, Codable, Sendable, Hashable {
     /// A `twitter:image` meta tag.
     case twitterImage = "twitter:image"
 }
+extension ImageSource {
+    func intoRust() throws -> RustBridge.ImageSource {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "null"
+        return try RustBridge.imageSourceFromJson(json)
+    }
+}
 
 /// The type of a feed (RSS, Atom, or JSON Feed).
 public enum FeedType: String, Codable, Sendable, Hashable {
@@ -1069,6 +1123,13 @@ public enum FeedType: String, Codable, Sendable, Hashable {
     case atom
     /// JSON Feed.
     case jsonFeed = "json_feed"
+}
+extension FeedType {
+    func intoRust() throws -> RustBridge.FeedType {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "null"
+        return try RustBridge.feedTypeFromJson(json)
+    }
 }
 
 /// The category of a downloaded asset.
@@ -1094,6 +1155,13 @@ public enum AssetCategory: String, Codable, Sendable, Hashable {
     /// An unrecognized asset type.
     case other
 }
+extension AssetCategory {
+    func intoRust() throws -> RustBridge.AssetCategory {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "null"
+        return try RustBridge.assetCategoryFromJson(json)
+    }
+}
 
 /// An event emitted during a streaming crawl operation.
 ///
@@ -1111,6 +1179,13 @@ public enum CrawlEvent {
     case error(url: String, error: String)
     /// The crawl has completed.
     case complete(pagesCrawled: UInt)
+}
+extension CrawlEvent {
+    func intoRust() throws -> RustBridge.CrawlEvent {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "null"
+        return try RustBridge.crawlEventFromJson(json)
+    }
 }
 
 /// A single page interaction action.
@@ -1140,6 +1215,13 @@ public enum PageAction {
     /// Scrape the current page HTML.
     case scrape
 }
+extension PageAction {
+    func intoRust() throws -> RustBridge.PageAction {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "null"
+        return try RustBridge.pageActionFromJson(json)
+    }
+}
 
 /// Direction for a scroll action.
 public enum ScrollDirection: String, Codable, Sendable, Hashable {
@@ -1147,6 +1229,13 @@ public enum ScrollDirection: String, Codable, Sendable, Hashable {
     case up
     /// Scroll downward.
     case down
+}
+extension ScrollDirection {
+    func intoRust() throws -> RustBridge.ScrollDirection {
+        let data = try JSONEncoder().encode(self)
+        let json = String(data: data, encoding: .utf8) ?? "null"
+        return try RustBridge.scrollDirectionFromJson(json)
+    }
 }
 
 /// Errors that can occur during crawling, scraping, or mapping operations.

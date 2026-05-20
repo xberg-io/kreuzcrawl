@@ -35,13 +35,12 @@ data class CrawlConfig(
     /** Whether to respect robots.txt directives. */
     val respectRobotsTxt: Boolean,
     /**
-     * When true, HTTP-level error responses (404 NotFound, 403 Forbidden, WAF blocks)
-     * are surfaced as `ScrapeResult` records with the matching `status_code` rather
-     * than raised as `CrawlError`. Default `false` preserves the historical
-     * throw-on-error contract for direct fetches. Independently of this flag,
-     * 404s reached at the end of a redirect chain are *always* surfaced softly —
-     * the user opted into redirect-following, so receiving a 404 there is part of
-     * the normal flow rather than an unexpected error.
+     * When true, HTTP-level error responses (404 NotFound, 403 Forbidden, WAF blocks) are surfaced
+     * as `ScrapeResult` records with the matching `status_code` rather than raised as `CrawlError`.
+     * Default `false` preserves the historical throw-on-error contract for direct fetches.
+     * Independently of this flag, 404s reached at the end of a redirect chain are *always* surfaced
+     * softly — the user opted into redirect-following, so receiving a 404 there is part of the
+     * normal flow rather than an unexpected error.
      */
     val softHttpErrors: Boolean,
     /** Custom user-agent string. */
@@ -59,8 +58,8 @@ data class CrawlConfig(
     /** Timeout for individual HTTP requests (in milliseconds when serialized). */
     val requestTimeout: Duration,
     /**
-     * Per-domain rate limit in milliseconds. When set, enforces a minimum delay
-     * between requests to the same domain. Defaults to 200ms when `null`.
+     * Per-domain rate limit in milliseconds. When set, enforces a minimum delay between requests to
+     * the same domain. Defaults to 200ms when `null`.
      */
     val rateLimitMs: Long?,
     /** Maximum number of redirects to follow. */
@@ -98,7 +97,8 @@ data class CrawlConfig(
     /** Whether to capture a screenshot when using the browser. */
     val captureScreenshot: Boolean,
     /**
-     * Whether to download non-HTML documents (PDF, DOCX, images, code, etc.) instead of skipping them.
+     * Whether to download non-HTML documents (PDF, DOCX, images, code, etc.) instead of skipping
+     * them.
      */
     val downloadDocuments: Boolean,
     /** Maximum size in bytes for document downloads. Defaults to 50 MB. */
@@ -110,5 +110,5 @@ data class CrawlConfig(
     /** Named browser profile for persistent sessions (cookies, localStorage). */
     val browserProfile: String?,
     /** Whether to save changes back to the browser profile on exit. */
-    val saveBrowserProfile: Boolean
+    val saveBrowserProfile: Boolean,
 )

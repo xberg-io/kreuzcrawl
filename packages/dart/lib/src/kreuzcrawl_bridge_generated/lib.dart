@@ -9,7 +9,7 @@ import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 part 'lib.freezed.dart';
 
 // These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `CrawlError`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`, `from`
 
 /// Convert markdown links to numbered citations.
 ///
@@ -56,13 +56,13 @@ Future<InteractionResult> interact({
 );
 
 /// Scrape multiple URLs concurrently.
-Future<String> batchScrape({
+Future<BatchScrapeResults> batchScrape({
   required CrawlEngineHandle engine,
   required List<String> urls,
 }) => RustLib.instance.api.crateBatchScrape(engine: engine, urls: urls);
 
 /// Crawl multiple seed URLs concurrently, each following links to configured depth.
-Future<String> batchCrawl({
+Future<BatchCrawlResults> batchCrawl({
   required CrawlEngineHandle engine,
   required List<String> urls,
 }) => RustLib.instance.api.crateBatchCrawl(engine: engine, urls: urls);
@@ -173,6 +173,14 @@ Future<BatchScrapeResult> createBatchScrapeResultFromJson({
 Future<BatchCrawlResult> createBatchCrawlResultFromJson({
   required String json,
 }) => RustLib.instance.api.crateCreateBatchCrawlResultFromJson(json: json);
+
+Future<BatchScrapeResults> createBatchScrapeResultsFromJson({
+  required String json,
+}) => RustLib.instance.api.crateCreateBatchScrapeResultsFromJson(json: json);
+
+Future<BatchCrawlResults> createBatchCrawlResultsFromJson({
+  required String json,
+}) => RustLib.instance.api.crateCreateBatchCrawlResultsFromJson(json: json);
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<CrawlEngineHandle>>
 abstract class CrawlEngineHandle implements RustOpaqueInterface {
@@ -359,6 +367,48 @@ class BatchCrawlResult {
           error == other.error;
 }
 
+/// Aggregate result of a batch crawl, exposing per-URL results plus precomputed counts.
+///
+/// The counts are derived once at construction so every binding language can read them
+/// as plain integer fields without re-iterating the `results` vector.
+class BatchCrawlResults {
+  /// Per-URL crawl results, in the order seed URLs were submitted.
+  final List<BatchCrawlResult> results;
+
+  /// Total number of seed URLs in the batch (equal to `results.len()`).
+  final PlatformInt64 totalCount;
+
+  /// Number of seed URLs whose crawl succeeded (`error` is `None`).
+  final PlatformInt64 completedCount;
+
+  /// Number of seed URLs whose crawl failed (`error` is `Some`).
+  final PlatformInt64 failedCount;
+
+  const BatchCrawlResults({
+    required this.results,
+    required this.totalCount,
+    required this.completedCount,
+    required this.failedCount,
+  });
+
+  @override
+  int get hashCode =>
+      results.hashCode ^
+      totalCount.hashCode ^
+      completedCount.hashCode ^
+      failedCount.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BatchCrawlResults &&
+          runtimeType == other.runtimeType &&
+          results == other.results &&
+          totalCount == other.totalCount &&
+          completedCount == other.completedCount &&
+          failedCount == other.failedCount;
+}
+
 /// Request to begin a multi-URL streaming crawl.
 ///
 /// Wraps a set of seed URLs for delivery through the streaming-adapter binding
@@ -406,6 +456,48 @@ class BatchScrapeResult {
           url == other.url &&
           result == other.result &&
           error == other.error;
+}
+
+/// Aggregate result of a batch scrape, exposing per-URL results plus precomputed counts.
+///
+/// The counts are derived once at construction so every binding language can read them
+/// as plain integer fields without re-iterating the `results` vector.
+class BatchScrapeResults {
+  /// Per-URL scrape results, in the order URLs were submitted.
+  final List<BatchScrapeResult> results;
+
+  /// Total number of URLs in the batch (equal to `results.len()`).
+  final PlatformInt64 totalCount;
+
+  /// Number of URLs whose scrape succeeded (`error` is `None`).
+  final PlatformInt64 completedCount;
+
+  /// Number of URLs whose scrape failed (`error` is `Some`).
+  final PlatformInt64 failedCount;
+
+  const BatchScrapeResults({
+    required this.results,
+    required this.totalCount,
+    required this.completedCount,
+    required this.failedCount,
+  });
+
+  @override
+  int get hashCode =>
+      results.hashCode ^
+      totalCount.hashCode ^
+      completedCount.hashCode ^
+      failedCount.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BatchScrapeResults &&
+          runtimeType == other.runtimeType &&
+          results == other.results &&
+          totalCount == other.totalCount &&
+          completedCount == other.completedCount &&
+          failedCount == other.failedCount;
 }
 
 /// Browser backend used for JavaScript rendering.

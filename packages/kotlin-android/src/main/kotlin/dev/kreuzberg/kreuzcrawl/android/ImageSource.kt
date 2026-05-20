@@ -30,5 +30,5 @@ enum class ImageSource {
     /** An `og:image` meta tag. */
     OG_IMAGE,
     /** A `twitter:image` meta tag. */
-    TWITTER_IMAGE;
+    TWITTER_IMAGE,
 }

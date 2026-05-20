@@ -26,5 +26,5 @@ data class HeadingInfo(
     /** The heading level (1-6). */
     val level: Byte,
     /** The heading text content. */
-    val text: String
+    val text: String,
 )

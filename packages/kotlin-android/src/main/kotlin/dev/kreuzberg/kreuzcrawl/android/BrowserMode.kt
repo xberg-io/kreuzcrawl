@@ -28,5 +28,5 @@ enum class BrowserMode {
     /** Always use the browser for every request. */
     ALWAYS,
     /** Never use the browser fallback. */
-    NEVER;
+    NEVER,
 }

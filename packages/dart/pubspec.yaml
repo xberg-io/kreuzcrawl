@@ -1,6 +1,6 @@
 name: kreuzcrawl
 description: High-performance web crawling engine
-version: 0.3.0-rc.20
+version: 0.3.0-rc.21
 environment:
   sdk: ">=3.11.0 <4.0.0"
 dependencies:

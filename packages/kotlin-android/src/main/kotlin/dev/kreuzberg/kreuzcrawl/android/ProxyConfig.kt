@@ -28,5 +28,5 @@ data class ProxyConfig(
     /** Optional username for proxy authentication. */
     val username: String?,
     /** Optional password for proxy authentication. */
-    val password: String?
+    val password: String?,
 )

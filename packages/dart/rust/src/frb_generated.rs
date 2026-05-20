@@ -39,7 +39,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueMoi,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.12.0";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -1091979360;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 735317409;
 
 // Section: executor
 
@@ -323,6 +323,34 @@ fn wire__crate__create_batch_crawl_result_from_json_impl(
         },
     )
 }
+fn wire__crate__create_batch_crawl_results_from_json_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "create_batch_crawl_results_from_json",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(ptr_, rust_vec_len_, data_len_)
+            };
+            let mut deserializer = flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_json = <String>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, String>((move || {
+                    let output_ok = crate::create_batch_crawl_results_from_json(api_json)?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
 fn wire__crate__create_batch_crawl_stream_request_from_json_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
@@ -373,6 +401,34 @@ fn wire__crate__create_batch_scrape_result_from_json_impl(
             move |context| {
                 transform_result_sse::<_, String>((move || {
                     let output_ok = crate::create_batch_scrape_result_from_json(api_json)?;
+                    Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__create_batch_scrape_results_from_json_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "create_batch_scrape_results_from_json",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(ptr_, rust_vec_len_, data_len_)
+            };
+            let mut deserializer = flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_json = <String>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, String>((move || {
+                    let output_ok = crate::create_batch_scrape_results_from_json(api_json)?;
                     Ok(output_ok)
                 })())
             }
@@ -1357,6 +1413,13 @@ const _: fn() = || {
         let _: Option<String> = BatchCrawlResult.error;
     }
     {
+        let BatchCrawlResults = None::<crate::BatchCrawlResults>.unwrap();
+        let _: Vec<crate::BatchCrawlResult> = BatchCrawlResults.results;
+        let _: i64 = BatchCrawlResults.total_count;
+        let _: i64 = BatchCrawlResults.completed_count;
+        let _: i64 = BatchCrawlResults.failed_count;
+    }
+    {
         let BatchCrawlStreamRequest = None::<crate::BatchCrawlStreamRequest>.unwrap();
         let _: Vec<String> = BatchCrawlStreamRequest.urls;
     }
@@ -1365,6 +1428,13 @@ const _: fn() = || {
         let _: String = BatchScrapeResult.url;
         let _: Option<crate::ScrapeResult> = BatchScrapeResult.result;
         let _: Option<String> = BatchScrapeResult.error;
+    }
+    {
+        let BatchScrapeResults = None::<crate::BatchScrapeResults>.unwrap();
+        let _: Vec<crate::BatchScrapeResult> = BatchScrapeResults.results;
+        let _: i64 = BatchScrapeResults.total_count;
+        let _: i64 = BatchScrapeResults.completed_count;
+        let _: i64 = BatchScrapeResults.failed_count;
     }
     {
         let BrowserConfig = None::<crate::BrowserConfig>.unwrap();
@@ -1892,6 +1962,22 @@ impl SseDecode for crate::BatchCrawlResult {
     }
 }
 
+impl SseDecode for crate::BatchCrawlResults {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_results = <Vec<crate::BatchCrawlResult>>::sse_decode(deserializer);
+        let mut var_totalCount = <i64>::sse_decode(deserializer);
+        let mut var_completedCount = <i64>::sse_decode(deserializer);
+        let mut var_failedCount = <i64>::sse_decode(deserializer);
+        return crate::BatchCrawlResults {
+            results: var_results,
+            total_count: var_totalCount,
+            completed_count: var_completedCount,
+            failed_count: var_failedCount,
+        };
+    }
+}
+
 impl SseDecode for crate::BatchCrawlStreamRequest {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -1910,6 +1996,22 @@ impl SseDecode for crate::BatchScrapeResult {
             url: var_url,
             result: var_result,
             error: var_error,
+        };
+    }
+}
+
+impl SseDecode for crate::BatchScrapeResults {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_results = <Vec<crate::BatchScrapeResult>>::sse_decode(deserializer);
+        let mut var_totalCount = <i64>::sse_decode(deserializer);
+        let mut var_completedCount = <i64>::sse_decode(deserializer);
+        let mut var_failedCount = <i64>::sse_decode(deserializer);
+        return crate::BatchScrapeResults {
+            results: var_results,
+            total_count: var_totalCount,
+            completed_count: var_completedCount,
+            failed_count: var_failedCount,
         };
     }
 }
@@ -2536,6 +2638,30 @@ impl SseDecode for Vec<crate::AssetCategory> {
         let mut ans_ = Vec::with_capacity(len_ as usize);
         for idx_ in 0..len_ {
             ans_.push(<crate::AssetCategory>::sse_decode(deserializer));
+        }
+        return ans_;
+    }
+}
+
+impl SseDecode for Vec<crate::BatchCrawlResult> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut len_ = <i32>::sse_decode(deserializer);
+        let mut ans_ = Vec::with_capacity(len_ as usize);
+        for idx_ in 0..len_ {
+            ans_.push(<crate::BatchCrawlResult>::sse_decode(deserializer));
+        }
+        return ans_;
+    }
+}
+
+impl SseDecode for Vec<crate::BatchScrapeResult> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut len_ = <i32>::sse_decode(deserializer);
+        let mut ans_ = Vec::with_capacity(len_ as usize);
+        for idx_ in 0..len_ {
+            ans_.push(<crate::BatchScrapeResult>::sse_decode(deserializer));
         }
         return ans_;
     }
@@ -3306,41 +3432,43 @@ fn pde_ffi_dispatcher_primary_impl(
         6 => wire__crate__create_action_result_from_json_impl(port, ptr, rust_vec_len, data_len),
         7 => wire__crate__create_article_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
         8 => wire__crate__create_batch_crawl_result_from_json_impl(port, ptr, rust_vec_len, data_len),
-        9 => wire__crate__create_batch_crawl_stream_request_from_json_impl(port, ptr, rust_vec_len, data_len),
-        10 => wire__crate__create_batch_scrape_result_from_json_impl(port, ptr, rust_vec_len, data_len),
-        11 => wire__crate__create_browser_config_from_json_impl(port, ptr, rust_vec_len, data_len),
-        12 => wire__crate__create_browser_extras_from_json_impl(port, ptr, rust_vec_len, data_len),
-        13 => wire__crate__create_citation_reference_from_json_impl(port, ptr, rust_vec_len, data_len),
-        14 => wire__crate__create_citation_result_from_json_impl(port, ptr, rust_vec_len, data_len),
-        15 => wire__crate__create_content_config_from_json_impl(port, ptr, rust_vec_len, data_len),
-        16 => wire__crate__create_cookie_info_from_json_impl(port, ptr, rust_vec_len, data_len),
-        17 => wire__crate__create_crawl_config_from_json_impl(port, ptr, rust_vec_len, data_len),
-        18 => wire__crate__create_crawl_page_result_from_json_impl(port, ptr, rust_vec_len, data_len),
-        19 => wire__crate__create_crawl_result_from_json_impl(port, ptr, rust_vec_len, data_len),
-        20 => wire__crate__create_crawl_stream_request_from_json_impl(port, ptr, rust_vec_len, data_len),
-        21 => wire__crate__create_downloaded_asset_from_json_impl(port, ptr, rust_vec_len, data_len),
-        22 => wire__crate__create_downloaded_document_from_json_impl(port, ptr, rust_vec_len, data_len),
-        23 => wire__crate__create_engine_impl(port, ptr, rust_vec_len, data_len),
-        24 => wire__crate__create_extraction_meta_from_json_impl(port, ptr, rust_vec_len, data_len),
-        25 => wire__crate__create_favicon_info_from_json_impl(port, ptr, rust_vec_len, data_len),
-        26 => wire__crate__create_feed_info_from_json_impl(port, ptr, rust_vec_len, data_len),
-        27 => wire__crate__create_heading_info_from_json_impl(port, ptr, rust_vec_len, data_len),
-        28 => wire__crate__create_hreflang_entry_from_json_impl(port, ptr, rust_vec_len, data_len),
-        29 => wire__crate__create_image_info_from_json_impl(port, ptr, rust_vec_len, data_len),
-        30 => wire__crate__create_interaction_result_from_json_impl(port, ptr, rust_vec_len, data_len),
-        31 => wire__crate__create_json_ld_entry_from_json_impl(port, ptr, rust_vec_len, data_len),
-        32 => wire__crate__create_link_info_from_json_impl(port, ptr, rust_vec_len, data_len),
-        33 => wire__crate__create_map_result_from_json_impl(port, ptr, rust_vec_len, data_len),
-        34 => wire__crate__create_markdown_result_from_json_impl(port, ptr, rust_vec_len, data_len),
-        35 => wire__crate__create_page_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
-        36 => wire__crate__create_proxy_config_from_json_impl(port, ptr, rust_vec_len, data_len),
-        37 => wire__crate__create_response_meta_from_json_impl(port, ptr, rust_vec_len, data_len),
-        38 => wire__crate__create_scrape_result_from_json_impl(port, ptr, rust_vec_len, data_len),
-        39 => wire__crate__create_sitemap_url_from_json_impl(port, ptr, rust_vec_len, data_len),
-        40 => wire__crate__generate_citations_impl(port, ptr, rust_vec_len, data_len),
-        41 => wire__crate__interact_impl(port, ptr, rust_vec_len, data_len),
-        42 => wire__crate__map_urls_impl(port, ptr, rust_vec_len, data_len),
-        43 => wire__crate__scrape_impl(port, ptr, rust_vec_len, data_len),
+        9 => wire__crate__create_batch_crawl_results_from_json_impl(port, ptr, rust_vec_len, data_len),
+        10 => wire__crate__create_batch_crawl_stream_request_from_json_impl(port, ptr, rust_vec_len, data_len),
+        11 => wire__crate__create_batch_scrape_result_from_json_impl(port, ptr, rust_vec_len, data_len),
+        12 => wire__crate__create_batch_scrape_results_from_json_impl(port, ptr, rust_vec_len, data_len),
+        13 => wire__crate__create_browser_config_from_json_impl(port, ptr, rust_vec_len, data_len),
+        14 => wire__crate__create_browser_extras_from_json_impl(port, ptr, rust_vec_len, data_len),
+        15 => wire__crate__create_citation_reference_from_json_impl(port, ptr, rust_vec_len, data_len),
+        16 => wire__crate__create_citation_result_from_json_impl(port, ptr, rust_vec_len, data_len),
+        17 => wire__crate__create_content_config_from_json_impl(port, ptr, rust_vec_len, data_len),
+        18 => wire__crate__create_cookie_info_from_json_impl(port, ptr, rust_vec_len, data_len),
+        19 => wire__crate__create_crawl_config_from_json_impl(port, ptr, rust_vec_len, data_len),
+        20 => wire__crate__create_crawl_page_result_from_json_impl(port, ptr, rust_vec_len, data_len),
+        21 => wire__crate__create_crawl_result_from_json_impl(port, ptr, rust_vec_len, data_len),
+        22 => wire__crate__create_crawl_stream_request_from_json_impl(port, ptr, rust_vec_len, data_len),
+        23 => wire__crate__create_downloaded_asset_from_json_impl(port, ptr, rust_vec_len, data_len),
+        24 => wire__crate__create_downloaded_document_from_json_impl(port, ptr, rust_vec_len, data_len),
+        25 => wire__crate__create_engine_impl(port, ptr, rust_vec_len, data_len),
+        26 => wire__crate__create_extraction_meta_from_json_impl(port, ptr, rust_vec_len, data_len),
+        27 => wire__crate__create_favicon_info_from_json_impl(port, ptr, rust_vec_len, data_len),
+        28 => wire__crate__create_feed_info_from_json_impl(port, ptr, rust_vec_len, data_len),
+        29 => wire__crate__create_heading_info_from_json_impl(port, ptr, rust_vec_len, data_len),
+        30 => wire__crate__create_hreflang_entry_from_json_impl(port, ptr, rust_vec_len, data_len),
+        31 => wire__crate__create_image_info_from_json_impl(port, ptr, rust_vec_len, data_len),
+        32 => wire__crate__create_interaction_result_from_json_impl(port, ptr, rust_vec_len, data_len),
+        33 => wire__crate__create_json_ld_entry_from_json_impl(port, ptr, rust_vec_len, data_len),
+        34 => wire__crate__create_link_info_from_json_impl(port, ptr, rust_vec_len, data_len),
+        35 => wire__crate__create_map_result_from_json_impl(port, ptr, rust_vec_len, data_len),
+        36 => wire__crate__create_markdown_result_from_json_impl(port, ptr, rust_vec_len, data_len),
+        37 => wire__crate__create_page_metadata_from_json_impl(port, ptr, rust_vec_len, data_len),
+        38 => wire__crate__create_proxy_config_from_json_impl(port, ptr, rust_vec_len, data_len),
+        39 => wire__crate__create_response_meta_from_json_impl(port, ptr, rust_vec_len, data_len),
+        40 => wire__crate__create_scrape_result_from_json_impl(port, ptr, rust_vec_len, data_len),
+        41 => wire__crate__create_sitemap_url_from_json_impl(port, ptr, rust_vec_len, data_len),
+        42 => wire__crate__generate_citations_impl(port, ptr, rust_vec_len, data_len),
+        43 => wire__crate__interact_impl(port, ptr, rust_vec_len, data_len),
+        44 => wire__crate__map_urls_impl(port, ptr, rust_vec_len, data_len),
+        45 => wire__crate__scrape_impl(port, ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
@@ -3482,6 +3610,24 @@ impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::BatchCrawlResult>> for 
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::BatchCrawlResults> {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.0.results.into_into_dart().into_dart(),
+            self.0.total_count.into_into_dart().into_dart(),
+            self.0.completed_count.into_into_dart().into_dart(),
+            self.0.failed_count.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for FrbWrapper<crate::BatchCrawlResults> {}
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::BatchCrawlResults>> for crate::BatchCrawlResults {
+    fn into_into_dart(self) -> FrbWrapper<crate::BatchCrawlResults> {
+        self.into()
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
 impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::BatchCrawlStreamRequest> {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [self.0.urls.into_into_dart().into_dart()].into_dart()
@@ -3507,6 +3653,24 @@ impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::BatchScrapeResult> {
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for FrbWrapper<crate::BatchScrapeResult> {}
 impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::BatchScrapeResult>> for crate::BatchScrapeResult {
     fn into_into_dart(self) -> FrbWrapper<crate::BatchScrapeResult> {
+        self.into()
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::BatchScrapeResults> {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.0.results.into_into_dart().into_dart(),
+            self.0.total_count.into_into_dart().into_dart(),
+            self.0.completed_count.into_into_dart().into_dart(),
+            self.0.failed_count.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for FrbWrapper<crate::BatchScrapeResults> {}
+impl flutter_rust_bridge::IntoIntoDart<FrbWrapper<crate::BatchScrapeResults>> for crate::BatchScrapeResults {
+    fn into_into_dart(self) -> FrbWrapper<crate::BatchScrapeResults> {
         self.into()
     }
 }
@@ -4450,6 +4614,16 @@ impl SseEncode for crate::BatchCrawlResult {
     }
 }
 
+impl SseEncode for crate::BatchCrawlResults {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <Vec<crate::BatchCrawlResult>>::sse_encode(self.results, serializer);
+        <i64>::sse_encode(self.total_count, serializer);
+        <i64>::sse_encode(self.completed_count, serializer);
+        <i64>::sse_encode(self.failed_count, serializer);
+    }
+}
+
 impl SseEncode for crate::BatchCrawlStreamRequest {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -4463,6 +4637,16 @@ impl SseEncode for crate::BatchScrapeResult {
         <String>::sse_encode(self.url, serializer);
         <Option<crate::ScrapeResult>>::sse_encode(self.result, serializer);
         <Option<String>>::sse_encode(self.error, serializer);
+    }
+}
+
+impl SseEncode for crate::BatchScrapeResults {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <Vec<crate::BatchScrapeResult>>::sse_encode(self.results, serializer);
+        <i64>::sse_encode(self.total_count, serializer);
+        <i64>::sse_encode(self.completed_count, serializer);
+        <i64>::sse_encode(self.failed_count, serializer);
     }
 }
 
@@ -4917,6 +5101,26 @@ impl SseEncode for Vec<crate::AssetCategory> {
         <i32>::sse_encode(self.len() as _, serializer);
         for item in self {
             <crate::AssetCategory>::sse_encode(item, serializer);
+        }
+    }
+}
+
+impl SseEncode for Vec<crate::BatchCrawlResult> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(self.len() as _, serializer);
+        for item in self {
+            <crate::BatchCrawlResult>::sse_encode(item, serializer);
+        }
+    }
+}
+
+impl SseEncode for Vec<crate::BatchScrapeResult> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(self.len() as _, serializer);
+        for item in self {
+            <crate::BatchScrapeResult>::sse_encode(item, serializer);
         }
     }
 }

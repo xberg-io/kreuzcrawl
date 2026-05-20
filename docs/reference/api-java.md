@@ -150,7 +150,7 @@ Scrape multiple URLs concurrently.
 **Signature:**
 
 ```java
-public static String batchScrape(CrawlEngineHandle engine, List<String> urls) throws CrawlError
+public static BatchScrapeResults batchScrape(CrawlEngineHandle engine, List<String> urls) throws CrawlError
 ```
 
 **Parameters:**
@@ -160,7 +160,7 @@ public static String batchScrape(CrawlEngineHandle engine, List<String> urls) th
 | `engine` | `CrawlEngineHandle` | Yes | The crawl engine handle |
 | `urls` | `List<String>` | Yes | The urls |
 
-**Returns:** `String`
+**Returns:** `BatchScrapeResults`
 **Errors:** Throws `CrawlErrorException`.
 
 ---
@@ -172,7 +172,7 @@ Crawl multiple seed URLs concurrently, each following links to configured depth.
 **Signature:**
 
 ```java
-public static String batchCrawl(CrawlEngineHandle engine, List<String> urls) throws CrawlError
+public static BatchCrawlResults batchCrawl(CrawlEngineHandle engine, List<String> urls) throws CrawlError
 ```
 
 **Parameters:**
@@ -182,7 +182,7 @@ public static String batchCrawl(CrawlEngineHandle engine, List<String> urls) thr
 | `engine` | `CrawlEngineHandle` | Yes | The crawl engine handle |
 | `urls` | `List<String>` | Yes | The urls |
 
-**Returns:** `String`
+**Returns:** `BatchCrawlResults`
 **Errors:** Throws `CrawlErrorException`.
 
 ---
@@ -235,6 +235,24 @@ Result from a single URL in a batch crawl operation.
 
 ---
 
+#### BatchCrawlResults
+
+Aggregate result of a batch crawl, exposing per-URL results plus precomputed counts.
+
+The counts are derived once at construction so every binding language can read them
+as plain integer fields without re-iterating the `results` vector.
+
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `results` | `List<BatchCrawlResult>` | `Collections.emptyList()` | Per-URL crawl results, in the order seed URLs were submitted. |
+| `totalCount` | `long` | — | Total number of seed URLs in the batch (equal to `results.len()`). |
+| `completedCount` | `long` | — | Number of seed URLs whose crawl succeeded (`error` is `null`). |
+| `failedCount` | `long` | — | Number of seed URLs whose crawl failed (`error` is `Some`). |
+
+
+---
+
 #### BatchCrawlStreamRequest
 
 Request to begin a multi-URL streaming crawl.
@@ -261,6 +279,24 @@ Result from a single URL in a batch scrape operation.
 | `url` | `String` | — | The URL that was scraped. |
 | `result` | `Optional<ScrapeResult>` | `null` | The scrape result, if successful. |
 | `error` | `Optional<String>` | `null` | The error message, if the scrape failed. |
+
+
+---
+
+#### BatchScrapeResults
+
+Aggregate result of a batch scrape, exposing per-URL results plus precomputed counts.
+
+The counts are derived once at construction so every binding language can read them
+as plain integer fields without re-iterating the `results` vector.
+
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `results` | `List<BatchScrapeResult>` | `Collections.emptyList()` | Per-URL scrape results, in the order URLs were submitted. |
+| `totalCount` | `long` | — | Total number of URLs in the batch (equal to `results.len()`). |
+| `completedCount` | `long` | — | Number of URLs whose scrape succeeded (`error` is `null`). |
+| `failedCount` | `long` | — | Number of URLs whose scrape failed (`error` is `Some`). |
 
 
 ---

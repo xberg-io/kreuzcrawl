@@ -32,5 +32,5 @@ data class ActionResult(
     /** Action-specific return data (screenshot bytes, JS return value, scraped HTML). */
     val data: String?,
     /** Error message if the action failed. */
-    val error: String?
+    val error: String?,
 )

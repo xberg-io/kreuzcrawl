@@ -34,5 +34,5 @@ data class MarkdownResult(
     /** Content with links replaced by numbered citations. */
     val citations: CitationResult?,
     /** Content-filtered markdown optimized for LLM consumption. */
-    val fitContent: String?
+    val fitContent: String?,
 )

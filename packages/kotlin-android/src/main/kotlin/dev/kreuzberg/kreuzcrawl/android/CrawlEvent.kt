@@ -24,13 +24,12 @@ package dev.kreuzberg.kreuzcrawl.android
 /**
  * An event emitted during a streaming crawl operation.
  *
- * Not available on `wasm32` targets — streaming requires native concurrency
- * primitives (tokio channels, `JoinSet`) that are not supported on wasm32.
+ * Not available on `wasm32` targets — streaming requires native concurrency primitives (tokio
+ * channels, `JoinSet`) that are not supported on wasm32.
  *
- * Delivered to bindings via alef's streaming-adapter pattern. The
- * `crawl_stream` / `batch_crawl_stream` binding wrappers in `bindings.rs`
- * expose this as the per-language streaming idiom (Python `AsyncIterator`,
- * Ruby `Enumerator`, PHP `Generator`, Elixir `Stream.unfold`, etc.).
+ * Delivered to bindings via alef's streaming-adapter pattern. The `crawl_stream` /
+ * `batch_crawl_stream` binding wrappers in `bindings.rs` expose this as the per-language streaming
+ * idiom (Python `AsyncIterator`, Ruby `Enumerator`, PHP `Generator`, Elixir `Stream.unfold`, etc.).
  */
 @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = CrawlEventDeserializer::class)
 @com.fasterxml.jackson.databind.annotation.JsonSerialize(using = CrawlEventSerializer::class)
@@ -38,25 +37,21 @@ sealed class CrawlEvent {
     /** A single page has been crawled. */
     @com.fasterxml.jackson.databind.annotation.JsonDeserialize
     @com.fasterxml.jackson.databind.annotation.JsonSerialize
-    data class Page(
-        val result: CrawlPageResult
-    ) : CrawlEvent()
+    data class Page(val result: CrawlPageResult) : CrawlEvent()
+
     /** An error occurred while crawling a URL. */
     @com.fasterxml.jackson.databind.annotation.JsonDeserialize
     @com.fasterxml.jackson.databind.annotation.JsonSerialize
-    data class Error(
-        val url: String,
-        val error: String
-    ) : CrawlEvent()
+    data class Error(val url: String, val error: String) : CrawlEvent()
+
     /** The crawl has completed. */
     @com.fasterxml.jackson.databind.annotation.JsonDeserialize
     @com.fasterxml.jackson.databind.annotation.JsonSerialize
-    data class Complete(
-        val pagesCrawled: Long
-    ) : CrawlEvent()
+    data class Complete(val pagesCrawled: Long) : CrawlEvent()
 }
 
-private class CrawlEventDeserializer : com.fasterxml.jackson.databind.deser.std.StdDeserializer<CrawlEvent>(CrawlEvent::class.java) {
+private class CrawlEventDeserializer :
+    com.fasterxml.jackson.databind.deser.std.StdDeserializer<CrawlEvent>(CrawlEvent::class.java) {
     @Suppress("LongMethod")
     override fun deserialize(
         parser: com.fasterxml.jackson.core.JsonParser,
@@ -65,22 +60,28 @@ private class CrawlEventDeserializer : com.fasterxml.jackson.databind.deser.std.
         val node = parser.codec.readTree<com.fasterxml.jackson.databind.node.ObjectNode>(parser)
         val tag = node.get("type")?.asText()
         @Suppress("UNCHECKED_CAST")
-        val payload = (node.deepCopy() as com.fasterxml.jackson.databind.node.ObjectNode).apply { remove("type") }
+        val payload =
+            (node.deepCopy() as com.fasterxml.jackson.databind.node.ObjectNode).apply {
+                remove("type")
+            }
         return when (tag) {
             "page" -> ctx.readTreeAsValue<CrawlEvent.Page>(payload, CrawlEvent.Page::class.java)
             "error" -> ctx.readTreeAsValue<CrawlEvent.Error>(payload, CrawlEvent.Error::class.java)
-            "complete" -> ctx.readTreeAsValue<CrawlEvent.Complete>(payload, CrawlEvent.Complete::class.java)
-            else -> throw com.fasterxml.jackson.databind.exc.InvalidFormatException(
-                parser,
-                "Unknown CrawlEvent tag",
-                tag,
-                CrawlEvent::class.java,
-            )
+            "complete" ->
+                ctx.readTreeAsValue<CrawlEvent.Complete>(payload, CrawlEvent.Complete::class.java)
+            else ->
+                throw com.fasterxml.jackson.databind.exc.InvalidFormatException(
+                    parser,
+                    "Unknown CrawlEvent tag",
+                    tag,
+                    CrawlEvent::class.java,
+                )
         }
     }
 }
 
-private class CrawlEventSerializer : com.fasterxml.jackson.databind.ser.std.StdSerializer<CrawlEvent>(CrawlEvent::class.java) {
+private class CrawlEventSerializer :
+    com.fasterxml.jackson.databind.ser.std.StdSerializer<CrawlEvent>(CrawlEvent::class.java) {
     @Suppress("LongMethod")
     override fun serialize(
         value: CrawlEvent,
@@ -91,32 +92,36 @@ private class CrawlEventSerializer : com.fasterxml.jackson.databind.ser.std.StdS
         val mapper =
             (gen.codec as? com.fasterxml.jackson.databind.ObjectMapper)
                 ?: com.fasterxml.jackson.databind.ObjectMapper().findAndRegisterModules()
-        val node: com.fasterxml.jackson.databind.node.ObjectNode = when (value) {
-            is CrawlEvent.Page -> {
-                @Suppress("UNCHECKED_CAST")
-                val n = mapper.valueToTree<com.fasterxml.jackson.databind.node.ObjectNode>(
-                    value as CrawlEvent.Page
-                ) as com.fasterxml.jackson.databind.node.ObjectNode
-                n.put("type", "page")
-                n
+        val node: com.fasterxml.jackson.databind.node.ObjectNode =
+            when (value) {
+                is CrawlEvent.Page -> {
+                    @Suppress("UNCHECKED_CAST")
+                    val n =
+                        mapper.valueToTree<com.fasterxml.jackson.databind.node.ObjectNode>(
+                            value as CrawlEvent.Page
+                        ) as com.fasterxml.jackson.databind.node.ObjectNode
+                    n.put("type", "page")
+                    n
+                }
+                is CrawlEvent.Error -> {
+                    @Suppress("UNCHECKED_CAST")
+                    val n =
+                        mapper.valueToTree<com.fasterxml.jackson.databind.node.ObjectNode>(
+                            value as CrawlEvent.Error
+                        ) as com.fasterxml.jackson.databind.node.ObjectNode
+                    n.put("type", "error")
+                    n
+                }
+                is CrawlEvent.Complete -> {
+                    @Suppress("UNCHECKED_CAST")
+                    val n =
+                        mapper.valueToTree<com.fasterxml.jackson.databind.node.ObjectNode>(
+                            value as CrawlEvent.Complete
+                        ) as com.fasterxml.jackson.databind.node.ObjectNode
+                    n.put("type", "complete")
+                    n
+                }
             }
-            is CrawlEvent.Error -> {
-                @Suppress("UNCHECKED_CAST")
-                val n = mapper.valueToTree<com.fasterxml.jackson.databind.node.ObjectNode>(
-                    value as CrawlEvent.Error
-                ) as com.fasterxml.jackson.databind.node.ObjectNode
-                n.put("type", "error")
-                n
-            }
-            is CrawlEvent.Complete -> {
-                @Suppress("UNCHECKED_CAST")
-                val n = mapper.valueToTree<com.fasterxml.jackson.databind.node.ObjectNode>(
-                    value as CrawlEvent.Complete
-                ) as com.fasterxml.jackson.databind.node.ObjectNode
-                n.put("type", "complete")
-                n
-            }
-        }
         mapper.writeTree(gen, node)
     }
 }

@@ -108,5 +108,5 @@ data class PageMetadata(
     /** Heading elements (h1-h6). */
     val headings: List<HeadingInfo>?,
     /** Computed word count of the page body text. */
-    val wordCount: Long?
+    val wordCount: Long?,
 )

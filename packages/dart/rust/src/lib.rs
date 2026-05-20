@@ -756,6 +756,38 @@ pub struct BatchCrawlResult {
     pub error: Option<String>,
 }
 
+/// Aggregate result of a batch scrape, exposing per-URL results plus precomputed counts.
+///
+/// The counts are derived once at construction so every binding language can read them
+/// as plain integer fields without re-iterating the `results` vector.
+#[frb(mirror(BatchScrapeResults))]
+pub struct BatchScrapeResults {
+    /// Per-URL scrape results, in the order URLs were submitted.
+    pub results: Vec<BatchScrapeResult>,
+    /// Total number of URLs in the batch (equal to `results.len()`).
+    pub total_count: i64,
+    /// Number of URLs whose scrape succeeded (`error` is `None`).
+    pub completed_count: i64,
+    /// Number of URLs whose scrape failed (`error` is `Some`).
+    pub failed_count: i64,
+}
+
+/// Aggregate result of a batch crawl, exposing per-URL results plus precomputed counts.
+///
+/// The counts are derived once at construction so every binding language can read them
+/// as plain integer fields without re-iterating the `results` vector.
+#[frb(mirror(BatchCrawlResults))]
+pub struct BatchCrawlResults {
+    /// Per-URL crawl results, in the order seed URLs were submitted.
+    pub results: Vec<BatchCrawlResult>,
+    /// Total number of seed URLs in the batch (equal to `results.len()`).
+    pub total_count: i64,
+    /// Number of seed URLs whose crawl succeeded (`error` is `None`).
+    pub completed_count: i64,
+    /// Number of seed URLs whose crawl failed (`error` is `Some`).
+    pub failed_count: i64,
+}
+
 impl CrawlEngineHandle {
     #[frb]
     pub fn crawl_stream(&self, req: CrawlStreamRequest, sink: crate::frb_generated::StreamSink<CrawlEvent>) {
@@ -1563,6 +1595,28 @@ impl From<kreuzcrawl::BatchCrawlResult> for BatchCrawlResult {
     }
 }
 
+impl From<kreuzcrawl::BatchScrapeResults> for BatchScrapeResults {
+    fn from(v: kreuzcrawl::BatchScrapeResults) -> Self {
+        BatchScrapeResults {
+            results: v.results.into_iter().map(BatchScrapeResult::from).collect(),
+            total_count: v.total_count as _,
+            completed_count: v.completed_count as _,
+            failed_count: v.failed_count as _,
+        }
+    }
+}
+
+impl From<kreuzcrawl::BatchCrawlResults> for BatchCrawlResults {
+    fn from(v: kreuzcrawl::BatchCrawlResults) -> Self {
+        BatchCrawlResults {
+            results: v.results.into_iter().map(BatchCrawlResult::from).collect(),
+            total_count: v.total_count as _,
+            completed_count: v.completed_count as _,
+            failed_count: v.failed_count as _,
+        }
+    }
+}
+
 impl From<kreuzcrawl::BrowserMode> for BrowserMode {
     fn from(v: kreuzcrawl::BrowserMode) -> Self {
         match v {
@@ -1980,15 +2034,19 @@ pub async fn interact(
 }
 
 /// Scrape multiple URLs concurrently.
-pub async fn batch_scrape(engine: CrawlEngineHandle, urls: Vec<String>) -> Result<String, String> {
-    let _ = (engine, urls);
-    Ok(String::new())
+pub async fn batch_scrape(engine: CrawlEngineHandle, urls: Vec<String>) -> Result<BatchScrapeResults, String> {
+    kreuzcrawl::batch_scrape(&engine.inner, urls)
+        .await
+        .map(BatchScrapeResults::from)
+        .map_err(|e| e.to_string())
 }
 
 /// Crawl multiple seed URLs concurrently, each following links to configured depth.
-pub async fn batch_crawl(engine: CrawlEngineHandle, urls: Vec<String>) -> Result<String, String> {
-    let _ = (engine, urls);
-    Ok(String::new())
+pub async fn batch_crawl(engine: CrawlEngineHandle, urls: Vec<String>) -> Result<BatchCrawlResults, String> {
+    kreuzcrawl::batch_crawl(&engine.inner, urls)
+        .await
+        .map(BatchCrawlResults::from)
+        .map_err(|e| e.to_string())
 }
 
 // `create_<Type>_from_json` helpers — deserialize a JSON string into a mirror type.
@@ -2221,5 +2279,19 @@ pub fn create_batch_scrape_result_from_json(json: String) -> Result<BatchScrapeR
 pub fn create_batch_crawl_result_from_json(json: String) -> Result<BatchCrawlResult, String> {
     serde_json::from_str::<kreuzcrawl::BatchCrawlResult>(&json)
         .map(BatchCrawlResult::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_batch_scrape_results_from_json(json: String) -> Result<BatchScrapeResults, String> {
+    serde_json::from_str::<kreuzcrawl::BatchScrapeResults>(&json)
+        .map(BatchScrapeResults::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_batch_crawl_results_from_json(json: String) -> Result<BatchCrawlResults, String> {
+    serde_json::from_str::<kreuzcrawl::BatchCrawlResults>(&json)
+        .map(BatchCrawlResults::from)
         .map_err(|e| e.to_string())
 }

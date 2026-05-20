@@ -42,5 +42,5 @@ enum class AssetCategory {
     /** A data file (JSON, XML, CSV, etc.). */
     DATA,
     /** An unrecognized asset type. */
-    OTHER;
+    OTHER,
 }

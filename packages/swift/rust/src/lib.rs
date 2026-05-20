@@ -714,6 +714,36 @@ mod ffi {
     }
 
     extern "Rust" {
+        type BatchScrapeResults;
+        #[swift_bridge(init)]
+        fn new(
+            results: Vec<BatchScrapeResult>,
+            total_count: usize,
+            completed_count: usize,
+            failed_count: usize,
+        ) -> BatchScrapeResults;
+        fn results(&self) -> Vec<BatchScrapeResult>;
+        fn total_count(&self) -> usize;
+        fn completed_count(&self) -> usize;
+        fn failed_count(&self) -> usize;
+    }
+
+    extern "Rust" {
+        type BatchCrawlResults;
+        #[swift_bridge(init)]
+        fn new(
+            results: Vec<BatchCrawlResult>,
+            total_count: usize,
+            completed_count: usize,
+            failed_count: usize,
+        ) -> BatchCrawlResults;
+        fn results(&self) -> Vec<BatchCrawlResult>;
+        fn total_count(&self) -> usize;
+        fn completed_count(&self) -> usize;
+        fn failed_count(&self) -> usize;
+    }
+
+    extern "Rust" {
         type BrowserMode;
         fn to_string(&self) -> String;
     }
@@ -779,9 +809,9 @@ mod ffi {
         fn map_urls(engine: CrawlEngineHandle, url: String) -> Result<MapResult, String>;
         fn interact(engine: CrawlEngineHandle, url: String, actions: Vec<String>) -> Result<InteractionResult, String>;
         #[swift_bridge(swift_name = "batchScrape")]
-        fn batch_scrape(engine: CrawlEngineHandle, urls: Vec<String>) -> Result<String, String>;
+        fn batch_scrape(engine: CrawlEngineHandle, urls: Vec<String>) -> Result<BatchScrapeResults, String>;
         #[swift_bridge(swift_name = "batchCrawl")]
-        fn batch_crawl(engine: CrawlEngineHandle, urls: Vec<String>) -> Result<String, String>;
+        fn batch_crawl(engine: CrawlEngineHandle, urls: Vec<String>) -> Result<BatchCrawlResults, String>;
     }
 
     extern "Rust" {
@@ -3366,6 +3396,90 @@ impl BatchCrawlResult {
     }
 }
 
+pub struct BatchScrapeResults(pub kreuzcrawl::BatchScrapeResults);
+impl BatchScrapeResults {
+    pub fn new(
+        results: Vec<BatchScrapeResult>,
+        total_count: usize,
+        completed_count: usize,
+        failed_count: usize,
+    ) -> BatchScrapeResults {
+        let mut __target: kreuzcrawl::BatchScrapeResults = ::std::default::Default::default();
+        __target.results = results.into_iter().map(|w| w.0).collect();
+        __target.total_count = total_count;
+        __target.completed_count = completed_count;
+        __target.failed_count = failed_count;
+        BatchScrapeResults(__target)
+    }
+    pub fn results(&self) -> Vec<BatchScrapeResult> {
+        self.0
+            .results
+            .iter()
+            .map(|elem| BatchScrapeResult(elem.clone()))
+            .collect()
+    }
+    pub fn total_count(&self) -> usize {
+        ::serde_json::to_value(&self.0.total_count)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn completed_count(&self) -> usize {
+        ::serde_json::to_value(&self.0.completed_count)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn failed_count(&self) -> usize {
+        ::serde_json::to_value(&self.0.failed_count)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+}
+
+pub struct BatchCrawlResults(pub kreuzcrawl::BatchCrawlResults);
+impl BatchCrawlResults {
+    pub fn new(
+        results: Vec<BatchCrawlResult>,
+        total_count: usize,
+        completed_count: usize,
+        failed_count: usize,
+    ) -> BatchCrawlResults {
+        let mut __target: kreuzcrawl::BatchCrawlResults = ::std::default::Default::default();
+        __target.results = results.into_iter().map(|w| w.0).collect();
+        __target.total_count = total_count;
+        __target.completed_count = completed_count;
+        __target.failed_count = failed_count;
+        BatchCrawlResults(__target)
+    }
+    pub fn results(&self) -> Vec<BatchCrawlResult> {
+        self.0
+            .results
+            .iter()
+            .map(|elem| BatchCrawlResult(elem.clone()))
+            .collect()
+    }
+    pub fn total_count(&self) -> usize {
+        ::serde_json::to_value(&self.0.total_count)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn completed_count(&self) -> usize {
+        ::serde_json::to_value(&self.0.completed_count)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn failed_count(&self) -> usize {
+        ::serde_json::to_value(&self.0.failed_count)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+}
+
 pub enum BrowserMode {
     Auto,
     Always,
@@ -3713,21 +3827,21 @@ pub fn interact(engine: CrawlEngineHandle, url: String, actions: Vec<String>) ->
     })
 }
 
-pub fn batch_scrape(engine: CrawlEngineHandle, urls: Vec<String>) -> Result<String, String> {
+pub fn batch_scrape(engine: CrawlEngineHandle, urls: Vec<String>) -> Result<BatchScrapeResults, String> {
     crate::__alef_tokio_runtime().block_on(async {
         kreuzcrawl::batch_scrape(&engine.0, urls)
             .await
             .map_err(|e| e.to_string())
-            .map(|s| s.to_string())
+            .map(BatchScrapeResults)
     })
 }
 
-pub fn batch_crawl(engine: CrawlEngineHandle, urls: Vec<String>) -> Result<String, String> {
+pub fn batch_crawl(engine: CrawlEngineHandle, urls: Vec<String>) -> Result<BatchCrawlResults, String> {
     crate::__alef_tokio_runtime().block_on(async {
         kreuzcrawl::batch_crawl(&engine.0, urls)
             .await
             .map_err(|e| e.to_string())
-            .map(|s| s.to_string())
+            .map(BatchCrawlResults)
     })
 }
 

@@ -28,5 +28,5 @@ enum class BrowserWait {
     /** Wait for a specific CSS selector to appear in the DOM. */
     SELECTOR,
     /** Wait for a fixed duration after navigation. */
-    FIXED;
+    FIXED,
 }

@@ -40,38 +40,37 @@ data class BrowserConfig(
     /** Extra time to wait after the wait condition is met. */
     val extraWait: Duration?,
     /**
-     * Enable browser-realistic TLS fingerprint via the stealth HTTP client.
-     * Only honored by `BrowserBackend.Native` — chromiumoxide is already
-     * full-stealth via Chrome's TLS stack.
+     * Enable browser-realistic TLS fingerprint via the stealth HTTP client. Only honored by
+     * `BrowserBackend.Native` — chromiumoxide is already full-stealth via Chrome's TLS stack.
      */
     val stealth: Boolean,
     /**
-     * Proxy for browser fetches. Overrides `CrawlConfig.proxy` when set.
-     * Native backend supports http/https only (no SOCKS5).
+     * Proxy for browser fetches. Overrides `CrawlConfig.proxy` when set. Native backend supports
+     * http/https only (no SOCKS5).
      */
     val proxy: ProxyConfig?,
     /**
-     * URL patterns to block before the network request fires. Supports `*`
-     * wildcards. Useful for skipping ads/analytics/large images. Honored by
-     * `BrowserBackend.Native`; chromiumoxide ignores this field today.
+     * URL patterns to block before the network request fires. Supports `*` wildcards. Useful for
+     * skipping ads/analytics/large images. Honored by `BrowserBackend.Native`; chromiumoxide
+     * ignores this field today.
      */
     val blockUrlPatterns: List<String>,
     /**
      * JavaScript snippet evaluated after navigation completes.
      *
      * Scraping captures the native backend result in `ScrapeResult.browser.eval_result`.
-     * Interactions run this script before page actions on both browser backends but do
-     * not include the script result in `InteractionResult`.
+     * Interactions run this script before page actions on both browser backends but do not include
+     * the script result in `InteractionResult`.
      */
     val evalScript: String?,
     /**
-     * User-agent used when fetching robots.txt. Defaults to `BrowserConfig.user_agent`
-     * (or kreuzcrawl's default) if unset. Native only.
+     * User-agent used when fetching robots.txt. Defaults to `BrowserConfig.user_agent` (or
+     * kreuzcrawl's default) if unset. Native only.
      */
     val robotsUserAgent: String?,
     /**
-     * Capture the full network event stream into the result. Default false
-     * (only the document event is captured). Native only.
+     * Capture the full network event stream into the result. Default false (only the document event
+     * is captured). Native only.
      */
-    val captureNetworkEvents: Boolean
+    val captureNetworkEvents: Boolean,
 )

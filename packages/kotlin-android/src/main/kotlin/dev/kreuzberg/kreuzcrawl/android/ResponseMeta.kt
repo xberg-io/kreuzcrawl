@@ -36,5 +36,5 @@ data class ResponseMeta(
     /** The Content-Language header value. */
     val contentLanguage: String?,
     /** The Content-Encoding header value. */
-    val contentEncoding: String?
+    val contentEncoding: String?,
 )

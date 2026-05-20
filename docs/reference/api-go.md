@@ -150,7 +150,7 @@ Scrape multiple URLs concurrently.
 **Signature:**
 
 ```go
-func BatchScrape(engine CrawlEngineHandle, urls []string) (string, error)
+func BatchScrape(engine CrawlEngineHandle, urls []string) (BatchScrapeResults, error)
 ```
 
 **Parameters:**
@@ -160,7 +160,7 @@ func BatchScrape(engine CrawlEngineHandle, urls []string) (string, error)
 | `Engine` | `CrawlEngineHandle` | Yes | The crawl engine handle |
 | `Urls` | `[]string` | Yes | The urls |
 
-**Returns:** `string`
+**Returns:** `BatchScrapeResults`
 **Errors:** Returns `error`.
 
 ---
@@ -172,7 +172,7 @@ Crawl multiple seed URLs concurrently, each following links to configured depth.
 **Signature:**
 
 ```go
-func BatchCrawl(engine CrawlEngineHandle, urls []string) (string, error)
+func BatchCrawl(engine CrawlEngineHandle, urls []string) (BatchCrawlResults, error)
 ```
 
 **Parameters:**
@@ -182,7 +182,7 @@ func BatchCrawl(engine CrawlEngineHandle, urls []string) (string, error)
 | `Engine` | `CrawlEngineHandle` | Yes | The crawl engine handle |
 | `Urls` | `[]string` | Yes | The urls |
 
-**Returns:** `string`
+**Returns:** `BatchCrawlResults`
 **Errors:** Returns `error`.
 
 ---
@@ -235,6 +235,24 @@ Result from a single URL in a batch crawl operation.
 
 ---
 
+#### BatchCrawlResults
+
+Aggregate result of a batch crawl, exposing per-URL results plus precomputed counts.
+
+The counts are derived once at construction so every binding language can read them
+as plain integer fields without re-iterating the `results` vector.
+
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `Results` | `[]BatchCrawlResult` | `nil` | Per-URL crawl results, in the order seed URLs were submitted. |
+| `TotalCount` | `int` | — | Total number of seed URLs in the batch (equal to `results.len()`). |
+| `CompletedCount` | `int` | — | Number of seed URLs whose crawl succeeded (`error` is `nil`). |
+| `FailedCount` | `int` | — | Number of seed URLs whose crawl failed (`error` is `Some`). |
+
+
+---
+
 #### BatchCrawlStreamRequest
 
 Request to begin a multi-URL streaming crawl.
@@ -261,6 +279,24 @@ Result from a single URL in a batch scrape operation.
 | `Url` | `string` | — | The URL that was scraped. |
 | `Result` | `*ScrapeResult` | `nil` | The scrape result, if successful. |
 | `Error` | `*string` | `nil` | The error message, if the scrape failed. |
+
+
+---
+
+#### BatchScrapeResults
+
+Aggregate result of a batch scrape, exposing per-URL results plus precomputed counts.
+
+The counts are derived once at construction so every binding language can read them
+as plain integer fields without re-iterating the `results` vector.
+
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `Results` | `[]BatchScrapeResult` | `nil` | Per-URL scrape results, in the order URLs were submitted. |
+| `TotalCount` | `int` | — | Total number of URLs in the batch (equal to `results.len()`). |
+| `CompletedCount` | `int` | — | Number of URLs whose scrape succeeded (`error` is `nil`). |
+| `FailedCount` | `int` | — | Number of URLs whose scrape failed (`error` is `Some`). |
 
 
 ---

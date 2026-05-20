@@ -150,7 +150,7 @@ Scrape multiple URLs concurrently.
 **Signature:**
 
 ```rust
-pub async fn batch_scrape(engine: CrawlEngineHandle, urls: Vec<String>) -> Result<String, CrawlError>
+pub async fn batch_scrape(engine: CrawlEngineHandle, urls: Vec<String>) -> Result<BatchScrapeResults, CrawlError>
 ```
 
 **Parameters:**
@@ -160,7 +160,7 @@ pub async fn batch_scrape(engine: CrawlEngineHandle, urls: Vec<String>) -> Resul
 | `engine` | `CrawlEngineHandle` | Yes | The crawl engine handle |
 | `urls` | `Vec<String>` | Yes | The urls |
 
-**Returns:** `String`
+**Returns:** `BatchScrapeResults`
 **Errors:** Returns `Err(CrawlError)`.
 
 ---
@@ -172,7 +172,7 @@ Crawl multiple seed URLs concurrently, each following links to configured depth.
 **Signature:**
 
 ```rust
-pub async fn batch_crawl(engine: CrawlEngineHandle, urls: Vec<String>) -> Result<String, CrawlError>
+pub async fn batch_crawl(engine: CrawlEngineHandle, urls: Vec<String>) -> Result<BatchCrawlResults, CrawlError>
 ```
 
 **Parameters:**
@@ -182,7 +182,7 @@ pub async fn batch_crawl(engine: CrawlEngineHandle, urls: Vec<String>) -> Result
 | `engine` | `CrawlEngineHandle` | Yes | The crawl engine handle |
 | `urls` | `Vec<String>` | Yes | The urls |
 
-**Returns:** `String`
+**Returns:** `BatchCrawlResults`
 **Errors:** Returns `Err(CrawlError)`.
 
 ---
@@ -235,6 +235,24 @@ Result from a single URL in a batch crawl operation.
 
 ---
 
+#### BatchCrawlResults
+
+Aggregate result of a batch crawl, exposing per-URL results plus precomputed counts.
+
+The counts are derived once at construction so every binding language can read them
+as plain integer fields without re-iterating the `results` vector.
+
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `results` | `Vec<BatchCrawlResult>` | `vec![]` | Per-URL crawl results, in the order seed URLs were submitted. |
+| `total_count` | `usize` | — | Total number of seed URLs in the batch (equal to `results.len()`). |
+| `completed_count` | `usize` | — | Number of seed URLs whose crawl succeeded (`error` is `None`). |
+| `failed_count` | `usize` | — | Number of seed URLs whose crawl failed (`error` is `Some`). |
+
+
+---
+
 #### BatchCrawlStreamRequest
 
 Request to begin a multi-URL streaming crawl.
@@ -261,6 +279,24 @@ Result from a single URL in a batch scrape operation.
 | `url` | `String` | — | The URL that was scraped. |
 | `result` | `Option<ScrapeResult>` | `Default::default()` | The scrape result, if successful. |
 | `error` | `Option<String>` | `Default::default()` | The error message, if the scrape failed. |
+
+
+---
+
+#### BatchScrapeResults
+
+Aggregate result of a batch scrape, exposing per-URL results plus precomputed counts.
+
+The counts are derived once at construction so every binding language can read them
+as plain integer fields without re-iterating the `results` vector.
+
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `results` | `Vec<BatchScrapeResult>` | `vec![]` | Per-URL scrape results, in the order URLs were submitted. |
+| `total_count` | `usize` | — | Total number of URLs in the batch (equal to `results.len()`). |
+| `completed_count` | `usize` | — | Number of URLs whose scrape succeeded (`error` is `None`). |
+| `failed_count` | `usize` | — | Number of URLs whose scrape failed (`error` is `Some`). |
 
 
 ---

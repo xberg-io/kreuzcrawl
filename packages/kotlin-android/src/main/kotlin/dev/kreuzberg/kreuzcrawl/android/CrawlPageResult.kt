@@ -62,5 +62,5 @@ data class CrawlPageResult(
     /** Metadata about the LLM extraction pass (cost, tokens, model). */
     val extractionMeta: ExtractionMeta?,
     /** Downloaded non-HTML document (PDF, DOCX, image, code, etc.). */
-    val downloadedDocument: DownloadedDocument?
+    val downloadedDocument: DownloadedDocument?,
 )

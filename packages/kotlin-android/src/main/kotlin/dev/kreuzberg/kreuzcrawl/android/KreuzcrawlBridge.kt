@@ -20,8 +20,7 @@ object KreuzcrawlBridge {
     @Throws(KreuzcrawlBridgeException::class)
     external fun nativeGenerateCitations(markdown: String): String
 
-    @Throws(KreuzcrawlBridgeException::class)
-    external fun nativeCreateEngine(config: String): Long
+    @Throws(KreuzcrawlBridgeException::class) external fun nativeCreateEngine(config: String): Long
 
     @Throws(KreuzcrawlBridgeException::class)
     external fun nativeScrape(engine: Long, url: String): String
@@ -45,7 +44,10 @@ object KreuzcrawlBridge {
 
     // Streaming JNI externs for CrawlEngineHandle.crawlStream
     @Throws(KreuzcrawlBridgeException::class)
-    external fun nativeCrawlEngineHandleCrawlStreamStart(clientHandle: Long, requestJson: String): Long
+    external fun nativeCrawlEngineHandleCrawlStreamStart(
+        clientHandle: Long,
+        requestJson: String,
+    ): Long
 
     @Throws(KreuzcrawlBridgeException::class)
     external fun nativeCrawlEngineHandleCrawlStreamNext(streamHandle: Long): String?
@@ -54,7 +56,10 @@ object KreuzcrawlBridge {
 
     // Streaming JNI externs for CrawlEngineHandle.batchCrawlStream
     @Throws(KreuzcrawlBridgeException::class)
-    external fun nativeCrawlEngineHandleBatchCrawlStreamStart(clientHandle: Long, requestJson: String): Long
+    external fun nativeCrawlEngineHandleBatchCrawlStreamStart(
+        clientHandle: Long,
+        requestJson: String,
+    ): Long
 
     @Throws(KreuzcrawlBridgeException::class)
     external fun nativeCrawlEngineHandleBatchCrawlStreamNext(streamHandle: Long): String?

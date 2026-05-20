@@ -741,6 +741,36 @@ pub const BatchCrawlResult = struct {
     error_: ?[]const u8,
 };
 
+/// Aggregate result of a batch scrape, exposing per-URL results plus precomputed counts.
+///
+/// The counts are derived once at construction so every binding language can read them
+/// as plain integer fields without re-iterating the `results` vector.
+pub const BatchScrapeResults = struct {
+    /// Per-URL scrape results, in the order URLs were submitted.
+    results: []const BatchScrapeResult,
+    /// Total number of URLs in the batch (equal to `results.len()`).
+    total_count: u64,
+    /// Number of URLs whose scrape succeeded (`error` is `null`).
+    completed_count: u64,
+    /// Number of URLs whose scrape failed (`error` is `Some`).
+    failed_count: u64,
+};
+
+/// Aggregate result of a batch crawl, exposing per-URL results plus precomputed counts.
+///
+/// The counts are derived once at construction so every binding language can read them
+/// as plain integer fields without re-iterating the `results` vector.
+pub const BatchCrawlResults = struct {
+    /// Per-URL crawl results, in the order seed URLs were submitted.
+    results: []const BatchCrawlResult,
+    /// Total number of seed URLs in the batch (equal to `results.len()`).
+    total_count: u64,
+    /// Number of seed URLs whose crawl succeeded (`error` is `null`).
+    completed_count: u64,
+    /// Number of seed URLs whose crawl failed (`error` is `Some`).
+    failed_count: u64,
+};
+
 /// When to use the headless browser fallback.
 pub const BrowserMode = enum {
     /// Automatically detect when JS rendering is needed and fall back to browser.
@@ -1053,7 +1083,6 @@ pub fn batch_scrape(engine: ?[]const u8, urls: []const u8) CrawlError![]u8 {
     const urls_z = try std.fmt.allocPrintSentinel(std.heap.c_allocator, "{s}", .{urls}, 0);
     defer std.heap.c_allocator.free(urls_z);
     const _result = c.kcrawl_batch_scrape(engine_handle, urls_z);
-    const _result_len = c.kcrawl_batch_scrape_len(engine_handle, urls_z);
     if (c.kcrawl_last_error_code() != 0) {
         return _first_error(CrawlError);
     }
@@ -1061,10 +1090,11 @@ pub fn batch_scrape(engine: ?[]const u8, urls: []const u8) CrawlError![]u8 {
     if (engine_config_handle) |h| c.kcrawl_crawl_config_free(h);
     if (engine_handle) |h| c.kcrawl_crawl_engine_handle_free(h);
     return blk: {
-        if (_result == null) return _first_error(CrawlError);
-        const slice = _result[0.._result_len];
+        const _json_ptr = c.kcrawl_batch_scrape_results_to_json(_result.?);
+        defer _free_string(_json_ptr);
+        c.kcrawl_batch_scrape_results_free(_result.?);
+        const slice = std.mem.sliceTo(_json_ptr, 0);
         const owned = try std.heap.c_allocator.dupe(u8, slice);
-        _free_string(_result);
         break :blk owned;
     };
 }
@@ -1078,7 +1108,6 @@ pub fn batch_crawl(engine: ?[]const u8, urls: []const u8) CrawlError![]u8 {
     const urls_z = try std.fmt.allocPrintSentinel(std.heap.c_allocator, "{s}", .{urls}, 0);
     defer std.heap.c_allocator.free(urls_z);
     const _result = c.kcrawl_batch_crawl(engine_handle, urls_z);
-    const _result_len = c.kcrawl_batch_crawl_len(engine_handle, urls_z);
     if (c.kcrawl_last_error_code() != 0) {
         return _first_error(CrawlError);
     }
@@ -1086,10 +1115,11 @@ pub fn batch_crawl(engine: ?[]const u8, urls: []const u8) CrawlError![]u8 {
     if (engine_config_handle) |h| c.kcrawl_crawl_config_free(h);
     if (engine_handle) |h| c.kcrawl_crawl_engine_handle_free(h);
     return blk: {
-        if (_result == null) return _first_error(CrawlError);
-        const slice = _result[0.._result_len];
+        const _json_ptr = c.kcrawl_batch_crawl_results_to_json(_result.?);
+        defer _free_string(_json_ptr);
+        c.kcrawl_batch_crawl_results_free(_result.?);
+        const slice = std.mem.sliceTo(_json_ptr, 0);
         const owned = try std.heap.c_allocator.dupe(u8, slice);
-        _free_string(_result);
         break :blk owned;
     };
 }

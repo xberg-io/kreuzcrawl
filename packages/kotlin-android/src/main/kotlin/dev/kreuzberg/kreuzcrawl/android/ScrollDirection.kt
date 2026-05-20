@@ -26,5 +26,5 @@ enum class ScrollDirection {
     /** Scroll upward. */
     UP,
     /** Scroll downward. */
-    DOWN;
+    DOWN,
 }

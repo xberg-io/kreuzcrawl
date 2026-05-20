@@ -31,6 +31,13 @@ typedef struct KCRAWLAuthConfig KCRAWLAuthConfig;
  */
 typedef struct KCRAWLBatchCrawlResult KCRAWLBatchCrawlResult;
 /**
+ * Aggregate result of a batch crawl, exposing per-URL results plus precomputed counts.
+ *
+ * The counts are derived once at construction so every binding language can read them
+ * as plain integer fields without re-iterating the `results` vector.
+ */
+typedef struct KCRAWLBatchCrawlResults KCRAWLBatchCrawlResults;
+/**
  * Request to begin a multi-URL streaming crawl.
  *
  * Wraps a set of seed URLs for delivery through the streaming-adapter binding
@@ -42,6 +49,13 @@ typedef struct KCRAWLBatchCrawlStreamRequest KCRAWLBatchCrawlStreamRequest;
  * Result from a single URL in a batch scrape operation.
  */
 typedef struct KCRAWLBatchScrapeResult KCRAWLBatchScrapeResult;
+/**
+ * Aggregate result of a batch scrape, exposing per-URL results plus precomputed counts.
+ *
+ * The counts are derived once at construction so every binding language can read them
+ * as plain integer fields without re-iterating the `results` vector.
+ */
+typedef struct KCRAWLBatchScrapeResults KCRAWLBatchScrapeResults;
 /**
  * Browser backend used for JavaScript rendering.
  */
@@ -2969,6 +2983,108 @@ KCRAWLCrawlResult *kcrawl_batch_crawl_result_result(const KCRAWLBatchCrawlResult
 char *kcrawl_batch_crawl_result_error(const KCRAWLBatchCrawlResult *ptr);
 
 /**
+ * Create a `BatchScrapeResults` from a JSON string. Returns null on failure.
+ * # Safety
+ * JSON string must be valid UTF-8 and null-terminated.
+ * Returned handle must be freed with `kcrawl_batch_scrape_results_free`.
+ */
+KCRAWLBatchScrapeResults *kcrawl_batch_scrape_results_from_json(const char *json);
+
+/**
+ * Serialize a `BatchScrapeResults` to a JSON string. Returns null on failure.
+ * # Safety
+ * `ptr` must be a valid, non-null pointer returned by a `kcrawl` function.
+ * The returned string must be freed with `kcrawl_free_string`.
+ */
+char *kcrawl_batch_scrape_results_to_json(const KCRAWLBatchScrapeResults *ptr);
+
+/**
+ * Free a `BatchScrapeResults` handle.
+ * # Safety
+ * Pointer must have been returned by this library, or be null.
+ */
+void kcrawl_batch_scrape_results_free(KCRAWLBatchScrapeResults *ptr);
+
+/**
+ * Get the `results` field from a `BatchScrapeResults`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+char *kcrawl_batch_scrape_results_results(const KCRAWLBatchScrapeResults *ptr);
+
+/**
+ * Get the `total_count` field from a `BatchScrapeResults`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+uintptr_t kcrawl_batch_scrape_results_total_count(const KCRAWLBatchScrapeResults *ptr);
+
+/**
+ * Get the `completed_count` field from a `BatchScrapeResults`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+uintptr_t kcrawl_batch_scrape_results_completed_count(const KCRAWLBatchScrapeResults *ptr);
+
+/**
+ * Get the `failed_count` field from a `BatchScrapeResults`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+uintptr_t kcrawl_batch_scrape_results_failed_count(const KCRAWLBatchScrapeResults *ptr);
+
+/**
+ * Create a `BatchCrawlResults` from a JSON string. Returns null on failure.
+ * # Safety
+ * JSON string must be valid UTF-8 and null-terminated.
+ * Returned handle must be freed with `kcrawl_batch_crawl_results_free`.
+ */
+KCRAWLBatchCrawlResults *kcrawl_batch_crawl_results_from_json(const char *json);
+
+/**
+ * Serialize a `BatchCrawlResults` to a JSON string. Returns null on failure.
+ * # Safety
+ * `ptr` must be a valid, non-null pointer returned by a `kcrawl` function.
+ * The returned string must be freed with `kcrawl_free_string`.
+ */
+char *kcrawl_batch_crawl_results_to_json(const KCRAWLBatchCrawlResults *ptr);
+
+/**
+ * Free a `BatchCrawlResults` handle.
+ * # Safety
+ * Pointer must have been returned by this library, or be null.
+ */
+void kcrawl_batch_crawl_results_free(KCRAWLBatchCrawlResults *ptr);
+
+/**
+ * Get the `results` field from a `BatchCrawlResults`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+char *kcrawl_batch_crawl_results_results(const KCRAWLBatchCrawlResults *ptr);
+
+/**
+ * Get the `total_count` field from a `BatchCrawlResults`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+uintptr_t kcrawl_batch_crawl_results_total_count(const KCRAWLBatchCrawlResults *ptr);
+
+/**
+ * Get the `completed_count` field from a `BatchCrawlResults`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+uintptr_t kcrawl_batch_crawl_results_completed_count(const KCRAWLBatchCrawlResults *ptr);
+
+/**
+ * Get the `failed_count` field from a `BatchCrawlResults`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+uintptr_t kcrawl_batch_crawl_results_failed_count(const KCRAWLBatchCrawlResults *ptr);
+
+/**
  * Convert an integer to a `BrowserMode` variant. Returns -1 on invalid input.
  * # Safety
  * Caller must ensure all pointer arguments are valid or null.
@@ -3417,33 +3533,15 @@ KCRAWLInteractionResult *kcrawl_interact(const KCRAWLCrawlEngineHandle *engine,
  * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
  * freed with the appropriate free function.
  */
-char *kcrawl_batch_scrape(const KCRAWLCrawlEngineHandle *_engine,
-                          const char *_urls);
-
-/**
- * Return the byte length of the C string that `kcrawl_batch_scrape` would return for the same
- * arguments, without allocating. Returns 0 when the underlying value is None or an error occurs.
- * Enables safe slice construction in Zig and Java FFM Panama without a NUL-scan.
- * \note SAFETY: All pointer parameters obey the same validity rules as `kcrawl_batch_scrape`.
- */
-uintptr_t kcrawl_batch_scrape_len(const KCRAWLCrawlEngineHandle *_engine,
-                                  const char *_urls);
+KCRAWLBatchScrapeResults *kcrawl_batch_scrape(const KCRAWLCrawlEngineHandle *engine,
+                                              const char *urls);
 
 /**
  * Crawl multiple seed URLs concurrently, each following links to configured depth.
  * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
  * freed with the appropriate free function.
  */
-char *kcrawl_batch_crawl(const KCRAWLCrawlEngineHandle *_engine,
-                         const char *_urls);
-
-/**
- * Return the byte length of the C string that `kcrawl_batch_crawl` would return for the same
- * arguments, without allocating. Returns 0 when the underlying value is None or an error occurs.
- * Enables safe slice construction in Zig and Java FFM Panama without a NUL-scan.
- * \note SAFETY: All pointer parameters obey the same validity rules as `kcrawl_batch_crawl`.
- */
-uintptr_t kcrawl_batch_crawl_len(const KCRAWLCrawlEngineHandle *_engine,
-                                 const char *_urls);
+KCRAWLBatchCrawlResults *kcrawl_batch_crawl(const KCRAWLCrawlEngineHandle *engine,
+                                            const char *urls);
 
 #endif  /* KCRAWL_H */

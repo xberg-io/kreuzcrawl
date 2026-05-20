@@ -28,5 +28,5 @@ enum class FeedType {
     /** Atom feed. */
     ATOM,
     /** JSON Feed. */
-    JSON_FEED;
+    JSON_FEED,
 }

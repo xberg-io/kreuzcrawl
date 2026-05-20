@@ -150,7 +150,7 @@ Scrape multiple URLs concurrently.
 **Signature:**
 
 ```c
-const char* kcrawl_batch_scrape(KcrawlCrawlEngineHandle engine, const char** urls);
+KcrawlBatchScrapeResults* kcrawl_batch_scrape(KcrawlCrawlEngineHandle engine, const char** urls);
 ```
 
 **Parameters:**
@@ -160,7 +160,7 @@ const char* kcrawl_batch_scrape(KcrawlCrawlEngineHandle engine, const char** url
 | `engine` | `KcrawlCrawlEngineHandle` | Yes | The crawl engine handle |
 | `urls` | `const char**` | Yes | The urls |
 
-**Returns:** `const char*`
+**Returns:** `KcrawlBatchScrapeResults`
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -172,7 +172,7 @@ Crawl multiple seed URLs concurrently, each following links to configured depth.
 **Signature:**
 
 ```c
-const char* kcrawl_batch_crawl(KcrawlCrawlEngineHandle engine, const char** urls);
+KcrawlBatchCrawlResults* kcrawl_batch_crawl(KcrawlCrawlEngineHandle engine, const char** urls);
 ```
 
 **Parameters:**
@@ -182,7 +182,7 @@ const char* kcrawl_batch_crawl(KcrawlCrawlEngineHandle engine, const char** urls
 | `engine` | `KcrawlCrawlEngineHandle` | Yes | The crawl engine handle |
 | `urls` | `const char**` | Yes | The urls |
 
-**Returns:** `const char*`
+**Returns:** `KcrawlBatchCrawlResults`
 **Errors:** Returns `NULL` on error.
 
 ---
@@ -235,6 +235,24 @@ Result from a single URL in a batch crawl operation.
 
 ---
 
+#### KcrawlBatchCrawlResults
+
+Aggregate result of a batch crawl, exposing per-URL results plus precomputed counts.
+
+The counts are derived once at construction so every binding language can read them
+as plain integer fields without re-iterating the `results` vector.
+
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `results` | `KcrawlBatchCrawlResult*` | `NULL` | Per-URL crawl results, in the order seed URLs were submitted. |
+| `total_count` | `uintptr_t` | — | Total number of seed URLs in the batch (equal to `results.len()`). |
+| `completed_count` | `uintptr_t` | — | Number of seed URLs whose crawl succeeded (`error` is `NULL`). |
+| `failed_count` | `uintptr_t` | — | Number of seed URLs whose crawl failed (`error` is `Some`). |
+
+
+---
+
 #### KcrawlBatchCrawlStreamRequest
 
 Request to begin a multi-URL streaming crawl.
@@ -261,6 +279,24 @@ Result from a single URL in a batch scrape operation.
 | `url` | `const char*` | — | The URL that was scraped. |
 | `result` | `KcrawlScrapeResult*` | `NULL` | The scrape result, if successful. |
 | `error` | `const char**` | `NULL` | The error message, if the scrape failed. |
+
+
+---
+
+#### KcrawlBatchScrapeResults
+
+Aggregate result of a batch scrape, exposing per-URL results plus precomputed counts.
+
+The counts are derived once at construction so every binding language can read them
+as plain integer fields without re-iterating the `results` vector.
+
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `results` | `KcrawlBatchScrapeResult*` | `NULL` | Per-URL scrape results, in the order URLs were submitted. |
+| `total_count` | `uintptr_t` | — | Total number of URLs in the batch (equal to `results.len()`). |
+| `completed_count` | `uintptr_t` | — | Number of URLs whose scrape succeeded (`error` is `NULL`). |
+| `failed_count` | `uintptr_t` | — | Number of URLs whose scrape failed (`error` is `Some`). |
 
 
 ---

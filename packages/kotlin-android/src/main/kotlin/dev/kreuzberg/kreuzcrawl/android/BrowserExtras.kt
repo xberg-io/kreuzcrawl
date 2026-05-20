@@ -35,8 +35,8 @@ data class BrowserExtras(
      */
     val networkEvents: List<ResponseMeta>,
     /**
-     * All non-expired cookies present in the browser's cookie jar after
-     * navigation completes (includes both prior cookies and server Set-Cookie).
+     * All non-expired cookies present in the browser's cookie jar after navigation completes
+     * (includes both prior cookies and server Set-Cookie).
      */
-    val cookies: List<CookieInfo>
+    val cookies: List<CookieInfo>,
 )

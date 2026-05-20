@@ -32,5 +32,5 @@ data class ArticleMetadata(
     /** The article section. */
     val section: String?,
     /** The article tags. */
-    val tags: List<String>
+    val tags: List<String>,
 )

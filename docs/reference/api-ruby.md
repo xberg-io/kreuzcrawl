@@ -160,7 +160,7 @@ def self.batch_scrape(engine, urls)
 | `engine` | `CrawlEngineHandle` | Yes | The crawl engine handle |
 | `urls` | `Array<String>` | Yes | The urls |
 
-**Returns:** `String`
+**Returns:** `BatchScrapeResults`
 **Errors:** Raises `CrawlError`.
 
 ---
@@ -182,7 +182,7 @@ def self.batch_crawl(engine, urls)
 | `engine` | `CrawlEngineHandle` | Yes | The crawl engine handle |
 | `urls` | `Array<String>` | Yes | The urls |
 
-**Returns:** `String`
+**Returns:** `BatchCrawlResults`
 **Errors:** Raises `CrawlError`.
 
 ---
@@ -235,6 +235,24 @@ Result from a single URL in a batch crawl operation.
 
 ---
 
+#### BatchCrawlResults
+
+Aggregate result of a batch crawl, exposing per-URL results plus precomputed counts.
+
+The counts are derived once at construction so every binding language can read them
+as plain integer fields without re-iterating the `results` vector.
+
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `results` | `Array<BatchCrawlResult>` | `[]` | Per-URL crawl results, in the order seed URLs were submitted. |
+| `total_count` | `Integer` | — | Total number of seed URLs in the batch (equal to `results.len()`). |
+| `completed_count` | `Integer` | — | Number of seed URLs whose crawl succeeded (`error` is `nil`). |
+| `failed_count` | `Integer` | — | Number of seed URLs whose crawl failed (`error` is `Some`). |
+
+
+---
+
 #### BatchCrawlStreamRequest
 
 Request to begin a multi-URL streaming crawl.
@@ -261,6 +279,24 @@ Result from a single URL in a batch scrape operation.
 | `url` | `String` | — | The URL that was scraped. |
 | `result` | `ScrapeResult?` | `nil` | The scrape result, if successful. |
 | `error` | `String?` | `nil` | The error message, if the scrape failed. |
+
+
+---
+
+#### BatchScrapeResults
+
+Aggregate result of a batch scrape, exposing per-URL results plus precomputed counts.
+
+The counts are derived once at construction so every binding language can read them
+as plain integer fields without re-iterating the `results` vector.
+
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `results` | `Array<BatchScrapeResult>` | `[]` | Per-URL scrape results, in the order URLs were submitted. |
+| `total_count` | `Integer` | — | Total number of URLs in the batch (equal to `results.len()`). |
+| `completed_count` | `Integer` | — | Number of URLs whose scrape succeeded (`error` is `nil`). |
+| `failed_count` | `Integer` | — | Number of URLs whose scrape failed (`error` is `Some`). |
 
 
 ---

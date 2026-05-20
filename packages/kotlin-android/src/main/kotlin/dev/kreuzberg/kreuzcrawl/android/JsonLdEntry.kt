@@ -28,5 +28,5 @@ data class JsonLdEntry(
     /** The `name` value, if present. */
     val name: String?,
     /** The raw JSON-LD string. */
-    val raw: String
+    val raw: String,
 )

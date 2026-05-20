@@ -30,5 +30,5 @@ data class FaviconInfo(
     /** The `sizes` attribute, if present. */
     val sizes: String?,
     /** The MIME type, if present. */
-    val mimeType: String?
+    val mimeType: String?,
 )

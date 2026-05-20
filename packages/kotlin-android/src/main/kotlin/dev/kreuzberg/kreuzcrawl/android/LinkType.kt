@@ -30,5 +30,5 @@ enum class LinkType {
     /** A fragment-only link (e.g., `#section`). */
     ANCHOR,
     /** A link to a downloadable document (PDF, DOC, etc.). */
-    DOCUMENT;
+    DOCUMENT,
 }
