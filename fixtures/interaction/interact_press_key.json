@@ -1,0 +1,58 @@
+{
+	"id": "interact_press_key",
+	"description": "Press a keyboard key (Enter) and verify success",
+	"tags": ["interaction", "press"],
+	"skip": {
+		"languages": ["wasm", "homebrew"],
+		"reason": "Requires browser feature"
+	},
+	"input": {
+		"mock_responses": [
+			{
+				"path": "/",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><head><title>Press Key Test</title></head><body><input id=\"searchbox\" type=\"text\" placeholder=\"Search\"><div id=\"results\" style=\"display:none\">Results here</div><script>document.getElementById('searchbox').addEventListener('keypress', function(e) { if(e.key === 'Enter') { document.getElementById('results').style.display = 'block'; } });</script></body></html>"
+			}
+		],
+		"config": {
+			"browser": {
+				"mode": "always"
+			}
+		},
+		"actions": [
+			{
+				"type": "click",
+				"selector": "#searchbox"
+			},
+			{
+				"type": "type",
+				"selector": "#searchbox",
+				"text": "test"
+			},
+			{
+				"type": "press",
+				"key": "Enter"
+			}
+		]
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "interaction.action_results[2].success",
+			"value": true
+		},
+		{
+			"type": "equals",
+			"field": "interaction.action_results[2].action_type",
+			"value": "press"
+		},
+		{
+			"type": "equals",
+			"field": "interaction.action_results[2].action_index",
+			"value": 2
+		}
+	]
+}

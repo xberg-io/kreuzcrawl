@@ -1,0 +1,47 @@
+{
+	"id": "interact_scrape_default",
+	"description": "Execute default Scrape action and verify extracted content",
+	"tags": ["interaction", "scrape"],
+	"skip": {
+		"languages": ["wasm", "homebrew"],
+		"reason": "Requires browser feature"
+	},
+	"input": {
+		"mock_responses": [
+			{
+				"path": "/",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><head><title>Scrape Test</title></head><body><h1>Main Content</h1><p>This is the content to scrape.</p><div id=\"article\"><h2>Section</h2><p>More details here.</p></div></body></html>"
+			}
+		],
+		"config": {
+			"browser": {
+				"mode": "always"
+			}
+		},
+		"actions": [
+			{
+				"type": "scrape"
+			}
+		]
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "interaction.action_results[0].success",
+			"value": true
+		},
+		{
+			"type": "equals",
+			"field": "interaction.action_results[0].action_type",
+			"value": "scrape"
+		},
+		{
+			"type": "not_empty",
+			"field": "interaction.action_results[0].data"
+		}
+	]
+}
