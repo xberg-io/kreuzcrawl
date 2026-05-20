@@ -1,7 +1,7 @@
 {
 	"id": "rate_limit_zero_no_delay",
 	"description": "Rate limiter with zero delay does not slow crawling",
-	"tags": ["rate_limit"],
+	"tags": ["rate_limit", "crawl"],
 	"input": {
 		"mock_responses": [
 			{

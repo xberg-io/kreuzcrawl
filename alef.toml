@@ -760,14 +760,24 @@ result_type = "char*"
 raw_c_result_type = "char*"
 c_engine_factory = "CrawlConfig"
 
-# Named call config for crawl — auto-selected for fixtures in the `crawl` category.
+# Named call config for crawl — auto-selected for fixtures tagged "crawl".
+# All 27 fixtures in fixtures/crawl/ carry this tag, plus selected fixtures in
+# other categories (engine, markdown, middleware, filter, browser, warc, rate_limit,
+# strategy) that exercise multi-page traversal via `crawl()` and assert on
+# CrawlResult fields like `pages`, `pages_crawled`. Tag (rather than category)
+# routing lets one call config serve every crawl-shaped fixture without
+# duplicating per-category select_when entries.
+# Routing precedence: `batch_crawl` < `crawl` alphabetically, so batch fixtures
+# (with `crawl` tag AND `category=batch, id_prefix=batch_crawl`) still route to
+# `batch_crawl` first; the broader `tag=crawl` here only catches what batch
+# missed.
 [crates.e2e.calls.crawl]
 function = "crawl"
 module = "kreuzcrawl"
 result_var = "result"
 async = true
 returns_result = true
-select_when = { category = "crawl" }
+select_when = { tag = "crawl" }
 # CrawlResult top-level fields (per crates/kreuzcrawl/src/types/results.rs).
 # `stayed_on_domain` is a CrawlPageResult field included here so fixtures asserting
 # at root level pass the result_fields gate (per-page lowering handled elsewhere).

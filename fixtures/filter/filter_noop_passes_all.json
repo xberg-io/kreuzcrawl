@@ -1,7 +1,7 @@
 {
 	"id": "filter_noop_passes_all",
 	"description": "No content filter passes all crawled pages through",
-	"tags": ["filter"],
+	"tags": ["filter", "crawl"],
 	"input": {
 		"mock_responses": [
 			{

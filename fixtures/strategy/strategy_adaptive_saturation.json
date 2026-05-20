@@ -1,7 +1,7 @@
 {
 	"id": "strategy_adaptive_saturation",
 	"description": "Adaptive strategy stops early when encountering saturation (duplicate content)",
-	"tags": ["strategy", "adaptive", "saturation"],
+	"tags": ["strategy", "adaptive", "saturation", "crawl"],
 	"input": {
 		"mock_responses": [
 			{
