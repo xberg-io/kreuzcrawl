@@ -581,6 +581,30 @@ void* __swift_bridge__$Vec_BatchCrawlResult$get_mut(void* vec_ptr, uintptr_t ind
 uintptr_t __swift_bridge__$Vec_BatchCrawlResult$len(void* vec_ptr);
 void* __swift_bridge__$Vec_BatchCrawlResult$as_ptr(void* vec_ptr);
 
+typedef struct BatchScrapeResults BatchScrapeResults;
+void __swift_bridge__$BatchScrapeResults$_free(void* self);
+
+void* __swift_bridge__$Vec_BatchScrapeResults$new(void);
+void __swift_bridge__$Vec_BatchScrapeResults$drop(void* vec_ptr);
+void __swift_bridge__$Vec_BatchScrapeResults$push(void* vec_ptr, void* item_ptr);
+void* __swift_bridge__$Vec_BatchScrapeResults$pop(void* vec_ptr);
+void* __swift_bridge__$Vec_BatchScrapeResults$get(void* vec_ptr, uintptr_t index);
+void* __swift_bridge__$Vec_BatchScrapeResults$get_mut(void* vec_ptr, uintptr_t index);
+uintptr_t __swift_bridge__$Vec_BatchScrapeResults$len(void* vec_ptr);
+void* __swift_bridge__$Vec_BatchScrapeResults$as_ptr(void* vec_ptr);
+
+typedef struct BatchCrawlResults BatchCrawlResults;
+void __swift_bridge__$BatchCrawlResults$_free(void* self);
+
+void* __swift_bridge__$Vec_BatchCrawlResults$new(void);
+void __swift_bridge__$Vec_BatchCrawlResults$drop(void* vec_ptr);
+void __swift_bridge__$Vec_BatchCrawlResults$push(void* vec_ptr, void* item_ptr);
+void* __swift_bridge__$Vec_BatchCrawlResults$pop(void* vec_ptr);
+void* __swift_bridge__$Vec_BatchCrawlResults$get(void* vec_ptr, uintptr_t index);
+void* __swift_bridge__$Vec_BatchCrawlResults$get_mut(void* vec_ptr, uintptr_t index);
+uintptr_t __swift_bridge__$Vec_BatchCrawlResults$len(void* vec_ptr);
+void* __swift_bridge__$Vec_BatchCrawlResults$as_ptr(void* vec_ptr);
+
 typedef struct BrowserMode BrowserMode;
 void __swift_bridge__$BrowserMode$_free(void* self);
 
@@ -1022,6 +1046,16 @@ void* __swift_bridge__$BatchCrawlResult$new(void* url, void* result, void* error
 void* __swift_bridge__$BatchCrawlResult$url(void* self);
 void* __swift_bridge__$BatchCrawlResult$result(void* self);
 void* __swift_bridge__$BatchCrawlResult$error(void* self);
+void* __swift_bridge__$BatchScrapeResults$new(void* results, uintptr_t total_count, uintptr_t completed_count, uintptr_t failed_count);
+void* __swift_bridge__$BatchScrapeResults$results(void* self);
+uintptr_t __swift_bridge__$BatchScrapeResults$total_count(void* self);
+uintptr_t __swift_bridge__$BatchScrapeResults$completed_count(void* self);
+uintptr_t __swift_bridge__$BatchScrapeResults$failed_count(void* self);
+void* __swift_bridge__$BatchCrawlResults$new(void* results, uintptr_t total_count, uintptr_t completed_count, uintptr_t failed_count);
+void* __swift_bridge__$BatchCrawlResults$results(void* self);
+uintptr_t __swift_bridge__$BatchCrawlResults$total_count(void* self);
+uintptr_t __swift_bridge__$BatchCrawlResults$completed_count(void* self);
+uintptr_t __swift_bridge__$BatchCrawlResults$failed_count(void* self);
 void* __swift_bridge__$BrowserMode$to_string(void* self);
 void* __swift_bridge__$BrowserWait$to_string(void* self);
 void* __swift_bridge__$BrowserBackend$to_string(void* self);

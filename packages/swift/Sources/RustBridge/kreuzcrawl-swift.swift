@@ -19,11 +19,11 @@ public func mapUrls<GenericIntoRustString: IntoRustString>(_ engine: CrawlEngine
 public func interact<GenericIntoRustString: IntoRustString>(_ engine: CrawlEngineHandle, _ url: GenericIntoRustString, _ actions: RustVec<GenericIntoRustString>) throws -> InteractionResult {
     try { let val = __swift_bridge__$interact({engine.isOwned = false; return engine.ptr;}(), { let rustString = url.intoRustString(); rustString.isOwned = false; return rustString.ptr }(), { let val = actions; val.isOwned = false; return val.ptr }()); if val.is_ok { return InteractionResult(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
-public func batchScrape<GenericIntoRustString: IntoRustString>(_ engine: CrawlEngineHandle, _ urls: RustVec<GenericIntoRustString>) throws -> RustString {
-    try { let val = __swift_bridge__$batch_scrape({engine.isOwned = false; return engine.ptr;}(), { let val = urls; val.isOwned = false; return val.ptr }()); if val.is_ok { return RustString(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+public func batchScrape<GenericIntoRustString: IntoRustString>(_ engine: CrawlEngineHandle, _ urls: RustVec<GenericIntoRustString>) throws -> BatchScrapeResults {
+    try { let val = __swift_bridge__$batch_scrape({engine.isOwned = false; return engine.ptr;}(), { let val = urls; val.isOwned = false; return val.ptr }()); if val.is_ok { return BatchScrapeResults(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
-public func batchCrawl<GenericIntoRustString: IntoRustString>(_ engine: CrawlEngineHandle, _ urls: RustVec<GenericIntoRustString>) throws -> RustString {
-    try { let val = __swift_bridge__$batch_crawl({engine.isOwned = false; return engine.ptr;}(), { let val = urls; val.isOwned = false; return val.ptr }()); if val.is_ok { return RustString(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+public func batchCrawl<GenericIntoRustString: IntoRustString>(_ engine: CrawlEngineHandle, _ urls: RustVec<GenericIntoRustString>) throws -> BatchCrawlResults {
+    try { let val = __swift_bridge__$batch_crawl({engine.isOwned = false; return engine.ptr;}(), { let val = urls; val.isOwned = false; return val.ptr }()); if val.is_ok { return BatchCrawlResults(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
 public func crawlEngineHandleCrawlStreamStart(_ client: CrawlEngineHandleRef, _ req: CrawlStreamRequestRef) throws -> CrawlEngineHandleCrawlStreamStreamHandle {
     try { let val = __swift_bridge__$crawl_engine_handle_crawl_stream_start(client.ptr, req.ptr); if val.is_ok { return CrawlEngineHandleCrawlStreamStreamHandle(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
@@ -3793,6 +3793,200 @@ extension BatchCrawlResult: Vectorizable {
 
     public static func vecOfSelfLen(vecPtr: UnsafeMutableRawPointer) -> UInt {
         __swift_bridge__$Vec_BatchCrawlResult$len(vecPtr)
+    }
+}
+
+
+public class BatchScrapeResults: BatchScrapeResultsRefMut {
+    var isOwned: Bool = true
+
+    public override init(ptr: UnsafeMutableRawPointer) {
+        super.init(ptr: ptr)
+    }
+
+    deinit {
+        if isOwned {
+            __swift_bridge__$BatchScrapeResults$_free(ptr)
+        }
+    }
+}
+extension BatchScrapeResults {
+    public convenience init(_ results: RustVec<BatchScrapeResult>, _ total_count: UInt, _ completed_count: UInt, _ failed_count: UInt) {
+        self.init(ptr: __swift_bridge__$BatchScrapeResults$new({ let val = results; val.isOwned = false; return val.ptr }(), total_count, completed_count, failed_count))
+    }
+}
+public class BatchScrapeResultsRefMut: BatchScrapeResultsRef {
+    public override init(ptr: UnsafeMutableRawPointer) {
+        super.init(ptr: ptr)
+    }
+}
+public class BatchScrapeResultsRef {
+    var ptr: UnsafeMutableRawPointer
+
+    public init(ptr: UnsafeMutableRawPointer) {
+        self.ptr = ptr
+    }
+}
+extension BatchScrapeResultsRef {
+    public func results() -> RustVec<BatchScrapeResult> {
+        RustVec(ptr: __swift_bridge__$BatchScrapeResults$results(ptr))
+    }
+
+    public func total_count() -> UInt {
+        __swift_bridge__$BatchScrapeResults$total_count(ptr)
+    }
+
+    public func completed_count() -> UInt {
+        __swift_bridge__$BatchScrapeResults$completed_count(ptr)
+    }
+
+    public func failed_count() -> UInt {
+        __swift_bridge__$BatchScrapeResults$failed_count(ptr)
+    }
+}
+extension BatchScrapeResults: Vectorizable {
+    public static func vecOfSelfNew() -> UnsafeMutableRawPointer {
+        __swift_bridge__$Vec_BatchScrapeResults$new()
+    }
+
+    public static func vecOfSelfFree(vecPtr: UnsafeMutableRawPointer) {
+        __swift_bridge__$Vec_BatchScrapeResults$drop(vecPtr)
+    }
+
+    public static func vecOfSelfPush(vecPtr: UnsafeMutableRawPointer, value: BatchScrapeResults) {
+        __swift_bridge__$Vec_BatchScrapeResults$push(vecPtr, {value.isOwned = false; return value.ptr;}())
+    }
+
+    public static func vecOfSelfPop(vecPtr: UnsafeMutableRawPointer) -> Optional<Self> {
+        let pointer = __swift_bridge__$Vec_BatchScrapeResults$pop(vecPtr)
+        if pointer == nil {
+            return nil
+        } else {
+            return (BatchScrapeResults(ptr: pointer!) as! Self)
+        }
+    }
+
+    public static func vecOfSelfGet(vecPtr: UnsafeMutableRawPointer, index: UInt) -> Optional<BatchScrapeResultsRef> {
+        let pointer = __swift_bridge__$Vec_BatchScrapeResults$get(vecPtr, index)
+        if pointer == nil {
+            return nil
+        } else {
+            return BatchScrapeResultsRef(ptr: pointer!)
+        }
+    }
+
+    public static func vecOfSelfGetMut(vecPtr: UnsafeMutableRawPointer, index: UInt) -> Optional<BatchScrapeResultsRefMut> {
+        let pointer = __swift_bridge__$Vec_BatchScrapeResults$get_mut(vecPtr, index)
+        if pointer == nil {
+            return nil
+        } else {
+            return BatchScrapeResultsRefMut(ptr: pointer!)
+        }
+    }
+
+    public static func vecOfSelfAsPtr(vecPtr: UnsafeMutableRawPointer) -> UnsafePointer<BatchScrapeResultsRef> {
+        UnsafePointer<BatchScrapeResultsRef>(OpaquePointer(__swift_bridge__$Vec_BatchScrapeResults$as_ptr(vecPtr)))
+    }
+
+    public static func vecOfSelfLen(vecPtr: UnsafeMutableRawPointer) -> UInt {
+        __swift_bridge__$Vec_BatchScrapeResults$len(vecPtr)
+    }
+}
+
+
+public class BatchCrawlResults: BatchCrawlResultsRefMut {
+    var isOwned: Bool = true
+
+    public override init(ptr: UnsafeMutableRawPointer) {
+        super.init(ptr: ptr)
+    }
+
+    deinit {
+        if isOwned {
+            __swift_bridge__$BatchCrawlResults$_free(ptr)
+        }
+    }
+}
+extension BatchCrawlResults {
+    public convenience init(_ results: RustVec<BatchCrawlResult>, _ total_count: UInt, _ completed_count: UInt, _ failed_count: UInt) {
+        self.init(ptr: __swift_bridge__$BatchCrawlResults$new({ let val = results; val.isOwned = false; return val.ptr }(), total_count, completed_count, failed_count))
+    }
+}
+public class BatchCrawlResultsRefMut: BatchCrawlResultsRef {
+    public override init(ptr: UnsafeMutableRawPointer) {
+        super.init(ptr: ptr)
+    }
+}
+public class BatchCrawlResultsRef {
+    var ptr: UnsafeMutableRawPointer
+
+    public init(ptr: UnsafeMutableRawPointer) {
+        self.ptr = ptr
+    }
+}
+extension BatchCrawlResultsRef {
+    public func results() -> RustVec<BatchCrawlResult> {
+        RustVec(ptr: __swift_bridge__$BatchCrawlResults$results(ptr))
+    }
+
+    public func total_count() -> UInt {
+        __swift_bridge__$BatchCrawlResults$total_count(ptr)
+    }
+
+    public func completed_count() -> UInt {
+        __swift_bridge__$BatchCrawlResults$completed_count(ptr)
+    }
+
+    public func failed_count() -> UInt {
+        __swift_bridge__$BatchCrawlResults$failed_count(ptr)
+    }
+}
+extension BatchCrawlResults: Vectorizable {
+    public static func vecOfSelfNew() -> UnsafeMutableRawPointer {
+        __swift_bridge__$Vec_BatchCrawlResults$new()
+    }
+
+    public static func vecOfSelfFree(vecPtr: UnsafeMutableRawPointer) {
+        __swift_bridge__$Vec_BatchCrawlResults$drop(vecPtr)
+    }
+
+    public static func vecOfSelfPush(vecPtr: UnsafeMutableRawPointer, value: BatchCrawlResults) {
+        __swift_bridge__$Vec_BatchCrawlResults$push(vecPtr, {value.isOwned = false; return value.ptr;}())
+    }
+
+    public static func vecOfSelfPop(vecPtr: UnsafeMutableRawPointer) -> Optional<Self> {
+        let pointer = __swift_bridge__$Vec_BatchCrawlResults$pop(vecPtr)
+        if pointer == nil {
+            return nil
+        } else {
+            return (BatchCrawlResults(ptr: pointer!) as! Self)
+        }
+    }
+
+    public static func vecOfSelfGet(vecPtr: UnsafeMutableRawPointer, index: UInt) -> Optional<BatchCrawlResultsRef> {
+        let pointer = __swift_bridge__$Vec_BatchCrawlResults$get(vecPtr, index)
+        if pointer == nil {
+            return nil
+        } else {
+            return BatchCrawlResultsRef(ptr: pointer!)
+        }
+    }
+
+    public static func vecOfSelfGetMut(vecPtr: UnsafeMutableRawPointer, index: UInt) -> Optional<BatchCrawlResultsRefMut> {
+        let pointer = __swift_bridge__$Vec_BatchCrawlResults$get_mut(vecPtr, index)
+        if pointer == nil {
+            return nil
+        } else {
+            return BatchCrawlResultsRefMut(ptr: pointer!)
+        }
+    }
+
+    public static func vecOfSelfAsPtr(vecPtr: UnsafeMutableRawPointer) -> UnsafePointer<BatchCrawlResultsRef> {
+        UnsafePointer<BatchCrawlResultsRef>(OpaquePointer(__swift_bridge__$Vec_BatchCrawlResults$as_ptr(vecPtr)))
+    }
+
+    public static func vecOfSelfLen(vecPtr: UnsafeMutableRawPointer) -> UInt {
+        __swift_bridge__$Vec_BatchCrawlResults$len(vecPtr)
     }
 }
 
