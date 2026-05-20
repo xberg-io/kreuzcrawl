@@ -1,0 +1,56 @@
+{
+	"id": "batch_crawl_stream_events",
+	"description": "Batch crawl stream produces expected Page and Complete events",
+	"tags": ["stream", "batch"],
+	"input": {
+		"mock_responses": [
+			{
+				"path": "/page1",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><body><h1>Page 1</h1></body></html>"
+			},
+			{
+				"path": "/page2",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><body><h1>Page 2</h1></body></html>"
+			},
+			{
+				"path": "/page3",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><body><h1>Page 3</h1></body></html>"
+			}
+		],
+		"config": {
+			"max_concurrent": 2
+		},
+		"urls": [
+			"__BASE__/page1",
+			"__BASE__/page2",
+			"__BASE__/page3"
+		]
+	},
+	"assertions": [
+		{
+			"type": "greater_than_or_equal",
+			"field": "stream.event_count_min",
+			"value": 4
+		},
+		{
+			"type": "is_true",
+			"field": "stream.has_page_event"
+		},
+		{
+			"type": "is_true",
+			"field": "stream.has_complete_event"
+		}
+	]
+}
