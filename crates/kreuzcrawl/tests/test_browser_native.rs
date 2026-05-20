@@ -401,8 +401,8 @@ async fn native_batch_scrape_uses_shared_executor_concurrently() {
         .collect::<Vec<_>>();
     let results = batch_scrape(&engine, urls).await.expect("batch scrape should run");
 
-    assert_eq!(results.len(), 12);
-    for result in results {
+    assert_eq!(results.total_count, 12);
+    for result in results.results {
         let page = result.result.expect("native scrape should succeed");
         assert!(page.html.contains("Native executor"));
         assert!(page.html.contains("data-rendered=\"true\""));

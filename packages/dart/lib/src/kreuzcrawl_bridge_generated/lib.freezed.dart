@@ -182,7 +182,7 @@ return header(_that.name,_that.value);case _:
 
 class AuthConfig_Basic extends AuthConfig {
   const AuthConfig_Basic({required this.username, required this.password}): super._();
-
+  
 
 /// Username sent in the `Authorization: Basic` header.
  final  String username;
@@ -252,7 +252,7 @@ as String,
 
 class AuthConfig_Bearer extends AuthConfig {
   const AuthConfig_Bearer({required this.token}): super._();
-
+  
 
 /// Token sent in the `Authorization: Bearer` header.
  final  String token;
@@ -319,7 +319,7 @@ as String,
 
 class AuthConfig_Header extends AuthConfig {
   const AuthConfig_Header({required this.name, required this.value}): super._();
-
+  
 
 /// HTTP header name to set on each request.
  final  String name;
@@ -555,7 +555,7 @@ return complete(_that.pagesCrawled);case _:
 
 class CrawlEvent_Page extends CrawlEvent {
   const CrawlEvent_Page({required this.result}): super._();
-
+  
 
 /// The crawled page result.
  final  CrawlPageResult result;
@@ -622,7 +622,7 @@ as CrawlPageResult,
 
 class CrawlEvent_Error extends CrawlEvent {
   const CrawlEvent_Error({required this.url, required this.error}): super._();
-
+  
 
 /// The URL that failed.
  final  String url;
@@ -692,7 +692,7 @@ as String,
 
 class CrawlEvent_Complete extends CrawlEvent {
   const CrawlEvent_Complete({required this.pagesCrawled}): super._();
-
+  
 
 /// Total number of pages crawled.
  final  PlatformInt64 pagesCrawled;
@@ -955,7 +955,7 @@ return scrape();case _:
 
 class PageAction_Click extends PageAction {
   const PageAction_Click({required this.selector}): super._();
-
+  
 
 /// CSS selector for the element to click.
  final  String selector;
@@ -1022,7 +1022,7 @@ as String,
 
 class PageAction_TypeText extends PageAction {
   const PageAction_TypeText({required this.selector, required this.text}): super._();
-
+  
 
 /// CSS selector for the input element.
  final  String selector;
@@ -1092,7 +1092,7 @@ as String,
 
 class PageAction_Press extends PageAction {
   const PageAction_Press({required this.key}): super._();
-
+  
 
 /// Key name to press.
  final  String key;
@@ -1159,7 +1159,7 @@ as String,
 
 class PageAction_Scroll extends PageAction {
   const PageAction_Scroll({required this.direction, required this.selector, required this.amount}): super._();
-
+  
 
 /// Direction to scroll.
  final  ScrollDirection direction;
@@ -1232,7 +1232,7 @@ as PlatformInt64,
 
 class PageAction_Wait extends PageAction {
   const PageAction_Wait({required this.milliseconds, required this.selector}): super._();
-
+  
 
 /// Milliseconds to wait. Ignored if `selector` is provided.
  final  PlatformInt64 milliseconds;
@@ -1302,7 +1302,7 @@ as String,
 
 class PageAction_Screenshot extends PageAction {
   const PageAction_Screenshot({required this.fullPage}): super._();
-
+  
 
 /// Whether to capture the full scrollable page. Defaults to viewport only.
  final  bool fullPage;
@@ -1369,7 +1369,7 @@ as bool,
 
 class PageAction_ExecuteJs extends PageAction {
   const PageAction_ExecuteJs({required this.script}): super._();
-
+  
 
 /// JavaScript source code to execute. Max 1 MB.
  final  String script;
@@ -1436,7 +1436,7 @@ as String,
 
 class PageAction_Scrape extends PageAction {
   const PageAction_Scrape(): super._();
-
+  
 
 
 

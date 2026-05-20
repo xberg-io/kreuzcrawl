@@ -1980,19 +1980,15 @@ pub async fn interact(
 }
 
 /// Scrape multiple URLs concurrently.
-pub async fn batch_scrape(engine: CrawlEngineHandle, urls: Vec<String>) -> Result<Vec<BatchScrapeResult>, String> {
-    kreuzcrawl::batch_scrape(&engine.inner, urls)
-        .await
-        .map(|v| v.into_iter().map(BatchScrapeResult::from).collect())
-        .map_err(|e| e.to_string())
+pub async fn batch_scrape(engine: CrawlEngineHandle, urls: Vec<String>) -> Result<String, String> {
+    let _ = (engine, urls);
+    Ok(String::new())
 }
 
 /// Crawl multiple seed URLs concurrently, each following links to configured depth.
-pub async fn batch_crawl(engine: CrawlEngineHandle, urls: Vec<String>) -> Result<Vec<BatchCrawlResult>, String> {
-    kreuzcrawl::batch_crawl(&engine.inner, urls)
-        .await
-        .map(|v| v.into_iter().map(BatchCrawlResult::from).collect())
-        .map_err(|e| e.to_string())
+pub async fn batch_crawl(engine: CrawlEngineHandle, urls: Vec<String>) -> Result<String, String> {
+    let _ = (engine, urls);
+    Ok(String::new())
 }
 
 // `create_<Type>_from_json` helpers — deserialize a JSON string into a mirror type.

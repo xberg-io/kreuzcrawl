@@ -232,12 +232,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<AssetCategory> dco_decode_list_asset_category(dynamic raw);
 
   @protected
-  List<BatchCrawlResult> dco_decode_list_batch_crawl_result(dynamic raw);
-
-  @protected
-  List<BatchScrapeResult> dco_decode_list_batch_scrape_result(dynamic raw);
-
-  @protected
   List<CitationReference> dco_decode_list_citation_reference(dynamic raw);
 
   @protected
@@ -628,16 +622,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   List<AssetCategory> sse_decode_list_asset_category(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  List<BatchCrawlResult> sse_decode_list_batch_crawl_result(
-    SseDeserializer deserializer,
-  );
-
-  @protected
-  List<BatchScrapeResult> sse_decode_list_batch_scrape_result(
     SseDeserializer deserializer,
   );
 
@@ -1141,18 +1125,6 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_list_asset_category(
     List<AssetCategory> self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_list_batch_crawl_result(
-    List<BatchCrawlResult> self,
-    SseSerializer serializer,
-  );
-
-  @protected
-  void sse_encode_list_batch_scrape_result(
-    List<BatchScrapeResult> self,
     SseSerializer serializer,
   );
 

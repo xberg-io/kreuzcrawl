@@ -56,13 +56,13 @@ Future<InteractionResult> interact({
 );
 
 /// Scrape multiple URLs concurrently.
-Future<List<BatchScrapeResult>> batchScrape({
+Future<String> batchScrape({
   required CrawlEngineHandle engine,
   required List<String> urls,
 }) => RustLib.instance.api.crateBatchScrape(engine: engine, urls: urls);
 
 /// Crawl multiple seed URLs concurrently, each following links to configured depth.
-Future<List<BatchCrawlResult>> batchCrawl({
+Future<String> batchCrawl({
   required CrawlEngineHandle engine,
   required List<String> urls,
 }) => RustLib.instance.api.crateBatchCrawl(engine: engine, urls: urls);

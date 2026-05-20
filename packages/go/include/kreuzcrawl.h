@@ -3417,8 +3417,8 @@ KCRAWLInteractionResult *kcrawl_interact(const KCRAWLCrawlEngineHandle *engine,
  * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
  * freed with the appropriate free function.
  */
-char *kcrawl_batch_scrape(const KCRAWLCrawlEngineHandle *engine,
-                          const char *urls);
+char *kcrawl_batch_scrape(const KCRAWLCrawlEngineHandle *_engine,
+                          const char *_urls);
 
 /**
  * Return the byte length of the C string that `kcrawl_batch_scrape` would return for the same
@@ -3426,16 +3426,16 @@ char *kcrawl_batch_scrape(const KCRAWLCrawlEngineHandle *engine,
  * Enables safe slice construction in Zig and Java FFM Panama without a NUL-scan.
  * \note SAFETY: All pointer parameters obey the same validity rules as `kcrawl_batch_scrape`.
  */
-uintptr_t kcrawl_batch_scrape_len(const KCRAWLCrawlEngineHandle *engine,
-                                  const char *urls);
+uintptr_t kcrawl_batch_scrape_len(const KCRAWLCrawlEngineHandle *_engine,
+                                  const char *_urls);
 
 /**
  * Crawl multiple seed URLs concurrently, each following links to configured depth.
  * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
  * freed with the appropriate free function.
  */
-char *kcrawl_batch_crawl(const KCRAWLCrawlEngineHandle *engine,
-                         const char *urls);
+char *kcrawl_batch_crawl(const KCRAWLCrawlEngineHandle *_engine,
+                         const char *_urls);
 
 /**
  * Return the byte length of the C string that `kcrawl_batch_crawl` would return for the same
@@ -3443,7 +3443,7 @@ char *kcrawl_batch_crawl(const KCRAWLCrawlEngineHandle *engine,
  * Enables safe slice construction in Zig and Java FFM Panama without a NUL-scan.
  * \note SAFETY: All pointer parameters obey the same validity rules as `kcrawl_batch_crawl`.
  */
-uintptr_t kcrawl_batch_crawl_len(const KCRAWLCrawlEngineHandle *engine,
-                                 const char *urls);
+uintptr_t kcrawl_batch_crawl_len(const KCRAWLCrawlEngineHandle *_engine,
+                                 const char *_urls);
 
 #endif  /* KCRAWL_H */

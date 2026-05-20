@@ -45,19 +45,16 @@
 	},
 	"assertions": [
 		{
-			"type": "equals",
-			"field": "stream.has_page_event",
-			"value": true
+			"type": "is_true",
+			"field": "stream.has_page_event"
 		},
 		{
-			"type": "equals",
-			"field": "stream.has_error_event",
-			"value": true
+			"type": "is_true",
+			"field": "stream.has_error_event"
 		},
 		{
-			"type": "equals",
-			"field": "stream.has_complete_event",
-			"value": true
+			"type": "is_true",
+			"field": "stream.has_complete_event"
 		}
 	]
 }

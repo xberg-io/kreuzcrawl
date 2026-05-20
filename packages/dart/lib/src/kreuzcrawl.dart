@@ -61,7 +61,7 @@ class KreuzcrawlBridge {
 
   /// Scrape multiple URLs concurrently.
   /// throws CrawlError on failure
-  static Future<List<BatchScrapeResult>> batchScrape(
+  static Future<String> batchScrape(
     CrawlEngineHandle engine,
     List<String> urls,
   ) async {
@@ -70,7 +70,7 @@ class KreuzcrawlBridge {
 
   /// Crawl multiple seed URLs concurrently, each following links to configured depth.
   /// throws CrawlError on failure
-  static Future<List<BatchCrawlResult>> batchCrawl(
+  static Future<String> batchCrawl(
     CrawlEngineHandle engine,
     List<String> urls,
   ) async {

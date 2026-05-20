@@ -30,13 +30,12 @@ async fn test_batch_crawl_multiple_seeds() {
     let urls: Vec<String> = ["a", "b", "c"].iter().map(|n| format!("{}/{n}", mock.uri())).collect();
 
     let results = batch_crawl(&handle, urls).await.expect("batch_crawl should succeed");
-    assert_eq!(results.len(), 3);
-
-    let success_count = results.iter().filter(|r| r.result.is_some()).count();
-    assert_eq!(success_count, 3, "all 3 should succeed");
+    assert_eq!(results.total_count, 3);
+    assert_eq!(results.completed_count, 3, "all 3 should succeed");
+    assert_eq!(results.failed_count, 0);
 
     // Verify each result has pages.
-    for result in &results {
+    for result in &results.results {
         let crawl = result.result.as_ref().unwrap_or_else(|| {
             panic!(
                 "{} failed: {}",
@@ -77,9 +76,8 @@ async fn test_batch_crawl_partial_failure() {
     let urls = vec![format!("{}/ok", mock.uri()), format!("{}/fail", mock.uri())];
 
     let results = batch_crawl(&handle, urls).await.expect("batch_crawl should succeed");
-    assert_eq!(results.len(), 2);
+    assert_eq!(results.total_count, 2);
 
     // At least one should succeed and at least one should fail or have an error.
-    let successes = results.iter().filter(|r| r.result.is_some()).count();
-    assert!(successes >= 1, "at least one seed should succeed");
+    assert!(results.completed_count >= 1, "at least one seed should succeed");
 }

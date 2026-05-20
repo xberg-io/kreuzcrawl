@@ -779,9 +779,9 @@ mod ffi {
         fn map_urls(engine: CrawlEngineHandle, url: String) -> Result<MapResult, String>;
         fn interact(engine: CrawlEngineHandle, url: String, actions: Vec<String>) -> Result<InteractionResult, String>;
         #[swift_bridge(swift_name = "batchScrape")]
-        fn batch_scrape(engine: CrawlEngineHandle, urls: Vec<String>) -> Result<Vec<BatchScrapeResult>, String>;
+        fn batch_scrape(engine: CrawlEngineHandle, urls: Vec<String>) -> Result<String, String>;
         #[swift_bridge(swift_name = "batchCrawl")]
-        fn batch_crawl(engine: CrawlEngineHandle, urls: Vec<String>) -> Result<Vec<BatchCrawlResult>, String>;
+        fn batch_crawl(engine: CrawlEngineHandle, urls: Vec<String>) -> Result<String, String>;
     }
 
     extern "Rust" {
@@ -3713,21 +3713,21 @@ pub fn interact(engine: CrawlEngineHandle, url: String, actions: Vec<String>) ->
     })
 }
 
-pub fn batch_scrape(engine: CrawlEngineHandle, urls: Vec<String>) -> Result<Vec<BatchScrapeResult>, String> {
+pub fn batch_scrape(engine: CrawlEngineHandle, urls: Vec<String>) -> Result<String, String> {
     crate::__alef_tokio_runtime().block_on(async {
         kreuzcrawl::batch_scrape(&engine.0, urls)
             .await
             .map_err(|e| e.to_string())
-            .map(|v| v.into_iter().map(BatchScrapeResult).collect::<Vec<_>>())
+            .map(|s| s.to_string())
     })
 }
 
-pub fn batch_crawl(engine: CrawlEngineHandle, urls: Vec<String>) -> Result<Vec<BatchCrawlResult>, String> {
+pub fn batch_crawl(engine: CrawlEngineHandle, urls: Vec<String>) -> Result<String, String> {
     crate::__alef_tokio_runtime().block_on(async {
         kreuzcrawl::batch_crawl(&engine.0, urls)
             .await
             .map_err(|e| e.to_string())
-            .map(|v| v.into_iter().map(BatchCrawlResult).collect::<Vec<_>>())
+            .map(|s| s.to_string())
     })
 }
 

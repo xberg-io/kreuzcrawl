@@ -86,12 +86,12 @@ abstract class RustLibApi extends BaseApi {
     required CrawlStreamRequest req,
   });
 
-  Future<List<BatchCrawlResult>> crateBatchCrawl({
+  Future<String> crateBatchCrawl({
     required CrawlEngineHandle engine,
     required List<String> urls,
   });
 
-  Future<List<BatchScrapeResult>> crateBatchScrape({
+  Future<String> crateBatchScrape({
     required CrawlEngineHandle engine,
     required List<String> urls,
   });
@@ -326,7 +326,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<List<BatchCrawlResult>> crateBatchCrawl({
+  Future<String> crateBatchCrawl({
     required CrawlEngineHandle engine,
     required List<String> urls,
   }) {
@@ -347,7 +347,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           );
         },
         codec: SseCodec(
-          decodeSuccessData: sse_decode_list_batch_crawl_result,
+          decodeSuccessData: sse_decode_String,
           decodeErrorData: sse_decode_String,
         ),
         constMeta: kCrateBatchCrawlConstMeta,
@@ -363,7 +363,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   );
 
   @override
-  Future<List<BatchScrapeResult>> crateBatchScrape({
+  Future<String> crateBatchScrape({
     required CrawlEngineHandle engine,
     required List<String> urls,
   }) {
@@ -384,7 +384,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           );
         },
         codec: SseCodec(
-          decodeSuccessData: sse_decode_list_batch_scrape_result,
+          decodeSuccessData: sse_decode_String,
           decodeErrorData: sse_decode_String,
         ),
         constMeta: kCrateBatchScrapeConstMeta,
@@ -2373,18 +2373,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  List<BatchCrawlResult> dco_decode_list_batch_crawl_result(dynamic raw) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    return (raw as List<dynamic>).map(dco_decode_batch_crawl_result).toList();
-  }
-
-  @protected
-  List<BatchScrapeResult> dco_decode_list_batch_scrape_result(dynamic raw) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    return (raw as List<dynamic>).map(dco_decode_batch_scrape_result).toList();
-  }
-
-  @protected
   List<CitationReference> dco_decode_list_citation_reference(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return (raw as List<dynamic>).map(dco_decode_citation_reference).toList();
@@ -3676,34 +3664,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var ans_ = <AssetCategory>[];
     for (var idx_ = 0; idx_ < len_; ++idx_) {
       ans_.add(sse_decode_asset_category(deserializer));
-    }
-    return ans_;
-  }
-
-  @protected
-  List<BatchCrawlResult> sse_decode_list_batch_crawl_result(
-    SseDeserializer deserializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-
-    var len_ = sse_decode_i_32(deserializer);
-    var ans_ = <BatchCrawlResult>[];
-    for (var idx_ = 0; idx_ < len_; ++idx_) {
-      ans_.add(sse_decode_batch_crawl_result(deserializer));
-    }
-    return ans_;
-  }
-
-  @protected
-  List<BatchScrapeResult> sse_decode_list_batch_scrape_result(
-    SseDeserializer deserializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-
-    var len_ = sse_decode_i_32(deserializer);
-    var ans_ = <BatchScrapeResult>[];
-    for (var idx_ = 0; idx_ < len_; ++idx_) {
-      ans_.add(sse_decode_batch_scrape_result(deserializer));
     }
     return ans_;
   }
@@ -5168,30 +5128,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_i_32(self.length, serializer);
     for (final item in self) {
       sse_encode_asset_category(item, serializer);
-    }
-  }
-
-  @protected
-  void sse_encode_list_batch_crawl_result(
-    List<BatchCrawlResult> self,
-    SseSerializer serializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_i_32(self.length, serializer);
-    for (final item in self) {
-      sse_encode_batch_crawl_result(item, serializer);
-    }
-  }
-
-  @protected
-  void sse_encode_list_batch_scrape_result(
-    List<BatchScrapeResult> self,
-    SseSerializer serializer,
-  ) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_i_32(self.length, serializer);
-    for (final item in self) {
-      sse_encode_batch_scrape_result(item, serializer);
     }
   }
 

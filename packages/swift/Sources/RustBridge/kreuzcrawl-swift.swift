@@ -19,11 +19,11 @@ public func mapUrls<GenericIntoRustString: IntoRustString>(_ engine: CrawlEngine
 public func interact<GenericIntoRustString: IntoRustString>(_ engine: CrawlEngineHandle, _ url: GenericIntoRustString, _ actions: RustVec<GenericIntoRustString>) throws -> InteractionResult {
     try { let val = __swift_bridge__$interact({engine.isOwned = false; return engine.ptr;}(), { let rustString = url.intoRustString(); rustString.isOwned = false; return rustString.ptr }(), { let val = actions; val.isOwned = false; return val.ptr }()); if val.is_ok { return InteractionResult(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
-public func batchScrape<GenericIntoRustString: IntoRustString>(_ engine: CrawlEngineHandle, _ urls: RustVec<GenericIntoRustString>) throws -> RustVec<BatchScrapeResult> {
-    try { let val = __swift_bridge__$batch_scrape({engine.isOwned = false; return engine.ptr;}(), { let val = urls; val.isOwned = false; return val.ptr }()); if val.is_ok { return RustVec(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+public func batchScrape<GenericIntoRustString: IntoRustString>(_ engine: CrawlEngineHandle, _ urls: RustVec<GenericIntoRustString>) throws -> RustString {
+    try { let val = __swift_bridge__$batch_scrape({engine.isOwned = false; return engine.ptr;}(), { let val = urls; val.isOwned = false; return val.ptr }()); if val.is_ok { return RustString(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
-public func batchCrawl<GenericIntoRustString: IntoRustString>(_ engine: CrawlEngineHandle, _ urls: RustVec<GenericIntoRustString>) throws -> RustVec<BatchCrawlResult> {
-    try { let val = __swift_bridge__$batch_crawl({engine.isOwned = false; return engine.ptr;}(), { let val = urls; val.isOwned = false; return val.ptr }()); if val.is_ok { return RustVec(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
+public func batchCrawl<GenericIntoRustString: IntoRustString>(_ engine: CrawlEngineHandle, _ urls: RustVec<GenericIntoRustString>) throws -> RustString {
+    try { let val = __swift_bridge__$batch_crawl({engine.isOwned = false; return engine.ptr;}(), { let val = urls; val.isOwned = false; return val.ptr }()); if val.is_ok { return RustString(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()
 }
 public func crawlEngineHandleCrawlStreamStart(_ client: CrawlEngineHandleRef, _ req: CrawlStreamRequestRef) throws -> CrawlEngineHandleCrawlStreamStreamHandle {
     try { let val = __swift_bridge__$crawl_engine_handle_crawl_stream_start(client.ptr, req.ptr); if val.is_ok { return CrawlEngineHandleCrawlStreamStreamHandle(ptr: val.ok_or_err!) } else { throw RustString(ptr: val.ok_or_err!) } }()

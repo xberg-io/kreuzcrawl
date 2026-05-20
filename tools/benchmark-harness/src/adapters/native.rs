@@ -95,6 +95,7 @@ impl ScrapeAdapter for NativeAdapter {
             .map_err(|e| crate::error::Error::Adapter(format!("batch_scrape failed: {e}")))?;
 
         let outputs = batch_results
+            .results
             .into_iter()
             .map(|batch| {
                 if let Some(result) = batch.result {
