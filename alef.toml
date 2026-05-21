@@ -1154,7 +1154,7 @@ select_when = { category = "stream" }
 # kcrawl_crawl_engine_handle_crawl_stream), not a simple `char*` return, and
 # cannot be expressed as assertion-based tests without a dedicated callback
 # harness. A future streaming e2e harness will re-enable C.
-skip_languages = ["wasm", "c", "java", "csharp", "go"]
+skip_languages = ["wasm", "c"]
 # CrawlEvent is a discriminated enum streamed item-by-item; result_fields
 # applies to the per-event projection (alef streaming adapter exposes
 # `url`, `event_type`, `page`, `error`, `final_url` etc. as virtual fields).
@@ -1234,8 +1234,7 @@ returns_result = true
 streaming = true
 select_when = { category = "stream", id_prefix = "batch_crawl_stream" }
 # C excluded: callback-based FFI API, same reason as crawl_stream.
-# Java/C#/Go also excluded: streaming not supported via FFI (blocking-only).
-skip_languages = ["wasm", "elixir", "zig", "swift", "brew", "c", "java", "csharp", "go"]
+skip_languages = ["wasm", "elixir", "zig", "swift", "brew", "c"]
 result_fields = ["url", "event_type", "page", "error", "final_url", "result", "pages_crawled"]
 
 [[crates.e2e.calls.batch_crawl_stream.args]]
