@@ -4,6 +4,13 @@
   "tags": [
     "error"
   ],
+  "input": {
+    "config": {
+      "browser": {
+        "mode": "never"
+      }
+    }
+  },
   "assertions": [
     {
       "type": "error"

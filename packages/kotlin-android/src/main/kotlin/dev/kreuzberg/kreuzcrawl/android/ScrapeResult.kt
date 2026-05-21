@@ -34,7 +34,7 @@ data class ScrapeResult(
     /** The size of the response body in bytes. */
     val bodySize: Long = 0L,
     /** Extracted metadata from the page. */
-    val metadata: PageMetadata,
+    val metadata: PageMetadata = PageMetadata(),
     /** Links found on the page. */
     val links: List<LinkInfo> = emptyList(),
     /** Images found on the page. */

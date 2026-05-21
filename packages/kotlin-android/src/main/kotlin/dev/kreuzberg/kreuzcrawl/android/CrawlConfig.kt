@@ -79,7 +79,7 @@ data class CrawlConfig(
     /** CSS selectors for tags to remove from HTML before processing. */
     val removeTags: List<String> = emptyList(),
     /** Content extraction and conversion configuration. */
-    val content: ContentConfig,
+    val content: ContentConfig = ContentConfig(),
     /** Maximum number of URLs to return from a map operation. */
     val mapLimit: Long? = null,
     /** Search filter for map results (case-insensitive substring match on URLs). */
@@ -91,7 +91,7 @@ data class CrawlConfig(
     /** Maximum size in bytes for individual asset downloads. */
     val maxAssetSize: Long? = null,
     /** Browser configuration. */
-    val browser: BrowserConfig,
+    val browser: BrowserConfig = BrowserConfig(),
     /** Proxy configuration for HTTP requests. */
     val proxy: ProxyConfig? = null,
     /** List of user-agent strings for rotation. If non-empty, overrides `user_agent`. */

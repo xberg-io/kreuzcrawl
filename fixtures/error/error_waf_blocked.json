@@ -5,6 +5,13 @@
     "error",
     "waf"
   ],
+  "input": {
+    "config": {
+      "browser": {
+        "mode": "never"
+      }
+    }
+  },
   "assertions": [
     {
       "type": "error"
