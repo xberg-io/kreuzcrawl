@@ -28,7 +28,7 @@ data class CookieInfo(
     /** The cookie value. */
     val value: String = "",
     /** The cookie domain, if specified. */
-    val domain: String? = "",
+    val domain: String? = null,
     /** The cookie path, if specified. */
-    val path: String? = ""
+    val path: String? = null
 )

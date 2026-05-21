@@ -28,11 +28,11 @@ data class DownloadedAsset(
     /** The SHA-256 content hash of the asset. */
     val contentHash: String = "",
     /** The MIME type from the Content-Type header. */
-    val mimeType: String? = "",
+    val mimeType: String? = null,
     /** The size of the asset in bytes. */
     val size: Long = 0L,
     /** The category of the asset. */
     val assetCategory: AssetCategory = AssetCategory.IMAGE,
     /** The HTML tag that referenced this asset (e.g., "link", "script", "img"). */
-    val htmlTag: String? = ""
+    val htmlTag: String? = null
 )

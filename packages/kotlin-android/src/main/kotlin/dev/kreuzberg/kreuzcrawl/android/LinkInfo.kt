@@ -30,7 +30,7 @@ data class LinkInfo(
     /** The classification of the link. */
     val linkType: LinkType = LinkType.INTERNAL,
     /** The `rel` attribute value, if present. */
-    val rel: String? = "",
+    val rel: String? = null,
     /** Whether the link has `rel="nofollow"`. */
     val nofollow: Boolean = false
 )

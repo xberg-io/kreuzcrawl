@@ -26,7 +26,7 @@ extension-module = ["pyo3/extension-module", "pyo3/abi3-py310"]
 
 [dependencies]
 futures = "0.3"
-kreuzcrawl = { path = "../kreuzcrawl" }
+kreuzcrawl = { path = "../kreuzcrawl", features = ["interact", "browser-chromiumoxide"] }
 pyo3 = { version = "0.28" }
 pyo3-async-runtimes = { version = "0.28", features = ["tokio-runtime"] }
 serde = { version = "1", features = ["derive"] }

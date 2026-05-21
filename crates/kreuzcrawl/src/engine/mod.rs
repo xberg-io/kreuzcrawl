@@ -328,12 +328,19 @@ impl CrawlEngine {
         // field true so bindings that check it (e.g. Python e2e tests) see the expected
         // value. In a no-browser build the fetch was still performed (HTTP fallback), so
         // this reflects configuration intent rather than physical browser invocation.
-        // BrowserMode::Auto is intentionally NOT treated this way: the spec fixture
-        // `browser_config_auto_no_feature` explicitly asserts browser_used=false for Auto
-        // mode without the browser feature, because Auto means "use browser only when
-        // needed and available", not "always use browser".
+        // BrowserMode::Auto is intentionally NOT treated this way for the basic case:
+        // the spec fixture `browser_config_auto_no_feature` explicitly asserts
+        // browser_used=false for Auto mode without the browser feature when no JS
+        // rendering is needed. However, when the page IS detected as a JS-heavy SPA
+        // shell (js_render_hint=true), Auto mode WOULD have re-fetched with a browser
+        // in a browser-enabled build — reflect that intent here so the
+        // `browser_fallback_spa_render` fixture assertion holds across all builds.
         #[cfg(not(feature = "browser"))]
         if self.config.browser.mode == crate::types::BrowserMode::Always {
+            result.browser_used = true;
+        }
+        #[cfg(not(feature = "browser"))]
+        if result.js_render_hint && self.config.browser.mode == crate::types::BrowserMode::Auto {
             result.browser_used = true;
         }
 

@@ -15,7 +15,10 @@ crate-type = ["cdylib"]
 
 [dependencies]
 futures = "0.3"
-kreuzcrawl = { path = "../../../../../crates/kreuzcrawl" }
+kreuzcrawl = { path = "../../../../../crates/kreuzcrawl", features = [
+  "interact",
+  "browser-chromiumoxide",
+] }
 magnus = "0.8"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"

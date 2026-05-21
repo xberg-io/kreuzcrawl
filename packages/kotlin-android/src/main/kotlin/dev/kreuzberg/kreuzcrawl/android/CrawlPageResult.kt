@@ -54,7 +54,7 @@ data class CrawlPageResult(
     /** Whether the content is a PDF. */
     val isPdf: Boolean = false,
     /** The detected character set encoding. */
-    val detectedCharset: String? = "",
+    val detectedCharset: String? = null,
     /** Markdown conversion of the page content. */
     val markdown: MarkdownResult? = null,
     /** Structured data extracted by LLM. Populated when extraction is configured. */

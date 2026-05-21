@@ -1189,6 +1189,9 @@ class CrawlPageResult {
   /// Downloaded non-HTML document (PDF, DOCX, image, code, etc.).
   final DownloadedDocument? downloadedDocument;
 
+  /// Whether the browser fallback was used to fetch this page.
+  final bool browserUsed;
+
   const CrawlPageResult({
     required this.url,
     required this.normalizedUrl,
@@ -1210,6 +1213,7 @@ class CrawlPageResult {
     this.extractedData,
     this.extractionMeta,
     this.downloadedDocument,
+    required this.browserUsed,
   });
 
   @override
@@ -1233,7 +1237,8 @@ class CrawlPageResult {
       markdown.hashCode ^
       extractedData.hashCode ^
       extractionMeta.hashCode ^
-      downloadedDocument.hashCode;
+      downloadedDocument.hashCode ^
+      browserUsed.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -1259,7 +1264,8 @@ class CrawlPageResult {
           markdown == other.markdown &&
           extractedData == other.extractedData &&
           extractionMeta == other.extractionMeta &&
-          downloadedDocument == other.downloadedDocument;
+          downloadedDocument == other.downloadedDocument &&
+          browserUsed == other.browserUsed;
 }
 
 /// The result of a multi-page crawl operation.
@@ -1285,6 +1291,9 @@ class CrawlResult {
   /// Whether all crawled pages stayed on the same domain as the start URL.
   final bool stayedOnDomain;
 
+  /// Whether the browser fallback was used for any page in this crawl.
+  final bool browserUsed;
+
   const CrawlResult({
     required this.pages,
     required this.finalUrl,
@@ -1293,6 +1302,7 @@ class CrawlResult {
     this.error,
     required this.cookies,
     required this.stayedOnDomain,
+    required this.browserUsed,
   });
 
   @override
@@ -1303,7 +1313,8 @@ class CrawlResult {
       wasSkipped.hashCode ^
       error.hashCode ^
       cookies.hashCode ^
-      stayedOnDomain.hashCode;
+      stayedOnDomain.hashCode ^
+      browserUsed.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -1316,7 +1327,8 @@ class CrawlResult {
           wasSkipped == other.wasSkipped &&
           error == other.error &&
           cookies == other.cookies &&
-          stayedOnDomain == other.stayedOnDomain;
+          stayedOnDomain == other.stayedOnDomain &&
+          browserUsed == other.browserUsed;
 }
 
 /// Request to begin a single-URL streaming crawl.
@@ -1905,6 +1917,10 @@ sealed class PageAction with _$PageAction {
   /// Take a screenshot of the current page.
   const factory PageAction.screenshot({
     /// Whether to capture the full scrollable page. Defaults to viewport only.
+    ///
+    /// Accepts both the canonical `fullPage` (camelCase) form and the
+    /// `full_page` (snake_case) alias so language bindings and fixtures can
+    /// use either convention without error.
     required bool fullPage,
   }) = PageAction_Screenshot;
 
@@ -2284,6 +2300,9 @@ class ScrapeResult {
   /// The HTTP status code of the response.
   final PlatformInt64 statusCode;
 
+  /// The final URL after following all redirects.
+  final String finalUrl;
+
   /// The Content-Type header value.
   final String contentType;
 
@@ -2365,6 +2384,7 @@ class ScrapeResult {
 
   const ScrapeResult({
     required this.statusCode,
+    required this.finalUrl,
     required this.contentType,
     required this.html,
     required this.bodySize,
@@ -2396,6 +2416,7 @@ class ScrapeResult {
   @override
   int get hashCode =>
       statusCode.hashCode ^
+      finalUrl.hashCode ^
       contentType.hashCode ^
       html.hashCode ^
       bodySize.hashCode ^
@@ -2429,6 +2450,7 @@ class ScrapeResult {
       other is ScrapeResult &&
           runtimeType == other.runtimeType &&
           statusCode == other.statusCode &&
+          finalUrl == other.finalUrl &&
           contentType == other.contentType &&
           html == other.html &&
           bodySize == other.bodySize &&

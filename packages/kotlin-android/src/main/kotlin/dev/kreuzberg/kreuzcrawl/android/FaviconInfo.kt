@@ -28,7 +28,7 @@ data class FaviconInfo(
     /** The `rel` attribute (e.g., "icon", "apple-touch-icon"). */
     val rel: String = "",
     /** The `sizes` attribute, if present. */
-    val sizes: String? = "",
+    val sizes: String? = null,
     /** The MIME type, if present. */
-    val mimeType: String? = ""
+    val mimeType: String? = null
 )

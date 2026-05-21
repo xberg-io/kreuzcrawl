@@ -32,7 +32,7 @@ data class CrawlResult(
     /** Whether any page was skipped during crawling. */
     val wasSkipped: Boolean = false,
     /** An error message, if the crawl encountered an issue. */
-    val error: String? = "",
+    val error: String? = null,
     /** Cookies collected during the crawl. */
     val cookies: List<CookieInfo> = emptyList(),
     /** Whether all crawled pages stayed on the same domain as the start URL. */

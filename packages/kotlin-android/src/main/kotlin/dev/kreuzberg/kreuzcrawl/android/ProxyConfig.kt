@@ -26,7 +26,7 @@ data class ProxyConfig(
     /** Proxy URL (e.g. "http://proxy:8080", "socks5://proxy:1080"). */
     val url: String = "",
     /** Optional username for proxy authentication. */
-    val username: String? = "",
+    val username: String? = null,
     /** Optional password for proxy authentication. */
-    val password: String? = ""
+    val password: String? = null
 )

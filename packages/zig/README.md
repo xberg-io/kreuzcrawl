@@ -61,7 +61,6 @@ Direct C FFI via @cImport, idiomatic error sets, optional types, and slice-based
 ```bash
 zig fetch --save <url>
 ```
-
 ## Quick Start
 
 ```zig title="Zig"
@@ -96,7 +95,6 @@ pub fn main() !void {
     std.debug.print("Pages crawled: {d}\n", .{crawl_result.object.get("pages").?.array.items.len});
 }
 ```
-
 ## API Reference
 
 Full API documentation is available at [docs.kreuzcrawl.kreuzberg.dev](https://docs.kreuzcrawl.kreuzberg.dev).

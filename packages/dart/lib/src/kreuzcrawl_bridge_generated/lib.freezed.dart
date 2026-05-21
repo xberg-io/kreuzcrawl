@@ -1305,6 +1305,10 @@ class PageAction_Screenshot extends PageAction {
   
 
 /// Whether to capture the full scrollable page. Defaults to viewport only.
+///
+/// Accepts both the canonical `fullPage` (camelCase) form and the
+/// `full_page` (snake_case) alias so language bindings and fixtures can
+/// use either convention without error.
  final  bool fullPage;
 
 /// Create a copy of PageAction

@@ -72,6 +72,7 @@ data class CrawlConfig(
     /** Whether to enable cookie handling. */
     val cookiesEnabled: Boolean = false,
     /** Authentication configuration. */
+    @field:com.fasterxml.jackson.databind.annotation.JsonSerialize(`as` = AuthConfig::class)
     val auth: AuthConfig? = null,
     /** Maximum response body size in bytes. */
     val maxBodySize: Long? = null,
@@ -102,7 +103,7 @@ data class CrawlConfig(
      */
     val downloadDocuments: Boolean = true,
     /** Maximum size in bytes for document downloads. Defaults to 50 MB. */
-    val documentMaxSize: Long? = 0L,
+    val documentMaxSize: Long? = null,
     /** Allowlist of MIME types to download. If empty, uses built-in defaults. */
     val documentMimeTypes: List<String> = emptyList(),
     /** Path to write WARC output. If `null`, WARC output is disabled. */

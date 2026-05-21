@@ -26,9 +26,9 @@ data class SitemapUrl(
     /** The URL. */
     val url: String = "",
     /** The last modification date, if present. */
-    val lastmod: String? = "",
+    val lastmod: String? = null,
     /** The change frequency, if present. */
-    val changefreq: String? = "",
+    val changefreq: String? = null,
     /** The priority, if present. */
-    val priority: String? = ""
+    val priority: String? = null
 )

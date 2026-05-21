@@ -42,7 +42,8 @@ fn convert_html_to_markdown(html: &str, config: &ContentConfig) -> Option<Markdo
                 .collect();
             let warnings = result.warnings.iter().map(|w| format!("{:?}", w)).collect();
 
-            let citations = Some(crate::citations::generate_citations(&content));
+            let citation_result = crate::citations::generate_citations(&content);
+            let citations = !citation_result.references.is_empty();
             let fit_content = Some(crate::pruning::generate_fit_markdown(&content));
 
             Some(MarkdownResult {

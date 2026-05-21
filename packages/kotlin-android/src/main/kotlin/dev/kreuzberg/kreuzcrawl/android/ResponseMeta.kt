@@ -24,17 +24,17 @@ package dev.kreuzberg.kreuzcrawl.android
 /** Response metadata extracted from HTTP headers. */
 data class ResponseMeta(
     /** The ETag header value. */
-    val etag: String? = "",
+    val etag: String? = null,
     /** The Last-Modified header value. */
-    val lastModified: String? = "",
+    val lastModified: String? = null,
     /** The Cache-Control header value. */
-    val cacheControl: String? = "",
+    val cacheControl: String? = null,
     /** The Server header value. */
-    val server: String? = "",
+    val server: String? = null,
     /** The X-Powered-By header value. */
-    val xPoweredBy: String? = "",
+    val xPoweredBy: String? = null,
     /** The Content-Language header value. */
-    val contentLanguage: String? = "",
+    val contentLanguage: String? = null,
     /** The Content-Encoding header value. */
-    val contentEncoding: String? = ""
+    val contentEncoding: String? = null
 )

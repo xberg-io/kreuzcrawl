@@ -26,7 +26,7 @@ data class JsonLdEntry(
     /** The `@type` value from the JSON-LD object. */
     val schemaType: String = "",
     /** The `name` value, if present. */
-    val name: String? = "",
+    val name: String? = null,
     /** The raw JSON-LD string. */
     val raw: String = ""
 )

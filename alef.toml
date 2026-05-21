@@ -1,5 +1,5 @@
 [workspace]
-alef_version = "0.17.22"
+alef_version = "0.17.23"
 languages = [
   "python",
   "node",
@@ -118,15 +118,18 @@ path_mappings = { "kreuzcrawl::citations" = "kreuzcrawl", "kreuzcrawl::bindings"
 
 [crates.python]
 module_name = "_kreuzcrawl"
+features = ["interact", "browser-chromiumoxide"]
 
 [crates.python.stubs]
 output = "packages/python/kreuzcrawl/"
 
 [crates.node]
 package_name = "@kreuzberg/kreuzcrawl"
+features = ["interact", "browser-chromiumoxide"]
 
 [crates.ruby]
 gem_name = "kreuzcrawl"
+features = ["interact", "browser-chromiumoxide"]
 
 [crates.ruby.stubs]
 output = "packages/ruby/sig/"
@@ -139,6 +142,7 @@ prefix = "kcrawl"
 header_name = "kreuzcrawl.h"
 lib_name = "kreuzcrawl_ffi"
 visitor_callbacks = false
+features = ["interact", "browser-chromiumoxide"]
 
 [crates.go]
 module = "github.com/kreuzberg-dev/kreuzcrawl/packages/go"

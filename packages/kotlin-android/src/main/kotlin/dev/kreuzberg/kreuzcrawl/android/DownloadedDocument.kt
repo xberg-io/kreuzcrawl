@@ -38,7 +38,7 @@ data class DownloadedDocument(
     /** Size of the document in bytes. */
     val size: Long = 0L,
     /** Filename extracted from Content-Disposition or URL path. */
-    val filename: String? = "",
+    val filename: String? = null,
     /** SHA-256 hex digest of the content. */
     val contentHash: String = "",
     /** Selected response headers. */

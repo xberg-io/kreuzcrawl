@@ -46,19 +46,19 @@ data class ScrapeResult(
     /** Whether the URL is allowed by robots.txt. */
     val isAllowed: Boolean = false,
     /** The crawl delay from robots.txt, in seconds. */
-    val crawlDelay: Long? = 0L,
+    val crawlDelay: Long? = null,
     /** Whether a noindex directive was detected. */
     val noindexDetected: Boolean = false,
     /** Whether a nofollow directive was detected. */
     val nofollowDetected: Boolean = false,
     /** The X-Robots-Tag header value, if present. */
-    val xRobotsTag: String? = "",
+    val xRobotsTag: String? = null,
     /** Whether the content is a PDF. */
     val isPdf: Boolean = false,
     /** Whether the page was skipped (binary or PDF content). */
     val wasSkipped: Boolean = false,
     /** The detected character set encoding. */
-    val detectedCharset: String? = "",
+    val detectedCharset: String? = null,
     /** Whether an authentication header was sent with the request. */
     val authHeaderSent: Boolean = false,
     /** Response metadata extracted from HTTP headers. */

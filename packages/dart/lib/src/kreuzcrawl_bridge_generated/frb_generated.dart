@@ -2213,8 +2213,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   CrawlPageResult dco_decode_crawl_page_result(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 20)
-      throw Exception('unexpected arr length: expect 20 but see ${arr.length}');
+    if (arr.length != 21)
+      throw Exception('unexpected arr length: expect 21 but see ${arr.length}');
     return CrawlPageResult(
       url: dco_decode_String(arr[0]),
       normalizedUrl: dco_decode_String(arr[1]),
@@ -2238,6 +2238,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       downloadedDocument: dco_decode_opt_box_autoadd_downloaded_document(
         arr[19],
       ),
+      browserUsed: dco_decode_bool(arr[20]),
     );
   }
 
@@ -2245,8 +2246,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   CrawlResult dco_decode_crawl_result(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 7)
-      throw Exception('unexpected arr length: expect 7 but see ${arr.length}');
+    if (arr.length != 8)
+      throw Exception('unexpected arr length: expect 8 but see ${arr.length}');
     return CrawlResult(
       pages: dco_decode_list_crawl_page_result(arr[0]),
       finalUrl: dco_decode_String(arr[1]),
@@ -2255,6 +2256,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       error: dco_decode_opt_String(arr[4]),
       cookies: dco_decode_list_cookie_info(arr[5]),
       stayedOnDomain: dco_decode_bool(arr[6]),
+      browserUsed: dco_decode_bool(arr[7]),
     );
   }
 
@@ -2862,38 +2864,39 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ScrapeResult dco_decode_scrape_result(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 27)
-      throw Exception('unexpected arr length: expect 27 but see ${arr.length}');
+    if (arr.length != 28)
+      throw Exception('unexpected arr length: expect 28 but see ${arr.length}');
     return ScrapeResult(
       statusCode: dco_decode_i_64(arr[0]),
-      contentType: dco_decode_String(arr[1]),
-      html: dco_decode_String(arr[2]),
-      bodySize: dco_decode_i_64(arr[3]),
-      metadata: dco_decode_page_metadata(arr[4]),
-      links: dco_decode_list_link_info(arr[5]),
-      images: dco_decode_list_image_info(arr[6]),
-      feeds: dco_decode_list_feed_info(arr[7]),
-      jsonLd: dco_decode_list_json_ld_entry(arr[8]),
-      isAllowed: dco_decode_bool(arr[9]),
-      crawlDelay: dco_decode_opt_box_autoadd_i_64(arr[10]),
-      noindexDetected: dco_decode_bool(arr[11]),
-      nofollowDetected: dco_decode_bool(arr[12]),
-      xRobotsTag: dco_decode_opt_String(arr[13]),
-      isPdf: dco_decode_bool(arr[14]),
-      wasSkipped: dco_decode_bool(arr[15]),
-      detectedCharset: dco_decode_opt_String(arr[16]),
-      authHeaderSent: dco_decode_bool(arr[17]),
-      responseMeta: dco_decode_opt_box_autoadd_response_meta(arr[18]),
-      assets: dco_decode_list_downloaded_asset(arr[19]),
-      jsRenderHint: dco_decode_bool(arr[20]),
-      browserUsed: dco_decode_bool(arr[21]),
-      markdown: dco_decode_opt_box_autoadd_markdown_result(arr[22]),
-      extractedData: dco_decode_opt_String(arr[23]),
-      extractionMeta: dco_decode_opt_box_autoadd_extraction_meta(arr[24]),
+      finalUrl: dco_decode_String(arr[1]),
+      contentType: dco_decode_String(arr[2]),
+      html: dco_decode_String(arr[3]),
+      bodySize: dco_decode_i_64(arr[4]),
+      metadata: dco_decode_page_metadata(arr[5]),
+      links: dco_decode_list_link_info(arr[6]),
+      images: dco_decode_list_image_info(arr[7]),
+      feeds: dco_decode_list_feed_info(arr[8]),
+      jsonLd: dco_decode_list_json_ld_entry(arr[9]),
+      isAllowed: dco_decode_bool(arr[10]),
+      crawlDelay: dco_decode_opt_box_autoadd_i_64(arr[11]),
+      noindexDetected: dco_decode_bool(arr[12]),
+      nofollowDetected: dco_decode_bool(arr[13]),
+      xRobotsTag: dco_decode_opt_String(arr[14]),
+      isPdf: dco_decode_bool(arr[15]),
+      wasSkipped: dco_decode_bool(arr[16]),
+      detectedCharset: dco_decode_opt_String(arr[17]),
+      authHeaderSent: dco_decode_bool(arr[18]),
+      responseMeta: dco_decode_opt_box_autoadd_response_meta(arr[19]),
+      assets: dco_decode_list_downloaded_asset(arr[20]),
+      jsRenderHint: dco_decode_bool(arr[21]),
+      browserUsed: dco_decode_bool(arr[22]),
+      markdown: dco_decode_opt_box_autoadd_markdown_result(arr[23]),
+      extractedData: dco_decode_opt_String(arr[24]),
+      extractionMeta: dco_decode_opt_box_autoadd_extraction_meta(arr[25]),
       downloadedDocument: dco_decode_opt_box_autoadd_downloaded_document(
-        arr[25],
+        arr[26],
       ),
-      browser: dco_decode_opt_box_autoadd_browser_extras(arr[26]),
+      browser: dco_decode_opt_box_autoadd_browser_extras(arr[27]),
     );
   }
 
@@ -3527,6 +3530,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_downloadedDocument = sse_decode_opt_box_autoadd_downloaded_document(
       deserializer,
     );
+    var var_browserUsed = sse_decode_bool(deserializer);
     return CrawlPageResult(
       url: var_url,
       normalizedUrl: var_normalizedUrl,
@@ -3548,6 +3552,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       extractedData: var_extractedData,
       extractionMeta: var_extractionMeta,
       downloadedDocument: var_downloadedDocument,
+      browserUsed: var_browserUsed,
     );
   }
 
@@ -3561,6 +3566,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_error = sse_decode_opt_String(deserializer);
     var var_cookies = sse_decode_list_cookie_info(deserializer);
     var var_stayedOnDomain = sse_decode_bool(deserializer);
+    var var_browserUsed = sse_decode_bool(deserializer);
     return CrawlResult(
       pages: var_pages,
       finalUrl: var_finalUrl,
@@ -3569,6 +3575,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       error: var_error,
       cookies: var_cookies,
       stayedOnDomain: var_stayedOnDomain,
+      browserUsed: var_browserUsed,
     );
   }
 
@@ -4508,6 +4515,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ScrapeResult sse_decode_scrape_result(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var var_statusCode = sse_decode_i_64(deserializer);
+    var var_finalUrl = sse_decode_String(deserializer);
     var var_contentType = sse_decode_String(deserializer);
     var var_html = sse_decode_String(deserializer);
     var var_bodySize = sse_decode_i_64(deserializer);
@@ -4542,6 +4550,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_browser = sse_decode_opt_box_autoadd_browser_extras(deserializer);
     return ScrapeResult(
       statusCode: var_statusCode,
+      finalUrl: var_finalUrl,
       contentType: var_contentType,
       html: var_html,
       bodySize: var_bodySize,
@@ -5132,6 +5141,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       self.downloadedDocument,
       serializer,
     );
+    sse_encode_bool(self.browserUsed, serializer);
   }
 
   @protected
@@ -5144,6 +5154,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_opt_String(self.error, serializer);
     sse_encode_list_cookie_info(self.cookies, serializer);
     sse_encode_bool(self.stayedOnDomain, serializer);
+    sse_encode_bool(self.browserUsed, serializer);
   }
 
   @protected
@@ -5943,6 +5954,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   void sse_encode_scrape_result(ScrapeResult self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_i_64(self.statusCode, serializer);
+    sse_encode_String(self.finalUrl, serializer);
     sse_encode_String(self.contentType, serializer);
     sse_encode_String(self.html, serializer);
     sse_encode_i_64(self.bodySize, serializer);

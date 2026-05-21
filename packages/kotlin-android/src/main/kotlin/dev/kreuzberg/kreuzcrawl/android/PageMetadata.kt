@@ -24,89 +24,89 @@ package dev.kreuzberg.kreuzcrawl.android
 /** Metadata extracted from an HTML page's `<meta>` tags and `<title>` element. */
 data class PageMetadata(
     /** The page title from the `<title>` element. */
-    val title: String? = "",
+    val title: String? = null,
     /** The meta description. */
-    val description: String? = "",
+    val description: String? = null,
     /** The canonical URL from `<link rel="canonical">`. */
-    val canonicalUrl: String? = "",
+    val canonicalUrl: String? = null,
     /** Keywords from `<meta name="keywords">`. */
-    val keywords: String? = "",
+    val keywords: String? = null,
     /** Author from `<meta name="author">`. */
-    val author: String? = "",
+    val author: String? = null,
     /** Viewport content from `<meta name="viewport">`. */
-    val viewport: String? = "",
+    val viewport: String? = null,
     /** Theme color from `<meta name="theme-color">`. */
-    val themeColor: String? = "",
+    val themeColor: String? = null,
     /** Generator from `<meta name="generator">`. */
-    val generator: String? = "",
+    val generator: String? = null,
     /** Robots content from `<meta name="robots">`. */
-    val robots: String? = "",
+    val robots: String? = null,
     /** The `lang` attribute from the `<html>` element. */
-    val htmlLang: String? = "",
+    val htmlLang: String? = null,
     /** The `dir` attribute from the `<html>` element. */
-    val htmlDir: String? = "",
+    val htmlDir: String? = null,
     /** Open Graph title. */
-    val ogTitle: String? = "",
+    val ogTitle: String? = null,
     /** Open Graph type. */
-    val ogType: String? = "",
+    val ogType: String? = null,
     /** Open Graph image URL. */
-    val ogImage: String? = "",
+    val ogImage: String? = null,
     /** Open Graph description. */
-    val ogDescription: String? = "",
+    val ogDescription: String? = null,
     /** Open Graph URL. */
-    val ogUrl: String? = "",
+    val ogUrl: String? = null,
     /** Open Graph site name. */
-    val ogSiteName: String? = "",
+    val ogSiteName: String? = null,
     /** Open Graph locale. */
-    val ogLocale: String? = "",
+    val ogLocale: String? = null,
     /** Open Graph video URL. */
-    val ogVideo: String? = "",
+    val ogVideo: String? = null,
     /** Open Graph audio URL. */
-    val ogAudio: String? = "",
+    val ogAudio: String? = null,
     /** Open Graph locale alternates. */
-    val ogLocaleAlternates: List<String>? = emptyList(),
+    val ogLocaleAlternates: List<String>? = null,
     /** Twitter card type. */
-    val twitterCard: String? = "",
+    val twitterCard: String? = null,
     /** Twitter title. */
-    val twitterTitle: String? = "",
+    val twitterTitle: String? = null,
     /** Twitter description. */
-    val twitterDescription: String? = "",
+    val twitterDescription: String? = null,
     /** Twitter image URL. */
-    val twitterImage: String? = "",
+    val twitterImage: String? = null,
     /** Twitter site handle. */
-    val twitterSite: String? = "",
+    val twitterSite: String? = null,
     /** Twitter creator handle. */
-    val twitterCreator: String? = "",
+    val twitterCreator: String? = null,
     /** Dublin Core title. */
-    val dcTitle: String? = "",
+    val dcTitle: String? = null,
     /** Dublin Core creator. */
-    val dcCreator: String? = "",
+    val dcCreator: String? = null,
     /** Dublin Core subject. */
-    val dcSubject: String? = "",
+    val dcSubject: String? = null,
     /** Dublin Core description. */
-    val dcDescription: String? = "",
+    val dcDescription: String? = null,
     /** Dublin Core publisher. */
-    val dcPublisher: String? = "",
+    val dcPublisher: String? = null,
     /** Dublin Core date. */
-    val dcDate: String? = "",
+    val dcDate: String? = null,
     /** Dublin Core type. */
-    val dcType: String? = "",
+    val dcType: String? = null,
     /** Dublin Core format. */
-    val dcFormat: String? = "",
+    val dcFormat: String? = null,
     /** Dublin Core identifier. */
-    val dcIdentifier: String? = "",
+    val dcIdentifier: String? = null,
     /** Dublin Core language. */
-    val dcLanguage: String? = "",
+    val dcLanguage: String? = null,
     /** Dublin Core rights. */
-    val dcRights: String? = "",
+    val dcRights: String? = null,
     /** Article metadata from `article:*` Open Graph tags. */
     val article: ArticleMetadata? = null,
     /** Hreflang alternate links. */
-    val hreflangs: List<HreflangEntry>? = emptyList(),
+    val hreflangs: List<HreflangEntry>? = null,
     /** Favicon and icon links. */
-    val favicons: List<FaviconInfo>? = emptyList(),
+    val favicons: List<FaviconInfo>? = null,
     /** Heading elements (h1-h6). */
-    val headings: List<HeadingInfo>? = emptyList(),
+    val headings: List<HeadingInfo>? = null,
     /** Computed word count of the page body text. */
-    val wordCount: Long? = 0L
+    val wordCount: Long? = null
 )

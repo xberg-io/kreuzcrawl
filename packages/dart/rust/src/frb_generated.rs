@@ -1564,6 +1564,7 @@ const _: fn() = || {
         let _: Option<String> = CrawlPageResult.extracted_data;
         let _: Option<crate::ExtractionMeta> = CrawlPageResult.extraction_meta;
         let _: Option<crate::DownloadedDocument> = CrawlPageResult.downloaded_document;
+        let _: bool = CrawlPageResult.browser_used;
     }
     {
         let CrawlResult = None::<crate::CrawlResult>.unwrap();
@@ -1574,6 +1575,7 @@ const _: fn() = || {
         let _: Option<String> = CrawlResult.error;
         let _: Vec<crate::CookieInfo> = CrawlResult.cookies;
         let _: bool = CrawlResult.stayed_on_domain;
+        let _: bool = CrawlResult.browser_used;
     }
     {
         let CrawlStreamRequest = None::<crate::CrawlStreamRequest>.unwrap();
@@ -1766,6 +1768,7 @@ const _: fn() = || {
     {
         let ScrapeResult = None::<crate::ScrapeResult>.unwrap();
         let _: i64 = ScrapeResult.status_code;
+        let _: String = ScrapeResult.final_url;
         let _: String = ScrapeResult.content_type;
         let _: String = ScrapeResult.html;
         let _: i64 = ScrapeResult.body_size;
@@ -2317,6 +2320,7 @@ impl SseDecode for crate::CrawlPageResult {
         let mut var_extractedData = <Option<String>>::sse_decode(deserializer);
         let mut var_extractionMeta = <Option<crate::ExtractionMeta>>::sse_decode(deserializer);
         let mut var_downloadedDocument = <Option<crate::DownloadedDocument>>::sse_decode(deserializer);
+        let mut var_browserUsed = <bool>::sse_decode(deserializer);
         return crate::CrawlPageResult {
             url: var_url,
             normalized_url: var_normalizedUrl,
@@ -2338,6 +2342,7 @@ impl SseDecode for crate::CrawlPageResult {
             extracted_data: var_extractedData,
             extraction_meta: var_extractionMeta,
             downloaded_document: var_downloadedDocument,
+            browser_used: var_browserUsed,
         };
     }
 }
@@ -2352,6 +2357,7 @@ impl SseDecode for crate::CrawlResult {
         let mut var_error = <Option<String>>::sse_decode(deserializer);
         let mut var_cookies = <Vec<crate::CookieInfo>>::sse_decode(deserializer);
         let mut var_stayedOnDomain = <bool>::sse_decode(deserializer);
+        let mut var_browserUsed = <bool>::sse_decode(deserializer);
         return crate::CrawlResult {
             pages: var_pages,
             final_url: var_finalUrl,
@@ -2360,6 +2366,7 @@ impl SseDecode for crate::CrawlResult {
             error: var_error,
             cookies: var_cookies,
             stayed_on_domain: var_stayedOnDomain,
+            browser_used: var_browserUsed,
         };
     }
 }
@@ -3313,6 +3320,7 @@ impl SseDecode for crate::ScrapeResult {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_statusCode = <i64>::sse_decode(deserializer);
+        let mut var_finalUrl = <String>::sse_decode(deserializer);
         let mut var_contentType = <String>::sse_decode(deserializer);
         let mut var_html = <String>::sse_decode(deserializer);
         let mut var_bodySize = <i64>::sse_decode(deserializer);
@@ -3341,6 +3349,7 @@ impl SseDecode for crate::ScrapeResult {
         let mut var_browser = <Option<crate::BrowserExtras>>::sse_decode(deserializer);
         return crate::ScrapeResult {
             status_code: var_statusCode,
+            final_url: var_finalUrl,
             content_type: var_contentType,
             html: var_html,
             body_size: var_bodySize,
@@ -3948,6 +3957,7 @@ impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::CrawlPageResult> {
             self.0.extracted_data.into_into_dart().into_dart(),
             self.0.extraction_meta.into_into_dart().into_dart(),
             self.0.downloaded_document.into_into_dart().into_dart(),
+            self.0.browser_used.into_into_dart().into_dart(),
         ]
         .into_dart()
     }
@@ -3969,6 +3979,7 @@ impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::CrawlResult> {
             self.0.error.into_into_dart().into_dart(),
             self.0.cookies.into_into_dart().into_dart(),
             self.0.stayed_on_domain.into_into_dart().into_dart(),
+            self.0.browser_used.into_into_dart().into_dart(),
         ]
         .into_dart()
     }
@@ -4420,6 +4431,7 @@ impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::ScrapeResult> {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
             self.0.status_code.into_into_dart().into_dart(),
+            self.0.final_url.into_into_dart().into_dart(),
             self.0.content_type.into_into_dart().into_dart(),
             self.0.html.into_into_dart().into_dart(),
             self.0.body_size.into_into_dart().into_dart(),
@@ -4873,6 +4885,7 @@ impl SseEncode for crate::CrawlPageResult {
         <Option<String>>::sse_encode(self.extracted_data, serializer);
         <Option<crate::ExtractionMeta>>::sse_encode(self.extraction_meta, serializer);
         <Option<crate::DownloadedDocument>>::sse_encode(self.downloaded_document, serializer);
+        <bool>::sse_encode(self.browser_used, serializer);
     }
 }
 
@@ -4886,6 +4899,7 @@ impl SseEncode for crate::CrawlResult {
         <Option<String>>::sse_encode(self.error, serializer);
         <Vec<crate::CookieInfo>>::sse_encode(self.cookies, serializer);
         <bool>::sse_encode(self.stayed_on_domain, serializer);
+        <bool>::sse_encode(self.browser_used, serializer);
     }
 }
 
@@ -5642,6 +5656,7 @@ impl SseEncode for crate::ScrapeResult {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <i64>::sse_encode(self.status_code, serializer);
+        <String>::sse_encode(self.final_url, serializer);
         <String>::sse_encode(self.content_type, serializer);
         <String>::sse_encode(self.html, serializer);
         <i64>::sse_encode(self.body_size, serializer);

@@ -43,7 +43,7 @@
 		{
 			"type": "contains",
 			"field": "interaction.action_results[0].error",
-			"value": "not found"
+			"value": "could not find"
 		}
 	]
 }

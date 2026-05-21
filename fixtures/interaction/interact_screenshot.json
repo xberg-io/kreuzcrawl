@@ -25,7 +25,6 @@
 		"actions": [
 			{
 				"type": "screenshot",
-				"selector": "#target",
 				"full_page": false
 			}
 		]
