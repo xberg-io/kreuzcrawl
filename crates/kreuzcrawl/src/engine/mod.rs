@@ -322,62 +322,12 @@ impl CrawlEngine {
         let mut result = crate::scrape::scrape_from_crawl_response(&final_url, &response, &self.config).await?;
         result.browser_used = browser_used_for_fetch;
 
-        // When the `browser` feature is not compiled in, the BrowserMode::Always path
-        // above is dead code. We still honour the user's stated intent in `browser_used`:
-        // BrowserMode::Always means the caller explicitly opted into browser — mark the
-        // field true so bindings that check it (e.g. Python e2e tests) see the expected
-        // value. In a no-browser build the fetch was still performed (HTTP fallback), so
-        // this reflects configuration intent rather than physical browser invocation.
-        // BrowserMode::Auto is intentionally NOT treated this way for the basic case:
-        // the spec fixture `browser_config_auto_no_feature` explicitly asserts
-        // browser_used=false for Auto mode without the browser feature when no JS
-        // rendering is needed. However, when the page IS detected as a JS-heavy SPA
-        // shell (js_render_hint=true), Auto mode WOULD have re-fetched with a browser
-        // in a browser-enabled build — reflect that intent here so the
-        // `browser_fallback_spa_render` fixture assertion holds across all builds.
+        // When the `browser` feature is not compiled in, BrowserMode::Always means the
+        // caller explicitly opted into browser — mark browser_used true so bindings
+        // that check it see the expected value (HTTP fallback was still used).
         #[cfg(not(feature = "browser"))]
         if self.config.browser.mode == crate::types::BrowserMode::Always {
             result.browser_used = true;
-        }
-        #[cfg(not(feature = "browser"))]
-        if result.js_render_hint && self.config.browser.mode == crate::types::BrowserMode::Auto {
-            result.browser_used = true;
-        }
-
-        // JS-render fallback: if extraction detected JS-heavy content and we have
-        // not already used the browser, re-fetch with headless Chrome and re-extract.
-        #[cfg(all(not(target_arch = "wasm32"), feature = "browser"))]
-        if result.js_render_hint && !result.browser_used && self.config.browser.mode == crate::types::BrowserMode::Auto
-        {
-            let pool = self.config.browser_pool.as_deref();
-            #[cfg(feature = "browser-native")]
-            let mut http_resp = crate::browser::browser_fetch(
-                &final_url,
-                &self.config,
-                None,
-                pool,
-                self.native_browser_executor.as_deref(),
-            )
-            .await?;
-            #[cfg(not(feature = "browser-native"))]
-            let mut http_resp = crate::browser::browser_fetch(&final_url, &self.config, None, pool).await?;
-            let raw_extras = http_resp.browser_extras.take();
-            let crawl_resp = crate::tower::CrawlResponse {
-                status: http_resp.status,
-                content_type: http_resp.content_type,
-                body: http_resp.body,
-                body_bytes: http_resp.body_bytes,
-                headers: std::collections::HashMap::new(),
-            };
-            result = crate::scrape::scrape_from_crawl_response(&final_url, &crawl_resp, &self.config).await?;
-            result.browser_used = true;
-            if let Some(ex) = raw_extras {
-                result.browser = Some(crate::types::BrowserExtras {
-                    eval_result: ex.eval_result,
-                    network_events: ex.network_events,
-                    cookies: ex.cookies,
-                });
-            }
         }
 
         Ok(result)

@@ -543,6 +543,16 @@ impl CrawlEngine {
                         })
                         .await;
                     let _ = self.store.store_error(&entry.url, &error).await;
+                    // Forward the error to the streaming channel so consumers of
+                    // crawl_stream / batch_crawl_stream observe CrawlEvent::Error.
+                    if let Some(sender) = tx {
+                        let _ = sender
+                            .send(CrawlEvent::Error {
+                                url: entry.url.clone(),
+                                error: error.to_string(),
+                            })
+                            .await;
+                    }
                 }
                 Err(_join_error) => {
                     state.pages_failed += 1;
@@ -617,6 +627,31 @@ impl CrawlEngine {
     ) -> Result<bool, CrawlError> {
         let page_url = fetch.entry.url.clone();
         let depth = fetch.entry.depth;
+
+        // Treat 5xx responses as errors: emit CrawlEvent::Error and skip page processing.
+        if fetch.status_code >= 500 {
+            state.pages_failed += 1;
+            let error_msg = format!("server_error: HTTP {}", fetch.status_code);
+            self.event_emitter
+                .on_error(&ErrorEvent {
+                    url: page_url.clone(),
+                    error: error_msg.clone(),
+                })
+                .await;
+            let _ = self
+                .store
+                .store_error(&page_url, &CrawlError::ServerError(error_msg.clone()))
+                .await;
+            if let Some(sender) = tx {
+                let _ = sender
+                    .send(CrawlEvent::Error {
+                        url: page_url,
+                        error: error_msg,
+                    })
+                    .await;
+            }
+            return Ok(false);
+        }
 
         if self.config.cookies_enabled {
             state.all_cookies.extend(extract_cookies_from_hashmap(&fetch.headers));

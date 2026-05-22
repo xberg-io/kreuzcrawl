@@ -124,7 +124,7 @@ async fn do_fetch(
             }
             return Err(CrawlError::Forbidden("forbidden".into()));
         }
-        404 => return Err(CrawlError::NotFound("not_found".into())),
+        404 => return Err(CrawlError::NotFound(format!("not_found: {}", req.url))),
         408 => return Err(CrawlError::Timeout("timeout".into())),
         410 => return Err(CrawlError::Gone("gone".into())),
         429 => return Err(CrawlError::RateLimited("rate_limited".into())),

@@ -273,8 +273,18 @@ async fn execute_action(page: &chromiumoxide::Page, action: &PageAction) -> Resu
 }
 
 async fn evaluate_json(page: &chromiumoxide::Page, script: &str) -> Result<serde_json::Value, CrawlError> {
+    // Chrome's Runtime.evaluate does not support top-level `return` statements.
+    // Wrap scripts that contain a `return` keyword in an IIFE so callers can
+    // write natural function-body expressions like "return document.title".
+    let wrapped;
+    let effective_script = if script.contains("return ") || script.trim_start().starts_with("return") {
+        wrapped = format!("(function() {{ {script} }})()");
+        wrapped.as_str()
+    } else {
+        script
+    };
     let result = page
-        .evaluate(script)
+        .evaluate(effective_script)
         .await
         .map_err(|e| CrawlError::BrowserError(format!("failed to evaluate JavaScript: {e}")))?;
     Ok(result.value().cloned().unwrap_or(serde_json::Value::Null))
