@@ -478,11 +478,13 @@ impl BrowserJsRuntime {
     }
 
     pub fn execute_script_guarded(&mut self, _name: &str, source: &str) -> Result<(), String> {
-        if source.len() < 10_000 {
-            self.execute_script(_name, source)
-        } else {
-            self.execute_script_with_timeout(source, std::time::Duration::from_secs(5))
-        }
+        // Every script gets a hard wall-clock execution bound. The previous
+        // `source.len() < 10_000` fast-path skipped the watchdog for "small"
+        // scripts on the assumption they could not run long — but a 13-byte
+        // `while(true){}` spins V8 forever, pinning the worker thread at
+        // 100% CPU with no recovery. Source length is not a proxy for
+        // runtime, so the watchdog must cover every script.
+        self.execute_script_with_timeout(source, std::time::Duration::from_secs(5))
     }
 
     pub fn execute_script_with_timeout(&mut self, source: &str, timeout: std::time::Duration) -> Result<(), String> {
@@ -528,13 +530,18 @@ impl BrowserJsRuntime {
         }
         let _ = watchdog.join();
 
+        // The watchdog may have called terminate_execution(). V8's termination
+        // flag is sticky: left set, it aborts the *next* script on this isolate
+        // too — so one timed-out script silently poisons every script after it.
+        // Clear it unconditionally (a no-op when no termination is pending).
+        self.runtime.v8_isolate().cancel_terminate_execution();
+
         match result {
             Ok(_) => Ok(()),
             Err(e) => {
                 let msg = e.to_string();
                 if msg.contains("Uncaught Error: execution terminated") {
                     tracing::warn!("Script killed after {}s timeout", timeout.as_secs());
-                    self.runtime.execute_script("<reset>", "undefined".to_string()).ok();
                     Ok(())
                 } else {
                     Err(format!("JS error: {}", msg))
@@ -894,6 +901,33 @@ mod tests {
         .unwrap();
         let result = rt.evaluate("globalThis.__result").unwrap();
         assert_eq!(result, serde_json::json!(["A", "B"]));
+    }
+
+    /// Regression: a sub-10KB script with an infinite loop must not wedge
+    /// the worker thread forever. `execute_script_guarded` previously skipped
+    /// the watchdog for scripts under 10_000 bytes, so a 13-byte
+    /// `while(true){}` spun V8 at 100% CPU with no recovery (observed on
+    /// staging: three worker threads pinned for six hours). Every script now
+    /// gets the wall-clock execution bound regardless of size.
+    #[test]
+    fn execute_script_guarded_kills_small_infinite_loop() {
+        let mut rt = setup_runtime("<html><body></body></html>");
+        let start = std::time::Instant::now();
+        // `while(true){}` is 13 bytes — far under the old 10_000-byte cutoff.
+        let result = rt.execute_script_guarded("evil", "while(true){}");
+        let elapsed = start.elapsed();
+        // The watchdog terminates execution; a killed script is swallowed
+        // (same as the large-script path) rather than hanging the caller.
+        assert!(result.is_ok(), "guarded execution should recover, got {result:?}");
+        assert!(
+            elapsed < std::time::Duration::from_secs(15),
+            "infinite loop must be killed by the watchdog, ran for {elapsed:?}"
+        );
+        // The runtime is still usable after the kill — V8's sticky
+        // termination flag must have been cleared.
+        rt.execute_script("after", "globalThis.__alive = 1;").unwrap();
+        let alive = rt.evaluate("globalThis.__alive").unwrap();
+        assert_eq!(alive.as_f64().unwrap() as i64, 1);
     }
 
     /// Regression test for #147: a TypeError in one script must not poison
