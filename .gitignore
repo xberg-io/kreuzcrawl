@@ -104,6 +104,7 @@ e2e/c/test_*
 !e2e/c/test_*.h
 e2e/c/*.o
 e2e/c/*.dSYM/
+e2e/c/run_tests
 
 # Generated pkg-config
 *.pc
