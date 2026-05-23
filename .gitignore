@@ -472,4 +472,6 @@ pkg/
 .github/skills/common-task-commands/SKILL.md
 .github/skills/create-e2e-fixture/SKILL.md
 .github/skills/quick-start/SKILL.md
+.agents/
+.cursor/
 # END ai-rulez

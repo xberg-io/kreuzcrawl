@@ -127,4 +127,26 @@ final class Kreuzcrawl
     ): BatchCrawlResults {
         return \Kreuzcrawl\KreuzcrawlApi::batchCrawl($engine, $urls); // delegate to native extension class
     }
+    /**
+     * Streaming adapter wrapper.
+     * @return \Generator
+     * @throws \RuntimeException
+     */
+    public static function crawlStream(
+        CrawlEngineHandle $engine,
+        CrawlStreamRequest $req,
+    ): \Generator {
+        return \Kreuzcrawl\KreuzcrawlApi::crawlStream($engine, $req); // delegate to native extension class
+    }
+    /**
+     * Streaming adapter wrapper.
+     * @return \Generator
+     * @throws \RuntimeException
+     */
+    public static function batchCrawlStream(
+        CrawlEngineHandle $engine,
+        BatchCrawlStreamRequest $req,
+    ): \Generator {
+        return \Kreuzcrawl\KreuzcrawlApi::batchCrawlStream($engine, $req); // delegate to native extension class
+    }
 }
