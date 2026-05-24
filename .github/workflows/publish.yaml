@@ -509,6 +509,7 @@ jobs:
         with:
           package-dir: packages/python
           output-dir: dist
+          dry-run: ${{ needs.prepare.outputs.dry_run }}
 
       - uses: actions/upload-artifact@v7.0.1
         with:
@@ -649,6 +650,7 @@ jobs:
       - uses: kreuzberg-dev/actions/build-ruby-gem@v1
         with:
           package-dir: packages/ruby
+          dry-run: ${{ needs.prepare.outputs.dry_run }}
 
       - name: Package gem
         # Inline: rake build emits the .gem under pkg/; no shared action wraps it.
@@ -700,6 +702,7 @@ jobs:
           lib-name: kreuzcrawl_php
           php-version: ${{ matrix.php }}
           php-ts: nts
+          dry-run: ${{ needs.prepare.outputs.dry_run }}
 
       - name: Determine Windows compiler
         if: runner.os == 'Windows'
@@ -1791,12 +1794,15 @@ jobs:
       - uses: actions/checkout@v6.0.2
         with:
           ref: ${{ needs.prepare.outputs.ref }}
+          fetch-depth: 0
           submodules: recursive
 
       - uses: erlef/setup-beam@v1.24
         with:
           elixir-version: "1.17"
           otp-version: "27"
+
+      - uses: kreuzberg-dev/actions/setup-rust@v1
 
       - name: Generate NIF checksum file
         uses: kreuzberg-dev/actions/generate-elixir-checksums@v1
@@ -1808,6 +1814,12 @@ jobs:
           nif-versions: "2.16,2.17"
           targets: x86_64-unknown-linux-gnu,aarch64-unknown-linux-gnu,x86_64-unknown-linux-musl,aarch64-unknown-linux-musl,aarch64-apple-darwin,x86_64-apple-darwin,x86_64-pc-windows-msvc
           output-path: packages/elixir/checksum-Elixir.Kreuzcrawl.Native.exs
+
+      - uses: kreuzberg-dev/actions/build-elixir-hex@v1
+        with:
+          package-dir: packages/elixir
+          nif-crate-path: packages/elixir/native/kreuzcrawl_nif
+          dry-run: ${{ needs.prepare.outputs.dry_run }}
 
       - uses: kreuzberg-dev/actions/publish-hex@v1
         with:
