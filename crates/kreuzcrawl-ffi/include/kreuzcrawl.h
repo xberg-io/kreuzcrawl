@@ -1864,7 +1864,7 @@ char *kcrawl_markdown_result_warnings(const KCRAWLMarkdownResult *ptr);
  * # Safety
  * Pointer must be a valid handle returned by this library.
  */
-KCRAWLCitationResult *kcrawl_markdown_result_citations(const KCRAWLMarkdownResult *ptr);
+int32_t kcrawl_markdown_result_citations(const KCRAWLMarkdownResult *ptr);
 
 /**
  * Get the `fit_content` field from a `MarkdownResult`.

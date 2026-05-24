@@ -1405,9 +1405,8 @@ description = "metadata.description"
 "map_result.has_lastmod" = "skip"
 # InteractionResult fields — action_results is a JSON array returned as char*
 "interaction_result.action_results" = "char*"
-# MarkdownResult.citations returns an opaque CitationResult* handle, not a JSON
-# string. Marking it PascalCase activates the opaque-leaf-handle codegen path.
-"markdown_result.citations" = "CitationResult"
+# MarkdownResult.citations is a bool field, returned as int32_t from the C accessor
+"markdown_result.citations" = "int32_t"
 # PageMetadata primitive fields
 "page_metadata.word_count" = "uintptr_t"
 # PageMetadata JSON array fields (char* — use alef_json_array_count for .length)
