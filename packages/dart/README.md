@@ -91,7 +91,6 @@ Built with flutter_rust_bridge for isolate-safe Future APIs and Flutter-native t
 ```bash
 dart pub add kreuzcrawl
 ```
-
 ## Quick Start
 
 ```dart title="Dart"
@@ -121,7 +120,6 @@ Future<void> main() async {
   print('Pages crawled: ${crawlResult.pages.length}');
 }
 ```
-
 ## API Reference
 
 Full API documentation is available at [docs.kreuzcrawl.kreuzberg.dev](https://docs.kreuzcrawl.kreuzberg.dev).

@@ -94,7 +94,6 @@ def deps do
 end
 
 ```
-
 ## Quick Start
 
 ```elixir title="Elixir"
@@ -114,7 +113,6 @@ config_json = Jason.encode!(%Kreuzcrawl.CrawlConfig{max_depth: 1, max_pages: 5})
 crawl = Jason.decode!(crawl_json)
 IO.puts("Pages crawled: #{length(crawl["pages"] || [])}")
 ```
-
 ## API Reference
 
 Full API documentation is available at [docs.kreuzcrawl.kreuzberg.dev](https://docs.kreuzcrawl.kreuzberg.dev).
