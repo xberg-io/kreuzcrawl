@@ -205,6 +205,12 @@ pkg/
 .mock-server.out
 .mock-server.pid
 
+# chromiumoxide leak watcher (scripts/chrome-memwatch.sh) — repo-relative
+# log destination so CI can collect it as a build artifact via the
+# predictable path. Already covered by `*.log` above; listed explicitly so
+# the contract is obvious to anyone reading this file.
+chrome-memwatch.log
+
 # Per-language smoke workflows scaffolded by alef. kreuzcrawl uses the unified
 # ci-e2e.yaml matrix for all language coverage; these standalone workflows are
 # kept emitted on disk for upstream parity but never committed.
@@ -472,6 +478,4 @@ pkg/
 .github/skills/common-task-commands/SKILL.md
 .github/skills/create-e2e-fixture/SKILL.md
 .github/skills/quick-start/SKILL.md
-.agents/
-.cursor/
 # END ai-rulez
