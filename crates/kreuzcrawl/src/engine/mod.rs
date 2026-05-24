@@ -357,15 +357,39 @@ impl CrawlEngine {
     }
 }
 
-/// Wasm-specific sequential batch implementations.
+/// Wasm-specific sequential multi-page crawl implementations.
+///
+/// The native crawl loop uses `tokio::spawn`, `JoinSet`, and `Semaphore` which do not
+/// compile to `wasm32-unknown-unknown`. These implementations drive the same BFS/DFS/
+/// strategy logic sequentially using `.await` only — no concurrency primitives.
 #[cfg(target_arch = "wasm32")]
 impl CrawlEngine {
-    /// Crawl a website starting from `url`. On wasm, performs a single-page scrape
-    /// since the full crawl loop requires concurrency primitives not available on wasm.
-    pub async fn crawl(&self, url: &str) -> Result<CrawlResult, CrawlError> {
-        // Simplified single-page crawl for wasm
-        let scrape = self.scrape(url).await?;
-        let page = CrawlPageResult {
+    /// Normalize a URL for deduplication on wasm.
+    ///
+    /// Strips query parameters and fragment, removes trailing slash (except root).
+    /// Mirrors `normalize::normalize_url_for_dedup` which is cfg-gated to non-wasm.
+    fn wasm_dedup_key(raw: &str) -> String {
+        if let Ok(mut u) = url::Url::parse(raw) {
+            u.set_fragment(None);
+            u.set_query(None);
+            let path = u.path().to_owned();
+            if path.len() > 1 && path.ends_with('/') {
+                u.set_path(&path[..path.len() - 1]);
+            }
+            u.to_string()
+        } else {
+            raw.to_owned()
+        }
+    }
+
+    /// Convert a `ScrapeResult` into a `CrawlPageResult` at the given depth.
+    fn scrape_to_crawl_page(scrape: ScrapeResult, url: &str, depth: usize, base_host: &str) -> CrawlPageResult {
+        let domain = url::Url::parse(url)
+            .ok()
+            .and_then(|u| u.host_str().map(|h| h.to_owned()))
+            .unwrap_or_default();
+        let stayed_on_domain = domain == base_host;
+        CrawlPageResult {
             url: url.to_owned(),
             normalized_url: crate::normalize::normalize_url(url),
             status_code: scrape.status_code,
@@ -377,8 +401,8 @@ impl CrawlEngine {
             images: scrape.images,
             feeds: scrape.feeds,
             json_ld: scrape.json_ld,
-            depth: 0,
-            stayed_on_domain: true,
+            depth,
+            stayed_on_domain,
             was_skipped: scrape.was_skipped,
             is_pdf: scrape.is_pdf,
             detected_charset: scrape.detected_charset,
@@ -387,16 +411,242 @@ impl CrawlEngine {
             extraction_meta: scrape.extraction_meta,
             downloaded_document: scrape.downloaded_document,
             browser_used: scrape.browser_used,
-        };
+        }
+    }
+
+    /// Compile regex patterns for path filtering, returning an error on invalid patterns.
+    fn compile_path_regexes(patterns: &[String]) -> Result<Vec<regex::Regex>, CrawlError> {
+        patterns
+            .iter()
+            .map(|pat| {
+                regex::Regex::new(pat).map_err(|e| CrawlError::Other(format!("invalid regex pattern \"{pat}\": {e}")))
+            })
+            .collect()
+    }
+
+    /// Crawl a website starting from `url`.
+    ///
+    /// Implements a sequential BFS/strategy-driven crawl loop. Follows links discovered
+    /// during scraping and applies `max_depth`, `max_pages`, `stay_on_domain`,
+    /// `allow_subdomains`, `include_paths`, `exclude_paths`, and the configured
+    /// `CrawlStrategy`. No concurrency primitives are used — each page is awaited
+    /// sequentially, which is correct for the wasm single-threaded executor.
+    pub async fn crawl(&self, url: &str) -> Result<CrawlResult, CrawlError> {
+        use std::collections::HashSet;
+
+        self.config.validate()?;
+
+        let parsed_seed = url::Url::parse(url).map_err(|e| CrawlError::Other(format!("invalid URL: {e}")))?;
+        let base_host = parsed_seed.host_str().unwrap_or("").to_owned();
+        let base_host_suffix = format!(".{base_host}");
+
+        let max_depth = self.config.max_depth.unwrap_or(usize::MAX);
+        let max_pages = self.config.max_pages.unwrap_or(usize::MAX);
+
+        let exclude_regexes = Self::compile_path_regexes(&self.config.exclude_paths)?;
+        let include_regexes = Self::compile_path_regexes(&self.config.include_paths)?;
+
+        // Local dedup set — mirrors the native frontier's `seen` set. The
+        // engine's `frontier` trait object is also updated so that
+        // `batch_crawl` across multiple seeds shares state correctly.
+        let mut seen: HashSet<String> = HashSet::new();
+
+        let seed_dedup = Self::wasm_dedup_key(url);
+        seen.insert(seed_dedup.clone());
+        let _ = self.frontier.mark_seen(&seed_dedup).await;
+
+        // Working set: strategy selects from this Vec each iteration.
+        let mut working_set: Vec<FrontierEntry> = vec![FrontierEntry {
+            url: url.to_owned(),
+            depth: 0,
+            priority: 1.0,
+        }];
+
+        let mut pages: Vec<CrawlPageResult> = Vec::new();
+        let mut normalized_urls: Vec<String> = Vec::new();
+        let mut redirect_count: usize = 0;
+        let mut was_skipped = false;
+        let mut pages_failed: usize = 0;
+        let mut urls_discovered: usize = 0;
+        let mut urls_filtered: usize = 0;
+        let mut crawl_error: Option<String> = None;
+        // The final URL for CrawlResult is the post-redirect URL of the seed.
+        // Wasm's `scrape()` follows redirects transparently, so we capture it
+        // from the first page's ScrapeResult.
+        let mut final_url = url.to_owned();
+
+        // Sequential crawl loop — no spawn, no JoinSet.
+        while !working_set.is_empty() {
+            // Check stopping conditions before selecting next entry.
+            let stats = CrawlStats {
+                pages_crawled: pages.len(),
+                pages_failed,
+                urls_discovered,
+                urls_filtered,
+                elapsed: std::time::Duration::ZERO,
+            };
+            if !self.strategy.should_continue(&stats) {
+                break;
+            }
+            if pages.len() >= max_pages {
+                break;
+            }
+
+            let Some(idx) = self.strategy.select_next(&working_set) else {
+                break;
+            };
+            let entry = working_set.swap_remove(idx);
+
+            // Apply path filters (include/exclude regexes).
+            if let Ok(parsed) = url::Url::parse(&entry.url) {
+                let path = parsed.path();
+                if !exclude_regexes.is_empty() && exclude_regexes.iter().any(|re| re.is_match(path)) {
+                    urls_filtered += 1;
+                    continue;
+                }
+                // Depth-0 seed is always included regardless of include_paths.
+                if !include_regexes.is_empty() && entry.depth > 0 && !include_regexes.iter().any(|re| re.is_match(path))
+                {
+                    urls_filtered += 1;
+                    continue;
+                }
+            }
+
+            // Fetch + extract the page.
+            let scrape = match self.scrape(&entry.url).await {
+                Ok(s) => s,
+                Err(e) => {
+                    pages_failed += 1;
+                    let error_msg = e.to_string();
+                    self.event_emitter
+                        .on_error(&crate::traits::ErrorEvent {
+                            url: entry.url.clone(),
+                            error: error_msg.clone(),
+                        })
+                        .await;
+                    let _ = self.store.store_error(&entry.url, &e).await;
+                    // Seed failure is propagated as a crawl-level error so that
+                    // the batch_crawl wrapper can classify this seed as failed.
+                    if entry.depth == 0 {
+                        crawl_error = Some(error_msg);
+                    }
+                    continue;
+                }
+            };
+
+            // Track seed redirect count from final_url divergence.
+            // Wasm's scrape() follows redirects transparently via the browser;
+            // final_url is the post-redirect URL.
+            if entry.depth == 0 {
+                final_url = scrape.final_url.clone();
+                if scrape.final_url != entry.url {
+                    redirect_count += 1;
+                }
+            }
+
+            if scrape.was_skipped || scrape.is_pdf {
+                was_skipped = true;
+            }
+
+            // Discover and enqueue links before building the page result so
+            // that `links` in the page result is the full extracted set.
+            if entry.depth < max_depth && !scrape.was_skipped && !scrape.is_pdf {
+                for link in &scrape.links {
+                    if link.link_type != LinkType::Internal && link.link_type != LinkType::Document {
+                        continue;
+                    }
+
+                    let link_url = crate::normalize::strip_fragment(&link.url);
+
+                    // stay_on_domain filter.
+                    if self.config.stay_on_domain
+                        && let Ok(lu) = url::Url::parse(&link_url)
+                    {
+                        let link_host = lu.host_str().unwrap_or("");
+                        if link_host != base_host
+                            && (!self.config.allow_subdomains || !link_host.ends_with(&base_host_suffix))
+                        {
+                            continue;
+                        }
+                    }
+
+                    let dedup_key = Self::wasm_dedup_key(&link_url);
+                    if !seen.contains(&dedup_key) {
+                        seen.insert(dedup_key.clone());
+                        let _ = self.frontier.mark_seen(&dedup_key).await;
+                        let priority = self.strategy.score_url(&link_url, entry.depth + 1);
+                        working_set.push(FrontierEntry {
+                            url: link_url.clone(),
+                            depth: entry.depth + 1,
+                            priority,
+                        });
+                        urls_discovered += 1;
+                        self.event_emitter.on_discovered(&link_url, entry.depth + 1).await;
+                    }
+                }
+            }
+
+            // Build and store the page result. Use the post-redirect URL as
+            // the canonical page URL, matching native crawl behavior where
+            // the final response URL (not the queued URL) is recorded.
+            let page_url = scrape.final_url.clone();
+            let page = Self::scrape_to_crawl_page(scrape, &page_url, entry.depth, &base_host);
+
+            // Apply content filter — filtered pages still contribute to link discovery.
+            let page = match self.content_filter.filter(page).await? {
+                Some(filtered) => filtered,
+                None => {
+                    urls_filtered += 1;
+                    continue;
+                }
+            };
+
+            self.strategy.on_page_processed(&page);
+            let _ = self.store.store_crawl_page(&page.url, &page).await;
+            self.event_emitter
+                .on_page(&crate::traits::PageEvent {
+                    url: page.url.clone(),
+                    status_code: page.status_code,
+                    depth: page.depth,
+                })
+                .await;
+
+            normalized_urls.push(crate::normalize::normalize_url(&page.url));
+            pages.push(page);
+        }
+
+        // Emit completion event.
+        let _ = self
+            .store
+            .on_complete(&CrawlStats {
+                pages_crawled: pages.len(),
+                pages_failed,
+                urls_discovered,
+                urls_filtered,
+                elapsed: std::time::Duration::ZERO,
+            })
+            .await;
+        self.event_emitter
+            .on_complete(&crate::traits::CompleteEvent {
+                pages_crawled: pages.len(),
+            })
+            .await;
+
+        // Safety truncation.
+        if pages.len() > max_pages {
+            pages.truncate(max_pages);
+        }
+
+        let stayed_on_domain = pages.iter().all(|p| p.stayed_on_domain);
         Ok(CrawlResult::new(
-            vec![page],
-            url.to_owned(),
-            0,
-            false,
-            None,
+            pages,
+            final_url,
+            redirect_count,
+            was_skipped,
+            crawl_error,
             Vec::new(),
-            true,
-            vec![crate::normalize::normalize_url(url)],
+            stayed_on_domain,
+            normalized_urls,
         ))
     }
 
