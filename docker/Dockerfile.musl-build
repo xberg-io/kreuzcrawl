@@ -29,9 +29,10 @@ COPY Cargo.toml Cargo.lock ./
 COPY crates/kreuzcrawl/ crates/kreuzcrawl/
 COPY crates/kreuzcrawl-cli/ crates/kreuzcrawl-cli/
 COPY crates/kreuzcrawl-bindings-common/ crates/kreuzcrawl-bindings-common/
+COPY crates/kreuzcrawl-browser/ crates/kreuzcrawl-browser/
 
 # Replace workspace members with only the crates we have
-RUN sed -i 's|members = \[.*\]|members = ["crates/kreuzcrawl", "crates/kreuzcrawl-cli", "crates/kreuzcrawl-bindings-common"]|' Cargo.toml
+RUN sed -i 's|members = \[.*\]|members = ["crates/kreuzcrawl", "crates/kreuzcrawl-cli", "crates/kreuzcrawl-bindings-common", "crates/kreuzcrawl-browser"]|' Cargo.toml
 
 RUN . "$HOME/.cargo/env" && \
     cargo build --release --package kreuzcrawl-cli --features "api,mcp" && \
