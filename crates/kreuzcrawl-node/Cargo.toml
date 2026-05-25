@@ -1,6 +1,6 @@
 [package]
 name = "kreuzcrawl-node"
-version = "0.3.0-rc.28"
+version = "0.3.0-rc.29"
 edition = "2024"
 license = "Elastic-2.0"
 description = "High-performance web crawling engine"
@@ -21,7 +21,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 futures-util = "0.3"
-kreuzcrawl = { version = "0.3.0-rc.28", path = "../kreuzcrawl", features = [
+kreuzcrawl = { version = "0.3.0-rc.29", path = "../kreuzcrawl", features = [
     "interact",
     "browser-chromiumoxide",
 ] }

@@ -31,9 +31,9 @@
         <dependency>
             <groupId>dev.kreuzberg.kreuzcrawl</groupId>
             <artifactId>kreuzcrawl</artifactId>
-            <version>0.3.0-rc.28</version>
+            <version>0.3.0-rc.29</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/../../packages/java/target/kreuzcrawl-0.3.0-rc.28.jar</systemPath>
+            <systemPath>${project.basedir}/../../packages/java/target/kreuzcrawl-0.3.0-rc.29.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
