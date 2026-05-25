@@ -543,7 +543,10 @@ jobs:
       - uses: actions/upload-artifact@v7.0.1
         with:
           name: node-bindings-${{ matrix.target }}
-          path: crates/kreuzcrawl-node/*.node
+          path: |
+            crates/kreuzcrawl-node/*.node
+            crates/kreuzcrawl-node/index.js
+            crates/kreuzcrawl-node/index.d.ts
           retention-days: 14
 
   wasm-bindings:
@@ -1566,15 +1569,16 @@ jobs:
           node-version: "22"
 
       - name: Stage platform packages with napi
-        # Inline: napi artifacts → per-platform npm/ subpackages plus build the
-        # TypeScript bundle. Tightly coupled to napi-rs layout; not worth a
-        # shared action.
+        # Inline: napi artifacts → per-platform npm/ subpackages, then drop the
+        # downloaded index.js + index.d.ts (uploaded by every matrix build run;
+        # identical across platforms, merge-multiple deduplicates) at the
+        # package root so they ship in the published tarball.
         working-directory: crates/kreuzcrawl-node
         shell: bash
         run: |
           pnpm exec napi create-npm-dirs
           pnpm exec napi artifacts --output-dir artifacts --npm-dir npm
-          pnpm build:ts
+          cp artifacts/index.js artifacts/index.d.ts .
 
       - name: Pack platform tarballs for publishing
         # Inline: per-platform package.json patching + npm pack. The wrapper
