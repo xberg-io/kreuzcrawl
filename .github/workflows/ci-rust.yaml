@@ -48,7 +48,7 @@ jobs:
           - os: ubuntu-24.04-arm
           - os: macos-latest
     steps:
-      - uses: actions/checkout@v6.0.2
+      - uses: actions/checkout@v6
         with:
           submodules: recursive
 
@@ -93,7 +93,7 @@ jobs:
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v6.0.2
+      - uses: actions/checkout@v6
 
       - name: Free disk space
         uses: kreuzberg-dev/actions/free-disk-space-linux@v1
