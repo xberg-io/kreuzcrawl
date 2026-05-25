@@ -42,7 +42,7 @@ class KreuzcrawlBridge {
             rateLimitMs: null,
             maxRedirects: 10,
             retryCount: 0,
-            retryCodes: [],
+            retryCodes: Int64List(0),
             cookiesEnabled: false,
             auth: null,
             maxBodySize: null,

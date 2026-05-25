@@ -210,7 +210,7 @@ repos:
         exclude: ^(test_apps/|e2e/)
       - id: hadolint
   - repo: https://github.com/kreuzberg-dev/alef
-    rev: v0.19.10
+    rev: v0.19.11
     hooks:
       - id: alef-verify
       - id: alef-sync-versions
