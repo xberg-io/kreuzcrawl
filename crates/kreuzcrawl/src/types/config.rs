@@ -369,6 +369,12 @@ pub struct CrawlConfig {
     pub browser_profile: Option<String>,
     /// Whether to save changes back to the browser profile on exit.
     pub save_browser_profile: bool,
+    /// Caller-supplied bypass provider. When `Some`, the engine routes every
+    /// URL through the provider, skipping native HTTP and chromiumoxide. Used
+    /// for integrating commercial bypass APIs (Bright Data, Zyte, etc.) at the
+    /// kreuzberg-cloud layer; kreuzcrawl itself ships no vendor adapters.
+    #[serde(skip)]
+    pub bypass: Option<crate::types::bypass::DynBypassProvider>,
     /// Shared browser pool for reusing Chrome across requests (not serializable).
     #[cfg(feature = "browser")]
     #[serde(skip)]
@@ -415,6 +421,7 @@ impl Default for CrawlConfig {
             warc_output: None,
             browser_profile: None,
             save_browser_profile: false,
+            bypass: None,
             #[cfg(feature = "browser")]
             browser_pool: None,
         }

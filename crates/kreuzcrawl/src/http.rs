@@ -13,22 +13,22 @@ use crate::types::{AuthConfig, CrawlConfig, ResponseMeta};
 /// browser backend. Populated when `browser_used` is true.
 #[derive(Debug, Clone, Default)]
 #[allow(dead_code)]
-pub(crate) struct BrowserExtras {
-    pub(crate) eval_result: Option<serde_json::Value>,
-    pub(crate) network_events: Vec<crate::types::ResponseMeta>,
-    pub(crate) cookies: Vec<crate::types::CookieInfo>,
+pub struct BrowserExtras {
+    pub eval_result: Option<serde_json::Value>,
+    pub network_events: Vec<crate::types::ResponseMeta>,
+    pub cookies: Vec<crate::types::CookieInfo>,
 }
 
 /// An HTTP response with status, headers, and body content.
-pub(crate) struct HttpResponse {
-    pub(crate) status: u16,
-    pub(crate) content_type: String,
-    pub(crate) body: String,
-    pub(crate) body_bytes: Vec<u8>,
+pub struct HttpResponse {
+    pub status: u16,
+    pub content_type: String,
+    pub body: String,
+    pub body_bytes: Vec<u8>,
     #[allow(dead_code)]
-    pub(crate) headers: std::collections::HashMap<String, Vec<String>>,
+    pub headers: std::collections::HashMap<String, Vec<String>>,
     #[allow(dead_code)]
-    pub(crate) browser_extras: Option<BrowserExtras>,
+    pub browser_extras: Option<BrowserExtras>,
     /// The URL of the final response after any transparent redirect following.
     ///
     /// On native targets reqwest uses `Policy::none()` so this always equals
@@ -39,7 +39,7 @@ pub(crate) struct HttpResponse {
     // `dead_code` fires on native because the wasm scrape path (the only
     // consumer) is gated on `#[cfg(target_arch = "wasm32")]`.
     #[allow(dead_code)]
-    pub(crate) final_url: String,
+    pub final_url: String,
 }
 
 /// Perform a single HTTP GET request with the given configuration.

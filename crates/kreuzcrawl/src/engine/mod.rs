@@ -97,6 +97,21 @@ impl CrawlEngine {
             )
         }
 
+        // Caller-supplied bypass provider short-circuits native/browser dispatch entirely.
+        if let Some(provider) = &self.config.bypass {
+            let http_resp = provider.fetch(url).await?;
+            return Ok((
+                CrawlResponse {
+                    status: http_resp.status,
+                    content_type: http_resp.content_type,
+                    body: http_resp.body,
+                    body_bytes: http_resp.body_bytes,
+                    headers: std::collections::HashMap::new(),
+                },
+                false,
+            ));
+        }
+
         // BrowserMode::Always — skip HTTP entirely.
         #[cfg(feature = "browser")]
         if self.config.browser.mode == crate::types::BrowserMode::Always {

@@ -43,6 +43,7 @@ pub(crate) mod warc;
 
 #[cfg(feature = "api")]
 pub use api::serve_with_config as serve_api;
+pub use http::HttpResponse;
 pub use bindings::{
     BatchCrawlResult, BatchCrawlResults, BatchScrapeResult, BatchScrapeResults, CrawlEngineHandle, batch_crawl,
     batch_scrape, crawl, create_engine, interact, map_urls, scrape,
@@ -67,11 +68,11 @@ pub use kreuzcrawl_browser::adapter::{NativeBrowserExecutor, NativeBrowserExecut
 #[cfg(feature = "mcp")]
 pub use mcp::{start_mcp_server, start_mcp_server_with_config};
 pub use types::{
-    ActionResult, ArticleMetadata, AssetCategory, AuthConfig, BrowserBackend, BrowserConfig, BrowserExtras,
-    BrowserMode, BrowserWait, CachedPage, ContentConfig, CookieInfo, CrawlConfig, CrawlPageResult, CrawlResult,
-    DownloadedAsset, DownloadedDocument, ExtractionMeta, FaviconInfo, FeedInfo, FeedType, HeadingInfo, HreflangEntry,
-    ImageInfo, ImageSource, InteractionResult, JsonLdEntry, LinkInfo, LinkType, MapResult, MarkdownResult,
-    PageMetadata, ProxyConfig, ResponseMeta, ScrapeResult, SitemapUrl,
+    ActionResult, ArticleMetadata, AssetCategory, AuthConfig, BypassProvider, BrowserBackend, BrowserConfig,
+    BrowserExtras, BrowserMode, BrowserWait, CachedPage, ContentConfig, CookieInfo, CrawlConfig, CrawlPageResult,
+    CrawlResult, DownloadedAsset, DownloadedDocument, DynBypassProvider, ExtractionMeta, FaviconInfo, FeedInfo,
+    FeedType, HeadingInfo, HreflangEntry, ImageInfo, ImageSource, InteractionResult, JsonLdEntry, LinkInfo, LinkType,
+    MapResult, MarkdownResult, PageMetadata, ProxyConfig, ResponseMeta, ScrapeResult, SitemapUrl,
 };
 #[cfg(not(target_arch = "wasm32"))]
 pub use types::{BatchCrawlStreamRequest, CrawlEvent, CrawlStreamRequest};
