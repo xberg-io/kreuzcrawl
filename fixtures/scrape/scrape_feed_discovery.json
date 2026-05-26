@@ -1,32 +1,29 @@
 {
-  "id": "scrape_feed_discovery",
-  "description": "Discovers RSS, Atom, and JSON feed links",
-  "tags": [
-    "scrape",
-    "feeds"
-  ],
-  "input": {
-    "config": {},
-    "mock_responses": [
-      {
-        "status_code": 200,
-        "headers": {
-          "content-type": "text/html; charset=utf-8"
-        },
-        "body_file": "html/rss_atom_feeds.html"
-      }
-    ]
-  },
-  "assertions": [
-    {
-      "type": "equals",
-      "field": "status_code",
-      "value": 200
-    },
-    {
-      "type": "greater_than_or_equal",
-      "field": "feeds.length",
-      "value": 3
-    }
-  ]
+	"id": "scrape_feed_discovery",
+	"description": "Discovers RSS, Atom, and JSON feed links",
+	"tags": ["scrape", "feeds"],
+	"input": {
+		"config": {},
+		"mock_responses": [
+			{
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_file": "html/rss_atom_feeds.html"
+			}
+		]
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "status_code",
+			"value": 200
+		},
+		{
+			"type": "greater_than_or_equal",
+			"field": "feeds.length",
+			"value": 3
+		}
+	]
 }

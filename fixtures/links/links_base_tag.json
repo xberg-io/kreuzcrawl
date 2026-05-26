@@ -1,32 +1,29 @@
 {
-  "id": "links_base_tag",
-  "description": "Resolves relative URLs using base tag href",
-  "tags": [
-    "links",
-    "resolution"
-  ],
-  "input": {
-    "config": {},
-    "mock_responses": [
-      {
-        "status_code": 200,
-        "headers": {
-          "content-type": "text/html; charset=utf-8"
-        },
-        "body_file": "html/base_tag_page.html"
-      }
-    ]
-  },
-  "assertions": [
-    {
-      "type": "greater_than",
-      "field": "links.length",
-      "value": 2
-    },
-    {
-      "type": "contains",
-      "field": "links[].url",
-      "value": "example.com"
-    }
-  ]
+	"id": "links_base_tag",
+	"description": "Resolves relative URLs using base tag href",
+	"tags": ["links", "resolution"],
+	"input": {
+		"config": {},
+		"mock_responses": [
+			{
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_file": "html/base_tag_page.html"
+			}
+		]
+	},
+	"assertions": [
+		{
+			"type": "greater_than",
+			"field": "links.length",
+			"value": 2
+		},
+		{
+			"type": "contains",
+			"field": "links[].url",
+			"value": "example.com"
+		}
+	]
 }

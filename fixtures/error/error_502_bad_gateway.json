@@ -1,23 +1,21 @@
 {
-  "id": "error_502_bad_gateway",
-  "description": "Handles 502 Bad Gateway response correctly",
-  "tags": [
-    "error"
-  ],
-  "assertions": [
-    {
-      "type": "error"
-    },
-    {
-      "type": "error",
-      "value": "bad_gateway"
-    }
-  ],
-  "mock_response": {
-    "status": 502,
-    "body": "<html><body><h1>502 Bad Gateway</h1></body></html>",
-    "headers": {
-      "content-type": "text/html; charset=utf-8"
-    }
-  }
+	"id": "error_502_bad_gateway",
+	"description": "Handles 502 Bad Gateway response correctly",
+	"tags": ["error"],
+	"assertions": [
+		{
+			"type": "error"
+		},
+		{
+			"type": "error",
+			"value": "bad_gateway"
+		}
+	],
+	"mock_response": {
+		"status": 502,
+		"body": "<html><body><h1>502 Bad Gateway</h1></body></html>",
+		"headers": {
+			"content-type": "text/html; charset=utf-8"
+		}
+	}
 }

@@ -95,6 +95,13 @@ data class CrawlConfig(
     val browser: BrowserConfig = BrowserConfig(),
     /** Proxy configuration for HTTP requests. */
     val proxy: ProxyConfig? = null,
+    /**
+     * Caller-supplied bypass provider. When `Some`, the engine routes every URL through the
+     * provider, skipping native HTTP and chromiumoxide. Used for integrating commercial bypass APIs
+     * (Bright Data, Zyte, etc.) at the kreuzberg-cloud layer; kreuzcrawl itself ships no vendor
+     * adapters.
+     */
+    val bypass: String? = null,
     /** List of user-agent strings for rotation. If non-empty, overrides `user_agent`. */
     val userAgents: List<String> = emptyList(),
     /** Whether to capture a screenshot when using the browser. */

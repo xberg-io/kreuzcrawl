@@ -1,42 +1,38 @@
 {
-  "id": "scrape_json_ld",
-  "description": "Extracts JSON-LD structured data from a page",
-  "tags": [
-    "scrape",
-    "metadata",
-    "json-ld"
-  ],
-  "input": {
-    "config": {},
-    "mock_responses": [
-      {
-        "status_code": 200,
-        "headers": {
-          "content-type": "text/html; charset=utf-8"
-        },
-        "body_file": "html/json_ld.html"
-      }
-    ]
-  },
-  "assertions": [
-    {
-      "type": "equals",
-      "field": "status_code",
-      "value": 200
-    },
-    {
-      "type": "not_empty",
-      "field": "json_ld"
-    },
-    {
-      "type": "equals",
-      "field": "json_ld.type",
-      "value": "Recipe"
-    },
-    {
-      "type": "equals",
-      "field": "json_ld.name",
-      "value": "Best Chocolate Cake"
-    }
-  ]
+	"id": "scrape_json_ld",
+	"description": "Extracts JSON-LD structured data from a page",
+	"tags": ["scrape", "metadata", "json-ld"],
+	"input": {
+		"config": {},
+		"mock_responses": [
+			{
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_file": "html/json_ld.html"
+			}
+		]
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "status_code",
+			"value": 200
+		},
+		{
+			"type": "not_empty",
+			"field": "json_ld"
+		},
+		{
+			"type": "equals",
+			"field": "json_ld.type",
+			"value": "Recipe"
+		},
+		{
+			"type": "equals",
+			"field": "json_ld.name",
+			"value": "Best Chocolate Cake"
+		}
+	]
 }

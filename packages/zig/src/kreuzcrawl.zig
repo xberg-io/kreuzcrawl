@@ -226,6 +226,11 @@ pub const CrawlConfig = struct {
     browser: BrowserConfig,
     /// Proxy configuration for HTTP requests.
     proxy: ?ProxyConfig,
+    /// Caller-supplied bypass provider. When `Some`, the engine routes every
+    /// URL through the provider, skipping native HTTP and chromiumoxide. Used
+    /// for integrating commercial bypass APIs (Bright Data, Zyte, etc.) at the
+    /// kreuzberg-cloud layer; kreuzcrawl itself ships no vendor adapters.
+    bypass: ?[]const u8,
     /// List of user-agent strings for rotation. If non-empty, overrides `user_agent`.
     user_agents: []const []const u8,
     /// Whether to capture a screenshot when using the browser.

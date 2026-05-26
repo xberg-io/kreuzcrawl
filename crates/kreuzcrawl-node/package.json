@@ -1,40 +1,40 @@
 {
-  "name": "@kreuzberg/kreuzcrawl",
-  "version": "0.3.0-rc.30",
-  "description": "High-performance web crawling engine",
-  "license": "Elastic-2.0",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/kreuzberg-dev/kreuzcrawl.git"
-  },
-  "files": [
-    "index.js",
-    "index.d.ts",
-    "*.node"
-  ],
-  "main": "index.js",
-  "types": "index.d.ts",
-  "scripts": {
-    "build": "napi build --platform --release",
-    "artifacts": "napi artifacts",
-    "prepublishOnly": "napi prepublish -t npm --skip-optional-publish"
-  },
-  "devDependencies": {
-    "@napi-rs/cli": "^3.6.2"
-  },
-  "napi": {
-    "binaryName": "kreuzcrawl-node",
-    "packageName": "@kreuzberg/kreuzcrawl",
-    "targets": [
-      "x86_64-unknown-linux-gnu",
-      "aarch64-unknown-linux-gnu",
-      "x86_64-apple-darwin",
-      "aarch64-apple-darwin",
-      "x86_64-pc-windows-msvc",
-      "aarch64-pc-windows-msvc"
-    ]
-  },
-  "engines": {
-    "node": ">= 18"
-  }
+	"name": "@kreuzberg/kreuzcrawl",
+	"version": "0.3.0-rc.31",
+	"description": "High-performance web crawling engine",
+	"license": "Elastic-2.0",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/kreuzberg-dev/kreuzcrawl.git"
+	},
+	"files": [
+		"index.js",
+		"index.d.ts",
+		"*.node"
+	],
+	"main": "index.js",
+	"types": "index.d.ts",
+	"scripts": {
+		"build": "napi build --platform --release",
+		"artifacts": "napi artifacts",
+		"prepublishOnly": "napi prepublish -t npm --skip-optional-publish"
+	},
+	"devDependencies": {
+		"@napi-rs/cli": "^3.6.2"
+	},
+	"napi": {
+		"binaryName": "kreuzcrawl-node",
+		"packageName": "@kreuzberg/kreuzcrawl",
+		"targets": [
+			"x86_64-unknown-linux-gnu",
+			"aarch64-unknown-linux-gnu",
+			"x86_64-apple-darwin",
+			"aarch64-apple-darwin",
+			"x86_64-pc-windows-msvc",
+			"aarch64-pc-windows-msvc"
+		]
+	},
+	"engines": {
+		"node": ">= 18"
+	}
 }

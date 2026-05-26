@@ -1,28 +1,25 @@
 {
-  "id": "content_204_no_content",
-  "description": "Handles 204 No Content response gracefully",
-  "tags": [
-    "content",
-    "edge-case"
-  ],
-  "input": {
-    "config": {},
-    "mock_responses": [
-      {
-        "status_code": 204,
-        "headers": {}
-      }
-    ]
-  },
-  "assertions": [
-    {
-      "type": "equals",
-      "field": "status_code",
-      "value": 204
-    },
-    {
-      "type": "is_empty",
-      "field": "html"
-    }
-  ]
+	"id": "content_204_no_content",
+	"description": "Handles 204 No Content response gracefully",
+	"tags": ["content", "edge-case"],
+	"input": {
+		"config": {},
+		"mock_responses": [
+			{
+				"status_code": 204,
+				"headers": {}
+			}
+		]
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "status_code",
+			"value": 204
+		},
+		{
+			"type": "is_empty",
+			"field": "html"
+		}
+	]
 }

@@ -1,26 +1,23 @@
 {
-  "id": "scrape_js_heavy_spa",
-  "description": "Handles SPA page with JavaScript-only content (no server-rendered HTML)",
-  "tags": [
-    "scrape",
-    "javascript"
-  ],
-  "input": {
-    "config": {},
-    "mock_responses": [
-      {
-        "status_code": 200,
-        "headers": {
-          "content-type": "text/html; charset=utf-8"
-        },
-        "body_file": "html/js_heavy_spa.html"
-      }
-    ]
-  },
-  "assertions": [
-    {
-      "type": "not_empty",
-      "field": "html"
-    }
-  ]
+	"id": "scrape_js_heavy_spa",
+	"description": "Handles SPA page with JavaScript-only content (no server-rendered HTML)",
+	"tags": ["scrape", "javascript"],
+	"input": {
+		"config": {},
+		"mock_responses": [
+			{
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_file": "html/js_heavy_spa.html"
+			}
+		]
+	},
+	"assertions": [
+		{
+			"type": "not_empty",
+			"field": "html"
+		}
+	]
 }

@@ -5,8 +5,8 @@
     .minimum_zig_version = "0.16.0",
     .dependencies = .{
         .kreuzcrawl = .{
-            .url = "https://github.com/kreuzberg-dev/kreuzcrawl/releases/download/v0.3.0-rc.30/kreuzcrawl-zig-v0.3.0-rc.30.tar.gz",
-            // alef: hash not pinned — run `zig fetch --save https://github.com/kreuzberg-dev/kreuzcrawl/releases/download/v0.3.0-rc.30/kreuzcrawl-zig-v0.3.0-rc.30.tar.gz` once to populate,
+            .url = "https://github.com/kreuzberg-dev/kreuzcrawl/releases/download/v0.3.0-rc.31/kreuzcrawl-zig-v0.3.0-rc.31.tar.gz",
+            // alef: hash not pinned — run `zig fetch --save https://github.com/kreuzberg-dev/kreuzcrawl/releases/download/v0.3.0-rc.31/kreuzcrawl-zig-v0.3.0-rc.31.tar.gz` once to populate,
             //       then set `hash` under [crates.e2e.registry.packages.zig] in alef.toml.
             .hash = "TODO",
         },

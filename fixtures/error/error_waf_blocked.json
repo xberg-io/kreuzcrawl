@@ -1,32 +1,29 @@
 {
-  "id": "error_waf_blocked",
-  "description": "WAF challenge/block detection returns WafBlocked error",
-  "tags": [
-    "error",
-    "waf"
-  ],
-  "input": {
-    "config": {
-      "browser": {
-        "mode": "never"
-      }
-    }
-  },
-  "assertions": [
-    {
-      "type": "error"
-    },
-    {
-      "type": "error",
-      "value": "waf"
-    }
-  ],
-  "mock_response": {
-    "status": 403,
-    "body": "<html><body><h1>403 Forbidden</h1><p>You have been blocked by our security system.</p></body></html>",
-    "headers": {
-      "content-type": "text/html; charset=utf-8",
-      "server": "Cloudflare"
-    }
-  }
+	"id": "error_waf_blocked",
+	"description": "WAF challenge/block detection returns WafBlocked error",
+	"tags": ["error", "waf"],
+	"input": {
+		"config": {
+			"browser": {
+				"mode": "never"
+			}
+		}
+	},
+	"assertions": [
+		{
+			"type": "error"
+		},
+		{
+			"type": "error",
+			"value": "waf"
+		}
+	],
+	"mock_response": {
+		"status": 403,
+		"body": "<html><body><h1>403 Forbidden</h1><p>You have been blocked by our security system.</p></body></html>",
+		"headers": {
+			"content-type": "text/html; charset=utf-8",
+			"server": "Cloudflare"
+		}
+	}
 }

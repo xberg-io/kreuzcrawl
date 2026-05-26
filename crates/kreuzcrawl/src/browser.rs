@@ -51,9 +51,49 @@ async fn chromiumoxide_fetch(
     pool: Option<&BrowserPool>,
 ) -> Result<HttpResponse, CrawlError> {
     if let Some(pool) = pool {
-        let pooled = pool.acquire_page().await?;
-        let result = page_fetch(url, config, pooled.page(), prior_cookies).await;
-        pooled.close().await;
+        // Attempt to reuse a session from the session pool if session affinity
+        // is enabled. If no session exists or affinity is disabled, acquire a
+        // fresh page from the browser pool.
+        let page = if config.browser.session_affinity {
+            let session_key = crate::browser_session_pool::SessionKey::from_url(
+                url,
+                config.browser.proxy.as_ref().map(|p| p.url.as_str()),
+            )?;
+            let session_pool = config.browser_session_pool.as_deref().ok_or_else(|| {
+                CrawlError::BrowserError("session_affinity enabled but session pool is not configured".into())
+            })?;
+
+            // Try to acquire an existing session.
+            if let Some(pooled_page) = session_pool.acquire(&session_key).await {
+                pooled_page
+            } else {
+                // No session available; acquire a fresh page from the browser pool.
+                let pooled = pool.acquire_page().await?;
+                pooled.page().clone()
+            }
+        } else {
+            // Affinity disabled; always get a fresh page.
+            let pooled = pool.acquire_page().await?;
+            pooled.page().clone()
+        };
+
+        let result = page_fetch(url, config, &page, prior_cookies).await;
+
+        // If session affinity is enabled and the fetch succeeded, stash the page
+        // in the session pool for reuse. Otherwise, close it.
+        if config.browser.session_affinity
+            && result.is_ok()
+            && let Ok(session_key) = crate::browser_session_pool::SessionKey::from_url(
+                url,
+                config.browser.proxy.as_ref().map(|p| p.url.as_str()),
+            )
+            && let Some(session_pool) = config.browser_session_pool.as_deref()
+        {
+            session_pool.insert(session_key, page).await;
+        } else {
+            let _ = page.close().await;
+        }
+
         result
     } else {
         let (mut browser, mut handler, data_dir) = launch_or_connect(config).await?;
@@ -139,9 +179,10 @@ async fn page_fetch(
 
     // Set viewport if stealth mode is enabled (default 1920x1080).
     if config.browser.stealth
-        && let Err(e) = set_viewport(page, 1920, 1080).await {
-            return Err(CrawlError::BrowserError(format!("failed to set viewport: {e}")));
-        }
+        && let Err(e) = set_viewport(page, 1920, 1080).await
+    {
+        return Err(CrawlError::BrowserError(format!("failed to set viewport: {e}")));
+    }
 
     // Set cookies from prior HTTP response.
     if let Some(cookies) = prior_cookies {

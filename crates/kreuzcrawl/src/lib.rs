@@ -11,6 +11,8 @@ mod browser_detect;
 pub mod browser_pool;
 #[cfg(feature = "browser")]
 pub(crate) mod browser_profile;
+#[cfg(feature = "browser")]
+pub mod browser_session_pool;
 pub(crate) mod citations;
 #[cfg(feature = "browser")]
 mod stealth;
@@ -53,6 +55,8 @@ pub use bindings::{
 pub use bindings::{batch_crawl_stream, crawl_stream};
 #[cfg(feature = "browser")]
 pub use browser_pool::{BrowserPool, BrowserPoolConfig};
+#[cfg(feature = "browser")]
+pub use browser_session_pool::{BrowserSessionPool, SessionKey};
 pub use citations::{CitationReference, CitationResult, generate_citations};
 pub use defaults::{
     AdaptiveStrategy, BestFirstStrategy, BfsStrategy, DfsStrategy, InMemoryFrontier, NoopCache, NoopEmitter,

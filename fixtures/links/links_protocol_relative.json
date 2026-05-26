@@ -1,32 +1,29 @@
 {
-  "id": "links_protocol_relative",
-  "description": "Handles protocol-relative URLs (//example.com) correctly",
-  "tags": [
-    "links",
-    "edge-case"
-  ],
-  "input": {
-    "config": {},
-    "mock_responses": [
-      {
-        "status_code": 200,
-        "headers": {
-          "content-type": "text/html; charset=utf-8"
-        },
-        "body_file": "html/protocol_relative_links.html"
-      }
-    ]
-  },
-  "assertions": [
-    {
-      "type": "greater_than",
-      "field": "links.length",
-      "value": 1
-    },
-    {
-      "type": "contains",
-      "field": "links[].url",
-      "value": "//"
-    }
-  ]
+	"id": "links_protocol_relative",
+	"description": "Handles protocol-relative URLs (//example.com) correctly",
+	"tags": ["links", "edge-case"],
+	"input": {
+		"config": {},
+		"mock_responses": [
+			{
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_file": "html/protocol_relative_links.html"
+			}
+		]
+	},
+	"assertions": [
+		{
+			"type": "greater_than",
+			"field": "links.length",
+			"value": 1
+		},
+		{
+			"type": "contains",
+			"field": "links[].url",
+			"value": "//"
+		}
+	]
 }

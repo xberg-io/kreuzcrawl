@@ -1,26 +1,22 @@
 {
-  "id": "error_retry_backoff",
-  "description": "Implements exponential backoff when retrying failed requests",
-  "tags": [
-    "error",
-    "retry",
-    "backoff"
-  ],
-  "assertions": [
-    {
-      "type": "error"
-    },
-    {
-      "type": "error",
-      "value": "rate_limited"
-    }
-  ],
-  "mock_response": {
-    "status": 429,
-    "body": "<html><body>Too Many Requests</body></html>",
-    "headers": {
-      "content-type": "text/html",
-      "retry-after": "1"
-    }
-  }
+	"id": "error_retry_backoff",
+	"description": "Implements exponential backoff when retrying failed requests",
+	"tags": ["error", "retry", "backoff"],
+	"assertions": [
+		{
+			"type": "error"
+		},
+		{
+			"type": "error",
+			"value": "rate_limited"
+		}
+	],
+	"mock_response": {
+		"status": 429,
+		"body": "<html><body>Too Many Requests</body></html>",
+		"headers": {
+			"content-type": "text/html",
+			"retry-after": "1"
+		}
+	}
 }

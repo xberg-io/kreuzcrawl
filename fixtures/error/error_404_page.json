@@ -1,23 +1,21 @@
 {
-  "id": "error_404_page",
-  "description": "Handles 404 response correctly",
-  "tags": [
-    "error"
-  ],
-  "assertions": [
-    {
-      "type": "error"
-    },
-    {
-      "type": "error",
-      "value": "not_found"
-    }
-  ],
-  "mock_response": {
-    "status": 404,
-    "body": "<html><body><h1>404 Not Found</h1></body></html>",
-    "headers": {
-      "content-type": "text/html; charset=utf-8"
-    }
-  }
+	"id": "error_404_page",
+	"description": "Handles 404 response correctly",
+	"tags": ["error"],
+	"assertions": [
+		{
+			"type": "error"
+		},
+		{
+			"type": "error",
+			"value": "not_found"
+		}
+	],
+	"mock_response": {
+		"status": 404,
+		"body": "<html><body><h1>404 Not Found</h1></body></html>",
+		"headers": {
+			"content-type": "text/html; charset=utf-8"
+		}
+	}
 }

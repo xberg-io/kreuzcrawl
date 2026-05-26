@@ -1,26 +1,23 @@
 {
-  "id": "encoding_unicode_url",
-  "description": "Handles Unicode characters in URLs (Hebrew, Japanese, Cyrillic)",
-  "tags": [
-    "encoding",
-    "unicode"
-  ],
-  "input": {
-    "config": {},
-    "mock_responses": [
-      {
-        "status_code": 200,
-        "headers": {
-          "content-type": "text/html; charset=utf-8"
-        },
-        "body_file": "html/unicode_content.html"
-      }
-    ]
-  },
-  "assertions": [
-    {
-      "type": "not_empty",
-      "field": "html"
-    }
-  ]
+	"id": "encoding_unicode_url",
+	"description": "Handles Unicode characters in URLs (Hebrew, Japanese, Cyrillic)",
+	"tags": ["encoding", "unicode"],
+	"input": {
+		"config": {},
+		"mock_responses": [
+			{
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_file": "html/unicode_content.html"
+			}
+		]
+	},
+	"assertions": [
+		{
+			"type": "not_empty",
+			"field": "html"
+		}
+	]
 }

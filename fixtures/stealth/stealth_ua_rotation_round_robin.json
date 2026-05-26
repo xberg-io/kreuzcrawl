@@ -1,12 +1,7 @@
 {
 	"id": "stealth_ua_rotation_round_robin",
 	"description": "User-agent rotation cycles through multiple agents across multiple requests",
-	"tags": [
-		"stealth",
-		"user-agent",
-		"rotation",
-		"crawl"
-	],
+	"tags": ["stealth", "user-agent", "rotation", "crawl"],
 	"input": {
 		"mock_responses": [
 			{

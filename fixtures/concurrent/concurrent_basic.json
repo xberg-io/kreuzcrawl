@@ -1,10 +1,7 @@
 {
 	"id": "concurrent_basic",
 	"description": "Concurrent crawling fetches all pages with max_concurrent workers",
-	"tags": [
-		"concurrent",
-		"crawl"
-	],
+	"tags": ["concurrent", "crawl"],
 	"input": {
 		"mock_responses": [
 			{

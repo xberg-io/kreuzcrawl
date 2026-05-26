@@ -1,37 +1,37 @@
 version: "3"
 
 tasks:
-  build:
-    desc: Build Docker image (API server)
-    cmds:
-      - docker build -f docker/Dockerfile -t kreuzcrawl:dev .
+    build:
+        desc: Build Docker image (API server)
+        cmds:
+            - docker build -f docker/Dockerfile -t kreuzcrawl:dev .
 
-  build:cli:
-    desc: Build Docker image (CLI only)
-    cmds:
-      - docker build -f docker/Dockerfile.cli -t kreuzcrawl:cli .
+    build:cli:
+        desc: Build Docker image (CLI only)
+        cmds:
+            - docker build -f docker/Dockerfile.cli -t kreuzcrawl:cli .
 
-  run:
-    desc: Run API server in Docker
-    deps: [build]
-    cmds:
-      - docker run -p 3000:3000 kreuzcrawl:dev
+    run:
+        desc: Run API server in Docker
+        deps: [build]
+        cmds:
+            - docker run -p 3000:3000 kreuzcrawl:dev
 
-  schemathesis:
-    desc: Run schemathesis API contract tests (auto-starts server)
-    dir: "{{.ROOT_DIR}}/tests/api"
-    cmds:
-      - uv sync
-      - uv run pytest -v --tb=short
-    env:
-      SCHEMATHESIS_MAX_EXAMPLES: "{{.MAX_EXAMPLES | default 25}}"
+    schemathesis:
+        desc: Run schemathesis API contract tests (auto-starts server)
+        dir: "{{.ROOT_DIR}}/tests/api"
+        cmds:
+            - uv sync
+            - uv run pytest -v --tb=short
+        env:
+            SCHEMATHESIS_MAX_EXAMPLES: "{{.MAX_EXAMPLES | default 25}}"
 
-  schemathesis:cli:
-    desc: Run schemathesis CLI against a running server (default :3000)
-    cmds:
-      - >-
-        uv run --with schemathesis schemathesis run
-        http://{{.HOST | default "localhost"}}:{{.PORT | default "3000"}}/openapi.json
-        --max-examples={{.MAX_EXAMPLES | default "25"}}
-        --request-timeout=30000
-        --checks not_a_server_error,status_code_conformance,content_type_conformance,response_schema_conformance,negative_data_rejection
+    schemathesis:cli:
+        desc: Run schemathesis CLI against a running server (default :3000)
+        cmds:
+            - >-
+                uv run --with schemathesis schemathesis run
+                http://{{.HOST | default "localhost"}}:{{.PORT | default "3000"}}/openapi.json
+                --max-examples={{.MAX_EXAMPLES | default "25"}}
+                --request-timeout=30000
+                --checks not_a_server_error,status_code_conformance,content_type_conformance,response_schema_conformance,negative_data_rejection

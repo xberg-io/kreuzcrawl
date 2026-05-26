@@ -1,318 +1,298 @@
 version: "3"
 
 includes:
-  _cfg:
-    taskfile: ../config/vars.yml
-    internal: true
-  _platforms:
-    taskfile: ../config/platforms.yml
-    internal: true
+    _cfg:
+        taskfile: ../config/vars.yml
+        internal: true
+    _platforms:
+        taskfile: ../config/platforms.yml
+        internal: true
 
 vars:
-  RUST_LOG: info
-  # On Windows, prepend MSVC bin path to avoid Git Bash link.exe conflict
-  CARGO_PATH_PREFIX: '{{if eq OS "windows"}}{{._cfg.MSVC_BIN_PATH}}{{if ._cfg.MSVC_BIN_PATH}}:{{end}}{{end}}'
-  # CMake path for Windows (needed for build scripts)
-  CMAKE_PATH:
-    sh: |
-      if [ "{{OS}}" != "windows" ]; then
-        echo ""
-        exit 0
-      fi
-      powershell -NoProfile -Command '
-        $cmakePath = "C:\Program Files\CMake\bin\cmake.exe"
-        if (Test-Path $cmakePath) { $cmakePath }
-      ' 2>/dev/null || echo ""
+    RUST_LOG: info
+    # On Windows, prepend MSVC bin path to avoid Git Bash link.exe conflict
+    CARGO_PATH_PREFIX: '{{if eq OS "windows"}}{{._cfg.MSVC_BIN_PATH}}{{if ._cfg.MSVC_BIN_PATH}}:{{end}}{{end}}'
+    # CMake path for Windows (needed for build scripts)
+    CMAKE_PATH:
+        sh: |
+            if [ "{{OS}}" != "windows" ]; then
+              echo ""
+              exit 0
+            fi
+            powershell -NoProfile -Command '
+              $cmakePath = "C:\Program Files\CMake\bin\cmake.exe"
+              if (Test-Path $cmakePath) { $cmakePath }
+            ' 2>/dev/null || echo ""
 
 tasks:
-  install:
-    desc: Install Rust toolchain and tools (rustup, taplo, cargo-deny)
-    cmds:
-      - echo "Rust toolchain is typically installed via rustup"
-      - rustc --version
-      # Windows: install lld-link to avoid PATH conflicts with Git Bash's link.exe
-      - cmd: rustup component add llvm-tools
-        platforms: [windows]
-      - task: install:taplo
-      - task: install:cargo-deny
+    install:
+        desc: Install Rust toolchain and tools (rustup, cargo-deny)
+        cmds:
+            - echo "Rust toolchain is typically installed via rustup"
+            - rustc --version
+            # Windows: install lld-link to avoid PATH conflicts with Git Bash's link.exe
+            - cmd: rustup component add llvm-tools
+              platforms: [windows]
+            - task: install:cargo-deny
 
-  install:taplo:
-    desc: Install taplo for TOML formatting
-    env:
-      PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
-    cmds:
-      - echo "Installing taplo for TOML formatting..."
-      # macOS: use brew
-      - cmd: taplo --version 2>/dev/null || brew install taplo
-        platforms: [darwin]
-        ignore_error: true
-      # Linux: use cargo install
-      - cmd: taplo --version 2>/dev/null || cargo install taplo-cli --locked
-        platforms: [linux]
-        ignore_error: true
-      # Windows: use winget (faster) or cargo install with fixed PATH
-      - cmd: taplo --version 2>/dev/null || cargo install taplo-cli --locked
-        platforms: [windows]
-        ignore_error: true
+    install:cargo-deny:
+        desc: Install cargo-deny for license checking
+        env:
+            PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
+        cmds:
+            - echo "Installing cargo-deny for license checking..."
+            # All platforms: use cargo install (Windows now works with MSVC PATH fix)
+            - cmd: cargo-deny --version 2>/dev/null || cargo install cargo-deny
+              ignore_error: true
 
-  install:cargo-deny:
-    desc: Install cargo-deny for license checking
-    env:
-      PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
-    cmds:
-      - echo "Installing cargo-deny for license checking..."
-      # All platforms: use cargo install (Windows now works with MSVC PATH fix)
-      - cmd: cargo-deny --version 2>/dev/null || cargo install cargo-deny
-        ignore_error: true
+    build:
+        desc: Build all Rust crates (uses {{.BUILD_PROFILE}})
+        cmds:
+            - task: build:{{.BUILD_PROFILE | default "release"}}
 
-  build:
-    desc: Build all Rust crates (uses {{.BUILD_PROFILE}})
-    cmds:
-      - task: build:{{.BUILD_PROFILE | default "release"}}
+    build:dev:
+        desc: Build all Rust crates in debug mode
+        env:
+            PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
+            CMAKE: "{{.CMAKE_PATH}}"
+        cmds:
+            - cmd: cargo build --workspace --all-features --exclude kreuzcrawl-php --exclude kreuzcrawl-node --exclude kreuzcrawl-wasm
+              platforms: [linux, darwin]
+            - cmd: cargo build --workspace --all-features --exclude kreuzcrawl-php --exclude kreuzcrawl-node --exclude kreuzcrawl-wasm
+              platforms: [windows]
 
-  build:dev:
-    desc: Build all Rust crates in debug mode
-    env:
-      PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
-      CMAKE: "{{.CMAKE_PATH}}"
-    cmds:
-      - cmd: cargo build --workspace --all-features --exclude kreuzcrawl-php --exclude kreuzcrawl-node --exclude kreuzcrawl-wasm
-        platforms: [linux, darwin]
-      - cmd: cargo build --workspace --all-features --exclude kreuzcrawl-php --exclude kreuzcrawl-node --exclude kreuzcrawl-wasm
-        platforms: [windows]
+    build:release:
+        desc: Build all Rust crates in release mode (optimized)
+        env:
+            PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
+            CMAKE: "{{.CMAKE_PATH}}"
+        cmds:
+            - cmd: cargo build --release --workspace --all-features --exclude kreuzcrawl-php --exclude kreuzcrawl-node --exclude kreuzcrawl-wasm
+              platforms: [linux, darwin]
+            - cmd: cargo build --release --workspace --all-features --exclude kreuzcrawl-php --exclude kreuzcrawl-node --exclude kreuzcrawl-wasm
+              platforms: [windows]
 
-  build:release:
-    desc: Build all Rust crates in release mode (optimized)
-    env:
-      PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
-      CMAKE: "{{.CMAKE_PATH}}"
-    cmds:
-      - cmd: cargo build --release --workspace --all-features --exclude kreuzcrawl-php --exclude kreuzcrawl-node --exclude kreuzcrawl-wasm
-        platforms: [linux, darwin]
-      - cmd: cargo build --release --workspace --all-features --exclude kreuzcrawl-php --exclude kreuzcrawl-node --exclude kreuzcrawl-wasm
-        platforms: [windows]
+    build:ci:
+        desc: Build all Rust crates in CI mode (with debug info)
+        env:
+            PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
+            CMAKE: "{{.CMAKE_PATH}}"
+            RUSTFLAGS: "-C debuginfo=2"
+        cmds:
+            - cmd: cargo build --release --workspace --all-features --exclude kreuzcrawl-php --exclude kreuzcrawl-node --exclude kreuzcrawl-wasm
+              platforms: [linux, darwin]
+            - cmd: cargo build --release --workspace --all-features --exclude kreuzcrawl-php --exclude kreuzcrawl-node --exclude kreuzcrawl-wasm
+              platforms: [windows]
 
-  build:ci:
-    desc: Build all Rust crates in CI mode (with debug info)
-    env:
-      PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
-      CMAKE: "{{.CMAKE_PATH}}"
-      RUSTFLAGS: "-C debuginfo=2"
-    cmds:
-      - cmd: cargo build --release --workspace --all-features --exclude kreuzcrawl-php --exclude kreuzcrawl-node --exclude kreuzcrawl-wasm
-        platforms: [linux, darwin]
-      - cmd: cargo build --release --workspace --all-features --exclude kreuzcrawl-php --exclude kreuzcrawl-node --exclude kreuzcrawl-wasm
-        platforms: [windows]
+    build:profiling:
+        desc: Build all Rust crates with profiling features (for flamegraph generation)
+        env:
+            PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
+            CMAKE: "{{.CMAKE_PATH}}"
+            ENABLE_PROFILING: "true"
+            RUSTFLAGS: "-g"
+        cmds:
+            - cargo build --workspace --release --features full,profiling,api,mcp,otel --exclude kreuzcrawl-php --exclude kreuzcrawl-node --exclude kreuzcrawl-wasm
 
-  build:profiling:
-    desc: Build all Rust crates with profiling features (for flamegraph generation)
-    env:
-      PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
-      CMAKE: "{{.CMAKE_PATH}}"
-      ENABLE_PROFILING: "true"
-      RUSTFLAGS: "-g"
-    cmds:
-      - cargo build --workspace --release --features full,profiling,api,mcp,otel --exclude kreuzcrawl-php --exclude kreuzcrawl-node --exclude kreuzcrawl-wasm
+    cli:build:
+        desc: Build CLI binary
+        env:
+            PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
+            CMAKE: "{{.CMAKE_PATH}}"
+        cmds:
+            - cargo build --release --package kreuzcrawl-cli {{if .TARGET}}--target {{.TARGET}}{{end}}
 
-  cli:build:
-    desc: Build CLI binary
-    env:
-      PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
-      CMAKE: "{{.CMAKE_PATH}}"
-    cmds:
-      - cargo build --release --package kreuzcrawl-cli {{if .TARGET}}--target {{.TARGET}}{{end}}
+    cli:build:dev:
+        desc: Build CLI binary in debug mode
+        env:
+            PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
+            CMAKE: "{{.CMAKE_PATH}}"
+        cmds:
+            - cargo build --package kreuzcrawl-cli
 
-  cli:build:dev:
-    desc: Build CLI binary in debug mode
-    env:
-      PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
-      CMAKE: "{{.CMAKE_PATH}}"
-    cmds:
-      - cargo build --package kreuzcrawl-cli
+    cli:install:
+        desc: Install CLI binary
+        env:
+            PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
+            CMAKE: "{{.CMAKE_PATH}}"
+        cmds:
+            - cargo install --path crates/kreuzcrawl-cli
 
-  cli:install:
-    desc: Install CLI binary
-    env:
-      PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
-      CMAKE: "{{.CMAKE_PATH}}"
-    cmds:
-      - cargo install --path crates/kreuzcrawl-cli
+    ffi:build:
+        desc: Build FFI library for language bindings
+        env:
+            PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
+            CMAKE: "{{.CMAKE_PATH}}"
+        cmds:
+            - cargo build --release --package kreuzcrawl-ffi {{.CARGO_ARGS | default ""}}
 
-  ffi:build:
-    desc: Build FFI library for language bindings
-    env:
-      PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
-      CMAKE: "{{.CMAKE_PATH}}"
-    cmds:
-      - cargo build --release --package kreuzcrawl-ffi {{.CARGO_ARGS | default ""}}
+    ffi:build:dev:
+        desc: Build FFI library in debug mode
+        env:
+            PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
+            CMAKE: "{{.CMAKE_PATH}}"
+        cmds:
+            - cargo build --package kreuzcrawl-ffi {{.CARGO_ARGS | default ""}}
 
-  ffi:build:dev:
-    desc: Build FFI library in debug mode
-    env:
-      PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
-      CMAKE: "{{.CMAKE_PATH}}"
-    cmds:
-      - cargo build --package kreuzcrawl-ffi {{.CARGO_ARGS | default ""}}
+    ffi:build:ci:
+        desc: Build FFI library in CI mode (with debug info)
+        env:
+            PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
+            CMAKE: "{{.CMAKE_PATH}}"
+            RUSTFLAGS: "-C debuginfo=2"
+        cmds:
+            - cargo build --release --package kreuzcrawl-ffi {{.CARGO_ARGS | default ""}}
 
-  ffi:build:ci:
-    desc: Build FFI library in CI mode (with debug info)
-    env:
-      PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
-      CMAKE: "{{.CMAKE_PATH}}"
-      RUSTFLAGS: "-C debuginfo=2"
-    cmds:
-      - cargo build --release --package kreuzcrawl-ffi {{.CARGO_ARGS | default ""}}
+    test:
+        desc: Run all Rust tests
+        cmds:
+            - cmd: bash scripts/ci/rust/run-unit-tests.sh
+              platforms: [linux, darwin]
 
-  test:
-    desc: Run all Rust tests
-    cmds:
-      - cmd: bash scripts/ci/rust/run-unit-tests.sh
-        platforms: [linux, darwin]
+    test:ci:
+        desc: Run Rust tests in CI mode with tessdata setup
+        env:
+            RUST_BACKTRACE: "1"
+            CARGO_TERM_COLOR: "always"
+        cmds:
+            - cmd: bash scripts/ci/rust/run-unit-tests.sh
+              platforms: [linux, darwin]
 
-  test:ci:
-    desc: Run Rust tests in CI mode with tessdata setup
-    env:
-      RUST_BACKTRACE: "1"
-      CARGO_TERM_COLOR: "always"
-    cmds:
-      - cmd: bash scripts/ci/rust/run-unit-tests.sh
-        platforms: [linux, darwin]
+    test:quick:
+        desc: Run fast Rust tests (unit tests only)
+        env:
+            PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
+        cmds:
+            - cargo test --lib --workspace --exclude kreuzcrawl-php --exclude kreuzcrawl-node --exclude kreuzcrawl-wasm
 
-  test:quick:
-    desc: Run fast Rust tests (unit tests only)
-    env:
-      PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
-    cmds:
-      - cargo test --lib --workspace --exclude kreuzcrawl-php --exclude kreuzcrawl-node --exclude kreuzcrawl-wasm
+    lint:
+        desc: Auto-fix Rust code linting (cargo fmt + clippy)
+        env:
+            PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
+        cmds:
+            - cargo fmt --all
+            - cargo clippy --workspace --fix --allow-dirty --allow-staged --exclude kreuzcrawl-php --exclude kreuzcrawl-node --exclude kreuzcrawl-wasm
 
-  lint:
-    desc: Auto-fix Rust code linting (cargo fmt + clippy)
-    env:
-      PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
-    cmds:
-      - cargo fmt --all
-      - cargo clippy --workspace --fix --allow-dirty --allow-staged --exclude kreuzcrawl-php --exclude kreuzcrawl-node --exclude kreuzcrawl-wasm
+    lint:check:
+        desc: Check Rust code linting without modifications
+        env:
+            PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
+        cmds:
+            - cargo fmt --all -- --check
+            # -A clippy::inherent_to_string: alef-generated swift-bridge crate emits inherent
+            # `to_string(&self)` methods that conflict with Display::to_string. Upstream fix
+            # belongs in alef-backend-swift/src/gen_rust_crate/mod.rs allow block.
+            - cargo clippy --workspace --exclude kreuzcrawl-php --exclude kreuzcrawl-node --exclude kreuzcrawl-wasm -- -D warnings -A clippy::inherent_to_string
 
-  lint:check:
-    desc: Check Rust code linting without modifications
-    env:
-      PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
-    cmds:
-      - cargo fmt --all -- --check
-      # -A clippy::inherent_to_string: alef-generated swift-bridge crate emits inherent
-      # `to_string(&self)` methods that conflict with Display::to_string. Upstream fix
-      # belongs in alef-backend-swift/src/gen_rust_crate/mod.rs allow block.
-      - cargo clippy --workspace --exclude kreuzcrawl-php --exclude kreuzcrawl-node --exclude kreuzcrawl-wasm -- -D warnings -A clippy::inherent_to_string
+    format:
+        desc: Format Rust code with modifications (cargo fmt)
+        env:
+            PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
+        cmds:
+            - cargo fmt --all
 
-  format:
-    desc: Format Rust code with modifications (cargo fmt)
-    env:
-      PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
-    cmds:
-      - cargo fmt --all
+    format:check:
+        desc: Check Rust code formatting without modifications
+        env:
+            PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
+        cmds:
+            - cargo fmt --all -- --check
 
-  format:check:
-    desc: Check Rust code formatting without modifications
-    env:
-      PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
-    cmds:
-      - cargo fmt --all -- --check
+    licenses:
+        desc: Check Rust dependency licenses with cargo-deny
+        env:
+            PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
+        cmds:
+            - cargo deny check licenses
 
-  licenses:
-    desc: Check Rust dependency licenses with cargo-deny
-    env:
-      PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
-    cmds:
-      - cargo deny check licenses
+    doc:
+        desc: Generate Rust documentation and open in browser
+        env:
+            PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
+        cmds:
+            - cargo doc --no-deps --open
 
-  doc:
-    desc: Generate Rust documentation and open in browser
-    env:
-      PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
-    cmds:
-      - cargo doc --no-deps --open
+    doc:build:
+        desc: Build Rust documentation (without opening)
+        env:
+            PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
+        cmds:
+            - cargo doc --no-deps
 
-  doc:build:
-    desc: Build Rust documentation (without opening)
-    env:
-      PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
-    cmds:
-      - cargo doc --no-deps
+    clean:
+        desc: Clean Rust build artifacts
+        cmds:
+            - cargo clean
 
-  clean:
-    desc: Clean Rust build artifacts
-    cmds:
-      - cargo clean
+    cache:cleanup:
+        desc: Clean up large build artifacts to reduce cache size (for CI)
+        cmds:
+            - cmd: echo "Cleaning up large build artifacts to reduce cache size..."
+              ignore_error: true
+            - cmd: find target -type f -name "*.rlib" -size +10M -exec rm -f {} \; 2>/dev/null || true
+              ignore_error: true
+            - cmd: find target -type f -name "*.so" -size +10M -exec rm -f {} \; 2>/dev/null || true
+              ignore_error: true
+            - cmd: find target -type f -name "*.dylib" -size +10M -exec rm -f {} \; 2>/dev/null || true
+              ignore_error: true
+            - cmd: find target -type f -name "*.dll" -size +10M -exec rm -f {} \; 2>/dev/null || true
+              ignore_error: true
+            - cmd: rm -rf target/*/incremental 2>/dev/null || true
+              ignore_error: true
+            - echo "Cleanup completed successfully"
+            - cmd: du -sh target 2>/dev/null || echo "No target directory found"
+              ignore_error: true
 
-  cache:cleanup:
-    desc: Clean up large build artifacts to reduce cache size (for CI)
-    cmds:
-      - cmd: echo "Cleaning up large build artifacts to reduce cache size..."
-        ignore_error: true
-      - cmd: find target -type f -name "*.rlib" -size +10M -exec rm -f {} \; 2>/dev/null || true
-        ignore_error: true
-      - cmd: find target -type f -name "*.so" -size +10M -exec rm -f {} \; 2>/dev/null || true
-        ignore_error: true
-      - cmd: find target -type f -name "*.dylib" -size +10M -exec rm -f {} \; 2>/dev/null || true
-        ignore_error: true
-      - cmd: find target -type f -name "*.dll" -size +10M -exec rm -f {} \; 2>/dev/null || true
-        ignore_error: true
-      - cmd: rm -rf target/*/incremental 2>/dev/null || true
-        ignore_error: true
-      - echo "Cleanup completed successfully"
-      - cmd: du -sh target 2>/dev/null || echo "No target directory found"
-        ignore_error: true
+    update:
+        desc: Update Rust dependencies
+        env:
+            PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
+        cmds:
+            - echo "Updating Rust dependencies (main workspace)..."
+            - cargo upgrade --incompatible
+            - cargo update
+            - cmd: echo "Updating Rust dependencies (Ruby native crate)..."
+            - cmd: cargo upgrade --incompatible --manifest-path packages/ruby/ext/kreuzcrawl_rb/native/Cargo.toml
+              ignore_error: true
+            - cmd: cargo update --manifest-path packages/ruby/ext/kreuzcrawl_rb/native/Cargo.toml
+              ignore_error: true
 
-  update:
-    desc: Update Rust dependencies
-    env:
-      PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
-    cmds:
-      - echo "Updating Rust dependencies (main workspace)..."
-      - cargo upgrade --incompatible
-      - cargo update
-      - cmd: echo "Updating Rust dependencies (Ruby native crate)..."
-      - cmd: cargo upgrade --incompatible --manifest-path packages/ruby/ext/kreuzcrawl_rb/native/Cargo.toml
-        ignore_error: true
-      - cmd: cargo update --manifest-path packages/ruby/ext/kreuzcrawl_rb/native/Cargo.toml
-        ignore_error: true
+    e2e:generate:
+        desc: Generate and format Rust E2E tests from fixtures
+        cmds:
+            - cmd: bash scripts/task/e2e-generate.sh rust
+              platforms: [linux, darwin]
+            - cmd: echo "E2E generation not yet supported on Windows - use WSL or CI"
+              platforms: [windows]
+            - task: e2e:format
+            - task: e2e:lint
 
-  e2e:generate:
-    desc: Generate and format Rust E2E tests from fixtures
-    cmds:
-      - cmd: bash scripts/task/e2e-generate.sh rust
-        platforms: [linux, darwin]
-      - cmd: echo "E2E generation not yet supported on Windows - use WSL or CI"
-        platforms: [windows]
-      - task: e2e:format
-      - task: e2e:lint
+    e2e:format:
+        desc: Format generated Rust E2E sources
+        env:
+            PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
+        cmds:
+            - cargo fmt --manifest-path e2e/rust/Cargo.toml
 
-  e2e:format:
-    desc: Format generated Rust E2E sources
-    env:
-      PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
-    cmds:
-      - cargo fmt --manifest-path e2e/rust/Cargo.toml
+    e2e:lint:
+        desc: Lint Rust E2E crate with clippy
+        env:
+            PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
+        cmds:
+            - cargo clippy --manifest-path e2e/rust/Cargo.toml -- -D warnings
 
-  e2e:lint:
-    desc: Lint Rust E2E crate with clippy
-    env:
-      PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
-    cmds:
-      - cargo clippy --manifest-path e2e/rust/Cargo.toml -- -D warnings
+    e2e:test:
+        desc: Run Rust E2E tests
+        env:
+            PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
+            RUST_TEST_THREADS: "1"
+        cmds:
+            - cargo test --manifest-path e2e/rust/Cargo.toml --release
 
-  e2e:test:
-    desc: Run Rust E2E tests
-    env:
-      PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
-      RUST_TEST_THREADS: "1"
-    cmds:
-      - cargo test --manifest-path e2e/rust/Cargo.toml --release
-
-  e2e:verify:
-    desc: Regenerate and validate Rust E2E suite (generate + format + lint + test)
-    cmds:
-      - task: e2e:generate
-      - task: e2e:format
-      - task: e2e:lint
-      - task: e2e:test
+    e2e:verify:
+        desc: Regenerate and validate Rust E2E suite (generate + format + lint + test)
+        cmds:
+            - task: e2e:generate
+            - task: e2e:format
+            - task: e2e:lint
+            - task: e2e:test

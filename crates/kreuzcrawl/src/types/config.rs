@@ -252,6 +252,11 @@ pub struct BrowserConfig {
     /// (only the document event is captured). Native only.
     #[serde(default)]
     pub capture_network_events: bool,
+    /// Enable session affinity: reuse chromiumoxide Pages for same-domain
+    /// requests so cookies + fingerprint + solved challenges persist.
+    /// Default: true. When false, each request gets a fresh Page.
+    #[serde(default)]
+    pub session_affinity: bool,
 }
 
 impl Default for BrowserConfig {
@@ -270,6 +275,7 @@ impl Default for BrowserConfig {
             eval_script: None,
             robots_user_agent: None,
             capture_network_events: false,
+            session_affinity: true,
         }
     }
 }
@@ -380,6 +386,14 @@ pub struct CrawlConfig {
     #[serde(skip)]
     #[cfg_attr(alef, alef(skip))]
     pub browser_pool: Option<std::sync::Arc<crate::browser_pool::BrowserPool>>,
+    /// Shared browser session pool for session affinity (not serializable).
+    /// When set alongside `session_affinity: true` in BrowserConfig, the pool
+    /// is used to cache Pages by (domain, proxy) so cookies and fingerprint
+    /// persist across requests.
+    #[cfg(feature = "browser")]
+    #[serde(skip)]
+    #[cfg_attr(alef, alef(skip))]
+    pub browser_session_pool: Option<std::sync::Arc<crate::browser_session_pool::BrowserSessionPool>>,
 }
 
 impl Default for CrawlConfig {
@@ -424,6 +438,8 @@ impl Default for CrawlConfig {
             bypass: None,
             #[cfg(feature = "browser")]
             browser_pool: None,
+            #[cfg(feature = "browser")]
+            browser_session_pool: None,
         }
     }
 }

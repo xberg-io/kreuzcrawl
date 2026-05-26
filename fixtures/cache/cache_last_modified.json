@@ -1,12 +1,7 @@
 {
 	"id": "cache_last_modified",
 	"description": "Last-Modified header enables conditional requests via If-Modified-Since",
-	"tags": [
-		"cache",
-		"last-modified",
-		"conditional",
-		"crawl"
-	],
+	"tags": ["cache", "last-modified", "conditional", "crawl"],
 	"input": {
 		"mock_responses": [
 			{

@@ -9,85 +9,85 @@ name: Publish pub.dev
 # push events" with tag pattern `v{{version}}`.
 
 on:
-  push:
-    tags:
-      - "v*"
+    push:
+        tags:
+            - "v*"
 
 permissions:
-  contents: read
-  id-token: write
+    contents: read
+    id-token: write
 
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+    FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:
-  prepare:
-    name: Prepare metadata
-    runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.meta.outputs.version }}
-      checkout_ref: ${{ steps.meta.outputs.checkout_ref }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6.0.2
-        with:
-          ref: ${{ github.ref }}
-          fetch-depth: 0
-          submodules: recursive
+    prepare:
+        name: Prepare metadata
+        runs-on: ubuntu-latest
+        outputs:
+            version: ${{ steps.meta.outputs.version }}
+            checkout_ref: ${{ steps.meta.outputs.checkout_ref }}
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v6.0.2
+              with:
+                  ref: ${{ github.ref }}
+                  fetch-depth: 0
+                  submodules: recursive
 
-      - name: Resolve release metadata
-        id: meta
-        uses: kreuzberg-dev/actions/prepare-release-metadata@v1
+            - name: Resolve release metadata
+              id: meta
+              uses: kreuzberg-dev/actions/prepare-release-metadata@v1
 
-  check-pub:
-    name: Check pub.dev for existing version
-    needs: prepare
-    runs-on: ubuntu-latest
-    outputs:
-      exists: ${{ steps.check.outputs.exists }}
-    steps:
-      - id: check
-        uses: kreuzberg-dev/actions/check-registry@v1
-        with:
-          registry: pub
-          package: kreuzcrawl
-          version: ${{ needs.prepare.outputs.version }}
+    check-pub:
+        name: Check pub.dev for existing version
+        needs: prepare
+        runs-on: ubuntu-latest
+        outputs:
+            exists: ${{ steps.check.outputs.exists }}
+        steps:
+            - id: check
+              uses: kreuzberg-dev/actions/check-registry@v1
+              with:
+                  registry: pub
+                  package: kreuzcrawl
+                  version: ${{ needs.prepare.outputs.version }}
 
-  dart-package:
-    name: Build Dart package
-    needs: prepare
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6.0.2
-        with:
-          ref: ${{ needs.prepare.outputs.checkout_ref }}
-          fetch-depth: 0
+    dart-package:
+        name: Build Dart package
+        needs: prepare
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v6.0.2
+              with:
+                  ref: ${{ needs.prepare.outputs.checkout_ref }}
+                  fetch-depth: 0
 
-      - uses: kreuzberg-dev/actions/setup-rust@v1
+            - uses: kreuzberg-dev/actions/setup-rust@v1
 
-      - uses: kreuzberg-dev/actions/build-dart-package@v1
-        with:
-          # flutter_rust_bridge.yaml lives in packages/dart/rust/, where rust_root: .
-          package-dir: packages/dart/rust
-          crate-name: kreuzcrawl-dart
+            - uses: kreuzberg-dev/actions/build-dart-package@v1
+              with:
+                  # flutter_rust_bridge.yaml lives in packages/dart/rust/, where rust_root: .
+                  package-dir: packages/dart/rust
+                  crate-name: kreuzcrawl-dart
 
-      - uses: actions/upload-artifact@v7.0.1
-        with:
-          name: dart-package
-          path: packages/dart
-          retention-days: 14
+            - uses: actions/upload-artifact@v7.0.1
+              with:
+                  name: dart-package
+                  path: packages/dart
+                  retention-days: 14
 
-  publish-pub:
-    name: Publish pub.dev
-    needs: [prepare, dart-package, check-pub]
-    if: ${{ needs.check-pub.outputs.exists != 'true' }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v8.0.1
-        with:
-          name: dart-package
-          path: packages/dart
+    publish-pub:
+        name: Publish pub.dev
+        needs: [prepare, dart-package, check-pub]
+        if: ${{ needs.check-pub.outputs.exists != 'true' }}
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/download-artifact@v8.0.1
+              with:
+                  name: dart-package
+                  path: packages/dart
 
-      - uses: kreuzberg-dev/actions/publish-pub@v1
-        with:
-          package-dir: packages/dart
+            - uses: kreuzberg-dev/actions/publish-pub@v1
+              with:
+                  package-dir: packages/dart

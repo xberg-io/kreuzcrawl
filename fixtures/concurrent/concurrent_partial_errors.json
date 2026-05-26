@@ -1,11 +1,7 @@
 {
 	"id": "concurrent_partial_errors",
 	"description": "Concurrent crawl handles partial failures gracefully",
-	"tags": [
-		"concurrent",
-		"error",
-		"crawl"
-	],
+	"tags": ["concurrent", "error", "crawl"],
 	"input": {
 		"mock_responses": [
 			{

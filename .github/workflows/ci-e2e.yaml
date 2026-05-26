@@ -1,356 +1,356 @@
 name: CI E2E
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "crates/**"
-      - "packages/**"
-      - "e2e/**"
-      - "fixtures/**"
-      - "alef.toml"
-      - "Cargo.toml"
-      - "Cargo.lock"
-      - "Taskfile.yml"
-      - ".github/workflows/ci-e2e.yaml"
-  pull_request:
-    branches: [main]
-    paths:
-      - "crates/**"
-      - "packages/**"
-      - "e2e/**"
-      - "fixtures/**"
-      - "alef.toml"
-      - "Cargo.toml"
-      - "Cargo.lock"
-      - "Taskfile.yml"
-      - ".github/workflows/ci-e2e.yaml"
-  workflow_dispatch:
+    push:
+        branches: [main]
+        paths:
+            - "crates/**"
+            - "packages/**"
+            - "e2e/**"
+            - "fixtures/**"
+            - "alef.toml"
+            - "Cargo.toml"
+            - "Cargo.lock"
+            - "Taskfile.yml"
+            - ".github/workflows/ci-e2e.yaml"
+    pull_request:
+        branches: [main]
+        paths:
+            - "crates/**"
+            - "packages/**"
+            - "e2e/**"
+            - "fixtures/**"
+            - "alef.toml"
+            - "Cargo.toml"
+            - "Cargo.lock"
+            - "Taskfile.yml"
+            - ".github/workflows/ci-e2e.yaml"
+    workflow_dispatch:
 
 concurrency:
-  group: ci-e2e-${{ github.ref }}
-  cancel-in-progress: true
+    group: ci-e2e-${{ github.ref }}
+    cancel-in-progress: true
 
 env:
-  CARGO_TERM_COLOR: always
-  CARGO_INCREMENTAL: 0
-  CARGO_PROFILE_DEV_DEBUG: 0
-  RUST_BACKTRACE: short
-  RUST_MIN_STACK: 16777216
-  BUILD_PROFILE: "ci"
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+    CARGO_TERM_COLOR: always
+    CARGO_INCREMENTAL: 0
+    CARGO_PROFILE_DEV_DEBUG: 0
+    RUST_BACKTRACE: short
+    RUST_MIN_STACK: 16777216
+    BUILD_PROFILE: "ci"
+    FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 permissions:
-  contents: read
+    contents: read
 
 jobs:
-  build-ffi:
-    name: Build FFI (${{ matrix.target }})
-    if: github.repository == 'kreuzberg-dev/kreuzcrawl' && github.actor != 'dependabot[bot]'
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: ${{ matrix.os == 'windows-latest' && 120 || 60 }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: ubuntu-24.04-arm
-            target: aarch64-unknown-linux-gnu
-          - os: ubuntu-latest
-            target: x86_64-unknown-linux-gnu
-          - os: macos-latest
-            target: aarch64-apple-darwin
-          - os: windows-latest
-            target: x86_64-pc-windows-msvc
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          submodules: recursive
+    build-ffi:
+        name: Build FFI (${{ matrix.target }})
+        if: github.repository == 'kreuzberg-dev/kreuzcrawl' && github.actor != 'dependabot[bot]'
+        runs-on: ${{ matrix.os }}
+        timeout-minutes: ${{ matrix.os == 'windows-latest' && 120 || 60 }}
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - os: ubuntu-24.04-arm
+                      target: aarch64-unknown-linux-gnu
+                    - os: ubuntu-latest
+                      target: x86_64-unknown-linux-gnu
+                    - os: macos-latest
+                      target: aarch64-apple-darwin
+                    - os: windows-latest
+                      target: x86_64-pc-windows-msvc
+        steps:
+            - uses: actions/checkout@v6
+              with:
+                  submodules: recursive
 
-      - name: Setup Rust
-        uses: kreuzberg-dev/actions/setup-rust@v1
-        with:
-          cache-key-prefix: build-ffi-${{ matrix.target }}
-          target: ${{ matrix.target }}
+            - name: Setup Rust
+              uses: kreuzberg-dev/actions/setup-rust@v1
+              with:
+                  cache-key-prefix: build-ffi-${{ matrix.target }}
+                  target: ${{ matrix.target }}
 
-      - name: Setup OpenSSL
-        uses: kreuzberg-dev/actions/setup-openssl@v1
+            - name: Setup OpenSSL
+              uses: kreuzberg-dev/actions/setup-openssl@v1
 
-      - name: Build FFI library
-        uses: kreuzberg-dev/actions/build-rust-ffi@v1
-        with:
-          crate-name: kreuzcrawl-ffi
+            - name: Build FFI library
+              uses: kreuzberg-dev/actions/build-rust-ffi@v1
+              with:
+                  crate-name: kreuzcrawl-ffi
 
-      - name: Build CLI
-        uses: kreuzberg-dev/actions/build-rust-cli@v1
-        with:
-          package-name: kreuzcrawl-cli
-          binary-name: kreuzcrawl
-          extra-cargo-args: --features "api,mcp,warc,ai,tracing"
+            - name: Build CLI
+              uses: kreuzberg-dev/actions/build-rust-cli@v1
+              with:
+                  package-name: kreuzcrawl-cli
+                  binary-name: kreuzcrawl
+                  extra-cargo-args: --features "api,mcp,warc,ai,tracing"
 
-      # mock-server is the alef-generated test fixture server that all language
-      # e2e conftests spawn. It lives in its own workspace (e2e/rust/Cargo.toml)
-      # and depends on the kreuzcrawl core crate. Built only on linux-arm64
-      # since e2e-tests downloads ffi-aarch64-unknown-linux-gnu.
-      - name: Build mock-server (linux-arm64 only)
-        if: matrix.target == 'aarch64-unknown-linux-gnu'
-        shell: bash
-        working-directory: e2e/rust
-        run: cargo build --release --bin mock-server
+            # mock-server is the alef-generated test fixture server that all language
+            # e2e conftests spawn. It lives in its own workspace (e2e/rust/Cargo.toml)
+            # and depends on the kreuzcrawl core crate. Built only on linux-arm64
+            # since e2e-tests downloads ffi-aarch64-unknown-linux-gnu.
+            - name: Build mock-server (linux-arm64 only)
+              if: matrix.target == 'aarch64-unknown-linux-gnu'
+              shell: bash
+              working-directory: e2e/rust
+              run: cargo build --release --bin mock-server
 
-      - name: Upload FFI artifacts
-        uses: actions/upload-artifact@v7
-        with:
-          name: ffi-${{ matrix.target }}
-          path: |
-            target/release/libkreuzcrawl_ffi.*
-            target/release/kreuzcrawl_ffi.*
-            crates/kreuzcrawl-ffi/include/kreuzcrawl.h
-            crates/kreuzcrawl-ffi/kreuzcrawl-ffi.pc
-            crates/kreuzcrawl-ffi/cmake/
-            target/release/kreuzcrawl
-            target/release/kreuzcrawl.exe
-            e2e/rust/target/release/mock-server
-          retention-days: 7
-          if-no-files-found: error
+            - name: Upload FFI artifacts
+              uses: actions/upload-artifact@v7
+              with:
+                  name: ffi-${{ matrix.target }}
+                  path: |
+                      target/release/libkreuzcrawl_ffi.*
+                      target/release/kreuzcrawl_ffi.*
+                      crates/kreuzcrawl-ffi/include/kreuzcrawl.h
+                      crates/kreuzcrawl-ffi/kreuzcrawl-ffi.pc
+                      crates/kreuzcrawl-ffi/cmake/
+                      target/release/kreuzcrawl
+                      target/release/kreuzcrawl.exe
+                      e2e/rust/target/release/mock-server
+                  retention-days: 7
+                  if-no-files-found: error
 
-  e2e-tests:
-    name: E2E (${{ matrix.lang }})
-    if: github.repository == 'kreuzberg-dev/kreuzcrawl' && github.actor != 'dependabot[bot]'
-    needs: [build-ffi]
-    runs-on: ubuntu-24.04-arm
-    timeout-minutes: 90
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - lang: python
-            python-version: "3.13"
-            test-cmd: "task python:e2e:test"
-          - lang: node
-            node-version: "24"
-            test-cmd: "task node:e2e:test"
-          - lang: go
-            go-version: "1.26"
-            test-cmd: "task go:e2e:test"
-          - lang: ruby
-            ruby-version: "3.4"
-            test-cmd: "task ruby:e2e:test"
-          - lang: java
-            java-version: "25"
-            test-cmd: "task java:e2e:test"
-          - lang: csharp
-            dotnet-version: "10.0.x"
-            test-cmd: "task csharp:e2e:test"
-          - lang: php
-            php-version: "8.4"
-            # PHPUnit requires dom/json/libxml/mbstring/tokenizer/xml/xmlwriter/ctype
-            php-extensions: "dom, json, libxml, mbstring, tokenizer, xml, xmlwriter, ctype"
-            test-cmd: "task php:e2e:test"
-          - lang: elixir
-            elixir-version: "1.17"
-            otp-version: "27"
-            test-cmd: "task elixir:e2e:test"
-          - lang: wasm
-            node-version: "24"
-            test-cmd: "task wasm:e2e:test"
-          - lang: rust
-            test-cmd: "task rust:e2e:test"
-          - lang: c
-            test-cmd: "task c:e2e:test"
-          - lang: dart
-            # packages/dart/pubspec depends on lints>=6.0.0 which requires Dart >=3.8.0
-            dart-version: "3.11.6"
-            test-cmd: "task dart:e2e:test"
-          - lang: swift
-            swift-version: "6.0"
-            test-cmd: "task swift:e2e:test"
-          - lang: zig
-            # e2e/zig/build.zig.zon declares minimum_zig_version "0.16.0"
-            zig-version: "0.16.0"
-            test-cmd: "task zig:e2e:test"
-          - lang: brew
-            test-cmd: "task brew:e2e:test"
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          submodules: recursive
+    e2e-tests:
+        name: E2E (${{ matrix.lang }})
+        if: github.repository == 'kreuzberg-dev/kreuzcrawl' && github.actor != 'dependabot[bot]'
+        needs: [build-ffi]
+        runs-on: ubuntu-24.04-arm
+        timeout-minutes: 90
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - lang: python
+                      python-version: "3.13"
+                      test-cmd: "task python:e2e:test"
+                    - lang: node
+                      node-version: "24"
+                      test-cmd: "task node:e2e:test"
+                    - lang: go
+                      go-version: "1.26"
+                      test-cmd: "task go:e2e:test"
+                    - lang: ruby
+                      ruby-version: "3.4"
+                      test-cmd: "task ruby:e2e:test"
+                    - lang: java
+                      java-version: "25"
+                      test-cmd: "task java:e2e:test"
+                    - lang: csharp
+                      dotnet-version: "10.0.x"
+                      test-cmd: "task csharp:e2e:test"
+                    - lang: php
+                      php-version: "8.4"
+                      # PHPUnit requires dom/json/libxml/mbstring/tokenizer/xml/xmlwriter/ctype
+                      php-extensions: "dom, json, libxml, mbstring, tokenizer, xml, xmlwriter, ctype"
+                      test-cmd: "task php:e2e:test"
+                    - lang: elixir
+                      elixir-version: "1.17"
+                      otp-version: "27"
+                      test-cmd: "task elixir:e2e:test"
+                    - lang: wasm
+                      node-version: "24"
+                      test-cmd: "task wasm:e2e:test"
+                    - lang: rust
+                      test-cmd: "task rust:e2e:test"
+                    - lang: c
+                      test-cmd: "task c:e2e:test"
+                    - lang: dart
+                      # packages/dart/pubspec depends on lints>=6.0.0 which requires Dart >=3.8.0
+                      dart-version: "3.11.6"
+                      test-cmd: "task dart:e2e:test"
+                    - lang: swift
+                      swift-version: "6.0"
+                      test-cmd: "task swift:e2e:test"
+                    - lang: zig
+                      # e2e/zig/build.zig.zon declares minimum_zig_version "0.16.0"
+                      zig-version: "0.16.0"
+                      test-cmd: "task zig:e2e:test"
+                    - lang: brew
+                      test-cmd: "task brew:e2e:test"
+        steps:
+            - uses: actions/checkout@v6
+              with:
+                  submodules: recursive
 
-      - name: Setup Rust
-        uses: kreuzberg-dev/actions/setup-rust@v1
-        with:
-          cache-key-prefix: e2e-${{ matrix.lang }}
+            - name: Setup Rust
+              uses: kreuzberg-dev/actions/setup-rust@v1
+              with:
+                  cache-key-prefix: e2e-${{ matrix.lang }}
 
-      - name: Download FFI artifacts
-        uses: actions/download-artifact@v8
-        with:
-          name: ffi-aarch64-unknown-linux-gnu
-          path: ffi-artifacts
+            - name: Download FFI artifacts
+              uses: actions/download-artifact@v8
+              with:
+                  name: ffi-aarch64-unknown-linux-gnu
+                  path: ffi-artifacts
 
-      - name: Stage FFI artifacts
-        shell: bash
-        run: |
-          mkdir -p target/release e2e/rust/target/release
-          # actions/upload-artifact@v7 preserves directory structure for multi-path
-          # uploads, so files land under ffi-artifacts/target/release/ etc.
-          # Fall back to flat layout for safety.
-          for src in ffi-artifacts/target/release/libkreuzcrawl_ffi.* ffi-artifacts/libkreuzcrawl_ffi.*; do
-            [ -e "$src" ] && cp "$src" target/release/ || true
-          done
-          for src in ffi-artifacts/target/release/kreuzcrawl_ffi.* ffi-artifacts/kreuzcrawl_ffi.*; do
-            [ -e "$src" ] && cp "$src" target/release/ || true
-          done
-          for src in ffi-artifacts/target/release/kreuzcrawl ffi-artifacts/kreuzcrawl; do
-            [ -e "$src" ] && cp "$src" target/release/ || true
-          done
-          for src in ffi-artifacts/e2e/rust/target/release/mock-server ffi-artifacts/mock-server; do
-            [ -e "$src" ] && cp "$src" e2e/rust/target/release/ || true
-          done
-          chmod +x target/release/libkreuzcrawl_ffi.so 2>/dev/null || true
-          chmod +x target/release/kreuzcrawl 2>/dev/null || true
-          chmod +x e2e/rust/target/release/mock-server 2>/dev/null || true
+            - name: Stage FFI artifacts
+              shell: bash
+              run: |
+                  mkdir -p target/release e2e/rust/target/release
+                  # actions/upload-artifact@v7 preserves directory structure for multi-path
+                  # uploads, so files land under ffi-artifacts/target/release/ etc.
+                  # Fall back to flat layout for safety.
+                  for src in ffi-artifacts/target/release/libkreuzcrawl_ffi.* ffi-artifacts/libkreuzcrawl_ffi.*; do
+                    [ -e "$src" ] && cp "$src" target/release/ || true
+                  done
+                  for src in ffi-artifacts/target/release/kreuzcrawl_ffi.* ffi-artifacts/kreuzcrawl_ffi.*; do
+                    [ -e "$src" ] && cp "$src" target/release/ || true
+                  done
+                  for src in ffi-artifacts/target/release/kreuzcrawl ffi-artifacts/kreuzcrawl; do
+                    [ -e "$src" ] && cp "$src" target/release/ || true
+                  done
+                  for src in ffi-artifacts/e2e/rust/target/release/mock-server ffi-artifacts/mock-server; do
+                    [ -e "$src" ] && cp "$src" e2e/rust/target/release/ || true
+                  done
+                  chmod +x target/release/libkreuzcrawl_ffi.so 2>/dev/null || true
+                  chmod +x target/release/kreuzcrawl 2>/dev/null || true
+                  chmod +x e2e/rust/target/release/mock-server 2>/dev/null || true
 
-      - name: Setup OpenSSL
-        uses: kreuzberg-dev/actions/setup-openssl@v1
+            - name: Setup OpenSSL
+              uses: kreuzberg-dev/actions/setup-openssl@v1
 
-      - name: Setup Python
-        if: matrix.python-version
-        uses: kreuzberg-dev/actions/setup-python-env@v1
-        with:
-          python-version: ${{ matrix.python-version }}
-          cache-prefix: e2e-py-${{ matrix.python-version }}
+            - name: Setup Python
+              if: matrix.python-version
+              uses: kreuzberg-dev/actions/setup-python-env@v1
+              with:
+                  python-version: ${{ matrix.python-version }}
+                  cache-prefix: e2e-py-${{ matrix.python-version }}
 
-      - name: Setup Node
-        if: matrix.node-version
-        uses: kreuzberg-dev/actions/setup-node-workspace@v1
+            - name: Setup Node
+              if: matrix.node-version
+              uses: kreuzberg-dev/actions/setup-node-workspace@v1
 
-      - name: Setup Go
-        if: matrix.go-version
-        uses: actions/setup-go@v6
-        with:
-          go-version: ${{ matrix.go-version }}
+            - name: Setup Go
+              if: matrix.go-version
+              uses: actions/setup-go@v6
+              with:
+                  go-version: ${{ matrix.go-version }}
 
-      - name: Setup Ruby
-        if: matrix.ruby-version
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: ${{ matrix.ruby-version }}
-          bundler-cache: true
-          working-directory: e2e/ruby
+            - name: Setup Ruby
+              if: matrix.ruby-version
+              uses: ruby/setup-ruby@v1
+              with:
+                  ruby-version: ${{ matrix.ruby-version }}
+                  bundler-cache: true
+                  working-directory: e2e/ruby
 
-      - name: Setup Java
-        if: matrix.java-version
-        uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: ${{ matrix.java-version }}
+            - name: Setup Java
+              if: matrix.java-version
+              uses: actions/setup-java@v5
+              with:
+                  distribution: temurin
+                  java-version: ${{ matrix.java-version }}
 
-      - name: Setup .NET
-        if: matrix.dotnet-version
-        uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: ${{ matrix.dotnet-version }}
+            - name: Setup .NET
+              if: matrix.dotnet-version
+              uses: actions/setup-dotnet@v5
+              with:
+                  dotnet-version: ${{ matrix.dotnet-version }}
 
-      - name: Setup PHP
-        if: matrix.php-version
-        uses: kreuzberg-dev/actions/setup-php@v1
-        with:
-          php-version: ${{ matrix.php-version }}
-          tools: composer
-          extensions: ${{ matrix.php-extensions || '' }}
+            - name: Setup PHP
+              if: matrix.php-version
+              uses: kreuzberg-dev/actions/setup-php@v1
+              with:
+                  php-version: ${{ matrix.php-version }}
+                  tools: composer
+                  extensions: ${{ matrix.php-extensions || '' }}
 
-      - name: Setup Elixir
-        if: matrix.elixir-version
-        uses: kreuzberg-dev/actions/setup-elixir@v1
-        with:
-          elixir-version: ${{ matrix.elixir-version }}
-          otp-version: ${{ matrix.otp-version }}
+            - name: Setup Elixir
+              if: matrix.elixir-version
+              uses: kreuzberg-dev/actions/setup-elixir@v1
+              with:
+                  elixir-version: ${{ matrix.elixir-version }}
+                  otp-version: ${{ matrix.otp-version }}
 
-      - name: Setup Dart
-        if: matrix.dart-version
-        uses: dart-lang/setup-dart@v1
-        with:
-          sdk: ${{ matrix.dart-version }}
+            - name: Setup Dart
+              if: matrix.dart-version
+              uses: dart-lang/setup-dart@v1
+              with:
+                  sdk: ${{ matrix.dart-version }}
 
-      - name: Setup Swift
-        if: matrix.swift-version
-        # kreuzberg-dev wrapper around SwiftyLab/setup-swift — supports
-        # ubuntu-24.04-arm; swift-actions/setup-swift@v2 returns a corrupt
-        # binary on that runner.
-        uses: kreuzberg-dev/actions/setup-swift@v1
-        with:
-          swift-version: ${{ matrix.swift-version }}
+            - name: Setup Swift
+              if: matrix.swift-version
+              # kreuzberg-dev wrapper around SwiftyLab/setup-swift — supports
+              # ubuntu-24.04-arm; swift-actions/setup-swift@v2 returns a corrupt
+              # binary on that runner.
+              uses: kreuzberg-dev/actions/setup-swift@v1
+              with:
+                  swift-version: ${{ matrix.swift-version }}
 
-      - name: Setup Zig
-        if: matrix.zig-version
-        # Resolves the official ziglang.org download index directly.
-        uses: kreuzberg-dev/actions/setup-zig@v1
-        with:
-          version: ${{ matrix.zig-version }}
+            - name: Setup Zig
+              if: matrix.zig-version
+              # Resolves the official ziglang.org download index directly.
+              uses: kreuzberg-dev/actions/setup-zig@v1
+              with:
+                  version: ${{ matrix.zig-version }}
 
-      - name: Setup wasm-pack
-        if: matrix.lang == 'wasm'
-        uses: kreuzberg-dev/actions/setup-wasm-pack@v1
+            - name: Setup wasm-pack
+              if: matrix.lang == 'wasm'
+              uses: kreuzberg-dev/actions/setup-wasm-pack@v1
 
-      - name: Setup Chrome
-        # Every binding has browser-using fixtures (chromiumoxide fallback,
-        # interact, etc.), so chromium has to be on PATH for the whole matrix
-        # — not only the brew formula test.
-        uses: kreuzberg-dev/actions/setup-chrome@v1
+            - name: Setup Chrome
+              # Every binding has browser-using fixtures (chromiumoxide fallback,
+              # interact, etc.), so chromium has to be on PATH for the whole matrix
+              # — not only the brew formula test.
+              uses: kreuzberg-dev/actions/setup-chrome@v1
 
-      - name: Setup library paths for FFI bindings
-        if: |
-          matrix.lang == 'go' || matrix.lang == 'java' ||
-          matrix.lang == 'csharp' || matrix.lang == 'elixir' ||
-          matrix.lang == 'c' || matrix.lang == 'swift' ||
-          matrix.lang == 'zig' || matrix.lang == 'dart'
-        shell: bash
-        run: |
-          export PKG_CONFIG_PATH="${PWD}/crates/kreuzcrawl-ffi:${PKG_CONFIG_PATH}"
-          # Both target/release (release-built FFI/swift/zig/etc.) and
-          # target/debug (dart:build:dev / debug-built bindings) need to be
-          # on the load path; the runner doesn't know which mode each lang built.
-          export LD_LIBRARY_PATH="${PWD}/target/release:${PWD}/target/debug:${LD_LIBRARY_PATH}"
-          echo "PKG_CONFIG_PATH=${PKG_CONFIG_PATH}" >> "$GITHUB_ENV"
-          echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}" >> "$GITHUB_ENV"
+            - name: Setup library paths for FFI bindings
+              if: |
+                  matrix.lang == 'go' || matrix.lang == 'java' ||
+                  matrix.lang == 'csharp' || matrix.lang == 'elixir' ||
+                  matrix.lang == 'c' || matrix.lang == 'swift' ||
+                  matrix.lang == 'zig' || matrix.lang == 'dart'
+              shell: bash
+              run: |
+                  export PKG_CONFIG_PATH="${PWD}/crates/kreuzcrawl-ffi:${PKG_CONFIG_PATH}"
+                  # Both target/release (release-built FFI/swift/zig/etc.) and
+                  # target/debug (dart:build:dev / debug-built bindings) need to be
+                  # on the load path; the runner doesn't know which mode each lang built.
+                  export LD_LIBRARY_PATH="${PWD}/target/release:${PWD}/target/debug:${LD_LIBRARY_PATH}"
+                  echo "PKG_CONFIG_PATH=${PKG_CONFIG_PATH}" >> "$GITHUB_ENV"
+                  echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}" >> "$GITHUB_ENV"
 
-      - name: Install Task
-        uses: kreuzberg-dev/actions/install-task@v1
+            - name: Install Task
+              uses: kreuzberg-dev/actions/install-task@v1
 
-      - name: Compile Ruby native extension
-        if: matrix.lang == 'ruby'
-        working-directory: packages/ruby
-        run: bundle install && bundle exec rake compile
+            - name: Compile Ruby native extension
+              if: matrix.lang == 'ruby'
+              working-directory: packages/ruby
+              run: bundle install && bundle exec rake compile
 
-      # Languages whose e2e tests import a built binding need that binding
-      # compiled before tests run. Python and Elixir build via their own
-      # conftest paths; Rust/C/Zig/Brew use the FFI artifact directly.
-      # Swift needs setup-swift-bridge.sh to emit the SwiftBridgeCore module.
-      - name: Build language binding
-        if: |
-          matrix.lang == 'node' || matrix.lang == 'java' ||
-          matrix.lang == 'wasm' || matrix.lang == 'php' ||
-          matrix.lang == 'csharp' || matrix.lang == 'dart' ||
-          matrix.lang == 'swift'
-        shell: bash
-        run: task ${{ matrix.lang }}:build:dev
+            # Languages whose e2e tests import a built binding need that binding
+            # compiled before tests run. Python and Elixir build via their own
+            # conftest paths; Rust/C/Zig/Brew use the FFI artifact directly.
+            # Swift needs setup-swift-bridge.sh to emit the SwiftBridgeCore module.
+            - name: Build language binding
+              if: |
+                  matrix.lang == 'node' || matrix.lang == 'java' ||
+                  matrix.lang == 'wasm' || matrix.lang == 'php' ||
+                  matrix.lang == 'csharp' || matrix.lang == 'dart' ||
+                  matrix.lang == 'swift'
+              shell: bash
+              run: task ${{ matrix.lang }}:build:dev
 
-      # Zig's build.zig searches target/debug/ for kreuzcrawl_ffi by default.
-      # CI stages the prebuilt FFI artifact into target/release/, so mirror
-      # it into target/debug/ for the zig matrix entry.
-      - name: Stage FFI for zig (target/debug shim)
-        if: matrix.lang == 'zig'
-        shell: bash
-        run: |
-          mkdir -p target/debug
-          for f in target/release/libkreuzcrawl_ffi.*; do
-            [ -e "$f" ] && ln -sf "$(pwd)/$f" "target/debug/$(basename "$f")"
-          done
+            # Zig's build.zig searches target/debug/ for kreuzcrawl_ffi by default.
+            # CI stages the prebuilt FFI artifact into target/release/, so mirror
+            # it into target/debug/ for the zig matrix entry.
+            - name: Stage FFI for zig (target/debug shim)
+              if: matrix.lang == 'zig'
+              shell: bash
+              run: |
+                  mkdir -p target/debug
+                  for f in target/release/libkreuzcrawl_ffi.*; do
+                    [ -e "$f" ] && ln -sf "$(pwd)/$f" "target/debug/$(basename "$f")"
+                  done
 
-      - name: Run tests
-        run: ${{ matrix.test-cmd }}
-        shell: bash
-        env:
-          PKG_CONFIG_PATH: ${{ env.PKG_CONFIG_PATH }}
-          LD_LIBRARY_PATH: ${{ env.LD_LIBRARY_PATH }}
-          DYLD_LIBRARY_PATH: ${{ env.DYLD_LIBRARY_PATH || '' }}
-          KREUZCRAWL_BUILD: "1"
+            - name: Run tests
+              run: ${{ matrix.test-cmd }}
+              shell: bash
+              env:
+                  PKG_CONFIG_PATH: ${{ env.PKG_CONFIG_PATH }}
+                  LD_LIBRARY_PATH: ${{ env.LD_LIBRARY_PATH }}
+                  DYLD_LIBRARY_PATH: ${{ env.DYLD_LIBRARY_PATH || '' }}
+                  KREUZCRAWL_BUILD: "1"

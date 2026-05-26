@@ -1,19 +1,16 @@
 {
-  "id": "error_empty_response",
-  "description": "Handles 200 with completely empty body gracefully",
-  "tags": [
-    "error",
-    "edge-case"
-  ],
-  "assertions": [
-    {
-      "type": "is_empty",
-      "field": "html"
-    }
-  ],
-  "mock_response": {
-    "status": 200,
-    "body": "",
-    "headers": {}
-  }
+	"id": "error_empty_response",
+	"description": "Handles 200 with completely empty body gracefully",
+	"tags": ["error", "edge-case"],
+	"assertions": [
+		{
+			"type": "is_empty",
+			"field": "html"
+		}
+	],
+	"mock_response": {
+		"status": 200,
+		"body": "",
+		"headers": {}
+	}
 }

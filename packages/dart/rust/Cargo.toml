@@ -1,6 +1,6 @@
 [package]
 name = "kreuzcrawl-dart"
-version = "0.3.0-rc.30"
+version = "0.3.0-rc.31"
 edition = "2024"
 license = "Elastic-2.0"
 

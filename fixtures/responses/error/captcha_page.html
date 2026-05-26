@@ -1,18 +1,18 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>Please verify you are human</title>
-</head>
-<body>
-    <div class="captcha-container">
-        <h1>Are you a robot?</h1>
-        <p>Please complete the CAPTCHA below to continue.</p>
-        <form action="/verify" method="POST">
-            <div class="g-recaptcha" data-sitekey="fake-site-key"></div>
-            <button type="submit">Verify</button>
-        </form>
-    </div>
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-</body>
+	<head>
+		<meta charset="utf-8" />
+		<title>Please verify you are human</title>
+	</head>
+	<body>
+		<div class="captcha-container">
+			<h1>Are you a robot?</h1>
+			<p>Please complete the CAPTCHA below to continue.</p>
+			<form action="/verify" method="POST">
+				<div class="g-recaptcha" data-sitekey="fake-site-key"></div>
+				<button type="submit">Verify</button>
+			</form>
+		</div>
+		<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+	</body>
 </html>

@@ -1,11 +1,7 @@
 {
 	"id": "cache_miss_fresh_fetch",
 	"description": "Uncached URLs are fetched fresh without conditional headers",
-	"tags": [
-		"cache",
-		"fresh_fetch",
-		"crawl"
-	],
+	"tags": ["cache", "fresh_fetch", "crawl"],
 	"input": {
 		"mock_responses": [
 			{

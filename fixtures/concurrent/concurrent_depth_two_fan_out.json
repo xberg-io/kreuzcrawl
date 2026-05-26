@@ -1,11 +1,7 @@
 {
 	"id": "concurrent_depth_two_fan_out",
 	"description": "Concurrent depth=2 crawl correctly fans out and deduplicates across levels",
-	"tags": [
-		"concurrent",
-		"depth",
-		"crawl"
-	],
+	"tags": ["concurrent", "depth", "crawl"],
 	"input": {
 		"mock_responses": [
 			{

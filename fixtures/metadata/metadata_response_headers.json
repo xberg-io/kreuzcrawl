@@ -1,49 +1,47 @@
 {
-  "id": "metadata_response_headers",
-  "description": "Extracts response metadata from HTTP headers (etag, server, content-language)",
-  "tags": [
-    "metadata"
-  ],
-  "input": {
-    "config": {},
-    "mock_responses": [
-      {
-        "status_code": 200,
-        "headers": {
-          "content-type": "text/html; charset=utf-8",
-          "etag": "\"abc123\"",
-          "last-modified": "Wed, 01 Jan 2025 00:00:00 GMT",
-          "server": "nginx/1.24",
-          "content-language": "en-US",
-          "x-powered-by": "kreuzcrawl"
-        },
-        "body_file": "html/comprehensive_metadata.html"
-      }
-    ]
-  },
-  "assertions": [
-    {
-      "type": "equals",
-      "field": "status_code",
-      "value": 200
-    },
-    {
-      "type": "not_empty",
-      "field": "response_headers.etag"
-    },
-    {
-      "type": "not_empty",
-      "field": "response_headers.last_modified"
-    },
-    {
-      "type": "contains",
-      "field": "response_headers.server",
-      "value": "nginx"
-    },
-    {
-      "type": "equals",
-      "field": "response_headers.content_language",
-      "value": "en-US"
-    }
-  ]
+	"id": "metadata_response_headers",
+	"description": "Extracts response metadata from HTTP headers (etag, server, content-language)",
+	"tags": ["metadata"],
+	"input": {
+		"config": {},
+		"mock_responses": [
+			{
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8",
+					"etag": "\"abc123\"",
+					"last-modified": "Wed, 01 Jan 2025 00:00:00 GMT",
+					"server": "nginx/1.24",
+					"content-language": "en-US",
+					"x-powered-by": "kreuzcrawl"
+				},
+				"body_file": "html/comprehensive_metadata.html"
+			}
+		]
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "status_code",
+			"value": 200
+		},
+		{
+			"type": "not_empty",
+			"field": "response_headers.etag"
+		},
+		{
+			"type": "not_empty",
+			"field": "response_headers.last_modified"
+		},
+		{
+			"type": "contains",
+			"field": "response_headers.server",
+			"value": "nginx"
+		},
+		{
+			"type": "equals",
+			"field": "response_headers.content_language",
+			"value": "en-US"
+		}
+	]
 }

@@ -13,2210 +13,2205 @@ name: Publish Release
 # package staging, Maven resource bundling).
 
 on:
-  workflow_dispatch:
-    inputs:
-      tag:
-        description: "Release tag to build (e.g., v0.3.0-rc.20)"
-        required: false
-        type: string
-      ref:
-        description: "Git ref (branch, tag, or commit) to build; defaults to the tag"
-        required: false
-        type: string
-      targets:
-        description: "Comma-separated list of release targets, or 'all'"
-        required: false
-        type: string
-        default: "all"
-      dry_run:
-        description: "Prepare artifacts without publishing"
-        required: false
-        type: boolean
-        default: false
-      republish:
-        description: "Delete and re-create the tag on current HEAD before publishing"
-        required: false
-        type: boolean
-        default: false
-      force_republish:
-        description: "Force republish targets whose registry version already exists"
-        required: false
-        type: boolean
-        default: false
-  release:
-    types: [published]
-  repository_dispatch:
-    types: [publish-release]
+    workflow_dispatch:
+        inputs:
+            tag:
+                description: "Release tag to build (e.g., v0.3.0-rc.20)"
+                required: false
+                type: string
+            ref:
+                description: "Git ref (branch, tag, or commit) to build; defaults to the tag"
+                required: false
+                type: string
+            targets:
+                description: "Comma-separated list of release targets, or 'all'"
+                required: false
+                type: string
+                default: "all"
+            dry_run:
+                description: "Prepare artifacts without publishing"
+                required: false
+                type: boolean
+                default: false
+            republish:
+                description: "Delete and re-create the tag on current HEAD before publishing"
+                required: false
+                type: boolean
+                default: false
+            force_republish:
+                description: "Force republish targets whose registry version already exists"
+                required: false
+                type: boolean
+                default: false
+    release:
+        types: [published]
+    repository_dispatch:
+        types: [publish-release]
 
 permissions:
-  contents: write
-  id-token: write
+    contents: write
+    id-token: write
 
 concurrency:
-  group: ${{ github.workflow }}-${{ (github.event_name == 'workflow_dispatch' && (github.event.inputs.ref || github.event.inputs.tag)) || github.ref || github.run_id }}
-  cancel-in-progress: false
+    group: ${{ github.workflow }}-${{ (github.event_name == 'workflow_dispatch' && (github.event.inputs.ref || github.event.inputs.tag)) || github.ref || github.run_id }}
+    cancel-in-progress: false
 
 jobs:
-  prepare:
-    name: Prepare metadata
-    runs-on: ubuntu-latest
-    outputs:
-      tag: ${{ steps.meta.outputs.tag }}
-      version: ${{ steps.meta.outputs.version }}
-      ref: ${{ steps.meta.outputs.ref }}
-      checkout_ref: ${{ steps.meta.outputs.checkout_ref }}
-      target_sha: ${{ steps.meta.outputs.target_sha }}
-      matrix_ref: ${{ steps.meta.outputs.matrix_ref }}
-      is_tag: ${{ steps.meta.outputs.is_tag }}
-      is_prerelease: ${{ steps.meta.outputs.is_prerelease }}
-      npm_tag: ${{ steps.meta.outputs.npm_tag }}
-      dry_run: ${{ steps.meta.outputs.dry_run }}
-      force_republish: ${{ steps.meta.outputs.force_republish }}
-      release_targets: ${{ steps.meta.outputs.release_targets }}
-      release_any: ${{ steps.meta.outputs.release_any }}
-      release_python: ${{ steps.meta.outputs.release_python }}
-      release_node: ${{ steps.meta.outputs.release_node }}
-      release_ruby: ${{ steps.meta.outputs.release_ruby }}
-      release_cli: ${{ steps.meta.outputs.release_cli }}
-      release_crates: ${{ steps.meta.outputs.release_crates }}
-      release_homebrew: ${{ steps.meta.outputs.release_homebrew }}
-      release_java: ${{ steps.meta.outputs.release_java }}
-      release_csharp: ${{ steps.meta.outputs.release_csharp }}
-      release_go: ${{ steps.meta.outputs.release_go }}
-      release_wasm: ${{ steps.meta.outputs.release_wasm }}
-      release_php: ${{ steps.meta.outputs.release_php }}
-      release_elixir: ${{ steps.meta.outputs.release_elixir }}
-      release_c_ffi: ${{ steps.meta.outputs.release_c_ffi }}
-      release_dart: ${{ steps.meta.outputs.release_dart }}
-      release_swift: ${{ steps.meta.outputs.release_swift }}
-      release_zig: ${{ steps.meta.outputs.release_zig }}
-      release_kotlin_android: ${{ steps.meta.outputs.release_kotlin_android }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6.0.2
-        with:
-          ref: ${{ (inputs.republish == true && (inputs.ref || github.event.repository.default_branch)) || inputs.ref || inputs.tag || github.ref }}
-          fetch-depth: 0
-          submodules: recursive
-
-      - name: Retag for republish
-        if: ${{ inputs.republish == true || github.event.client_payload.republish == true }}
-        uses: kreuzberg-dev/actions/retag-for-republish@v1
-        with:
-          tag: ${{ inputs.tag || github.event.client_payload.tag }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Resolve release metadata
-        id: meta
-        uses: kreuzberg-dev/actions/prepare-release-metadata@v1
-
-      - name: Ensure GitHub Release exists for tag
-        if: ${{ steps.meta.outputs.is_tag == 'true' && steps.meta.outputs.dry_run != 'true' }}
-        uses: kreuzberg-dev/actions/publish-github-release@v1
-        with:
-          tag: ${{ steps.meta.outputs.tag }}
-          target: ${{ steps.meta.outputs.target_sha }}
-          notes: "Release ${{ steps.meta.outputs.tag }}"
-          draft: "true"
-          prerelease: ${{ steps.meta.outputs.is_prerelease }}
-
-  validate-versions:
-    name: Validate language manifest versions
-    needs: prepare
-    if: ${{ needs.prepare.outputs.is_tag == 'true' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6.0.2
-        with:
-          ref: ${{ needs.prepare.outputs.checkout_ref }}
-          fetch-depth: 0
-          submodules: recursive
-
-      - name: Validate versions
-        uses: kreuzberg-dev/actions/validate-versions@v1
-        with:
-          version: ${{ needs.prepare.outputs.version }}
-
-  # ─── Registry existence checks ────────────────────────────────────────
-
-  check-pypi:
-    name: Check PyPI for existing version
-    needs: prepare
-    if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_python == 'true' }}
-    runs-on: ubuntu-latest
-    outputs:
-      exists: ${{ steps.check.outputs.exists }}
-    steps:
-      - id: check
-        uses: kreuzberg-dev/actions/check-registry@v1
-        with:
-          registry: pypi
-          package: kreuzcrawl
-          version: ${{ needs.prepare.outputs.version }}
-
-  check-npm:
-    name: Check npm for existing version
-    needs: prepare
-    if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_node == 'true' }}
-    runs-on: ubuntu-latest
-    outputs:
-      exists: ${{ steps.check.outputs.exists }}
-    steps:
-      - id: check
-        uses: kreuzberg-dev/actions/check-registry@v1
-        with:
-          registry: npm
-          package: "@kreuzberg/kreuzcrawl"
-          version: ${{ needs.prepare.outputs.version }}
-
-  check-wasm:
-    name: Check npm for existing WASM package
-    needs: prepare
-    if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_wasm == 'true' }}
-    runs-on: ubuntu-latest
-    outputs:
-      exists: ${{ steps.check.outputs.exists }}
-    steps:
-      - id: check
-        uses: kreuzberg-dev/actions/check-registry@v1
-        with:
-          registry: npm
-          package: "@kreuzberg/kreuzcrawl-wasm"
-          version: ${{ needs.prepare.outputs.version }}
-
-  check-rubygems:
-    name: Check RubyGems for existing version
-    needs: prepare
-    if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_ruby == 'true' }}
-    runs-on: ubuntu-latest
-    outputs:
-      exists: ${{ steps.check.outputs.exists }}
-    steps:
-      - id: check
-        uses: kreuzberg-dev/actions/check-registry@v1
-        with:
-          registry: rubygems
-          package: kreuzcrawl
-          version: ${{ needs.prepare.outputs.version }}
-
-  check-maven:
-    name: Check Maven Central for existing version
-    needs: prepare
-    if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_java == 'true' }}
-    runs-on: ubuntu-latest
-    outputs:
-      exists: ${{ steps.check.outputs.exists }}
-    steps:
-      - id: check
-        uses: kreuzberg-dev/actions/check-registry@v1
-        with:
-          registry: maven
-          package: "dev.kreuzberg.kreuzcrawl:kreuzcrawl"
-          version: ${{ needs.prepare.outputs.version }}
-
-  check-nuget:
-    name: Check NuGet for existing version
-    needs: prepare
-    if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_csharp == 'true' }}
-    runs-on: ubuntu-latest
-    outputs:
-      exists: ${{ steps.check.outputs.exists }}
-    steps:
-      - id: check
-        uses: kreuzberg-dev/actions/check-registry@v1
-        with:
-          registry: nuget
-          package: Kreuzcrawl
-          version: ${{ needs.prepare.outputs.version }}
-
-  check-packagist:
-    name: Check Packagist for existing version
-    needs: prepare
-    if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_php == 'true' }}
-    runs-on: ubuntu-latest
-    outputs:
-      exists: ${{ steps.check.outputs.exists }}
-    steps:
-      - id: check
-        uses: kreuzberg-dev/actions/check-registry@v1
-        with:
-          registry: packagist
-          package: kreuzberg-dev/kreuzcrawl
-          version: ${{ needs.prepare.outputs.version }}
-
-  check-cratesio:
-    name: Check crates.io for existing versions
-    needs: prepare
-    if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_crates == 'true' }}
-    runs-on: ubuntu-latest
-    outputs:
-      bindings_common_exists: ${{ steps.check.outputs.exists }}
-      kreuzcrawl_exists: ${{ steps.check.outputs.kreuzcrawl_exists }}
-      cli_exists: ${{ steps.check.outputs.cli_exists }}
-      all_exist: ${{ steps.derive.outputs.all_exist }}
-    steps:
-      - id: check
-        uses: kreuzberg-dev/actions/check-registry@v1
-        with:
-          registry: cratesio
-          package: kreuzcrawl-bindings-common
-          version: ${{ needs.prepare.outputs.version }}
-          extra-packages: |
-            kreuzcrawl_exists=kreuzcrawl
-            cli_exists=kreuzcrawl-cli
-
-      - id: derive
-        # Inline: aggregate three check-registry outputs into a single boolean
-        # the publish-crates job can guard on. No shared action equivalent.
-        run: |
-          if [[ "${{ steps.check.outputs.exists }}" == "true" \
-            && "${{ steps.check.outputs.kreuzcrawl_exists }}" == "true" \
-            && "${{ steps.check.outputs.cli_exists }}" == "true" ]]; then
-            echo "all_exist=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "all_exist=false" >> "$GITHUB_OUTPUT"
-          fi
-
-  check-hex:
-    name: Check Hex.pm for existing version
-    needs: prepare
-    if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_elixir == 'true' }}
-    runs-on: ubuntu-latest
-    outputs:
-      exists: ${{ steps.check.outputs.exists }}
-    steps:
-      - id: check
-        uses: kreuzberg-dev/actions/check-registry@v1
-        with:
-          registry: hex
-          package: kreuzcrawl
-          version: ${{ needs.prepare.outputs.version }}
-
-  check-zig:
-    name: Check Zig package presence
-    needs: prepare
-    if: ${{ (needs.prepare.outputs.is_tag == 'true' || needs.prepare.outputs.dry_run == 'true') && needs.prepare.outputs.release_zig == 'true' }}
-    runs-on: ubuntu-latest
-    outputs:
-      exists: ${{ steps.check.outputs.exists }}
-    steps:
-      - id: check
-        # `registry: github-release` (not `registry: zig`) — alef check-registry's
-        # zig path only verifies the release tag exists. On a real release that's
-        # always true, so it short-circuits `publish-zig` to skipped. Verify the
-        # actual asset is present instead.
-        uses: kreuzberg-dev/actions/check-registry@v1
-        with:
-          registry: github-release
-          package: kreuzcrawl-zig-v${{ needs.prepare.outputs.version }}.tar.gz
-          version: ${{ needs.prepare.outputs.version }}
-          repo: ${{ github.repository }}
-          assets: kreuzcrawl-zig-v${{ needs.prepare.outputs.version }}.tar.gz
-
-  check-maven-kotlin-android:
-    name: Check Maven Central for kotlin-android package
-    needs: prepare
-    if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_kotlin_android == 'true' }}
-    runs-on: ubuntu-latest
-    outputs:
-      kotlin_android_exists: ${{ steps.check.outputs.kotlin_android_exists }}
-    steps:
-      - id: check
-        uses: kreuzberg-dev/actions/check-registry@v1
-        with:
-          registry: maven
-          package: dev.kreuzberg:kreuzcrawl
-          version: ${{ needs.prepare.outputs.version }}
-          extra-packages: |
-            kotlin_android_exists=dev.kreuzberg:kreuzcrawl-android
-
-  check-homebrew:
-    name: Check Homebrew tap for formula
-    needs: prepare
-    if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_homebrew == 'true' }}
-    runs-on: ubuntu-latest
-    outputs:
-      exists: ${{ steps.check.outputs.exists }}
-    steps:
-      - id: check
-        uses: kreuzberg-dev/actions/check-registry@v1
-        with:
-          registry: homebrew
-          package: kreuzcrawl
-          version: ${{ needs.prepare.outputs.version }}
-          tap-repo: kreuzberg-dev/homebrew-tap
-
-  check-cli:
-    name: Check GitHub Release for CLI assets
-    needs: prepare
-    if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_cli == 'true' }}
-    runs-on: ubuntu-latest
-    outputs:
-      exists: ${{ steps.check.outputs.exists }}
-    steps:
-      - id: check
-        uses: kreuzberg-dev/actions/check-registry@v1
-        with:
-          registry: github-release
-          package: kreuzcrawl
-          version: ${{ needs.prepare.outputs.version }}
-          repo: ${{ github.repository }}
-          tag: ${{ needs.prepare.outputs.tag }}
-          asset-prefix: kreuzcrawl-cli-
-          assets: |
-            kreuzcrawl-cli-aarch64-apple-darwin.tar.gz,kreuzcrawl-cli-aarch64-unknown-linux-gnu.tar.gz,kreuzcrawl-cli-aarch64-unknown-linux-musl.tar.gz,kreuzcrawl-cli-x86_64-unknown-linux-gnu.tar.gz,kreuzcrawl-cli-x86_64-unknown-linux-musl.tar.gz,kreuzcrawl-cli-x86_64-pc-windows-msvc.zip
-
-  check-go:
-    name: Check GitHub Release for Go FFI assets
-    needs: prepare
-    if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_go == 'true' }}
-    runs-on: ubuntu-latest
-    outputs:
-      exists: ${{ steps.check.outputs.exists }}
-    steps:
-      - id: check
-        uses: kreuzberg-dev/actions/check-registry@v1
-        with:
-          registry: github-release
-          package: kreuzcrawl
-          version: ${{ needs.prepare.outputs.version }}
-          repo: ${{ github.repository }}
-          tag: ${{ needs.prepare.outputs.tag }}
-          asset-prefix: kreuzcrawl-go-
-
-  check-c-ffi:
-    name: Check GitHub Release for C FFI assets
-    needs: prepare
-    if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_c_ffi == 'true' }}
-    runs-on: ubuntu-latest
-    outputs:
-      exists: ${{ steps.check.outputs.exists }}
-    steps:
-      - id: check
-        uses: kreuzberg-dev/actions/check-registry@v1
-        with:
-          registry: github-release
-          package: kreuzcrawl
-          version: ${{ needs.prepare.outputs.version }}
-          repo: ${{ github.repository }}
-          tag: ${{ needs.prepare.outputs.tag }}
-          asset-prefix: kreuzcrawl-ffi-
-
-  check-elixir-release:
-    name: Check GitHub Release for Elixir NIF assets
-    needs: prepare
-    if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_elixir == 'true' }}
-    runs-on: ubuntu-latest
-    outputs:
-      exists: ${{ steps.check.outputs.exists }}
-    steps:
-      - id: check
-        uses: kreuzberg-dev/actions/check-registry@v1
-        with:
-          registry: github-release
-          package: kreuzcrawl
-          version: ${{ needs.prepare.outputs.version }}
-          repo: ${{ github.repository }}
-          tag: ${{ needs.prepare.outputs.tag }}
-          asset-prefix: libkreuzcrawl_nif-
-
-  # ─── Build matrix jobs ────────────────────────────────────────────────
-
-  python-wheels:
-    name: Build Python wheels (${{ matrix.os }})
-    needs: [prepare, check-pypi]
-    if: ${{ needs.prepare.outputs.release_python == 'true' && (needs.check-pypi.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 180
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, ubuntu-24.04-arm, macos-latest, windows-latest]
-    steps:
-      - uses: actions/checkout@v6.0.2
-        with:
-          ref: ${{ needs.prepare.outputs.checkout_ref }}
-          fetch-depth: 0
-          submodules: recursive
-
-      - name: Free disk space
-        if: runner.os == 'Linux'
-        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
-
-      - name: Build wheels
-        uses: kreuzberg-dev/actions/build-python-wheels@v1
-        with:
-          python-version: "3.13"
-          package-dir: packages/python
-          # PyO3 abi3-py310 → one wheel per platform covers Python 3.10+.
-          cibw-build: "cp310-*"
-          upload-artifact: "false"
-
-      - uses: actions/upload-artifact@v7.0.1
-        with:
-          name: python-wheels-${{ matrix.os }}
-          path: wheelhouse/*.whl
-          retention-days: 14
-
-  python-sdist:
-    name: Build Python sdist
-    needs: [prepare, check-pypi, publish-crates]
-    if: ${{ !cancelled() && needs.publish-crates.result != 'failure' && needs.prepare.outputs.release_python == 'true' && (needs.check-pypi.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6.0.2
-        with:
-          ref: ${{ needs.prepare.outputs.checkout_ref }}
-          fetch-depth: 0
-          submodules: recursive
-
-      - uses: kreuzberg-dev/actions/setup-rust@v1
-      - uses: actions/setup-python@v6.2.0
-        with:
-          python-version: "3.13"
-
-      - uses: kreuzberg-dev/actions/build-python-sdist@v1
-        with:
-          package-dir: packages/python
-          output-dir: dist
-          dry-run: ${{ needs.prepare.outputs.dry_run }}
-
-      - uses: actions/upload-artifact@v7.0.1
-        with:
-          name: python-sdist
-          path: dist/*.tar.gz
-          retention-days: 14
-
-  node-bindings:
-    name: Build Node bindings (${{ matrix.target }})
-    needs: [prepare, check-npm]
-    if: ${{ needs.prepare.outputs.release_node == 'true' && (needs.check-npm.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 180
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - { os: ubuntu-latest, target: x86_64-unknown-linux-gnu }
-          - { os: ubuntu-24.04-arm, target: aarch64-unknown-linux-gnu }
-          - { os: macos-latest, target: aarch64-apple-darwin }
-          - { os: macos-15-intel, target: x86_64-apple-darwin }
-          - { os: windows-latest, target: x86_64-pc-windows-msvc }
-    steps:
-      - uses: actions/checkout@v6.0.2
-        with:
-          ref: ${{ needs.prepare.outputs.checkout_ref }}
-          fetch-depth: 0
-          submodules: recursive
-
-      - name: Free disk space
-        if: runner.os == 'Linux'
-        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
-
-      - uses: kreuzberg-dev/actions/setup-rust@v1
-        with:
-          target: ${{ matrix.target }}
-          cache-key-prefix: publish-node-${{ matrix.target }}
-
-      - uses: kreuzberg-dev/actions/setup-node-workspace@v1
-        with:
-          node-version: "22"
-
-      - name: Build NAPI binding
-        uses: kreuzberg-dev/actions/build-node-napi@v1
-        with:
-          crate-dir: crates/kreuzcrawl-node
-          build-command: pnpm exec napi build --release --target ${{ matrix.target }} --platform
-
-      - uses: actions/upload-artifact@v7.0.1
-        with:
-          name: node-bindings-${{ matrix.target }}
-          path: |
-            crates/kreuzcrawl-node/*.node
-            crates/kreuzcrawl-node/index.js
-            crates/kreuzcrawl-node/index.d.ts
-          retention-days: 14
-
-  wasm-bindings:
-    name: Build WASM package
-    needs: [prepare, check-wasm]
-    if: ${{ needs.prepare.outputs.release_wasm == 'true' && (needs.check-wasm.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    steps:
-      - uses: actions/checkout@v6.0.2
-        with:
-          ref: ${{ needs.prepare.outputs.checkout_ref }}
-          fetch-depth: 0
-          submodules: recursive
-
-      - uses: kreuzberg-dev/actions/install-wasi-sdk@v1
-
-      - name: Configure WASM C compiler
-        shell: bash
-        run: |
-          echo "CC_wasm32_unknown_unknown=${WASI_SDK_PATH}/bin/clang" >> "$GITHUB_ENV"
-          echo "AR_wasm32_unknown_unknown=${WASI_SDK_PATH}/bin/ar" >> "$GITHUB_ENV"
-
-      - uses: kreuzberg-dev/actions/setup-rust@v1
-        with:
-          target: wasm32-unknown-unknown
-          cache-key-prefix: publish-wasm
-
-      - uses: kreuzberg-dev/actions/setup-node-workspace@v1
-        with:
-          node-version: "22"
-
-      - uses: kreuzberg-dev/actions/build-wasm-package@v1
-        with:
-          crate-dir: crates/kreuzcrawl-wasm
-          pack-tarball: "true"
-
-      - uses: actions/upload-artifact@v7.0.1
-        with:
-          name: wasm-bundle
-          path: |
-            crates/kreuzcrawl-wasm/dist/**
-            crates/kreuzcrawl-wasm/dist-node/**
-            crates/kreuzcrawl-wasm/dist-web/**
-            crates/kreuzcrawl-wasm/pkg/**
-            crates/kreuzcrawl-wasm/package.json
-          retention-days: 14
-
-  ruby-gem:
-    name: Build Ruby gem (${{ matrix.label }})
-    needs: [prepare, check-rubygems, publish-crates]
-    if: ${{ !cancelled() && needs.publish-crates.result != 'failure' && needs.prepare.outputs.release_ruby == 'true' && (needs.check-rubygems.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 180
-    env:
-      RB_SYS_CARGO_PROFILE: release
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - { os: ubuntu-latest, label: linux-x86_64 }
-          - { os: ubuntu-24.04-arm, label: linux-aarch64 }
-          - { os: macos-latest, label: macos-arm64 }
-          - { os: macos-15-intel, label: macos-x86_64 }
-          - { os: windows-latest, label: windows-x64 }
-    steps:
-      - uses: actions/checkout@v6.0.2
-        with:
-          ref: ${{ needs.prepare.outputs.checkout_ref }}
-          fetch-depth: 0
-          submodules: recursive
-
-      - name: Free disk space
-        if: runner.os == 'Linux'
-        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
-
-      - uses: kreuzberg-dev/actions/setup-rust@v1
-        with:
-          cache-key-prefix: publish-ruby-${{ matrix.label }}
-
-      - uses: ruby/setup-ruby@v1.308.0
-        with:
-          ruby-version: "3.3"
-          bundler-cache: false
-
-      - uses: kreuzberg-dev/actions/build-ruby-gem@v1
-        with:
-          package-dir: packages/ruby
-          dry-run: ${{ needs.prepare.outputs.dry_run }}
-
-      - name: Build platform gem
-        # Inline: rb-sys's rake tasks are platform-dependent. All platforms use
-        # native[PLATFORM] gem to produce platform-specific gems. The native task
-        # is smart: on matching architectures it builds in-place, on mismatched
-        # architectures it cross-compiles via rake-compiler-dock.
-        working-directory: packages/ruby
-        shell: bash
-        run: |
-          case "${{ matrix.label }}" in
-            linux-x86_64) target="x86_64-linux" ;;
-            linux-aarch64) target="aarch64-linux" ;;
-            macos-arm64) target="arm64-darwin" ;;
-            macos-x86_64) target="x86_64-darwin" ;;
-            windows-x64) target="x64-mingw-ucrt" ;;
-            *) echo "Unknown platform: ${{ matrix.label }}"; exit 1 ;;
-          esac
-          bundle exec rake "native[$target]" gem
-
-      - name: Drop source gem on non-canonical builders
-        if: ${{ matrix.label != 'linux-x86_64' }}
-        # Inline: only the canonical `linux-x86_64` builder ships the source gem; others
-        # would emit byte-different source gems that overwrite each other under
-        # merge-multiple and produce an invalid .gem at publish time.
-        shell: bash
-        run: |
-          shopt -s nullglob
-          for f in packages/ruby/pkg/*.gem; do
-            base="$(basename "$f")"
-            case "$base" in
-              *-x86_64-linux.gem|*-aarch64-linux.gem|*-arm64-darwin.gem|*-x86_64-darwin.gem|*-x64-mingw-ucrt.gem) ;;
-              *) echo "Removing non-canonical source gem $base"; rm -f "$f" ;;
-            esac
-          done
-
-      - uses: actions/upload-artifact@v7.0.1
-        with:
-          name: rubygems-${{ matrix.label }}
-          path: packages/ruby/pkg/*.gem
-          retention-days: 14
-
-  php-extension:
-    name: Build PHP extension (php${{ matrix.php }} ${{ matrix.platform.label }})
-    needs: [prepare, check-packagist, publish-crates]
-    if: ${{ !cancelled() && needs.publish-crates.result != 'failure' && needs.prepare.outputs.release_php == 'true' && (needs.check-packagist.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
-    runs-on: ${{ matrix.platform.os }}
-    timeout-minutes: 60
-    strategy:
-      fail-fast: false
-      matrix:
-        php: ["8.2", "8.3", "8.4"]
-        platform:
-          - { os: ubuntu-latest, label: linux-x86_64, target: x86_64-unknown-linux-gnu }
-          - { os: ubuntu-24.04-arm, label: linux-arm64, target: aarch64-unknown-linux-gnu }
-          - { os: macos-latest, label: macos-arm64, target: aarch64-apple-darwin }
-          - { os: macos-15-intel, label: macos-x86_64, target: x86_64-apple-darwin }
-          - { os: windows-latest, label: windows-x86_64, target: x86_64-pc-windows-msvc }
-    steps:
-      - uses: actions/checkout@v6.0.2
-        with:
-          ref: ${{ needs.prepare.outputs.checkout_ref }}
-          fetch-depth: 0
-          submodules: recursive
-
-      - uses: kreuzberg-dev/actions/setup-php@v1
-        with:
-          php-version: ${{ matrix.php }}
-
-      - uses: kreuzberg-dev/actions/setup-rust@v1
-        with:
-          target: ${{ matrix.platform.target }}
-          cache-key-prefix: publish-php-${{ matrix.platform.label }}-php${{ matrix.php }}
-
-      - uses: kreuzberg-dev/actions/build-php-extension@v1
-        with:
-          crate-name: kreuzcrawl-php
-          lib-name: kreuzcrawl_php
-          php-version: ${{ matrix.php }}
-          php-ts: nts
-          dry-run: ${{ needs.prepare.outputs.dry_run }}
-
-      - name: Determine Windows compiler
-        if: runner.os == 'Windows'
-        id: wincompiler
-        shell: pwsh
-        run: |
-          $compiler = switch ('${{ matrix.php }}') {
-            '8.2' { 'vs16' }
-            '8.3' { 'vs16' }
-            default { 'vs17' }
-          }
-          "compiler=$compiler" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
-
-      - uses: kreuzberg-dev/actions/package-php-pie@v1
-        with:
-          php-version: ${{ matrix.php }}
-          php-ts: nts
-          target: ${{ matrix.platform.target }}
-          windows-compiler: ${{ steps.wincompiler.outputs.compiler }}
-          version: ${{ needs.prepare.outputs.version }}
-          output-dir: dist/php-package
-
-      - uses: actions/upload-artifact@v7.0.1
-        with:
-          name: php-package-${{ matrix.platform.label }}-php${{ matrix.php }}
-          path: |
-            dist/php-package/php_*.tgz
-            dist/php-package/php_*.tgz.sha256
-            dist/php-package/php_*.zip
-            dist/php-package/php_*.zip.sha256
-          retention-days: 14
-
-  cli-binaries:
-    name: Build CLI binary (${{ matrix.target }})
-    needs: [prepare, check-cli]
-    if: ${{ needs.prepare.outputs.release_cli == 'true' && (needs.check-cli.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 180
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - { os: ubuntu-latest, target: x86_64-unknown-linux-gnu }
-          - { os: ubuntu-24.04-arm, target: aarch64-unknown-linux-gnu }
-          - { os: macos-latest, target: aarch64-apple-darwin }
-          - { os: macos-15-intel, target: x86_64-apple-darwin }
-          - { os: windows-latest, target: x86_64-pc-windows-msvc }
-    steps:
-      - uses: actions/checkout@v6.0.2
-        with:
-          ref: ${{ needs.prepare.outputs.checkout_ref }}
-          fetch-depth: 0
-          submodules: recursive
-
-      - name: Free disk space
-        if: runner.os == 'Linux'
-        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
-
-      - uses: kreuzberg-dev/actions/setup-rust@v1
-        with:
-          target: ${{ matrix.target }}
-          cache-key-prefix: publish-cli-${{ matrix.target }}
-
-      - uses: kreuzberg-dev/actions/build-rust-cli@v1
-        id: build
-        with:
-          package-name: kreuzcrawl-cli
-          binary-name: kreuzcrawl
-          target: ${{ matrix.target }}
-          extra-cargo-args: --features all
-
-      - name: Package CLI artifact
-        # Inline: archive layout (.tar.gz on Unix, .zip on Windows) varies per
-        # OS in a way no shared action covers; tiny and self-contained.
+    prepare:
+        name: Prepare metadata
+        runs-on: ubuntu-latest
+        outputs:
+            tag: ${{ steps.meta.outputs.tag }}
+            version: ${{ steps.meta.outputs.version }}
+            ref: ${{ steps.meta.outputs.ref }}
+            checkout_ref: ${{ steps.meta.outputs.checkout_ref }}
+            target_sha: ${{ steps.meta.outputs.target_sha }}
+            matrix_ref: ${{ steps.meta.outputs.matrix_ref }}
+            is_tag: ${{ steps.meta.outputs.is_tag }}
+            is_prerelease: ${{ steps.meta.outputs.is_prerelease }}
+            npm_tag: ${{ steps.meta.outputs.npm_tag }}
+            dry_run: ${{ steps.meta.outputs.dry_run }}
+            force_republish: ${{ steps.meta.outputs.force_republish }}
+            release_targets: ${{ steps.meta.outputs.release_targets }}
+            release_any: ${{ steps.meta.outputs.release_any }}
+            release_python: ${{ steps.meta.outputs.release_python }}
+            release_node: ${{ steps.meta.outputs.release_node }}
+            release_ruby: ${{ steps.meta.outputs.release_ruby }}
+            release_cli: ${{ steps.meta.outputs.release_cli }}
+            release_crates: ${{ steps.meta.outputs.release_crates }}
+            release_homebrew: ${{ steps.meta.outputs.release_homebrew }}
+            release_java: ${{ steps.meta.outputs.release_java }}
+            release_csharp: ${{ steps.meta.outputs.release_csharp }}
+            release_go: ${{ steps.meta.outputs.release_go }}
+            release_wasm: ${{ steps.meta.outputs.release_wasm }}
+            release_php: ${{ steps.meta.outputs.release_php }}
+            release_elixir: ${{ steps.meta.outputs.release_elixir }}
+            release_c_ffi: ${{ steps.meta.outputs.release_c_ffi }}
+            release_dart: ${{ steps.meta.outputs.release_dart }}
+            release_swift: ${{ steps.meta.outputs.release_swift }}
+            release_zig: ${{ steps.meta.outputs.release_zig }}
+            release_kotlin_android: ${{ steps.meta.outputs.release_kotlin_android }}
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v6.0.2
+              with:
+                  ref: ${{ (inputs.republish == true && (inputs.ref || github.event.repository.default_branch)) || inputs.ref || inputs.tag || github.ref }}
+                  fetch-depth: 0
+                  submodules: recursive
+
+            - name: Retag for republish
+              if: ${{ inputs.republish == true || github.event.client_payload.republish == true }}
+              uses: kreuzberg-dev/actions/retag-for-republish@v1
+              with:
+                  tag: ${{ inputs.tag || github.event.client_payload.tag }}
+                  token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Resolve release metadata
+              id: meta
+              uses: kreuzberg-dev/actions/prepare-release-metadata@v1
+
+            - name: Ensure GitHub Release exists for tag
+              if: ${{ steps.meta.outputs.is_tag == 'true' && steps.meta.outputs.dry_run != 'true' }}
+              uses: kreuzberg-dev/actions/publish-github-release@v1
+              with:
+                  tag: ${{ steps.meta.outputs.tag }}
+                  target: ${{ steps.meta.outputs.target_sha }}
+                  notes: "Release ${{ steps.meta.outputs.tag }}"
+                  draft: "true"
+                  prerelease: ${{ steps.meta.outputs.is_prerelease }}
+
+    validate-versions:
+        name: Validate language manifest versions
+        needs: prepare
+        if: ${{ needs.prepare.outputs.is_tag == 'true' }}
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v6.0.2
+              with:
+                  ref: ${{ needs.prepare.outputs.checkout_ref }}
+                  fetch-depth: 0
+                  submodules: recursive
+
+            - name: Validate versions
+              uses: kreuzberg-dev/actions/validate-versions@v1
+              with:
+                  version: ${{ needs.prepare.outputs.version }}
+
+    # ─── Registry existence checks ────────────────────────────────────────
+
+    check-pypi:
+        name: Check PyPI for existing version
+        needs: prepare
+        if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_python == 'true' }}
+        runs-on: ubuntu-latest
+        outputs:
+            exists: ${{ steps.check.outputs.exists }}
+        steps:
+            - id: check
+              uses: kreuzberg-dev/actions/check-registry@v1
+              with:
+                  registry: pypi
+                  package: kreuzcrawl
+                  version: ${{ needs.prepare.outputs.version }}
+
+    check-npm:
+        name: Check npm for existing version
+        needs: prepare
+        if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_node == 'true' }}
+        runs-on: ubuntu-latest
+        outputs:
+            exists: ${{ steps.check.outputs.exists }}
+        steps:
+            - id: check
+              uses: kreuzberg-dev/actions/check-registry@v1
+              with:
+                  registry: npm
+                  package: "@kreuzberg/kreuzcrawl"
+                  version: ${{ needs.prepare.outputs.version }}
+
+    check-wasm:
+        name: Check npm for existing WASM package
+        needs: prepare
+        if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_wasm == 'true' }}
+        runs-on: ubuntu-latest
+        outputs:
+            exists: ${{ steps.check.outputs.exists }}
+        steps:
+            - id: check
+              uses: kreuzberg-dev/actions/check-registry@v1
+              with:
+                  registry: npm
+                  package: "@kreuzberg/kreuzcrawl-wasm"
+                  version: ${{ needs.prepare.outputs.version }}
+
+    check-rubygems:
+        name: Check RubyGems for existing version
+        needs: prepare
+        if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_ruby == 'true' }}
+        runs-on: ubuntu-latest
+        outputs:
+            exists: ${{ steps.check.outputs.exists }}
+        steps:
+            - id: check
+              uses: kreuzberg-dev/actions/check-registry@v1
+              with:
+                  registry: rubygems
+                  package: kreuzcrawl
+                  version: ${{ needs.prepare.outputs.version }}
+
+    check-maven:
+        name: Check Maven Central for existing version
+        needs: prepare
+        if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_java == 'true' }}
+        runs-on: ubuntu-latest
+        outputs:
+            exists: ${{ steps.check.outputs.exists }}
+        steps:
+            - id: check
+              uses: kreuzberg-dev/actions/check-registry@v1
+              with:
+                  registry: maven
+                  package: "dev.kreuzberg.kreuzcrawl:kreuzcrawl"
+                  version: ${{ needs.prepare.outputs.version }}
+
+    check-nuget:
+        name: Check NuGet for existing version
+        needs: prepare
+        if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_csharp == 'true' }}
+        runs-on: ubuntu-latest
+        outputs:
+            exists: ${{ steps.check.outputs.exists }}
+        steps:
+            - id: check
+              uses: kreuzberg-dev/actions/check-registry@v1
+              with:
+                  registry: nuget
+                  package: Kreuzcrawl
+                  version: ${{ needs.prepare.outputs.version }}
+
+    check-packagist:
+        name: Check Packagist for existing version
+        needs: prepare
+        if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_php == 'true' }}
+        runs-on: ubuntu-latest
+        outputs:
+            exists: ${{ steps.check.outputs.exists }}
+        steps:
+            - id: check
+              uses: kreuzberg-dev/actions/check-registry@v1
+              with:
+                  registry: packagist
+                  package: kreuzberg-dev/kreuzcrawl
+                  version: ${{ needs.prepare.outputs.version }}
+
+    check-cratesio:
+        name: Check crates.io for existing versions
+        needs: prepare
+        if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_crates == 'true' }}
+        runs-on: ubuntu-latest
+        outputs:
+            bindings_common_exists: ${{ steps.check.outputs.exists }}
+            kreuzcrawl_exists: ${{ steps.check.outputs.kreuzcrawl_exists }}
+            cli_exists: ${{ steps.check.outputs.cli_exists }}
+            all_exist: ${{ steps.derive.outputs.all_exist }}
+        steps:
+            - id: check
+              uses: kreuzberg-dev/actions/check-registry@v1
+              with:
+                  registry: cratesio
+                  package: kreuzcrawl-bindings-common
+                  version: ${{ needs.prepare.outputs.version }}
+                  extra-packages: |
+                      kreuzcrawl_exists=kreuzcrawl
+                      cli_exists=kreuzcrawl-cli
+
+            - id: derive
+              # Inline: aggregate three check-registry outputs into a single boolean
+              # the publish-crates job can guard on. No shared action equivalent.
+              run: |
+                  if [[ "${{ steps.check.outputs.exists }}" == "true" \
+                    && "${{ steps.check.outputs.kreuzcrawl_exists }}" == "true" \
+                    && "${{ steps.check.outputs.cli_exists }}" == "true" ]]; then
+                    echo "all_exist=true" >> "$GITHUB_OUTPUT"
+                  else
+                    echo "all_exist=false" >> "$GITHUB_OUTPUT"
+                  fi
+
+    check-hex:
+        name: Check Hex.pm for existing version
+        needs: prepare
+        if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_elixir == 'true' }}
+        runs-on: ubuntu-latest
+        outputs:
+            exists: ${{ steps.check.outputs.exists }}
+        steps:
+            - id: check
+              uses: kreuzberg-dev/actions/check-registry@v1
+              with:
+                  registry: hex
+                  package: kreuzcrawl
+                  version: ${{ needs.prepare.outputs.version }}
+
+    check-zig:
+        name: Check Zig package presence
+        needs: prepare
+        if: ${{ (needs.prepare.outputs.is_tag == 'true' || needs.prepare.outputs.dry_run == 'true') && needs.prepare.outputs.release_zig == 'true' }}
+        runs-on: ubuntu-latest
+        outputs:
+            exists: ${{ steps.check.outputs.exists }}
+        steps:
+            - id: check
+              # `registry: github-release` (not `registry: zig`) — alef check-registry's
+              # zig path only verifies the release tag exists. On a real release that's
+              # always true, so it short-circuits `publish-zig` to skipped. Verify the
+              # actual asset is present instead.
+              uses: kreuzberg-dev/actions/check-registry@v1
+              with:
+                  registry: github-release
+                  package: kreuzcrawl-zig-v${{ needs.prepare.outputs.version }}.tar.gz
+                  version: ${{ needs.prepare.outputs.version }}
+                  repo: ${{ github.repository }}
+                  assets: kreuzcrawl-zig-v${{ needs.prepare.outputs.version }}.tar.gz
+
+    check-maven-kotlin-android:
+        name: Check Maven Central for kotlin-android package
+        needs: prepare
+        if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_kotlin_android == 'true' }}
+        runs-on: ubuntu-latest
+        outputs:
+            kotlin_android_exists: ${{ steps.check.outputs.kotlin_android_exists }}
+        steps:
+            - id: check
+              uses: kreuzberg-dev/actions/check-registry@v1
+              with:
+                  registry: maven
+                  package: dev.kreuzberg:kreuzcrawl
+                  version: ${{ needs.prepare.outputs.version }}
+                  extra-packages: |
+                      kotlin_android_exists=dev.kreuzberg:kreuzcrawl-android
+
+    check-homebrew:
+        name: Check Homebrew tap for formula
+        needs: prepare
+        if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_homebrew == 'true' }}
+        runs-on: ubuntu-latest
+        outputs:
+            exists: ${{ steps.check.outputs.exists }}
+        steps:
+            - id: check
+              uses: kreuzberg-dev/actions/check-registry@v1
+              with:
+                  registry: homebrew
+                  package: kreuzcrawl
+                  version: ${{ needs.prepare.outputs.version }}
+                  tap-repo: kreuzberg-dev/homebrew-tap
+
+    check-cli:
+        name: Check GitHub Release for CLI assets
+        needs: prepare
+        if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_cli == 'true' }}
+        runs-on: ubuntu-latest
+        outputs:
+            exists: ${{ steps.check.outputs.exists }}
+        steps:
+            - id: check
+              uses: kreuzberg-dev/actions/check-registry@v1
+              with:
+                  registry: github-release
+                  package: kreuzcrawl
+                  version: ${{ needs.prepare.outputs.version }}
+                  repo: ${{ github.repository }}
+                  tag: ${{ needs.prepare.outputs.tag }}
+                  asset-prefix: kreuzcrawl-cli-
+                  assets: |
+                      kreuzcrawl-cli-aarch64-apple-darwin.tar.gz,kreuzcrawl-cli-aarch64-unknown-linux-gnu.tar.gz,kreuzcrawl-cli-aarch64-unknown-linux-musl.tar.gz,kreuzcrawl-cli-x86_64-unknown-linux-gnu.tar.gz,kreuzcrawl-cli-x86_64-unknown-linux-musl.tar.gz,kreuzcrawl-cli-x86_64-pc-windows-msvc.zip
+
+    check-go:
+        name: Check GitHub Release for Go FFI assets
+        needs: prepare
+        if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_go == 'true' }}
+        runs-on: ubuntu-latest
+        outputs:
+            exists: ${{ steps.check.outputs.exists }}
+        steps:
+            - id: check
+              uses: kreuzberg-dev/actions/check-registry@v1
+              with:
+                  registry: github-release
+                  package: kreuzcrawl
+                  version: ${{ needs.prepare.outputs.version }}
+                  repo: ${{ github.repository }}
+                  tag: ${{ needs.prepare.outputs.tag }}
+                  asset-prefix: kreuzcrawl-go-
+
+    check-c-ffi:
+        name: Check GitHub Release for C FFI assets
+        needs: prepare
+        if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_c_ffi == 'true' }}
+        runs-on: ubuntu-latest
+        outputs:
+            exists: ${{ steps.check.outputs.exists }}
+        steps:
+            - id: check
+              uses: kreuzberg-dev/actions/check-registry@v1
+              with:
+                  registry: github-release
+                  package: kreuzcrawl
+                  version: ${{ needs.prepare.outputs.version }}
+                  repo: ${{ github.repository }}
+                  tag: ${{ needs.prepare.outputs.tag }}
+                  asset-prefix: kreuzcrawl-ffi-
+
+    check-elixir-release:
+        name: Check GitHub Release for Elixir NIF assets
+        needs: prepare
+        if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.release_elixir == 'true' }}
+        runs-on: ubuntu-latest
+        outputs:
+            exists: ${{ steps.check.outputs.exists }}
+        steps:
+            - id: check
+              uses: kreuzberg-dev/actions/check-registry@v1
+              with:
+                  registry: github-release
+                  package: kreuzcrawl
+                  version: ${{ needs.prepare.outputs.version }}
+                  repo: ${{ github.repository }}
+                  tag: ${{ needs.prepare.outputs.tag }}
+                  asset-prefix: libkreuzcrawl_nif-
+
+    # ─── Build matrix jobs ────────────────────────────────────────────────
+
+    python-wheels:
+        name: Build Python wheels (${{ matrix.os }})
+        needs: [prepare, check-pypi]
+        if: ${{ needs.prepare.outputs.release_python == 'true' && (needs.check-pypi.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
+        runs-on: ${{ matrix.os }}
+        timeout-minutes: 180
+        strategy:
+            fail-fast: false
+            matrix:
+                os: [ubuntu-latest, ubuntu-24.04-arm, macos-latest, windows-latest]
+        steps:
+            - uses: actions/checkout@v6.0.2
+              with:
+                  ref: ${{ needs.prepare.outputs.checkout_ref }}
+                  fetch-depth: 0
+                  submodules: recursive
+
+            - name: Free disk space
+              if: runner.os == 'Linux'
+              uses: kreuzberg-dev/actions/free-disk-space-linux@v1
+
+            - name: Build wheels
+              uses: kreuzberg-dev/actions/build-python-wheels@v1
+              with:
+                  python-version: "3.13"
+                  package-dir: packages/python
+                  # PyO3 abi3-py310 → one wheel per platform covers Python 3.10+.
+                  cibw-build: "cp310-*"
+                  upload-artifact: "false"
+
+            - uses: actions/upload-artifact@v7.0.1
+              with:
+                  name: python-wheels-${{ matrix.os }}
+                  path: wheelhouse/*.whl
+                  retention-days: 14
+
+    python-sdist:
+        name: Build Python sdist
+        needs: [prepare, check-pypi, publish-crates]
+        if: ${{ !cancelled() && needs.publish-crates.result != 'failure' && needs.prepare.outputs.release_python == 'true' && (needs.check-pypi.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v6.0.2
+              with:
+                  ref: ${{ needs.prepare.outputs.checkout_ref }}
+                  fetch-depth: 0
+                  submodules: recursive
+
+            - uses: kreuzberg-dev/actions/setup-rust@v1
+            - uses: actions/setup-python@v6.2.0
+              with:
+                  python-version: "3.13"
+
+            - uses: kreuzberg-dev/actions/build-python-sdist@v1
+              with:
+                  package-dir: packages/python
+                  output-dir: dist
+                  dry-run: ${{ needs.prepare.outputs.dry_run }}
+
+            - uses: actions/upload-artifact@v7.0.1
+              with:
+                  name: python-sdist
+                  path: dist/*.tar.gz
+                  retention-days: 14
+
+    node-bindings:
+        name: Build Node bindings (${{ matrix.target }})
+        needs: [prepare, check-npm]
+        if: ${{ needs.prepare.outputs.release_node == 'true' && (needs.check-npm.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
+        runs-on: ${{ matrix.os }}
+        timeout-minutes: 180
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - { os: ubuntu-latest, target: x86_64-unknown-linux-gnu }
+                    - { os: ubuntu-24.04-arm, target: aarch64-unknown-linux-gnu }
+                    - { os: macos-latest, target: aarch64-apple-darwin }
+                    - { os: macos-15-intel, target: x86_64-apple-darwin }
+                    - { os: windows-latest, target: x86_64-pc-windows-msvc }
+        steps:
+            - uses: actions/checkout@v6.0.2
+              with:
+                  ref: ${{ needs.prepare.outputs.checkout_ref }}
+                  fetch-depth: 0
+                  submodules: recursive
+
+            - name: Free disk space
+              if: runner.os == 'Linux'
+              uses: kreuzberg-dev/actions/free-disk-space-linux@v1
+
+            - uses: kreuzberg-dev/actions/setup-rust@v1
+              with:
+                  target: ${{ matrix.target }}
+                  cache-key-prefix: publish-node-${{ matrix.target }}
+
+            - uses: kreuzberg-dev/actions/setup-node-workspace@v1
+              with:
+                  node-version: "22"
+
+            - name: Build NAPI binding
+              uses: kreuzberg-dev/actions/build-node-napi@v1
+              with:
+                  crate-dir: crates/kreuzcrawl-node
+                  build-command: pnpm exec napi build --release --target ${{ matrix.target }} --platform
+
+            - uses: actions/upload-artifact@v7.0.1
+              with:
+                  name: node-bindings-${{ matrix.target }}
+                  path: |
+                      crates/kreuzcrawl-node/*.node
+                      crates/kreuzcrawl-node/index.js
+                      crates/kreuzcrawl-node/index.d.ts
+                  retention-days: 14
+
+    wasm-bindings:
+        name: Build WASM package
+        needs: [prepare, check-wasm]
+        if: ${{ needs.prepare.outputs.release_wasm == 'true' && (needs.check-wasm.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
+        runs-on: ubuntu-latest
+        timeout-minutes: 60
+        steps:
+            - uses: actions/checkout@v6.0.2
+              with:
+                  ref: ${{ needs.prepare.outputs.checkout_ref }}
+                  fetch-depth: 0
+                  submodules: recursive
+
+            - uses: kreuzberg-dev/actions/install-wasi-sdk@v1
+
+            - name: Configure WASM C compiler
+              shell: bash
+              run: |
+                  echo "CC_wasm32_unknown_unknown=${WASI_SDK_PATH}/bin/clang" >> "$GITHUB_ENV"
+                  echo "AR_wasm32_unknown_unknown=${WASI_SDK_PATH}/bin/ar" >> "$GITHUB_ENV"
+
+            - uses: kreuzberg-dev/actions/setup-rust@v1
+              with:
+                  target: wasm32-unknown-unknown
+                  cache-key-prefix: publish-wasm
+
+            - uses: kreuzberg-dev/actions/setup-node-workspace@v1
+              with:
+                  node-version: "22"
+
+            - uses: kreuzberg-dev/actions/build-wasm-package@v1
+              with:
+                  crate-dir: crates/kreuzcrawl-wasm
+                  pack-tarball: "true"
+
+            - uses: actions/upload-artifact@v7.0.1
+              with:
+                  name: wasm-bundle
+                  path: |
+                      crates/kreuzcrawl-wasm/dist/**
+                      crates/kreuzcrawl-wasm/dist-node/**
+                      crates/kreuzcrawl-wasm/dist-web/**
+                      crates/kreuzcrawl-wasm/pkg/**
+                      crates/kreuzcrawl-wasm/package.json
+                  retention-days: 14
+
+    ruby-gem:
+        name: Build Ruby gem (${{ matrix.label }})
+        needs: [prepare, check-rubygems, publish-crates]
+        if: ${{ !cancelled() && needs.publish-crates.result != 'failure' && needs.prepare.outputs.release_ruby == 'true' && (needs.check-rubygems.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
+        runs-on: ${{ matrix.os }}
+        timeout-minutes: 180
         env:
-          BINARY_PATH: ${{ steps.build.outputs.binary-path }}
-          TARGET: ${{ matrix.target }}
-        shell: bash
-        run: |
-          STAGE="kreuzcrawl-cli-${TARGET}"
-          mkdir -p "$STAGE"
-          cp LICENSE "$STAGE/" 2>/dev/null || true
-          cp README.md "$STAGE/" 2>/dev/null || true
-          if [[ "$RUNNER_OS" == "Windows" ]]; then
-            cp "$BINARY_PATH" "$STAGE/kreuzcrawl.exe"
-            7z a "${STAGE}.zip" "$STAGE" >/dev/null
-          else
-            cp "$BINARY_PATH" "$STAGE/kreuzcrawl"
-            tar -czf "${STAGE}.tar.gz" "$STAGE"
-          fi
-
-      - uses: actions/upload-artifact@v7.0.1
-        with:
-          name: cli-${{ matrix.target }}
-          path: |
-            kreuzcrawl-cli-${{ matrix.target }}.tar.gz
-            kreuzcrawl-cli-${{ matrix.target }}.zip
-          if-no-files-found: ignore
-          retention-days: 14
-
-  cli-musl-binaries:
-    name: Build CLI musl binary (${{ matrix.arch }})
-    needs: [prepare, check-cli]
-    if: ${{ needs.prepare.outputs.release_cli == 'true' && (needs.check-cli.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
-    runs-on: ${{ matrix.runner }}
-    timeout-minutes: 180
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - { arch: x86_64, runner: ubuntu-latest, target: x86_64-unknown-linux-musl }
-          - { arch: aarch64, runner: ubuntu-24.04-arm, target: aarch64-unknown-linux-musl }
-    steps:
-      - uses: actions/checkout@v6.0.2
-        with:
-          ref: ${{ needs.prepare.outputs.checkout_ref }}
-          fetch-depth: 0
-          submodules: recursive
-
-      - uses: kreuzberg-dev/actions/free-disk-space-linux@v1
-
-      - name: Build musl CLI via Docker
-        # Inline: kreuzcrawl ships a musl CLI built via a custom Dockerfile that
-        # bundles libonnxruntime and tesseract for $ORIGIN/lib runtime loading.
-        # The shared build-rust-cli action targets host toolchains only.
-        shell: bash
-        run: |
-          docker build -f docker/Dockerfile.musl-build --output type=local,dest=./dist .
-          file dist/kreuzcrawl
-
-      - name: Package musl CLI archive
-        # Inline: musl artifacts include a sibling lib/ directory the binary
-        # dlopens at runtime. Pack into the same archive layout as cli-binaries.
-        env:
-          TARGET: ${{ matrix.target }}
-        shell: bash
-        run: |
-          STAGE="kreuzcrawl-cli-${TARGET}"
-          mkdir -p "$STAGE/lib"
-          cp dist/kreuzcrawl "$STAGE/"
-          cp dist/lib/* "$STAGE/lib/" 2>/dev/null || true
-          cp LICENSE "$STAGE/" 2>/dev/null || true
-          cp README.md "$STAGE/" 2>/dev/null || true
-          tar -czf "kreuzcrawl-cli-${TARGET}.tar.gz" "$STAGE"
-
-      - uses: actions/upload-artifact@v7.0.1
-        with:
-          name: cli-${{ matrix.target }}
-          path: kreuzcrawl-cli-${{ matrix.target }}.tar.gz
-          retention-days: 14
-
-  go-ffi-libraries:
-    name: Build Go FFI library (${{ matrix.platform }})
-    needs: [prepare, check-go]
-    if: ${{ needs.prepare.outputs.release_go == 'true' && (needs.check-go.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 180
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - { os: ubuntu-latest, platform: linux-x86_64, target: x86_64-unknown-linux-gnu }
-          - { os: ubuntu-24.04-arm, platform: linux-aarch64, target: aarch64-unknown-linux-gnu }
-          - { os: macos-latest, platform: macos-arm64, target: aarch64-apple-darwin }
-          - { os: macos-15-intel, platform: macos-x86_64, target: x86_64-apple-darwin }
-          - { os: windows-latest, platform: windows-x86_64, target: x86_64-pc-windows-msvc }
-    steps:
-      - uses: actions/checkout@v6.0.2
-        with:
-          ref: ${{ needs.prepare.outputs.checkout_ref }}
-          fetch-depth: 0
-          submodules: recursive
-
-      - name: Free disk space
-        if: runner.os == 'Linux'
-        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
-
-      - uses: kreuzberg-dev/actions/setup-rust@v1
-        with:
-          target: ${{ matrix.target }}
-          cache-key-prefix: publish-go-${{ matrix.platform }}
-
-      - uses: kreuzberg-dev/actions/build-go-ffi@v1
-        with:
-          target: ${{ matrix.target }}
-          crate-name: kreuzcrawl-ffi
-          lib-name: kreuzcrawl_ffi
-          header-path: crates/kreuzcrawl-ffi/include/kreuzcrawl.h
-          archive-name: kreuzcrawl-go-${{ matrix.platform }}.tar.gz
-          output-dir: dist/go-ffi
-
-      - uses: actions/upload-artifact@v7.0.1
-        with:
-          name: go-ffi-${{ matrix.platform }}
-          path: dist/go-ffi/*.tar.gz
-          if-no-files-found: error
-          retention-days: 14
-
-  c-ffi-libraries:
-    name: Build C FFI distribution (${{ matrix.platform }})
-    needs: [prepare, check-c-ffi]
-    if: ${{ needs.prepare.outputs.release_c_ffi == 'true' && (needs.check-c-ffi.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 180
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - { os: ubuntu-latest, platform: linux-x86_64, target: x86_64-unknown-linux-gnu }
-          - { os: ubuntu-24.04-arm, platform: linux-aarch64, target: aarch64-unknown-linux-gnu }
-          - { os: macos-latest, platform: macos-arm64, target: aarch64-apple-darwin }
-          - { os: macos-15-intel, platform: macos-x86_64, target: x86_64-apple-darwin }
-          - { os: windows-latest, platform: windows-x86_64, target: x86_64-pc-windows-msvc }
-    steps:
-      - uses: actions/checkout@v6.0.2
-        with:
-          ref: ${{ needs.prepare.outputs.checkout_ref }}
-          fetch-depth: 0
-          submodules: recursive
-
-      - name: Free disk space
-        if: runner.os == 'Linux'
-        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
-
-      - uses: kreuzberg-dev/actions/setup-rust@v1
-        with:
-          target: ${{ matrix.target }}
-          cache-key-prefix: publish-c-ffi-${{ matrix.platform }}
-
-      - uses: kreuzberg-dev/actions/build-rust-ffi@v1
-        with:
-          crate-name: kreuzcrawl-ffi
-          target: ${{ matrix.target }}
-
-      - name: Stage C FFI distribution
-        # Inline: bundle library + header + LICENSE into a single tarball
-        # named to match the upload-c-ffi-release expected asset prefix.
-        env:
-          TARGET: ${{ matrix.target }}
-          PLATFORM: ${{ matrix.platform }}
-        shell: bash
-        run: |
-          STAGE="kreuzcrawl-ffi-${PLATFORM}"
-          mkdir -p "$STAGE/lib" "$STAGE/include"
-          find "target/${TARGET}/release" -maxdepth 1 -type f \
-            \( -name 'libkreuzcrawl_ffi.*' -o -name 'kreuzcrawl_ffi.dll' \) \
-            -exec cp {} "$STAGE/lib/" \;
-          cp crates/kreuzcrawl-ffi/include/kreuzcrawl.h "$STAGE/include/"
-          cp LICENSE "$STAGE/" 2>/dev/null || true
-          mkdir -p dist/c-ffi
-          tar -czf "dist/c-ffi/${STAGE}.tar.gz" "$STAGE"
-
-      - uses: actions/upload-artifact@v7.0.1
-        with:
-          name: c-ffi-${{ matrix.platform }}
-          path: dist/c-ffi/*.tar.gz
-          if-no-files-found: error
-          retention-days: 14
-
-  java-natives:
-    name: Build Java natives (${{ matrix.classifier }})
-    needs: [prepare, check-maven]
-    if: ${{ needs.prepare.outputs.release_java == 'true' && (needs.check-maven.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 180
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - { os: ubuntu-latest, classifier: linux-x86_64, target: x86_64-unknown-linux-gnu }
-          - { os: ubuntu-24.04-arm, classifier: linux-aarch64, target: aarch64-unknown-linux-gnu }
-          - { os: macos-latest, classifier: macos-arm64, target: aarch64-apple-darwin }
-          - { os: macos-15-intel, classifier: macos-x86_64, target: x86_64-apple-darwin }
-          - { os: windows-latest, classifier: windows-x86_64, target: x86_64-pc-windows-msvc }
-    steps:
-      - uses: actions/checkout@v6.0.2
-        with:
-          ref: ${{ needs.prepare.outputs.checkout_ref }}
-          fetch-depth: 0
-          submodules: recursive
-
-      - name: Free disk space
-        if: runner.os == 'Linux'
-        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
-
-      - uses: kreuzberg-dev/actions/setup-rust@v1
-        with:
-          target: ${{ matrix.target }}
-          cache-key-prefix: publish-java-${{ matrix.classifier }}
-
-      - uses: kreuzberg-dev/actions/build-java-natives@v1
-        with:
-          target: ${{ matrix.target }}
-          crate-name: kreuzcrawl-ffi
-          lib-name: kreuzcrawl_ffi
-          classifier: ${{ matrix.classifier }}
-
-      - uses: actions/upload-artifact@v7.0.1
-        with:
-          name: java-natives-${{ matrix.classifier }}
-          path: dist/java-natives
-          if-no-files-found: error
-          retention-days: 14
-
-  java-natives-musl:
-    name: Build Java natives (linux-musl-${{ matrix.arch }})
-    needs: [prepare, check-maven]
-    if: ${{ needs.prepare.outputs.release_java == 'true' && (needs.check-maven.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 180
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - {
-              os: ubuntu-latest,
-              arch: x86_64,
-              target: x86_64-unknown-linux-musl,
-              classifier: linux-musl-x86_64,
-            }
-          - {
-              os: ubuntu-24.04-arm,
-              arch: aarch64,
-              target: aarch64-unknown-linux-musl,
-              classifier: linux-musl-aarch64,
-            }
-    steps:
-      - uses: actions/checkout@v6.0.2
-        with:
-          ref: ${{ needs.prepare.outputs.checkout_ref }}
-          fetch-depth: 0
-          submodules: recursive
-
-      - uses: kreuzberg-dev/actions/free-disk-space-linux@v1
-
-      - name: Build musl FFI via Docker
-        # Inline: building cdylib for musl on the host runner fails to link
-        # libgcc_s.so.1; kreuzcrawl's Dockerfile.musl-ffi runs on Alpine
-        # (native musl) and produces a self-contained libkreuzcrawl_ffi.so.
-        shell: bash
-        run: |
-          docker build -f docker/Dockerfile.musl-ffi --output type=local,dest=./dist .
-          file dist/libkreuzcrawl_ffi.so
-
-      - name: Stage musl libkreuzcrawl_ffi.so under Java natives layout
-        shell: bash
-        env:
-          CLASSIFIER: ${{ matrix.classifier }}
-        run: |
-          STAGE="dist/java-natives/native/${CLASSIFIER}"
-          mkdir -p "$STAGE"
-          cp dist/libkreuzcrawl_ffi.so "$STAGE/libkreuzcrawl_ffi.so"
-          ls -la "$STAGE"
-
-      - uses: actions/upload-artifact@v7.0.1
-        with:
-          name: java-natives-${{ matrix.classifier }}
-          path: dist/java-natives
-          if-no-files-found: error
-          retention-days: 14
-
-  csharp-natives:
-    name: Build C# natives (${{ matrix.rid }})
-    needs: [prepare, check-nuget]
-    if: ${{ needs.prepare.outputs.release_csharp == 'true' && (needs.check-nuget.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 180
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - { os: ubuntu-latest, rid: linux-x64, target: x86_64-unknown-linux-gnu }
-          - { os: ubuntu-24.04-arm, rid: linux-arm64, target: aarch64-unknown-linux-gnu }
-          - { os: macos-latest, rid: osx-arm64, target: aarch64-apple-darwin }
-          - { os: macos-15-intel, rid: osx-x64, target: x86_64-apple-darwin }
-          - { os: windows-latest, rid: win-x64, target: x86_64-pc-windows-msvc }
-    steps:
-      - uses: actions/checkout@v6.0.2
-        with:
-          ref: ${{ needs.prepare.outputs.checkout_ref }}
-          fetch-depth: 0
-          submodules: recursive
-
-      - name: Free disk space
-        if: runner.os == 'Linux'
-        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
-
-      - uses: kreuzberg-dev/actions/setup-rust@v1
-        with:
-          target: ${{ matrix.target }}
-          cache-key-prefix: publish-csharp-${{ matrix.rid }}
-
-      - uses: kreuzberg-dev/actions/build-csharp-natives@v1
-        with:
-          target: ${{ matrix.target }}
-          crate-name: kreuzcrawl-ffi
-          lib-name: kreuzcrawl_ffi
-          rid: ${{ matrix.rid }}
-
-      - uses: actions/upload-artifact@v7.0.1
-        with:
-          name: csharp-natives-${{ matrix.rid }}
-          path: dist/csharp-natives
-          if-no-files-found: error
-          retention-days: 14
-
-  csharp-natives-musl:
-    name: Build C# natives (linux-musl-${{ matrix.arch }})
-    needs: [prepare, check-nuget]
-    if: ${{ needs.prepare.outputs.release_csharp == 'true' && (needs.check-nuget.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 180
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - { os: ubuntu-latest, arch: x64, target: x86_64-unknown-linux-musl, rid: linux-musl-x64 }
-          - {
-              os: ubuntu-24.04-arm,
-              arch: arm64,
-              target: aarch64-unknown-linux-musl,
-              rid: linux-musl-arm64,
-            }
-    steps:
-      - uses: actions/checkout@v6.0.2
-        with:
-          ref: ${{ needs.prepare.outputs.checkout_ref }}
-          fetch-depth: 0
-          submodules: recursive
-
-      - uses: kreuzberg-dev/actions/free-disk-space-linux@v1
-
-      - uses: kreuzberg-dev/actions/setup-rust@v1
-        with:
-          target: ${{ matrix.target }}
-          cache-key-prefix: publish-csharp-${{ matrix.rid }}
-
-      - uses: kreuzberg-dev/actions/build-csharp-natives@v1
-        with:
-          target: ${{ matrix.target }}
-          crate-name: kreuzcrawl-ffi
-          lib-name: kreuzcrawl_ffi
-          rid: ${{ matrix.rid }}
-
-      - uses: actions/upload-artifact@v7.0.1
-        with:
-          name: csharp-natives-${{ matrix.rid }}
-          path: dist/csharp-natives
-          if-no-files-found: error
-          retention-days: 14
-
-  elixir-natives:
-    name: Build Elixir NIF (${{ matrix.label }} nif-${{ matrix.nif }})
-    needs: [prepare, check-elixir-release, publish-crates]
-    if: ${{ !cancelled() && needs.publish-crates.result != 'failure' && needs.prepare.outputs.release_elixir == 'true' && (needs.check-elixir-release.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 180
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - { os: ubuntu-latest, label: linux-x86_64, target: x86_64-unknown-linux-gnu }
-          - { os: ubuntu-24.04-arm, label: linux-aarch64, target: aarch64-unknown-linux-gnu }
-          - { os: macos-latest, label: macos-arm64, target: aarch64-apple-darwin }
-          - { os: macos-15-intel, label: macos-x86_64, target: x86_64-apple-darwin }
-          - { os: windows-latest, label: windows-x86_64, target: x86_64-pc-windows-msvc }
-        nif: ["2.16", "2.17"]
-    steps:
-      - uses: actions/checkout@v6.0.2
-        with:
-          ref: ${{ needs.prepare.outputs.checkout_ref }}
-          fetch-depth: 0
-          submodules: recursive
-
-      - name: Free disk space
-        if: runner.os == 'Linux'
-        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
-
-      - uses: erlef/setup-beam@v1.24
-        with:
-          elixir-version: "1.17"
-          otp-version: "27"
-
-      - uses: kreuzberg-dev/actions/setup-rust@v1
-        with:
-          target: ${{ matrix.target }}
-          cache-key-prefix: publish-elixir-${{ matrix.label }}
-
-      - uses: kreuzberg-dev/actions/build-elixir-natives@v1
-        with:
-          target: ${{ matrix.target }}
-          nif-crate-name: kreuzcrawl_nif
-          nif-crate-path: packages/elixir/native/kreuzcrawl_nif
-          package-dir: packages/elixir
-          nif-version: ${{ needs.prepare.outputs.version }}
-          nif-api-version: ${{ matrix.nif }}
-
-      - uses: actions/upload-artifact@v7.0.1
-        with:
-          name: elixir-${{ matrix.label }}-nif-${{ matrix.nif }}
-          path: dist/elixir-natives/*.tar.gz
-          if-no-files-found: error
-          retention-days: 14
-
-  elixir-natives-musl:
-    name: Build Elixir NIF (linux-musl-${{ matrix.arch }} nif-${{ matrix.nif }})
-    needs: [prepare, check-elixir-release, publish-crates]
-    if: ${{ !cancelled() && needs.publish-crates.result != 'failure' && needs.prepare.outputs.release_elixir == 'true' && (needs.check-elixir-release.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 180
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - { os: ubuntu-latest, arch: x86_64, target: x86_64-unknown-linux-musl }
-          - { os: ubuntu-24.04-arm, arch: aarch64, target: aarch64-unknown-linux-musl }
-        nif: ["2.16", "2.17"]
-    steps:
-      - uses: actions/checkout@v6.0.2
-        with:
-          ref: ${{ needs.prepare.outputs.checkout_ref }}
-          fetch-depth: 0
-          submodules: recursive
-
-      - uses: kreuzberg-dev/actions/free-disk-space-linux@v1
-
-      - uses: erlef/setup-beam@v1.24
-        with:
-          elixir-version: "1.17"
-          otp-version: "27"
-
-      - uses: kreuzberg-dev/actions/setup-rust@v1
-        with:
-          target: ${{ matrix.target }}
-          cache-key-prefix: publish-elixir-musl-${{ matrix.arch }}
-
-      - uses: kreuzberg-dev/actions/build-elixir-natives@v1
-        with:
-          target: ${{ matrix.target }}
-          nif-crate-name: kreuzcrawl_nif
-          nif-crate-path: packages/elixir/native/kreuzcrawl_nif
-          package-dir: packages/elixir
-          nif-version: ${{ needs.prepare.outputs.version }}
-          nif-api-version: ${{ matrix.nif }}
-
-      - uses: actions/upload-artifact@v7.0.1
-        with:
-          name: elixir-musl-${{ matrix.arch }}-nif-${{ matrix.nif }}
-          path: dist/elixir-natives/*.tar.gz
-          if-no-files-found: error
-          retention-days: 14
-
-  swift-artifactbundle:
-    name: Build Swift artifact bundle
-    needs: prepare
-    if: ${{ needs.prepare.outputs.release_swift == 'true' }}
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v6.0.2
-        with:
-          ref: ${{ needs.prepare.outputs.checkout_ref }}
-          fetch-depth: 0
-      - uses: kreuzberg-dev/actions/setup-rust@v1
-      - uses: kreuzberg-dev/actions/build-swift-artifactbundle@v1
-        id: bundle
-        with:
-          crate-name: kreuzcrawl-swift
-          artifact-name: KreuzcrawlSwift
-      - uses: actions/upload-artifact@v7.0.1
-        with:
-          name: swift-artifactbundle
-          path: ${{ steps.bundle.outputs.bundle-zip }}
-          if-no-files-found: error
-          retention-days: 14
-
-  swift-package:
-    name: Build Swift package
-    needs: prepare
-    if: ${{ needs.prepare.outputs.release_swift == 'true' }}
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v6.0.2
-        with:
-          ref: ${{ needs.prepare.outputs.checkout_ref }}
-          fetch-depth: 0
-
-      - uses: kreuzberg-dev/actions/setup-rust@v1
-
-      - uses: kreuzberg-dev/actions/build-swift-package@v1
-        with:
-          package-dir: packages/swift
-          crate-name: kreuzcrawl-swift
-
-      - uses: actions/upload-artifact@v7.0.1
-        with:
-          name: swift-package
-          path: packages/swift
-          retention-days: 14
-
-  zig-package:
-    name: Build Zig package (smoke check)
-    needs: prepare
-    if: ${{ needs.prepare.outputs.release_zig == 'true' }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6.0.2
-        with:
-          ref: ${{ needs.prepare.outputs.checkout_ref }}
-          fetch-depth: 0
-
-      - uses: kreuzberg-dev/actions/setup-rust@v1
-
-      - uses: kreuzberg-dev/actions/build-zig-package@v1
-        with:
-          ffi-crate: kreuzcrawl-ffi
-          package-dir: packages/zig
-
-  # ─── GitHub Release asset uploads ─────────────────────────────────────
-
-  upload-cli-release:
-    name: Upload CLI binaries to GitHub Release
-    needs: [prepare, cli-binaries, cli-musl-binaries]
-    if: ${{ needs.prepare.outputs.is_tag == 'true' && (needs.cli-binaries.result == 'success' || needs.cli-musl-binaries.result == 'success') }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v8.0.1
-        with:
-          pattern: cli-*
-          path: dist/cli
-          merge-multiple: true
-
-      - uses: kreuzberg-dev/actions/upload-release-assets@v1
-        with:
-          tag: ${{ needs.prepare.outputs.tag }}
-          working-directory: dist/cli
-          dry-run: ${{ needs.prepare.outputs.dry_run }}
-          assets: |
-            kreuzcrawl-cli-*.tar.gz
-            kreuzcrawl-cli-*.zip
-
-  upload-go-release:
-    name: Upload Go FFI archives to GitHub Release
-    needs: [prepare, go-ffi-libraries]
-    if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.go-ffi-libraries.result == 'success' }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v8.0.1
-        with:
-          pattern: go-ffi-*
-          path: dist/go-ffi
-          merge-multiple: true
-
-      - uses: kreuzberg-dev/actions/upload-release-assets@v1
-        with:
-          tag: ${{ needs.prepare.outputs.tag }}
-          working-directory: dist/go-ffi
-          dry-run: ${{ needs.prepare.outputs.dry_run }}
-          assets: kreuzcrawl-go-*.tar.gz
-
-  upload-c-ffi-release:
-    name: Upload C FFI archives to GitHub Release
-    needs: [prepare, c-ffi-libraries]
-    if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.c-ffi-libraries.result == 'success' }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v8.0.1
-        with:
-          pattern: c-ffi-*
-          path: dist/c-ffi
-          merge-multiple: true
-
-      - uses: kreuzberg-dev/actions/upload-release-assets@v1
-        with:
-          tag: ${{ needs.prepare.outputs.tag }}
-          working-directory: dist/c-ffi
-          dry-run: ${{ needs.prepare.outputs.dry_run }}
-          assets: kreuzcrawl-ffi-*.tar.gz
-
-  upload-elixir-release:
-    name: Upload Elixir NIF archives to GitHub Release
-    needs: [prepare, elixir-natives, elixir-natives-musl]
-    if: ${{ needs.prepare.outputs.is_tag == 'true' && (needs.elixir-natives.result == 'success' || needs.elixir-natives-musl.result == 'success') }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v8.0.1
-        with:
-          pattern: elixir-*
-          path: dist/elixir
-          merge-multiple: true
-
-      - uses: kreuzberg-dev/actions/upload-release-assets@v1
-        with:
-          tag: ${{ needs.prepare.outputs.tag }}
-          working-directory: dist/elixir
-          dry-run: ${{ needs.prepare.outputs.dry_run }}
-          assets: libkreuzcrawl_nif-*.tar.gz
-
-  upload-php-pie-release:
-    name: Upload PHP PIE archives to GitHub Release
-    needs: [prepare, php-extension]
-    if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.php-extension.result == 'success' }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v8.0.1
-        with:
-          pattern: php-package-*
-          path: dist/php-package
-          merge-multiple: true
-
-      - uses: kreuzberg-dev/actions/upload-release-assets@v1
-        with:
-          tag: ${{ needs.prepare.outputs.tag }}
-          working-directory: dist/php-package
-          dry-run: ${{ needs.prepare.outputs.dry_run }}
-          assets: |
-            php_*.tgz
-            php_*.tgz.sha256
-            php_*.zip
-            php_*.zip.sha256
-
-  # Verifies every expected release asset is present on the GitHub release
-  # before the publish-* fan-out depends on those URLs.
-  verify-assets:
-    name: Verify release assets
-    needs:
-      - prepare
-      - upload-cli-release
-      - upload-go-release
-      - upload-c-ffi-release
-      - upload-elixir-release
-      - upload-php-pie-release
-    if: ${{ always() && needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.dry_run != 'true' && !contains(needs.*.result, 'failure') }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: kreuzberg-dev/actions/verify-release-assets@v1
-        with:
-          tag: ${{ needs.prepare.outputs.tag }}
-          expected-assets: |
-            # CLI
-            kreuzcrawl-cli-*.tar.gz
-            kreuzcrawl-cli-*.zip
-            # Go FFI
-            kreuzcrawl-go-*.tar.gz
-            # C FFI
-            kreuzcrawl-ffi-*.tar.gz
-            # Elixir NIF
-            libkreuzcrawl_nif-*.tar.gz
-
-  # ─── Publish jobs ─────────────────────────────────────────────────────
-
-  publish-crates:
-    name: Publish crates.io packages
-    needs: [prepare, validate-versions, check-cratesio]
-    if: ${{ needs.prepare.outputs.release_crates == 'true' && needs.prepare.outputs.is_tag == 'true' && (needs.check-cratesio.outputs.all_exist != 'true' || needs.prepare.outputs.force_republish == 'true') }}
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
-    steps:
-      - uses: actions/checkout@v6.0.2
-        with:
-          ref: ${{ needs.prepare.outputs.ref }}
-          submodules: recursive
-
-      - uses: kreuzberg-dev/actions/setup-rust@v1
-        with:
-          cache-key-prefix: publish-crates
-
-      - uses: kreuzberg-dev/actions/publish-crates@v1
-        with:
-          # Order matters: kreuzcrawl-browser is a hard dep of kreuzcrawl
-          # (path-only deps are rejected by cargo publish), and kreuzcrawl
-          # is depended on by both kreuzcrawl-bindings-common and
-          # kreuzcrawl-cli, so each must land on the index before its
-          # dependents try to resolve.
-          crates: kreuzcrawl-browser kreuzcrawl kreuzcrawl-bindings-common kreuzcrawl-cli
-          version: ${{ needs.prepare.outputs.version }}
-          dry-run: ${{ needs.prepare.outputs.dry_run }}
-
-  publish-pypi:
-    name: Publish to PyPI
-    needs: [prepare, python-wheels, python-sdist, check-pypi]
-    if: ${{ needs.prepare.outputs.release_python == 'true' && needs.prepare.outputs.is_tag == 'true' && (needs.check-pypi.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
-    runs-on: ubuntu-latest
-    environment: pypi
-    permissions:
-      contents: read
-      id-token: write
-    steps:
-      - uses: actions/download-artifact@v8.0.1
-        with:
-          pattern: python-wheels-*
-          path: dist
-          merge-multiple: true
-      - uses: actions/download-artifact@v8.0.1
-        with:
-          name: python-sdist
-          path: dist
-
-      - uses: kreuzberg-dev/actions/publish-pypi@v1
-        with:
-          packages-dir: dist
-          dry-run: ${{ needs.prepare.outputs.dry_run }}
-
-  publish-rubygems:
-    name: Publish Ruby gems
-    needs: [prepare, ruby-gem, check-rubygems]
-    if: ${{ needs.prepare.outputs.release_ruby == 'true' && needs.prepare.outputs.is_tag == 'true' && (needs.check-rubygems.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
-    steps:
-      - uses: actions/download-artifact@v8.0.1
-        with:
-          pattern: rubygems-*
-          path: dist
-          merge-multiple: true
-
-      - uses: ruby/setup-ruby@v1.308.0
-        with:
-          ruby-version: "3.3"
-          bundler-cache: false
-
-      - uses: rubygems/configure-rubygems-credentials@v2.0.0
-
-      - uses: kreuzberg-dev/actions/publish-rubygems@v1
-        with:
-          gems-dir: dist
-          dry-run: ${{ needs.prepare.outputs.dry_run }}
-
-  publish-node:
-    name: Publish Node packages
-    needs: [prepare, node-bindings, check-npm]
-    if: ${{ needs.prepare.outputs.release_node == 'true' && needs.prepare.outputs.is_tag == 'true' && (needs.check-npm.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
-    steps:
-      - uses: actions/checkout@v6.0.2
-        with:
-          ref: ${{ needs.prepare.outputs.ref }}
-          submodules: recursive
-
-      - uses: actions/download-artifact@v8.0.1
-        with:
-          pattern: node-bindings-*
-          path: crates/kreuzcrawl-node/artifacts
-          merge-multiple: true
-
-      - uses: kreuzberg-dev/actions/setup-node-workspace@v1
-        with:
-          node-version: "22"
-
-      - name: Stage platform packages with napi
-        # Inline: napi artifacts → per-platform npm/ subpackages, then drop the
-        # downloaded index.js + index.d.ts (uploaded by every matrix build run;
-        # identical across platforms, merge-multiple deduplicates) at the
-        # package root so they ship in the published tarball.
-        working-directory: crates/kreuzcrawl-node
-        shell: bash
-        run: |
-          pnpm exec napi create-npm-dirs
-          pnpm exec napi artifacts --output-dir artifacts --npm-dir npm
-          cp artifacts/index.js artifacts/index.d.ts .
-
-      - name: Pack platform tarballs for publishing
-        # Inline: per-platform package.json patching + npm pack. The wrapper
-        # script lives at scripts/publish/pack-node-platform-packages.sh
-        # because it is shared with manual reproduction.
-        shell: bash
-        run: scripts/publish/pack-node-platform-packages.sh crates/kreuzcrawl-node/npm
-
-      - name: Publish platform sub-packages
-        uses: kreuzberg-dev/actions/publish-npm@v1
-        with:
-          packages-dir: crates/kreuzcrawl-node/npm
-          npm-tag: ${{ needs.prepare.outputs.npm_tag }}
-          dry-run: ${{ needs.prepare.outputs.dry_run }}
-
-      - name: Wait for npm indexing (linux-x64-gnu)
-        if: ${{ needs.prepare.outputs.dry_run != 'true' }}
-        uses: kreuzberg-dev/actions/wait-for-package@v1
-        with:
-          registry: npm
-          package: "@kreuzberg/kreuzcrawl-linux-x64-gnu"
-          version: ${{ needs.prepare.outputs.version }}
-          max-attempts: "25"
-
-      - name: Publish main @kreuzberg/kreuzcrawl package
-        uses: kreuzberg-dev/actions/publish-npm@v1
-        with:
-          package-dir: crates/kreuzcrawl-node
-          npm-tag: ${{ needs.prepare.outputs.npm_tag }}
-          dry-run: ${{ needs.prepare.outputs.dry_run }}
-
-  publish-wasm:
-    name: Publish WASM package
-    needs: [prepare, wasm-bindings, check-wasm]
-    if: ${{ needs.prepare.outputs.release_wasm == 'true' && needs.prepare.outputs.is_tag == 'true' && (needs.check-wasm.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
-    steps:
-      - uses: actions/checkout@v6.0.2
-        with:
-          ref: ${{ needs.prepare.outputs.ref }}
-          submodules: recursive
-
-      - uses: actions/download-artifact@v8.0.1
-        with:
-          name: wasm-bundle
-          path: crates/kreuzcrawl-wasm
-
-      - uses: kreuzberg-dev/actions/setup-node-workspace@v1
-        with:
-          node-version: "22"
-
-      - uses: kreuzberg-dev/actions/publish-npm@v1
-        with:
-          package-dir: crates/kreuzcrawl-wasm
-          npm-tag: ${{ needs.prepare.outputs.npm_tag }}
-          provenance: "true"
-          dry-run: ${{ needs.prepare.outputs.dry_run }}
-
-  publish-packagist:
-    name: Trigger Packagist update
-    needs: [prepare, upload-php-pie-release, check-packagist]
-    if: ${{ needs.prepare.outputs.release_php == 'true' && needs.prepare.outputs.is_tag == 'true' && (needs.check-packagist.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: kreuzberg-dev/actions/publish-packagist@v1
-        with:
-          packagist-username: kreuzberg-dev
-          package-name: kreuzberg-dev/kreuzcrawl
-          version: ${{ needs.prepare.outputs.version }}
-          repository-url: https://github.com/kreuzberg-dev/kreuzcrawl
-          dry-run: ${{ needs.prepare.outputs.dry_run }}
-        env:
-          PACKAGIST_API_TOKEN: ${{ secrets.PACKAGIST_API_TOKEN }}
-
-  publish-maven:
-    name: Publish Maven (Java) package
-    needs: [prepare, java-natives, java-natives-musl, check-maven]
-    if: ${{ needs.prepare.outputs.release_java == 'true' && needs.prepare.outputs.is_tag == 'true' && (needs.check-maven.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6.0.2
-        with:
-          ref: ${{ needs.prepare.outputs.ref }}
-          submodules: recursive
-
-      - uses: actions/download-artifact@v8.0.1
-        with:
-          pattern: java-natives-*
-          path: java-natives
-          merge-multiple: true
-
-      - name: Stage natives into resources
-        # Inline: copy classifier-bucketed libs from artifact tree into
-        # packages/java/src/main/resources/natives/<classifier>/. Tightly
-        # coupled to the Maven resource layout — no shared action covers it.
-        shell: bash
-        run: |
-          mkdir -p packages/java/src/main/resources/natives
-          for dir in java-natives/native/*/; do
-            classifier="$(basename "$dir")"
-            mkdir -p "packages/java/src/main/resources/natives/${classifier}"
-            cp -v "${dir}"/* "packages/java/src/main/resources/natives/${classifier}/"
-          done
-
-      - uses: actions/setup-java@v5.2.0
-        with:
-          distribution: temurin
-          java-version: "21"
-          cache: maven
-          server-id: central
-          server-username: MAVEN_USERNAME
-          server-password: MAVEN_PASSWORD
-          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-          gpg-passphrase: MAVEN_GPG_PASSPHRASE
-
-      - uses: kreuzberg-dev/actions/setup-maven@v1
-
-      - uses: kreuzberg-dev/actions/configure-maven-gpg@v1
-        with:
-          pom-file: packages/java/pom.xml
-
-      - uses: kreuzberg-dev/actions/publish-maven@v1
-        with:
-          pom-file: packages/java/pom.xml
-          maven-profile: publish
-          extra-args: -DskipTests
-          dry-run: ${{ needs.prepare.outputs.dry_run }}
-        env:
-          MAVEN_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
-          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-
-  publish-nuget:
-    name: Publish NuGet package
-    needs: [prepare, csharp-natives, csharp-natives-musl, check-nuget]
-    if: ${{ needs.prepare.outputs.release_csharp == 'true' && needs.prepare.outputs.is_tag == 'true' && (needs.check-nuget.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
-    steps:
-      - uses: actions/checkout@v6.0.2
-        with:
-          ref: ${{ needs.prepare.outputs.ref }}
-          submodules: recursive
-
-      - uses: actions/download-artifact@v8.0.1
-        with:
-          pattern: csharp-natives-*
-          path: csharp-natives
-          merge-multiple: true
-
-      - name: Stage runtimes/<rid>/native into NuGet project
-        # Inline: NuGet expects native libs in runtimes/<rid>/native/ adjacent
-        # to the project. Copy from artifact tree into the C# project.
-        shell: bash
-        run: |
-          mkdir -p packages/csharp/runtimes
-          for dir in csharp-natives/runtimes/*/; do
-            rid="$(basename "$dir")"
-            mkdir -p "packages/csharp/runtimes/${rid}/native"
-            cp -v "${dir}native/"* "packages/csharp/runtimes/${rid}/native/"
-          done
-
-      - uses: actions/setup-dotnet@v5.2.0
-        with:
-          dotnet-version: "8.0.x"
-
-      - name: Pack NuGet package
-        # Inline: dotnet pack with the version override against the .slnx; one-liner.
-        shell: bash
-        run: |
-          dotnet pack packages/csharp/Kreuzcrawl.slnx \
-            -c Release \
-            -p:Version=${{ needs.prepare.outputs.version }} \
-            -o dist/nuget
-
-      - uses: kreuzberg-dev/actions/publish-nuget@v1
-        with:
-          packages-dir: dist/nuget
-          dry-run: ${{ needs.prepare.outputs.dry_run }}
-        env:
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-
-  publish-hex:
-    name: Publish Elixir Hex package
-    needs: [prepare, upload-elixir-release, check-hex]
-    if: ${{ needs.prepare.outputs.release_elixir == 'true' && needs.prepare.outputs.is_tag == 'true' && (needs.check-hex.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6.0.2
-        with:
-          ref: ${{ needs.prepare.outputs.ref }}
-          fetch-depth: 0
-          submodules: recursive
-
-      - uses: erlef/setup-beam@v1.24
-        with:
-          elixir-version: "1.17"
-          otp-version: "27"
-
-      - uses: kreuzberg-dev/actions/setup-rust@v1
-
-      - name: Generate NIF checksum file
-        uses: kreuzberg-dev/actions/generate-elixir-checksums@v1
-        with:
-          github-repo: ${{ github.repository }}
-          tag: ${{ needs.prepare.outputs.tag }}
-          version: ${{ needs.prepare.outputs.version }}
-          lib-name: kreuzcrawl_nif
-          nif-versions: "2.16,2.17"
-          targets: x86_64-unknown-linux-gnu,aarch64-unknown-linux-gnu,x86_64-unknown-linux-musl,aarch64-unknown-linux-musl,aarch64-apple-darwin,x86_64-apple-darwin,x86_64-pc-windows-msvc
-          output-path: packages/elixir/checksum-Elixir.Kreuzcrawl.Native.exs
-
-      - uses: kreuzberg-dev/actions/build-elixir-hex@v1
-        with:
-          package-dir: packages/elixir
-          nif-crate-path: packages/elixir/native/kreuzcrawl_nif
-          dry-run: ${{ needs.prepare.outputs.dry_run }}
-
-      - uses: kreuzberg-dev/actions/publish-hex@v1
-        with:
-          package-dir: packages/elixir
-          dry-run: ${{ needs.prepare.outputs.dry_run }}
-        env:
-          HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
-
-  kotlin-android-natives:
-    name: Build kotlin-android natives (${{ matrix.abi }})
-    needs: prepare
-    if: ${{ needs.prepare.outputs.release_kotlin_android == 'true' }}
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - abi: arm64-v8a
-            target: aarch64-linux-android
-          - abi: x86_64
-            target: x86_64-linux-android
-          - abi: armeabi-v7a
-            target: armv7-linux-androideabi
-          - abi: x86
-            target: i686-linux-android
-    steps:
-      - uses: actions/checkout@v6.0.2
-        with:
-          ref: ${{ needs.prepare.outputs.ref }}
-          submodules: recursive
-
-      - uses: kreuzberg-dev/actions/setup-rust@v1
-        with:
-          target: ${{ matrix.target }}
-          cache-key-prefix: kotlin-android-${{ matrix.abi }}
-
-      - uses: kreuzberg-dev/actions/setup-android-ndk@v1
-
-      - uses: kreuzberg-dev/actions/build-android-natives@v1
-        with:
-          crate-name: kreuzcrawl-ffi
-          lib-name: kreuzcrawl_ffi
-          abi: ${{ matrix.abi }}
-          target: ${{ matrix.target }}
-
-      - uses: actions/upload-artifact@v7.0.1
-        with:
-          name: kotlin-android-${{ matrix.abi }}
-          path: dist/android-natives/${{ matrix.abi }}/
-          if-no-files-found: error
-
-  publish-kotlin-android:
-    name: Publish kotlin-android (Maven Central via Gradle)
-    needs: [prepare, kotlin-android-natives, check-maven-kotlin-android]
-    if: ${{ needs.prepare.outputs.release_kotlin_android == 'true' && needs.prepare.outputs.is_tag == 'true' && (needs.check-maven-kotlin-android.outputs.kotlin_android_exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6.0.2
-        with:
-          ref: ${{ needs.prepare.outputs.ref }}
-
-      - uses: actions/download-artifact@v8.0.1
-        with:
-          pattern: kotlin-android-*
-          path: kotlin-android-natives
-          merge-multiple: false
-
-      - name: Stage natives into AAR jniLibs
-        run: |
-          for abi in arm64-v8a x86_64 armeabi-v7a x86; do
-            src="kotlin-android-natives/kotlin-android-${abi}"
-            [ -d "$src" ] || continue
-            mkdir -p "packages/kotlin-android/src/main/jniLibs/${abi}"
-            cp -v "${src}/libkreuzcrawl_ffi.so" \
-                  "packages/kotlin-android/src/main/jniLibs/${abi}/"
-          done
-        shell: bash
-
-      - uses: kreuzberg-dev/actions/publish-maven-gradle@v1
-        with:
-          working-directory: packages/kotlin-android
-          gradle-task: publishAndReleaseToMavenCentral
-          dry-run: ${{ needs.prepare.outputs.dry_run }}
-        env:
-          MAVEN_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
-          MAVEN_GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-
-  publish-zig:
-    name: Publish Zig package metadata
-    needs: [prepare, zig-package, check-zig]
-    if: ${{ needs.prepare.outputs.release_zig == 'true' && needs.prepare.outputs.is_tag == 'true' && (needs.check-zig.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6.0.2
-        with:
-          ref: ${{ needs.prepare.outputs.ref }}
-          submodules: recursive
-
-      - uses: kreuzberg-dev/actions/publish-zig@v1
-        with:
-          working-directory: packages/zig
-          tag: ${{ needs.prepare.outputs.tag }}
-          # Override the auto-detected package-name (`kreuzcrawl` from
-          # build.zig.zon) to match the alef-emitted test_app URL pattern
-          # `{crate-name}-zig-v{version}.tar.gz`. Without this, the asset
-          # uploads as `kreuzcrawl-v{version}.tar.gz` while test_apps/zig
-          # fetches `kreuzcrawl-zig-v{version}.tar.gz` → 404 + consumer
-          # build.zig.zon TODO hash.
-          package-name: kreuzcrawl-zig
-          update-release-notes: "true"
-          dry-run: ${{ needs.prepare.outputs.dry_run }}
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  # ─── Homebrew (real-brew bottles) ─────────────────────────────────────
-  #
-  # Three-job topology mirrors tslp/h2m: update formula source URL+SHA in
-  # the tap first so `brew install --build-bottle` has a buildable formula,
-  # then build real bottles per platform via `homebrew-build-bottles@v1`,
-  # then merge per-platform JSON manifests into the formula's `bottle do`
-  # block via `homebrew-merge-bottles@v1`.
-
-  publish-homebrew-formula:
-    name: Update Homebrew formula source
-    needs: [prepare, check-homebrew, upload-cli-release]
-    if: |
-      always() &&
-      needs.prepare.outputs.release_homebrew == 'true' &&
-      needs.prepare.outputs.is_tag == 'true' &&
-      needs.prepare.outputs.dry_run != 'true' &&
-      needs.upload-cli-release.result == 'success' &&
-      (needs.check-homebrew.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true')
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout source repo
-        uses: actions/checkout@v6.0.2
-        with:
-          ref: ${{ needs.prepare.outputs.checkout_ref }}
-
-      - name: Checkout homebrew-tap
-        uses: actions/checkout@v6.0.2
-        with:
-          repository: kreuzberg-dev/homebrew-tap
-          token: ${{ secrets.HOMEBREW_TOKEN }}
-          path: homebrew-tap
-
-      - name: Update formula source url + sha256
-        env:
-          TAG: ${{ needs.prepare.outputs.tag }}
-          VERSION: ${{ needs.prepare.outputs.version }}
-          TAP_DIR: ${{ github.workspace }}/homebrew-tap
-        run: scripts/publish/update-homebrew-formula.sh
-
-      - name: Commit and push to tap
-        working-directory: homebrew-tap
-        env:
-          GH_TOKEN: ${{ secrets.HOMEBREW_TOKEN }}
-        # Inline: tap-side commit/push — bot identity is repo-specific.
-        run: |
-          git config user.name "kreuzberg-bot"
-          git config user.email "bot@kreuzberg.dev"
-          if git diff --quiet Formula/; then
-            echo "No formula changes; skipping commit."
-            exit 0
-          fi
-          git add Formula/kreuzcrawl.rb
-          git commit -m "kreuzcrawl ${{ needs.prepare.outputs.version }}"
-          git push origin HEAD
-
-  homebrew-bottles:
-    name: Build Homebrew bottle (${{ matrix.bottle_tag }})
-    needs: [prepare, publish-homebrew-formula]
-    if: |
-      always() &&
-      needs.prepare.outputs.dry_run != 'true' &&
-      needs.publish-homebrew-formula.result == 'success'
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 180
-    permissions:
-      contents: write
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - { os: macos-latest, bottle_tag: arm64_sequoia, install_brew: false }
-          - { os: macos-15-intel, bottle_tag: sequoia, install_brew: false }
-          - { os: ubuntu-latest, bottle_tag: x86_64_linux, install_brew: true }
-          - { os: ubuntu-24.04-arm, bottle_tag: arm64_linux, install_brew: true }
-    steps:
-      # actions/checkout@v6 regression on macos-15-intel: the includeIf-gated
-      # credential helper isn't honored by git 2.54 on that runner image, so
-      # the fetch falls back to interactive auth and fails. v5 writes the
-      # extraheader directly into .git/config and works on every runner.
-      - uses: actions/checkout@v5
-        with:
-          ref: ${{ needs.prepare.outputs.checkout_ref }}
-
-      - name: Free disk space
-        if: runner.os == 'Linux'
-        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
-
-      - name: Install Homebrew (Linux)
-        if: ${{ matrix.install_brew }}
-        uses: kreuzberg-dev/actions/install-homebrew-linux@v1
-
-      - name: Build bottles
-        uses: kreuzberg-dev/actions/homebrew-build-bottles@v1
-        with:
-          tag: ${{ needs.prepare.outputs.tag }}
-          version: ${{ needs.prepare.outputs.version }}
-          tap: kreuzberg-dev/homebrew-tap
-          formulas: |
-            kreuzcrawl
-          out-dir: ${{ github.workspace }}/bottle-json
-          github-repo: ${{ github.repository }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload bottle JSON manifests
-        uses: actions/upload-artifact@v7.0.1
-        with:
-          name: homebrew-bottle-json-${{ matrix.bottle_tag }}
-          path: ${{ github.workspace }}/bottle-json/*.json
-          if-no-files-found: error
-          retention-days: 14
-
-  publish-homebrew-bottles:
-    name: Merge Homebrew bottle DSL
-    needs: [prepare, publish-homebrew-formula, homebrew-bottles]
-    if: |
-      always() &&
-      needs.prepare.outputs.dry_run != 'true' &&
-      needs.publish-homebrew-formula.result == 'success' &&
-      needs.homebrew-bottles.result == 'success'
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout source repo
-        uses: actions/checkout@v6.0.2
-        with:
-          ref: ${{ needs.prepare.outputs.checkout_ref }}
-
-      - name: Checkout homebrew-tap
-        uses: actions/checkout@v6.0.2
-        with:
-          repository: kreuzberg-dev/homebrew-tap
-          token: ${{ secrets.HOMEBREW_TOKEN }}
-          path: homebrew-tap
-
-      - name: Download all bottle JSON manifests
-        uses: actions/download-artifact@v8.0.1
-        with:
-          path: ${{ github.workspace }}/bottle-json
-          pattern: homebrew-bottle-json-*
-          merge-multiple: true
-
-      - name: Merge bottle DSL into formula
-        uses: kreuzberg-dev/actions/homebrew-merge-bottles@v1
-        with:
-          tag: ${{ needs.prepare.outputs.tag }}
-          version: ${{ needs.prepare.outputs.version }}
-          tap-dir: ${{ github.workspace }}/homebrew-tap
-          json-dir: ${{ github.workspace }}/bottle-json
-          formulas: |
-            kreuzcrawl
-          github-repo: ${{ github.repository }}
-
-      - name: Commit and push bottle DSL
-        working-directory: homebrew-tap
-        env:
-          GH_TOKEN: ${{ secrets.HOMEBREW_TOKEN }}
-        # Inline: tap-side commit/push — bot identity is repo-specific.
-        run: |
-          git config user.name "kreuzberg-bot"
-          git config user.email "bot@kreuzberg.dev"
-          if git diff --quiet Formula/; then
-            echo "No bottle DSL changes; skipping commit."
-            exit 0
-          fi
-          git add Formula/kreuzcrawl.rb
-          git commit -m "kreuzcrawl ${{ needs.prepare.outputs.version }} bottles"
-          git push origin HEAD
-
-  # ─── Post-publish verification ────────────────────────────────────────
-  # For each language, install the *just-published* package from its
-  # registry and run the test_apps/<lang>/ fixture suite against it.
-  # alef test-apps run builds + spawns the e2e mock-server internally
-  # and injects MOCK_SERVER_URL into the language's test command.
-
-  verify-published-packages:
-    name: Verify published packages (${{ matrix.language }})
-    needs:
-      - prepare
-      - publish-crates
-      - publish-pypi
-      - publish-rubygems
-      - publish-node
-      - publish-wasm
-      - publish-packagist
-      - publish-maven
-      - publish-nuget
-      - publish-hex
-      - publish-zig
-      - publish-homebrew-formula
-      - publish-homebrew-bottles
-      - upload-cli-release
-      - upload-go-release
-      - upload-c-ffi-release
-    if: |
-      always() &&
-      !cancelled() &&
-      needs.prepare.outputs.is_tag == 'true' &&
-      needs.prepare.outputs.dry_run != 'true' &&
-      !contains(needs.*.result, 'failure')
-    strategy:
-      fail-fast: false
-      matrix:
-        language: [python, node, ruby, php, go, java, csharp, elixir, wasm, c, brew]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ needs.prepare.outputs.tag }}
-      - name: Build mock-server (needed by alef test-apps run)
-        # Rust ships preinstalled on ubuntu-latest. mock-server source lives
-        # under e2e/rust/ and is alef-generated; alef test-apps run shells
-        # out to its release binary.
-        run: cargo build --release --manifest-path e2e/rust/Cargo.toml
-      - uses: kreuzberg-dev/actions/run-test-apps@v1
-        with:
-          language: ${{ matrix.language }}
-          version: ${{ needs.prepare.outputs.version }}
-      - name: Upload test-app log on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-app-log-${{ matrix.language }}
-          path: /tmp/test-apps-${{ matrix.language }}.log
-          if-no-files-found: ignore
-          retention-days: 7
-
-  # ─── Finalization ─────────────────────────────────────────────────────
-
-  release-finalize:
-    name: Finalize GitHub Release
-    needs:
-      - prepare
-      - verify-assets
-      - publish-crates
-      - publish-pypi
-      - publish-rubygems
-      - publish-node
-      - publish-wasm
-      - publish-packagist
-      - publish-maven
-      - publish-kotlin-android
-      - publish-nuget
-      - publish-hex
-      - publish-zig
-      - publish-homebrew-formula
-      - publish-homebrew-bottles
-      - upload-cli-release
-      - upload-go-release
-      - upload-c-ffi-release
-      - verify-published-packages
-    if: |
-      always() &&
-      !cancelled() &&
-      needs.prepare.outputs.is_tag == 'true' &&
-      needs.prepare.outputs.dry_run != 'true' &&
-      !contains(needs.*.result, 'failure')
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: kreuzberg-dev/actions/finalize-release@v1
-        with:
-          tag: ${{ needs.prepare.outputs.tag }}
-          is-prerelease: ${{ needs.prepare.outputs.is_prerelease == 'true' && 'true' || 'false' }}
-          go-module-path: packages/go
-
-  announce-discord:
-    name: Announce release on Discord
-    needs:
-      - prepare
-      - publish-crates
-      - publish-pypi
-      - publish-rubygems
-      - publish-node
-      - publish-wasm
-      - publish-packagist
-      - publish-maven
-      - publish-kotlin-android
-      - publish-nuget
-      - publish-hex
-      - publish-zig
-      - publish-homebrew-formula
-      - publish-homebrew-bottles
-      - upload-cli-release
-      - upload-go-release
-      - upload-c-ffi-release
-      - upload-elixir-release
-      - upload-php-pie-release
-      - verify-published-packages
-      - release-finalize
-    if: |
-      always() &&
-      !cancelled() &&
-      needs.prepare.outputs.is_tag == 'true' &&
-      needs.prepare.outputs.dry_run != 'true' &&
-      needs.prepare.outputs.is_prerelease != 'true' &&
-      !contains(needs.*.result, 'failure')
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: kreuzberg-dev/actions/announce-release-discord@v1
-        with:
-          tag: ${{ needs.prepare.outputs.tag }}
-          webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          project-name: kreuzcrawl
+            RB_SYS_CARGO_PROFILE: release
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - { os: ubuntu-latest, label: linux-x86_64 }
+                    - { os: ubuntu-24.04-arm, label: linux-aarch64 }
+                    - { os: macos-latest, label: macos-arm64 }
+                    - { os: macos-15-intel, label: macos-x86_64 }
+                    - { os: windows-latest, label: windows-x64 }
+        steps:
+            - uses: actions/checkout@v6.0.2
+              with:
+                  ref: ${{ needs.prepare.outputs.checkout_ref }}
+                  fetch-depth: 0
+                  submodules: recursive
+
+            - name: Free disk space
+              if: runner.os == 'Linux'
+              uses: kreuzberg-dev/actions/free-disk-space-linux@v1
+
+            - uses: kreuzberg-dev/actions/setup-rust@v1
+              with:
+                  cache-key-prefix: publish-ruby-${{ matrix.label }}
+
+            - uses: ruby/setup-ruby@v1.308.0
+              with:
+                  ruby-version: "3.3"
+                  bundler-cache: false
+
+            - uses: kreuzberg-dev/actions/build-ruby-gem@v1
+              with:
+                  package-dir: packages/ruby
+                  dry-run: ${{ needs.prepare.outputs.dry_run }}
+
+            - name: Build platform gem
+              # Inline: rb-sys's rake tasks are platform-dependent. All platforms use
+              # native[PLATFORM] gem to produce platform-specific gems. The native task
+              # is smart: on matching architectures it builds in-place, on mismatched
+              # architectures it cross-compiles via rake-compiler-dock.
+              working-directory: packages/ruby
+              shell: bash
+              run: |
+                  case "${{ matrix.label }}" in
+                    linux-x86_64) target="x86_64-linux" ;;
+                    linux-aarch64) target="aarch64-linux" ;;
+                    macos-arm64) target="arm64-darwin" ;;
+                    macos-x86_64) target="x86_64-darwin" ;;
+                    windows-x64) target="x64-mingw-ucrt" ;;
+                    *) echo "Unknown platform: ${{ matrix.label }}"; exit 1 ;;
+                  esac
+                  bundle exec rake "native[$target]" gem
+
+            - name: Drop source gem on non-canonical builders
+              if: ${{ matrix.label != 'linux-x86_64' }}
+              # Inline: only the canonical `linux-x86_64` builder ships the source gem; others
+              # would emit byte-different source gems that overwrite each other under
+              # merge-multiple and produce an invalid .gem at publish time.
+              shell: bash
+              run: |
+                  shopt -s nullglob
+                  for f in packages/ruby/pkg/*.gem; do
+                    base="$(basename "$f")"
+                    case "$base" in
+                      *-x86_64-linux.gem|*-aarch64-linux.gem|*-arm64-darwin.gem|*-x86_64-darwin.gem|*-x64-mingw-ucrt.gem) ;;
+                      *) echo "Removing non-canonical source gem $base"; rm -f "$f" ;;
+                    esac
+                  done
+
+            - uses: actions/upload-artifact@v7.0.1
+              with:
+                  name: rubygems-${{ matrix.label }}
+                  path: packages/ruby/pkg/*.gem
+                  retention-days: 14
+
+    php-extension:
+        name: Build PHP extension (php${{ matrix.php }} ${{ matrix.platform.label }})
+        needs: [prepare, check-packagist, publish-crates]
+        if: ${{ !cancelled() && needs.publish-crates.result != 'failure' && needs.prepare.outputs.release_php == 'true' && (needs.check-packagist.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
+        runs-on: ${{ matrix.platform.os }}
+        timeout-minutes: 60
+        strategy:
+            fail-fast: false
+            matrix:
+                php: ["8.2", "8.3", "8.4"]
+                platform:
+                    - { os: ubuntu-latest, label: linux-x86_64, target: x86_64-unknown-linux-gnu }
+                    - { os: ubuntu-24.04-arm, label: linux-arm64, target: aarch64-unknown-linux-gnu }
+                    - { os: macos-latest, label: macos-arm64, target: aarch64-apple-darwin }
+                    - { os: macos-15-intel, label: macos-x86_64, target: x86_64-apple-darwin }
+                    - { os: windows-latest, label: windows-x86_64, target: x86_64-pc-windows-msvc }
+        steps:
+            - uses: actions/checkout@v6.0.2
+              with:
+                  ref: ${{ needs.prepare.outputs.checkout_ref }}
+                  fetch-depth: 0
+                  submodules: recursive
+
+            - uses: kreuzberg-dev/actions/setup-php@v1
+              with:
+                  php-version: ${{ matrix.php }}
+
+            - uses: kreuzberg-dev/actions/setup-rust@v1
+              with:
+                  target: ${{ matrix.platform.target }}
+                  cache-key-prefix: publish-php-${{ matrix.platform.label }}-php${{ matrix.php }}
+
+            - uses: kreuzberg-dev/actions/build-php-extension@v1
+              with:
+                  crate-name: kreuzcrawl-php
+                  lib-name: kreuzcrawl_php
+                  php-version: ${{ matrix.php }}
+                  php-ts: nts
+                  dry-run: ${{ needs.prepare.outputs.dry_run }}
+
+            - name: Determine Windows compiler
+              if: runner.os == 'Windows'
+              id: wincompiler
+              shell: pwsh
+              run: |
+                  $compiler = switch ('${{ matrix.php }}') {
+                    '8.2' { 'vs16' }
+                    '8.3' { 'vs16' }
+                    default { 'vs17' }
+                  }
+                  "compiler=$compiler" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+
+            - uses: kreuzberg-dev/actions/package-php-pie@v1
+              with:
+                  php-version: ${{ matrix.php }}
+                  php-ts: nts
+                  target: ${{ matrix.platform.target }}
+                  windows-compiler: ${{ steps.wincompiler.outputs.compiler }}
+                  version: ${{ needs.prepare.outputs.version }}
+                  output-dir: dist/php-package
+
+            - uses: actions/upload-artifact@v7.0.1
+              with:
+                  name: php-package-${{ matrix.platform.label }}-php${{ matrix.php }}
+                  path: |
+                      dist/php-package/php_*.tgz
+                      dist/php-package/php_*.tgz.sha256
+                      dist/php-package/php_*.zip
+                      dist/php-package/php_*.zip.sha256
+                  retention-days: 14
+
+    cli-binaries:
+        name: Build CLI binary (${{ matrix.target }})
+        needs: [prepare, check-cli]
+        if: ${{ needs.prepare.outputs.release_cli == 'true' && (needs.check-cli.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
+        runs-on: ${{ matrix.os }}
+        timeout-minutes: 180
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - { os: ubuntu-latest, target: x86_64-unknown-linux-gnu }
+                    - { os: ubuntu-24.04-arm, target: aarch64-unknown-linux-gnu }
+                    - { os: macos-latest, target: aarch64-apple-darwin }
+                    - { os: macos-15-intel, target: x86_64-apple-darwin }
+                    - { os: windows-latest, target: x86_64-pc-windows-msvc }
+        steps:
+            - uses: actions/checkout@v6.0.2
+              with:
+                  ref: ${{ needs.prepare.outputs.checkout_ref }}
+                  fetch-depth: 0
+                  submodules: recursive
+
+            - name: Free disk space
+              if: runner.os == 'Linux'
+              uses: kreuzberg-dev/actions/free-disk-space-linux@v1
+
+            - uses: kreuzberg-dev/actions/setup-rust@v1
+              with:
+                  target: ${{ matrix.target }}
+                  cache-key-prefix: publish-cli-${{ matrix.target }}
+
+            - uses: kreuzberg-dev/actions/build-rust-cli@v1
+              id: build
+              with:
+                  package-name: kreuzcrawl-cli
+                  binary-name: kreuzcrawl
+                  target: ${{ matrix.target }}
+                  extra-cargo-args: --features all
+
+            - name: Package CLI artifact
+              # Inline: archive layout (.tar.gz on Unix, .zip on Windows) varies per
+              # OS in a way no shared action covers; tiny and self-contained.
+              env:
+                  BINARY_PATH: ${{ steps.build.outputs.binary-path }}
+                  TARGET: ${{ matrix.target }}
+              shell: bash
+              run: |
+                  STAGE="kreuzcrawl-cli-${TARGET}"
+                  mkdir -p "$STAGE"
+                  cp LICENSE "$STAGE/" 2>/dev/null || true
+                  cp README.md "$STAGE/" 2>/dev/null || true
+                  if [[ "$RUNNER_OS" == "Windows" ]]; then
+                    cp "$BINARY_PATH" "$STAGE/kreuzcrawl.exe"
+                    7z a "${STAGE}.zip" "$STAGE" >/dev/null
+                  else
+                    cp "$BINARY_PATH" "$STAGE/kreuzcrawl"
+                    tar -czf "${STAGE}.tar.gz" "$STAGE"
+                  fi
+
+            - uses: actions/upload-artifact@v7.0.1
+              with:
+                  name: cli-${{ matrix.target }}
+                  path: |
+                      kreuzcrawl-cli-${{ matrix.target }}.tar.gz
+                      kreuzcrawl-cli-${{ matrix.target }}.zip
+                  if-no-files-found: ignore
+                  retention-days: 14
+
+    cli-musl-binaries:
+        name: Build CLI musl binary (${{ matrix.arch }})
+        needs: [prepare, check-cli]
+        if: ${{ needs.prepare.outputs.release_cli == 'true' && (needs.check-cli.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
+        runs-on: ${{ matrix.runner }}
+        timeout-minutes: 180
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - { arch: x86_64, runner: ubuntu-latest, target: x86_64-unknown-linux-musl }
+                    - { arch: aarch64, runner: ubuntu-24.04-arm, target: aarch64-unknown-linux-musl }
+        steps:
+            - uses: actions/checkout@v6.0.2
+              with:
+                  ref: ${{ needs.prepare.outputs.checkout_ref }}
+                  fetch-depth: 0
+                  submodules: recursive
+
+            - uses: kreuzberg-dev/actions/free-disk-space-linux@v1
+
+            - name: Build musl CLI via Docker
+              # Inline: kreuzcrawl ships a musl CLI built via a custom Dockerfile that
+              # bundles libonnxruntime and tesseract for $ORIGIN/lib runtime loading.
+              # The shared build-rust-cli action targets host toolchains only.
+              shell: bash
+              run: |
+                  docker build -f docker/Dockerfile.musl-build --output type=local,dest=./dist .
+                  file dist/kreuzcrawl
+
+            - name: Package musl CLI archive
+              # Inline: musl artifacts include a sibling lib/ directory the binary
+              # dlopens at runtime. Pack into the same archive layout as cli-binaries.
+              env:
+                  TARGET: ${{ matrix.target }}
+              shell: bash
+              run: |
+                  STAGE="kreuzcrawl-cli-${TARGET}"
+                  mkdir -p "$STAGE/lib"
+                  cp dist/kreuzcrawl "$STAGE/"
+                  cp dist/lib/* "$STAGE/lib/" 2>/dev/null || true
+                  cp LICENSE "$STAGE/" 2>/dev/null || true
+                  cp README.md "$STAGE/" 2>/dev/null || true
+                  tar -czf "kreuzcrawl-cli-${TARGET}.tar.gz" "$STAGE"
+
+            - uses: actions/upload-artifact@v7.0.1
+              with:
+                  name: cli-${{ matrix.target }}
+                  path: kreuzcrawl-cli-${{ matrix.target }}.tar.gz
+                  retention-days: 14
+
+    go-ffi-libraries:
+        name: Build Go FFI library (${{ matrix.platform }})
+        needs: [prepare, check-go]
+        if: ${{ needs.prepare.outputs.release_go == 'true' && (needs.check-go.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
+        runs-on: ${{ matrix.os }}
+        timeout-minutes: 180
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - { os: ubuntu-latest, platform: linux-x86_64, target: x86_64-unknown-linux-gnu }
+                    - { os: ubuntu-24.04-arm, platform: linux-aarch64, target: aarch64-unknown-linux-gnu }
+                    - { os: macos-latest, platform: macos-arm64, target: aarch64-apple-darwin }
+                    - { os: macos-15-intel, platform: macos-x86_64, target: x86_64-apple-darwin }
+                    - { os: windows-latest, platform: windows-x86_64, target: x86_64-pc-windows-msvc }
+        steps:
+            - uses: actions/checkout@v6.0.2
+              with:
+                  ref: ${{ needs.prepare.outputs.checkout_ref }}
+                  fetch-depth: 0
+                  submodules: recursive
+
+            - name: Free disk space
+              if: runner.os == 'Linux'
+              uses: kreuzberg-dev/actions/free-disk-space-linux@v1
+
+            - uses: kreuzberg-dev/actions/setup-rust@v1
+              with:
+                  target: ${{ matrix.target }}
+                  cache-key-prefix: publish-go-${{ matrix.platform }}
+
+            - uses: kreuzberg-dev/actions/build-go-ffi@v1
+              with:
+                  target: ${{ matrix.target }}
+                  crate-name: kreuzcrawl-ffi
+                  lib-name: kreuzcrawl_ffi
+                  header-path: crates/kreuzcrawl-ffi/include/kreuzcrawl.h
+                  archive-name: kreuzcrawl-go-${{ matrix.platform }}.tar.gz
+                  output-dir: dist/go-ffi
+
+            - uses: actions/upload-artifact@v7.0.1
+              with:
+                  name: go-ffi-${{ matrix.platform }}
+                  path: dist/go-ffi/*.tar.gz
+                  if-no-files-found: error
+                  retention-days: 14
+
+    c-ffi-libraries:
+        name: Build C FFI distribution (${{ matrix.platform }})
+        needs: [prepare, check-c-ffi]
+        if: ${{ needs.prepare.outputs.release_c_ffi == 'true' && (needs.check-c-ffi.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
+        runs-on: ${{ matrix.os }}
+        timeout-minutes: 180
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - { os: ubuntu-latest, platform: linux-x86_64, target: x86_64-unknown-linux-gnu }
+                    - { os: ubuntu-24.04-arm, platform: linux-aarch64, target: aarch64-unknown-linux-gnu }
+                    - { os: macos-latest, platform: macos-arm64, target: aarch64-apple-darwin }
+                    - { os: macos-15-intel, platform: macos-x86_64, target: x86_64-apple-darwin }
+                    - { os: windows-latest, platform: windows-x86_64, target: x86_64-pc-windows-msvc }
+        steps:
+            - uses: actions/checkout@v6.0.2
+              with:
+                  ref: ${{ needs.prepare.outputs.checkout_ref }}
+                  fetch-depth: 0
+                  submodules: recursive
+
+            - name: Free disk space
+              if: runner.os == 'Linux'
+              uses: kreuzberg-dev/actions/free-disk-space-linux@v1
+
+            - uses: kreuzberg-dev/actions/setup-rust@v1
+              with:
+                  target: ${{ matrix.target }}
+                  cache-key-prefix: publish-c-ffi-${{ matrix.platform }}
+
+            - uses: kreuzberg-dev/actions/build-rust-ffi@v1
+              with:
+                  crate-name: kreuzcrawl-ffi
+                  target: ${{ matrix.target }}
+
+            - name: Stage C FFI distribution
+              # Inline: bundle library + header + LICENSE into a single tarball
+              # named to match the upload-c-ffi-release expected asset prefix.
+              env:
+                  TARGET: ${{ matrix.target }}
+                  PLATFORM: ${{ matrix.platform }}
+              shell: bash
+              run: |
+                  STAGE="kreuzcrawl-ffi-${PLATFORM}"
+                  mkdir -p "$STAGE/lib" "$STAGE/include"
+                  find "target/${TARGET}/release" -maxdepth 1 -type f \
+                    \( -name 'libkreuzcrawl_ffi.*' -o -name 'kreuzcrawl_ffi.dll' \) \
+                    -exec cp {} "$STAGE/lib/" \;
+                  cp crates/kreuzcrawl-ffi/include/kreuzcrawl.h "$STAGE/include/"
+                  cp LICENSE "$STAGE/" 2>/dev/null || true
+                  mkdir -p dist/c-ffi
+                  tar -czf "dist/c-ffi/${STAGE}.tar.gz" "$STAGE"
+
+            - uses: actions/upload-artifact@v7.0.1
+              with:
+                  name: c-ffi-${{ matrix.platform }}
+                  path: dist/c-ffi/*.tar.gz
+                  if-no-files-found: error
+                  retention-days: 14
+
+    java-natives:
+        name: Build Java natives (${{ matrix.classifier }})
+        needs: [prepare, check-maven]
+        if: ${{ needs.prepare.outputs.release_java == 'true' && (needs.check-maven.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
+        runs-on: ${{ matrix.os }}
+        timeout-minutes: 180
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - { os: ubuntu-latest, classifier: linux-x86_64, target: x86_64-unknown-linux-gnu }
+                    - { os: ubuntu-24.04-arm, classifier: linux-aarch64, target: aarch64-unknown-linux-gnu }
+                    - { os: macos-latest, classifier: macos-arm64, target: aarch64-apple-darwin }
+                    - { os: macos-15-intel, classifier: macos-x86_64, target: x86_64-apple-darwin }
+                    - { os: windows-latest, classifier: windows-x86_64, target: x86_64-pc-windows-msvc }
+        steps:
+            - uses: actions/checkout@v6.0.2
+              with:
+                  ref: ${{ needs.prepare.outputs.checkout_ref }}
+                  fetch-depth: 0
+                  submodules: recursive
+
+            - name: Free disk space
+              if: runner.os == 'Linux'
+              uses: kreuzberg-dev/actions/free-disk-space-linux@v1
+
+            - uses: kreuzberg-dev/actions/setup-rust@v1
+              with:
+                  target: ${{ matrix.target }}
+                  cache-key-prefix: publish-java-${{ matrix.classifier }}
+
+            - uses: kreuzberg-dev/actions/build-java-natives@v1
+              with:
+                  target: ${{ matrix.target }}
+                  crate-name: kreuzcrawl-ffi
+                  lib-name: kreuzcrawl_ffi
+                  classifier: ${{ matrix.classifier }}
+
+            - uses: actions/upload-artifact@v7.0.1
+              with:
+                  name: java-natives-${{ matrix.classifier }}
+                  path: dist/java-natives
+                  if-no-files-found: error
+                  retention-days: 14
+
+    java-natives-musl:
+        name: Build Java natives (linux-musl-${{ matrix.arch }})
+        needs: [prepare, check-maven]
+        if: ${{ needs.prepare.outputs.release_java == 'true' && (needs.check-maven.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
+        runs-on: ${{ matrix.os }}
+        timeout-minutes: 180
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - {
+                          os: ubuntu-latest,
+                          arch: x86_64,
+                          target: x86_64-unknown-linux-musl,
+                          classifier: linux-musl-x86_64,
+                      }
+                    - {
+                          os: ubuntu-24.04-arm,
+                          arch: aarch64,
+                          target: aarch64-unknown-linux-musl,
+                          classifier: linux-musl-aarch64,
+                      }
+        steps:
+            - uses: actions/checkout@v6.0.2
+              with:
+                  ref: ${{ needs.prepare.outputs.checkout_ref }}
+                  fetch-depth: 0
+                  submodules: recursive
+
+            - uses: kreuzberg-dev/actions/free-disk-space-linux@v1
+
+            - name: Build musl FFI via Docker
+              # Inline: building cdylib for musl on the host runner fails to link
+              # libgcc_s.so.1; kreuzcrawl's Dockerfile.musl-ffi runs on Alpine
+              # (native musl) and produces a self-contained libkreuzcrawl_ffi.so.
+              shell: bash
+              run: |
+                  docker build -f docker/Dockerfile.musl-ffi --output type=local,dest=./dist .
+                  file dist/libkreuzcrawl_ffi.so
+
+            - name: Stage musl libkreuzcrawl_ffi.so under Java natives layout
+              shell: bash
+              env:
+                  CLASSIFIER: ${{ matrix.classifier }}
+              run: |
+                  STAGE="dist/java-natives/native/${CLASSIFIER}"
+                  mkdir -p "$STAGE"
+                  cp dist/libkreuzcrawl_ffi.so "$STAGE/libkreuzcrawl_ffi.so"
+                  ls -la "$STAGE"
+
+            - uses: actions/upload-artifact@v7.0.1
+              with:
+                  name: java-natives-${{ matrix.classifier }}
+                  path: dist/java-natives
+                  if-no-files-found: error
+                  retention-days: 14
+
+    csharp-natives:
+        name: Build C# natives (${{ matrix.rid }})
+        needs: [prepare, check-nuget]
+        if: ${{ needs.prepare.outputs.release_csharp == 'true' && (needs.check-nuget.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
+        runs-on: ${{ matrix.os }}
+        timeout-minutes: 180
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - { os: ubuntu-latest, rid: linux-x64, target: x86_64-unknown-linux-gnu }
+                    - { os: ubuntu-24.04-arm, rid: linux-arm64, target: aarch64-unknown-linux-gnu }
+                    - { os: macos-latest, rid: osx-arm64, target: aarch64-apple-darwin }
+                    - { os: macos-15-intel, rid: osx-x64, target: x86_64-apple-darwin }
+                    - { os: windows-latest, rid: win-x64, target: x86_64-pc-windows-msvc }
+        steps:
+            - uses: actions/checkout@v6.0.2
+              with:
+                  ref: ${{ needs.prepare.outputs.checkout_ref }}
+                  fetch-depth: 0
+                  submodules: recursive
+
+            - name: Free disk space
+              if: runner.os == 'Linux'
+              uses: kreuzberg-dev/actions/free-disk-space-linux@v1
+
+            - uses: kreuzberg-dev/actions/setup-rust@v1
+              with:
+                  target: ${{ matrix.target }}
+                  cache-key-prefix: publish-csharp-${{ matrix.rid }}
+
+            - uses: kreuzberg-dev/actions/build-csharp-natives@v1
+              with:
+                  target: ${{ matrix.target }}
+                  crate-name: kreuzcrawl-ffi
+                  lib-name: kreuzcrawl_ffi
+                  rid: ${{ matrix.rid }}
+
+            - uses: actions/upload-artifact@v7.0.1
+              with:
+                  name: csharp-natives-${{ matrix.rid }}
+                  path: dist/csharp-natives
+                  if-no-files-found: error
+                  retention-days: 14
+
+    csharp-natives-musl:
+        name: Build C# natives (linux-musl-${{ matrix.arch }})
+        needs: [prepare, check-nuget]
+        if: ${{ needs.prepare.outputs.release_csharp == 'true' && (needs.check-nuget.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
+        runs-on: ${{ matrix.os }}
+        timeout-minutes: 180
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - { os: ubuntu-latest, arch: x64, target: x86_64-unknown-linux-musl, rid: linux-musl-x64 }
+                    - { os: ubuntu-24.04-arm, arch: arm64, target: aarch64-unknown-linux-musl, rid: linux-musl-arm64 }
+        steps:
+            - uses: actions/checkout@v6.0.2
+              with:
+                  ref: ${{ needs.prepare.outputs.checkout_ref }}
+                  fetch-depth: 0
+                  submodules: recursive
+
+            - uses: kreuzberg-dev/actions/free-disk-space-linux@v1
+
+            - uses: kreuzberg-dev/actions/setup-rust@v1
+              with:
+                  target: ${{ matrix.target }}
+                  cache-key-prefix: publish-csharp-${{ matrix.rid }}
+
+            - uses: kreuzberg-dev/actions/build-csharp-natives@v1
+              with:
+                  target: ${{ matrix.target }}
+                  crate-name: kreuzcrawl-ffi
+                  lib-name: kreuzcrawl_ffi
+                  rid: ${{ matrix.rid }}
+
+            - uses: actions/upload-artifact@v7.0.1
+              with:
+                  name: csharp-natives-${{ matrix.rid }}
+                  path: dist/csharp-natives
+                  if-no-files-found: error
+                  retention-days: 14
+
+    elixir-natives:
+        name: Build Elixir NIF (${{ matrix.label }} nif-${{ matrix.nif }})
+        needs: [prepare, check-elixir-release, publish-crates]
+        if: ${{ !cancelled() && needs.publish-crates.result != 'failure' && needs.prepare.outputs.release_elixir == 'true' && (needs.check-elixir-release.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
+        runs-on: ${{ matrix.os }}
+        timeout-minutes: 180
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - { os: ubuntu-latest, label: linux-x86_64, target: x86_64-unknown-linux-gnu }
+                    - { os: ubuntu-24.04-arm, label: linux-aarch64, target: aarch64-unknown-linux-gnu }
+                    - { os: macos-latest, label: macos-arm64, target: aarch64-apple-darwin }
+                    - { os: macos-15-intel, label: macos-x86_64, target: x86_64-apple-darwin }
+                    - { os: windows-latest, label: windows-x86_64, target: x86_64-pc-windows-msvc }
+                nif: ["2.16", "2.17"]
+        steps:
+            - uses: actions/checkout@v6.0.2
+              with:
+                  ref: ${{ needs.prepare.outputs.checkout_ref }}
+                  fetch-depth: 0
+                  submodules: recursive
+
+            - name: Free disk space
+              if: runner.os == 'Linux'
+              uses: kreuzberg-dev/actions/free-disk-space-linux@v1
+
+            - uses: erlef/setup-beam@v1.24
+              with:
+                  elixir-version: "1.17"
+                  otp-version: "27"
+
+            - uses: kreuzberg-dev/actions/setup-rust@v1
+              with:
+                  target: ${{ matrix.target }}
+                  cache-key-prefix: publish-elixir-${{ matrix.label }}
+
+            - uses: kreuzberg-dev/actions/build-elixir-natives@v1
+              with:
+                  target: ${{ matrix.target }}
+                  nif-crate-name: kreuzcrawl_nif
+                  nif-crate-path: packages/elixir/native/kreuzcrawl_nif
+                  package-dir: packages/elixir
+                  nif-version: ${{ needs.prepare.outputs.version }}
+                  nif-api-version: ${{ matrix.nif }}
+
+            - uses: actions/upload-artifact@v7.0.1
+              with:
+                  name: elixir-${{ matrix.label }}-nif-${{ matrix.nif }}
+                  path: dist/elixir-natives/*.tar.gz
+                  if-no-files-found: error
+                  retention-days: 14
+
+    elixir-natives-musl:
+        name: Build Elixir NIF (linux-musl-${{ matrix.arch }} nif-${{ matrix.nif }})
+        needs: [prepare, check-elixir-release, publish-crates]
+        if: ${{ !cancelled() && needs.publish-crates.result != 'failure' && needs.prepare.outputs.release_elixir == 'true' && (needs.check-elixir-release.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
+        runs-on: ${{ matrix.os }}
+        timeout-minutes: 180
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - { os: ubuntu-latest, arch: x86_64, target: x86_64-unknown-linux-musl }
+                    - { os: ubuntu-24.04-arm, arch: aarch64, target: aarch64-unknown-linux-musl }
+                nif: ["2.16", "2.17"]
+        steps:
+            - uses: actions/checkout@v6.0.2
+              with:
+                  ref: ${{ needs.prepare.outputs.checkout_ref }}
+                  fetch-depth: 0
+                  submodules: recursive
+
+            - uses: kreuzberg-dev/actions/free-disk-space-linux@v1
+
+            - uses: erlef/setup-beam@v1.24
+              with:
+                  elixir-version: "1.17"
+                  otp-version: "27"
+
+            - uses: kreuzberg-dev/actions/setup-rust@v1
+              with:
+                  target: ${{ matrix.target }}
+                  cache-key-prefix: publish-elixir-musl-${{ matrix.arch }}
+
+            - uses: kreuzberg-dev/actions/build-elixir-natives@v1
+              with:
+                  target: ${{ matrix.target }}
+                  nif-crate-name: kreuzcrawl_nif
+                  nif-crate-path: packages/elixir/native/kreuzcrawl_nif
+                  package-dir: packages/elixir
+                  nif-version: ${{ needs.prepare.outputs.version }}
+                  nif-api-version: ${{ matrix.nif }}
+
+            - uses: actions/upload-artifact@v7.0.1
+              with:
+                  name: elixir-musl-${{ matrix.arch }}-nif-${{ matrix.nif }}
+                  path: dist/elixir-natives/*.tar.gz
+                  if-no-files-found: error
+                  retention-days: 14
+
+    swift-artifactbundle:
+        name: Build Swift artifact bundle
+        needs: prepare
+        if: ${{ needs.prepare.outputs.release_swift == 'true' }}
+        runs-on: macos-latest
+        steps:
+            - uses: actions/checkout@v6.0.2
+              with:
+                  ref: ${{ needs.prepare.outputs.checkout_ref }}
+                  fetch-depth: 0
+            - uses: kreuzberg-dev/actions/setup-rust@v1
+            - uses: kreuzberg-dev/actions/build-swift-artifactbundle@v1
+              id: bundle
+              with:
+                  crate-name: kreuzcrawl-swift
+                  artifact-name: KreuzcrawlSwift
+            - uses: actions/upload-artifact@v7.0.1
+              with:
+                  name: swift-artifactbundle
+                  path: ${{ steps.bundle.outputs.bundle-zip }}
+                  if-no-files-found: error
+                  retention-days: 14
+
+    swift-package:
+        name: Build Swift package
+        needs: prepare
+        if: ${{ needs.prepare.outputs.release_swift == 'true' }}
+        runs-on: macos-latest
+        steps:
+            - uses: actions/checkout@v6.0.2
+              with:
+                  ref: ${{ needs.prepare.outputs.checkout_ref }}
+                  fetch-depth: 0
+
+            - uses: kreuzberg-dev/actions/setup-rust@v1
+
+            - uses: kreuzberg-dev/actions/build-swift-package@v1
+              with:
+                  package-dir: packages/swift
+                  crate-name: kreuzcrawl-swift
+
+            - uses: actions/upload-artifact@v7.0.1
+              with:
+                  name: swift-package
+                  path: packages/swift
+                  retention-days: 14
+
+    zig-package:
+        name: Build Zig package (smoke check)
+        needs: prepare
+        if: ${{ needs.prepare.outputs.release_zig == 'true' }}
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v6.0.2
+              with:
+                  ref: ${{ needs.prepare.outputs.checkout_ref }}
+                  fetch-depth: 0
+
+            - uses: kreuzberg-dev/actions/setup-rust@v1
+
+            - uses: kreuzberg-dev/actions/build-zig-package@v1
+              with:
+                  ffi-crate: kreuzcrawl-ffi
+                  package-dir: packages/zig
+
+    # ─── GitHub Release asset uploads ─────────────────────────────────────
+
+    upload-cli-release:
+        name: Upload CLI binaries to GitHub Release
+        needs: [prepare, cli-binaries, cli-musl-binaries]
+        if: ${{ needs.prepare.outputs.is_tag == 'true' && (needs.cli-binaries.result == 'success' || needs.cli-musl-binaries.result == 'success') }}
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/download-artifact@v8.0.1
+              with:
+                  pattern: cli-*
+                  path: dist/cli
+                  merge-multiple: true
+
+            - uses: kreuzberg-dev/actions/upload-release-assets@v1
+              with:
+                  tag: ${{ needs.prepare.outputs.tag }}
+                  working-directory: dist/cli
+                  dry-run: ${{ needs.prepare.outputs.dry_run }}
+                  assets: |
+                      kreuzcrawl-cli-*.tar.gz
+                      kreuzcrawl-cli-*.zip
+
+    upload-go-release:
+        name: Upload Go FFI archives to GitHub Release
+        needs: [prepare, go-ffi-libraries]
+        if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.go-ffi-libraries.result == 'success' }}
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/download-artifact@v8.0.1
+              with:
+                  pattern: go-ffi-*
+                  path: dist/go-ffi
+                  merge-multiple: true
+
+            - uses: kreuzberg-dev/actions/upload-release-assets@v1
+              with:
+                  tag: ${{ needs.prepare.outputs.tag }}
+                  working-directory: dist/go-ffi
+                  dry-run: ${{ needs.prepare.outputs.dry_run }}
+                  assets: kreuzcrawl-go-*.tar.gz
+
+    upload-c-ffi-release:
+        name: Upload C FFI archives to GitHub Release
+        needs: [prepare, c-ffi-libraries]
+        if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.c-ffi-libraries.result == 'success' }}
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/download-artifact@v8.0.1
+              with:
+                  pattern: c-ffi-*
+                  path: dist/c-ffi
+                  merge-multiple: true
+
+            - uses: kreuzberg-dev/actions/upload-release-assets@v1
+              with:
+                  tag: ${{ needs.prepare.outputs.tag }}
+                  working-directory: dist/c-ffi
+                  dry-run: ${{ needs.prepare.outputs.dry_run }}
+                  assets: kreuzcrawl-ffi-*.tar.gz
+
+    upload-elixir-release:
+        name: Upload Elixir NIF archives to GitHub Release
+        needs: [prepare, elixir-natives, elixir-natives-musl]
+        if: ${{ needs.prepare.outputs.is_tag == 'true' && (needs.elixir-natives.result == 'success' || needs.elixir-natives-musl.result == 'success') }}
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/download-artifact@v8.0.1
+              with:
+                  pattern: elixir-*
+                  path: dist/elixir
+                  merge-multiple: true
+
+            - uses: kreuzberg-dev/actions/upload-release-assets@v1
+              with:
+                  tag: ${{ needs.prepare.outputs.tag }}
+                  working-directory: dist/elixir
+                  dry-run: ${{ needs.prepare.outputs.dry_run }}
+                  assets: libkreuzcrawl_nif-*.tar.gz
+
+    upload-php-pie-release:
+        name: Upload PHP PIE archives to GitHub Release
+        needs: [prepare, php-extension]
+        if: ${{ needs.prepare.outputs.is_tag == 'true' && needs.php-extension.result == 'success' }}
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/download-artifact@v8.0.1
+              with:
+                  pattern: php-package-*
+                  path: dist/php-package
+                  merge-multiple: true
+
+            - uses: kreuzberg-dev/actions/upload-release-assets@v1
+              with:
+                  tag: ${{ needs.prepare.outputs.tag }}
+                  working-directory: dist/php-package
+                  dry-run: ${{ needs.prepare.outputs.dry_run }}
+                  assets: |
+                      php_*.tgz
+                      php_*.tgz.sha256
+                      php_*.zip
+                      php_*.zip.sha256
+
+    # Verifies every expected release asset is present on the GitHub release
+    # before the publish-* fan-out depends on those URLs.
+    verify-assets:
+        name: Verify release assets
+        needs:
+            - prepare
+            - upload-cli-release
+            - upload-go-release
+            - upload-c-ffi-release
+            - upload-elixir-release
+            - upload-php-pie-release
+        if: ${{ always() && needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.dry_run != 'true' && !contains(needs.*.result, 'failure') }}
+        runs-on: ubuntu-latest
+        steps:
+            - uses: kreuzberg-dev/actions/verify-release-assets@v1
+              with:
+                  tag: ${{ needs.prepare.outputs.tag }}
+                  expected-assets: |
+                      # CLI
+                      kreuzcrawl-cli-*.tar.gz
+                      kreuzcrawl-cli-*.zip
+                      # Go FFI
+                      kreuzcrawl-go-*.tar.gz
+                      # C FFI
+                      kreuzcrawl-ffi-*.tar.gz
+                      # Elixir NIF
+                      libkreuzcrawl_nif-*.tar.gz
+
+    # ─── Publish jobs ─────────────────────────────────────────────────────
+
+    publish-crates:
+        name: Publish crates.io packages
+        needs: [prepare, validate-versions, check-cratesio]
+        if: ${{ needs.prepare.outputs.release_crates == 'true' && needs.prepare.outputs.is_tag == 'true' && (needs.check-cratesio.outputs.all_exist != 'true' || needs.prepare.outputs.force_republish == 'true') }}
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            id-token: write
+        steps:
+            - uses: actions/checkout@v6.0.2
+              with:
+                  ref: ${{ needs.prepare.outputs.ref }}
+                  submodules: recursive
+
+            - uses: kreuzberg-dev/actions/setup-rust@v1
+              with:
+                  cache-key-prefix: publish-crates
+
+            - uses: kreuzberg-dev/actions/publish-crates@v1
+              with:
+                  # Order matters: kreuzcrawl-browser is a hard dep of kreuzcrawl
+                  # (path-only deps are rejected by cargo publish), and kreuzcrawl
+                  # is depended on by both kreuzcrawl-bindings-common and
+                  # kreuzcrawl-cli, so each must land on the index before its
+                  # dependents try to resolve.
+                  crates: kreuzcrawl-browser kreuzcrawl kreuzcrawl-bindings-common kreuzcrawl-cli
+                  version: ${{ needs.prepare.outputs.version }}
+                  dry-run: ${{ needs.prepare.outputs.dry_run }}
+
+    publish-pypi:
+        name: Publish to PyPI
+        needs: [prepare, python-wheels, python-sdist, check-pypi]
+        if: ${{ needs.prepare.outputs.release_python == 'true' && needs.prepare.outputs.is_tag == 'true' && (needs.check-pypi.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
+        runs-on: ubuntu-latest
+        environment: pypi
+        permissions:
+            contents: read
+            id-token: write
+        steps:
+            - uses: actions/download-artifact@v8.0.1
+              with:
+                  pattern: python-wheels-*
+                  path: dist
+                  merge-multiple: true
+            - uses: actions/download-artifact@v8.0.1
+              with:
+                  name: python-sdist
+                  path: dist
+
+            - uses: kreuzberg-dev/actions/publish-pypi@v1
+              with:
+                  packages-dir: dist
+                  dry-run: ${{ needs.prepare.outputs.dry_run }}
+
+    publish-rubygems:
+        name: Publish Ruby gems
+        needs: [prepare, ruby-gem, check-rubygems]
+        if: ${{ needs.prepare.outputs.release_ruby == 'true' && needs.prepare.outputs.is_tag == 'true' && (needs.check-rubygems.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            id-token: write
+        steps:
+            - uses: actions/download-artifact@v8.0.1
+              with:
+                  pattern: rubygems-*
+                  path: dist
+                  merge-multiple: true
+
+            - uses: ruby/setup-ruby@v1.308.0
+              with:
+                  ruby-version: "3.3"
+                  bundler-cache: false
+
+            - uses: rubygems/configure-rubygems-credentials@v2.0.0
+
+            - uses: kreuzberg-dev/actions/publish-rubygems@v1
+              with:
+                  gems-dir: dist
+                  dry-run: ${{ needs.prepare.outputs.dry_run }}
+
+    publish-node:
+        name: Publish Node packages
+        needs: [prepare, node-bindings, check-npm]
+        if: ${{ needs.prepare.outputs.release_node == 'true' && needs.prepare.outputs.is_tag == 'true' && (needs.check-npm.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            id-token: write
+        steps:
+            - uses: actions/checkout@v6.0.2
+              with:
+                  ref: ${{ needs.prepare.outputs.ref }}
+                  submodules: recursive
+
+            - uses: actions/download-artifact@v8.0.1
+              with:
+                  pattern: node-bindings-*
+                  path: crates/kreuzcrawl-node/artifacts
+                  merge-multiple: true
+
+            - uses: kreuzberg-dev/actions/setup-node-workspace@v1
+              with:
+                  node-version: "22"
+
+            - name: Stage platform packages with napi
+              # Inline: napi artifacts → per-platform npm/ subpackages, then drop the
+              # downloaded index.js + index.d.ts (uploaded by every matrix build run;
+              # identical across platforms, merge-multiple deduplicates) at the
+              # package root so they ship in the published tarball.
+              working-directory: crates/kreuzcrawl-node
+              shell: bash
+              run: |
+                  pnpm exec napi create-npm-dirs
+                  pnpm exec napi artifacts --output-dir artifacts --npm-dir npm
+                  cp artifacts/index.js artifacts/index.d.ts .
+
+            - name: Pack platform tarballs for publishing
+              # Inline: per-platform package.json patching + npm pack. The wrapper
+              # script lives at scripts/publish/pack-node-platform-packages.sh
+              # because it is shared with manual reproduction.
+              shell: bash
+              run: scripts/publish/pack-node-platform-packages.sh crates/kreuzcrawl-node/npm
+
+            - name: Publish platform sub-packages
+              uses: kreuzberg-dev/actions/publish-npm@v1
+              with:
+                  packages-dir: crates/kreuzcrawl-node/npm
+                  npm-tag: ${{ needs.prepare.outputs.npm_tag }}
+                  dry-run: ${{ needs.prepare.outputs.dry_run }}
+
+            - name: Wait for npm indexing (linux-x64-gnu)
+              if: ${{ needs.prepare.outputs.dry_run != 'true' }}
+              uses: kreuzberg-dev/actions/wait-for-package@v1
+              with:
+                  registry: npm
+                  package: "@kreuzberg/kreuzcrawl-linux-x64-gnu"
+                  version: ${{ needs.prepare.outputs.version }}
+                  max-attempts: "25"
+
+            - name: Publish main @kreuzberg/kreuzcrawl package
+              uses: kreuzberg-dev/actions/publish-npm@v1
+              with:
+                  package-dir: crates/kreuzcrawl-node
+                  npm-tag: ${{ needs.prepare.outputs.npm_tag }}
+                  dry-run: ${{ needs.prepare.outputs.dry_run }}
+
+    publish-wasm:
+        name: Publish WASM package
+        needs: [prepare, wasm-bindings, check-wasm]
+        if: ${{ needs.prepare.outputs.release_wasm == 'true' && needs.prepare.outputs.is_tag == 'true' && (needs.check-wasm.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            id-token: write
+        steps:
+            - uses: actions/checkout@v6.0.2
+              with:
+                  ref: ${{ needs.prepare.outputs.ref }}
+                  submodules: recursive
+
+            - uses: actions/download-artifact@v8.0.1
+              with:
+                  name: wasm-bundle
+                  path: crates/kreuzcrawl-wasm
+
+            - uses: kreuzberg-dev/actions/setup-node-workspace@v1
+              with:
+                  node-version: "22"
+
+            - uses: kreuzberg-dev/actions/publish-npm@v1
+              with:
+                  package-dir: crates/kreuzcrawl-wasm
+                  npm-tag: ${{ needs.prepare.outputs.npm_tag }}
+                  provenance: "true"
+                  dry-run: ${{ needs.prepare.outputs.dry_run }}
+
+    publish-packagist:
+        name: Trigger Packagist update
+        needs: [prepare, upload-php-pie-release, check-packagist]
+        if: ${{ needs.prepare.outputs.release_php == 'true' && needs.prepare.outputs.is_tag == 'true' && (needs.check-packagist.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
+        runs-on: ubuntu-latest
+        steps:
+            - uses: kreuzberg-dev/actions/publish-packagist@v1
+              with:
+                  packagist-username: kreuzberg-dev
+                  package-name: kreuzberg-dev/kreuzcrawl
+                  version: ${{ needs.prepare.outputs.version }}
+                  repository-url: https://github.com/kreuzberg-dev/kreuzcrawl
+                  dry-run: ${{ needs.prepare.outputs.dry_run }}
+              env:
+                  PACKAGIST_API_TOKEN: ${{ secrets.PACKAGIST_API_TOKEN }}
+
+    publish-maven:
+        name: Publish Maven (Java) package
+        needs: [prepare, java-natives, java-natives-musl, check-maven]
+        if: ${{ needs.prepare.outputs.release_java == 'true' && needs.prepare.outputs.is_tag == 'true' && (needs.check-maven.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v6.0.2
+              with:
+                  ref: ${{ needs.prepare.outputs.ref }}
+                  submodules: recursive
+
+            - uses: actions/download-artifact@v8.0.1
+              with:
+                  pattern: java-natives-*
+                  path: java-natives
+                  merge-multiple: true
+
+            - name: Stage natives into resources
+              # Inline: copy classifier-bucketed libs from artifact tree into
+              # packages/java/src/main/resources/natives/<classifier>/. Tightly
+              # coupled to the Maven resource layout — no shared action covers it.
+              shell: bash
+              run: |
+                  mkdir -p packages/java/src/main/resources/natives
+                  for dir in java-natives/native/*/; do
+                    classifier="$(basename "$dir")"
+                    mkdir -p "packages/java/src/main/resources/natives/${classifier}"
+                    cp -v "${dir}"/* "packages/java/src/main/resources/natives/${classifier}/"
+                  done
+
+            - uses: actions/setup-java@v5.2.0
+              with:
+                  distribution: temurin
+                  java-version: "21"
+                  cache: maven
+                  server-id: central
+                  server-username: MAVEN_USERNAME
+                  server-password: MAVEN_PASSWORD
+                  gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+                  gpg-passphrase: MAVEN_GPG_PASSPHRASE
+
+            - uses: kreuzberg-dev/actions/setup-maven@v1
+
+            - uses: kreuzberg-dev/actions/configure-maven-gpg@v1
+              with:
+                  pom-file: packages/java/pom.xml
+
+            - uses: kreuzberg-dev/actions/publish-maven@v1
+              with:
+                  pom-file: packages/java/pom.xml
+                  maven-profile: publish
+                  extra-args: -DskipTests
+                  dry-run: ${{ needs.prepare.outputs.dry_run }}
+              env:
+                  MAVEN_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+                  MAVEN_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
+                  MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
+    publish-nuget:
+        name: Publish NuGet package
+        needs: [prepare, csharp-natives, csharp-natives-musl, check-nuget]
+        if: ${{ needs.prepare.outputs.release_csharp == 'true' && needs.prepare.outputs.is_tag == 'true' && (needs.check-nuget.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            id-token: write
+        steps:
+            - uses: actions/checkout@v6.0.2
+              with:
+                  ref: ${{ needs.prepare.outputs.ref }}
+                  submodules: recursive
+
+            - uses: actions/download-artifact@v8.0.1
+              with:
+                  pattern: csharp-natives-*
+                  path: csharp-natives
+                  merge-multiple: true
+
+            - name: Stage runtimes/<rid>/native into NuGet project
+              # Inline: NuGet expects native libs in runtimes/<rid>/native/ adjacent
+              # to the project. Copy from artifact tree into the C# project.
+              shell: bash
+              run: |
+                  mkdir -p packages/csharp/runtimes
+                  for dir in csharp-natives/runtimes/*/; do
+                    rid="$(basename "$dir")"
+                    mkdir -p "packages/csharp/runtimes/${rid}/native"
+                    cp -v "${dir}native/"* "packages/csharp/runtimes/${rid}/native/"
+                  done
+
+            - uses: actions/setup-dotnet@v5.2.0
+              with:
+                  dotnet-version: "8.0.x"
+
+            - name: Pack NuGet package
+              # Inline: dotnet pack with the version override against the .slnx; one-liner.
+              shell: bash
+              run: |
+                  dotnet pack packages/csharp/Kreuzcrawl.slnx \
+                    -c Release \
+                    -p:Version=${{ needs.prepare.outputs.version }} \
+                    -o dist/nuget
+
+            - uses: kreuzberg-dev/actions/publish-nuget@v1
+              with:
+                  packages-dir: dist/nuget
+                  dry-run: ${{ needs.prepare.outputs.dry_run }}
+              env:
+                  NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+
+    publish-hex:
+        name: Publish Elixir Hex package
+        needs: [prepare, upload-elixir-release, check-hex]
+        if: ${{ needs.prepare.outputs.release_elixir == 'true' && needs.prepare.outputs.is_tag == 'true' && (needs.check-hex.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v6.0.2
+              with:
+                  ref: ${{ needs.prepare.outputs.ref }}
+                  fetch-depth: 0
+                  submodules: recursive
+
+            - uses: erlef/setup-beam@v1.24
+              with:
+                  elixir-version: "1.17"
+                  otp-version: "27"
+
+            - uses: kreuzberg-dev/actions/setup-rust@v1
+
+            - name: Generate NIF checksum file
+              uses: kreuzberg-dev/actions/generate-elixir-checksums@v1
+              with:
+                  github-repo: ${{ github.repository }}
+                  tag: ${{ needs.prepare.outputs.tag }}
+                  version: ${{ needs.prepare.outputs.version }}
+                  lib-name: kreuzcrawl_nif
+                  nif-versions: "2.16,2.17"
+                  targets: x86_64-unknown-linux-gnu,aarch64-unknown-linux-gnu,x86_64-unknown-linux-musl,aarch64-unknown-linux-musl,aarch64-apple-darwin,x86_64-apple-darwin,x86_64-pc-windows-msvc
+                  output-path: packages/elixir/checksum-Elixir.Kreuzcrawl.Native.exs
+
+            - uses: kreuzberg-dev/actions/build-elixir-hex@v1
+              with:
+                  package-dir: packages/elixir
+                  nif-crate-path: packages/elixir/native/kreuzcrawl_nif
+                  dry-run: ${{ needs.prepare.outputs.dry_run }}
+
+            - uses: kreuzberg-dev/actions/publish-hex@v1
+              with:
+                  package-dir: packages/elixir
+                  dry-run: ${{ needs.prepare.outputs.dry_run }}
+              env:
+                  HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
+
+    kotlin-android-natives:
+        name: Build kotlin-android natives (${{ matrix.abi }})
+        needs: prepare
+        if: ${{ needs.prepare.outputs.release_kotlin_android == 'true' }}
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - abi: arm64-v8a
+                      target: aarch64-linux-android
+                    - abi: x86_64
+                      target: x86_64-linux-android
+                    - abi: armeabi-v7a
+                      target: armv7-linux-androideabi
+                    - abi: x86
+                      target: i686-linux-android
+        steps:
+            - uses: actions/checkout@v6.0.2
+              with:
+                  ref: ${{ needs.prepare.outputs.ref }}
+                  submodules: recursive
+
+            - uses: kreuzberg-dev/actions/setup-rust@v1
+              with:
+                  target: ${{ matrix.target }}
+                  cache-key-prefix: kotlin-android-${{ matrix.abi }}
+
+            - uses: kreuzberg-dev/actions/setup-android-ndk@v1
+
+            - uses: kreuzberg-dev/actions/build-android-natives@v1
+              with:
+                  crate-name: kreuzcrawl-ffi
+                  lib-name: kreuzcrawl_ffi
+                  abi: ${{ matrix.abi }}
+                  target: ${{ matrix.target }}
+
+            - uses: actions/upload-artifact@v7.0.1
+              with:
+                  name: kotlin-android-${{ matrix.abi }}
+                  path: dist/android-natives/${{ matrix.abi }}/
+                  if-no-files-found: error
+
+    publish-kotlin-android:
+        name: Publish kotlin-android (Maven Central via Gradle)
+        needs: [prepare, kotlin-android-natives, check-maven-kotlin-android]
+        if: ${{ needs.prepare.outputs.release_kotlin_android == 'true' && needs.prepare.outputs.is_tag == 'true' && (needs.check-maven-kotlin-android.outputs.kotlin_android_exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v6.0.2
+              with:
+                  ref: ${{ needs.prepare.outputs.ref }}
+
+            - uses: actions/download-artifact@v8.0.1
+              with:
+                  pattern: kotlin-android-*
+                  path: kotlin-android-natives
+                  merge-multiple: false
+
+            - name: Stage natives into AAR jniLibs
+              run: |
+                  for abi in arm64-v8a x86_64 armeabi-v7a x86; do
+                    src="kotlin-android-natives/kotlin-android-${abi}"
+                    [ -d "$src" ] || continue
+                    mkdir -p "packages/kotlin-android/src/main/jniLibs/${abi}"
+                    cp -v "${src}/libkreuzcrawl_ffi.so" \
+                          "packages/kotlin-android/src/main/jniLibs/${abi}/"
+                  done
+              shell: bash
+
+            - uses: kreuzberg-dev/actions/publish-maven-gradle@v1
+              with:
+                  working-directory: packages/kotlin-android
+                  gradle-task: publishAndReleaseToMavenCentral
+                  dry-run: ${{ needs.prepare.outputs.dry_run }}
+              env:
+                  MAVEN_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+                  MAVEN_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
+                  MAVEN_GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+                  MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
+    publish-zig:
+        name: Publish Zig package metadata
+        needs: [prepare, zig-package, check-zig]
+        if: ${{ needs.prepare.outputs.release_zig == 'true' && needs.prepare.outputs.is_tag == 'true' && (needs.check-zig.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v6.0.2
+              with:
+                  ref: ${{ needs.prepare.outputs.ref }}
+                  submodules: recursive
+
+            - uses: kreuzberg-dev/actions/publish-zig@v1
+              with:
+                  working-directory: packages/zig
+                  tag: ${{ needs.prepare.outputs.tag }}
+                  # Override the auto-detected package-name (`kreuzcrawl` from
+                  # build.zig.zon) to match the alef-emitted test_app URL pattern
+                  # `{crate-name}-zig-v{version}.tar.gz`. Without this, the asset
+                  # uploads as `kreuzcrawl-v{version}.tar.gz` while test_apps/zig
+                  # fetches `kreuzcrawl-zig-v{version}.tar.gz` → 404 + consumer
+                  # build.zig.zon TODO hash.
+                  package-name: kreuzcrawl-zig
+                  update-release-notes: "true"
+                  dry-run: ${{ needs.prepare.outputs.dry_run }}
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    # ─── Homebrew (real-brew bottles) ─────────────────────────────────────
+    #
+    # Three-job topology mirrors tslp/h2m: update formula source URL+SHA in
+    # the tap first so `brew install --build-bottle` has a buildable formula,
+    # then build real bottles per platform via `homebrew-build-bottles@v1`,
+    # then merge per-platform JSON manifests into the formula's `bottle do`
+    # block via `homebrew-merge-bottles@v1`.
+
+    publish-homebrew-formula:
+        name: Update Homebrew formula source
+        needs: [prepare, check-homebrew, upload-cli-release]
+        if: |
+            always() &&
+            needs.prepare.outputs.release_homebrew == 'true' &&
+            needs.prepare.outputs.is_tag == 'true' &&
+            needs.prepare.outputs.dry_run != 'true' &&
+            needs.upload-cli-release.result == 'success' &&
+            (needs.check-homebrew.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true')
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        permissions:
+            contents: write
+        steps:
+            - name: Checkout source repo
+              uses: actions/checkout@v6.0.2
+              with:
+                  ref: ${{ needs.prepare.outputs.checkout_ref }}
+
+            - name: Checkout homebrew-tap
+              uses: actions/checkout@v6.0.2
+              with:
+                  repository: kreuzberg-dev/homebrew-tap
+                  token: ${{ secrets.HOMEBREW_TOKEN }}
+                  path: homebrew-tap
+
+            - name: Update formula source url + sha256
+              env:
+                  TAG: ${{ needs.prepare.outputs.tag }}
+                  VERSION: ${{ needs.prepare.outputs.version }}
+                  TAP_DIR: ${{ github.workspace }}/homebrew-tap
+              run: scripts/publish/update-homebrew-formula.sh
+
+            - name: Commit and push to tap
+              working-directory: homebrew-tap
+              env:
+                  GH_TOKEN: ${{ secrets.HOMEBREW_TOKEN }}
+              # Inline: tap-side commit/push — bot identity is repo-specific.
+              run: |
+                  git config user.name "kreuzberg-bot"
+                  git config user.email "bot@kreuzberg.dev"
+                  if git diff --quiet Formula/; then
+                    echo "No formula changes; skipping commit."
+                    exit 0
+                  fi
+                  git add Formula/kreuzcrawl.rb
+                  git commit -m "kreuzcrawl ${{ needs.prepare.outputs.version }}"
+                  git push origin HEAD
+
+    homebrew-bottles:
+        name: Build Homebrew bottle (${{ matrix.bottle_tag }})
+        needs: [prepare, publish-homebrew-formula]
+        if: |
+            always() &&
+            needs.prepare.outputs.dry_run != 'true' &&
+            needs.publish-homebrew-formula.result == 'success'
+        runs-on: ${{ matrix.os }}
+        timeout-minutes: 180
+        permissions:
+            contents: write
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - { os: macos-latest, bottle_tag: arm64_sequoia, install_brew: false }
+                    - { os: macos-15-intel, bottle_tag: sequoia, install_brew: false }
+                    - { os: ubuntu-latest, bottle_tag: x86_64_linux, install_brew: true }
+                    - { os: ubuntu-24.04-arm, bottle_tag: arm64_linux, install_brew: true }
+        steps:
+            # actions/checkout@v6 regression on macos-15-intel: the includeIf-gated
+            # credential helper isn't honored by git 2.54 on that runner image, so
+            # the fetch falls back to interactive auth and fails. v5 writes the
+            # extraheader directly into .git/config and works on every runner.
+            - uses: actions/checkout@v5
+              with:
+                  ref: ${{ needs.prepare.outputs.checkout_ref }}
+
+            - name: Free disk space
+              if: runner.os == 'Linux'
+              uses: kreuzberg-dev/actions/free-disk-space-linux@v1
+
+            - name: Install Homebrew (Linux)
+              if: ${{ matrix.install_brew }}
+              uses: kreuzberg-dev/actions/install-homebrew-linux@v1
+
+            - name: Build bottles
+              uses: kreuzberg-dev/actions/homebrew-build-bottles@v1
+              with:
+                  tag: ${{ needs.prepare.outputs.tag }}
+                  version: ${{ needs.prepare.outputs.version }}
+                  tap: kreuzberg-dev/homebrew-tap
+                  formulas: |
+                      kreuzcrawl
+                  out-dir: ${{ github.workspace }}/bottle-json
+                  github-repo: ${{ github.repository }}
+                  token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Upload bottle JSON manifests
+              uses: actions/upload-artifact@v7.0.1
+              with:
+                  name: homebrew-bottle-json-${{ matrix.bottle_tag }}
+                  path: ${{ github.workspace }}/bottle-json/*.json
+                  if-no-files-found: error
+                  retention-days: 14
+
+    publish-homebrew-bottles:
+        name: Merge Homebrew bottle DSL
+        needs: [prepare, publish-homebrew-formula, homebrew-bottles]
+        if: |
+            always() &&
+            needs.prepare.outputs.dry_run != 'true' &&
+            needs.publish-homebrew-formula.result == 'success' &&
+            needs.homebrew-bottles.result == 'success'
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        permissions:
+            contents: write
+        steps:
+            - name: Checkout source repo
+              uses: actions/checkout@v6.0.2
+              with:
+                  ref: ${{ needs.prepare.outputs.checkout_ref }}
+
+            - name: Checkout homebrew-tap
+              uses: actions/checkout@v6.0.2
+              with:
+                  repository: kreuzberg-dev/homebrew-tap
+                  token: ${{ secrets.HOMEBREW_TOKEN }}
+                  path: homebrew-tap
+
+            - name: Download all bottle JSON manifests
+              uses: actions/download-artifact@v8.0.1
+              with:
+                  path: ${{ github.workspace }}/bottle-json
+                  pattern: homebrew-bottle-json-*
+                  merge-multiple: true
+
+            - name: Merge bottle DSL into formula
+              uses: kreuzberg-dev/actions/homebrew-merge-bottles@v1
+              with:
+                  tag: ${{ needs.prepare.outputs.tag }}
+                  version: ${{ needs.prepare.outputs.version }}
+                  tap-dir: ${{ github.workspace }}/homebrew-tap
+                  json-dir: ${{ github.workspace }}/bottle-json
+                  formulas: |
+                      kreuzcrawl
+                  github-repo: ${{ github.repository }}
+
+            - name: Commit and push bottle DSL
+              working-directory: homebrew-tap
+              env:
+                  GH_TOKEN: ${{ secrets.HOMEBREW_TOKEN }}
+              # Inline: tap-side commit/push — bot identity is repo-specific.
+              run: |
+                  git config user.name "kreuzberg-bot"
+                  git config user.email "bot@kreuzberg.dev"
+                  if git diff --quiet Formula/; then
+                    echo "No bottle DSL changes; skipping commit."
+                    exit 0
+                  fi
+                  git add Formula/kreuzcrawl.rb
+                  git commit -m "kreuzcrawl ${{ needs.prepare.outputs.version }} bottles"
+                  git push origin HEAD
+
+    # ─── Post-publish verification ────────────────────────────────────────
+    # For each language, install the *just-published* package from its
+    # registry and run the test_apps/<lang>/ fixture suite against it.
+    # alef test-apps run builds + spawns the e2e mock-server internally
+    # and injects MOCK_SERVER_URL into the language's test command.
+
+    verify-published-packages:
+        name: Verify published packages (${{ matrix.language }})
+        needs:
+            - prepare
+            - publish-crates
+            - publish-pypi
+            - publish-rubygems
+            - publish-node
+            - publish-wasm
+            - publish-packagist
+            - publish-maven
+            - publish-nuget
+            - publish-hex
+            - publish-zig
+            - publish-homebrew-formula
+            - publish-homebrew-bottles
+            - upload-cli-release
+            - upload-go-release
+            - upload-c-ffi-release
+        if: |
+            always() &&
+            !cancelled() &&
+            needs.prepare.outputs.is_tag == 'true' &&
+            needs.prepare.outputs.dry_run != 'true' &&
+            !contains(needs.*.result, 'failure')
+        strategy:
+            fail-fast: false
+            matrix:
+                language: [python, node, ruby, php, go, java, csharp, elixir, wasm, c, brew]
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  ref: ${{ needs.prepare.outputs.tag }}
+            - name: Build mock-server (needed by alef test-apps run)
+              # Rust ships preinstalled on ubuntu-latest. mock-server source lives
+              # under e2e/rust/ and is alef-generated; alef test-apps run shells
+              # out to its release binary.
+              run: cargo build --release --manifest-path e2e/rust/Cargo.toml
+            - uses: kreuzberg-dev/actions/run-test-apps@v1
+              with:
+                  language: ${{ matrix.language }}
+                  version: ${{ needs.prepare.outputs.version }}
+            - name: Upload test-app log on failure
+              if: failure()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: test-app-log-${{ matrix.language }}
+                  path: /tmp/test-apps-${{ matrix.language }}.log
+                  if-no-files-found: ignore
+                  retention-days: 7
+
+    # ─── Finalization ─────────────────────────────────────────────────────
+
+    release-finalize:
+        name: Finalize GitHub Release
+        needs:
+            - prepare
+            - verify-assets
+            - publish-crates
+            - publish-pypi
+            - publish-rubygems
+            - publish-node
+            - publish-wasm
+            - publish-packagist
+            - publish-maven
+            - publish-kotlin-android
+            - publish-nuget
+            - publish-hex
+            - publish-zig
+            - publish-homebrew-formula
+            - publish-homebrew-bottles
+            - upload-cli-release
+            - upload-go-release
+            - upload-c-ffi-release
+            - verify-published-packages
+        if: |
+            always() &&
+            !cancelled() &&
+            needs.prepare.outputs.is_tag == 'true' &&
+            needs.prepare.outputs.dry_run != 'true' &&
+            !contains(needs.*.result, 'failure')
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+        steps:
+            - uses: kreuzberg-dev/actions/finalize-release@v1
+              with:
+                  tag: ${{ needs.prepare.outputs.tag }}
+                  is-prerelease: ${{ needs.prepare.outputs.is_prerelease == 'true' && 'true' || 'false' }}
+                  go-module-path: packages/go
+
+    announce-discord:
+        name: Announce release on Discord
+        needs:
+            - prepare
+            - publish-crates
+            - publish-pypi
+            - publish-rubygems
+            - publish-node
+            - publish-wasm
+            - publish-packagist
+            - publish-maven
+            - publish-kotlin-android
+            - publish-nuget
+            - publish-hex
+            - publish-zig
+            - publish-homebrew-formula
+            - publish-homebrew-bottles
+            - upload-cli-release
+            - upload-go-release
+            - upload-c-ffi-release
+            - upload-elixir-release
+            - upload-php-pie-release
+            - verify-published-packages
+            - release-finalize
+        if: |
+            always() &&
+            !cancelled() &&
+            needs.prepare.outputs.is_tag == 'true' &&
+            needs.prepare.outputs.dry_run != 'true' &&
+            needs.prepare.outputs.is_prerelease != 'true' &&
+            !contains(needs.*.result, 'failure')
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+        steps:
+            - uses: kreuzberg-dev/actions/announce-release-discord@v1
+              with:
+                  tag: ${{ needs.prepare.outputs.tag }}
+                  webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+                  project-name: kreuzcrawl

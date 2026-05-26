@@ -1,31 +1,28 @@
 {
-  "id": "encoding_double_encoded",
-  "description": "Handles double-encoded URL characters (%25C3%25B6)",
-  "tags": [
-    "encoding",
-    "edge-case"
-  ],
-  "input": {
-    "config": {},
-    "mock_responses": [
-      {
-        "status_code": 200,
-        "headers": {
-          "content-type": "text/html; charset=utf-8"
-        },
-        "body_inline": "<html><body><a href=\"/path%25C3%25B6name\">Double Encoded</a><p>Content</p></body></html>"
-      }
-    ]
-  },
-  "assertions": [
-    {
-      "type": "not_empty",
-      "field": "html"
-    },
-    {
-      "type": "greater_than_or_equal",
-      "field": "links.length",
-      "value": 1
-    }
-  ]
+	"id": "encoding_double_encoded",
+	"description": "Handles double-encoded URL characters (%25C3%25B6)",
+	"tags": ["encoding", "edge-case"],
+	"input": {
+		"config": {},
+		"mock_responses": [
+			{
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><body><a href=\"/path%25C3%25B6name\">Double Encoded</a><p>Content</p></body></html>"
+			}
+		]
+	},
+	"assertions": [
+		{
+			"type": "not_empty",
+			"field": "html"
+		},
+		{
+			"type": "greater_than_or_equal",
+			"field": "links.length",
+			"value": 1
+		}
+	]
 }

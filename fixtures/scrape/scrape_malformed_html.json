@@ -1,36 +1,33 @@
 {
-  "id": "scrape_malformed_html",
-  "description": "Gracefully handles broken HTML without crashing",
-  "tags": [
-    "scrape",
-    "edge-case"
-  ],
-  "input": {
-    "config": {},
-    "mock_responses": [
-      {
-        "status_code": 200,
-        "headers": {
-          "content-type": "text/html; charset=utf-8"
-        },
-        "body_file": "html/malformed.html"
-      }
-    ]
-  },
-  "assertions": [
-    {
-      "type": "equals",
-      "field": "status_code",
-      "value": 200
-    },
-    {
-      "type": "not_empty",
-      "field": "html"
-    },
-    {
-      "type": "contains",
-      "field": "metadata.description",
-      "value": "broken HTML"
-    }
-  ]
+	"id": "scrape_malformed_html",
+	"description": "Gracefully handles broken HTML without crashing",
+	"tags": ["scrape", "edge-case"],
+	"input": {
+		"config": {},
+		"mock_responses": [
+			{
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_file": "html/malformed.html"
+			}
+		]
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "status_code",
+			"value": 200
+		},
+		{
+			"type": "not_empty",
+			"field": "html"
+		},
+		{
+			"type": "contains",
+			"field": "metadata.description",
+			"value": "broken HTML"
+		}
+	]
 }

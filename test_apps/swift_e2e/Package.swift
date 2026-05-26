@@ -8,7 +8,7 @@ let package = Package(
         .iOS(.v16),
     ],
     dependencies: [
-        .package(url: "https://github.com/kreuzberg-dev/kreuzcrawl.git", from: "0.3.0-rc.30"),
+        .package(url: "https://github.com/kreuzberg-dev/kreuzcrawl.git", from: "0.3.0-rc.31"),
     ],
     targets: [
         .testTarget(

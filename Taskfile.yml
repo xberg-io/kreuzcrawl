@@ -1,75 +1,75 @@
 version: "3"
 
 includes:
-  _cfg:
-    taskfile: .task/config/vars.yml
-    internal: true
+    _cfg:
+        taskfile: .task/config/vars.yml
+        internal: true
 
-  rust:
-    taskfile: .task/languages/rust.yml
-  python:
-    taskfile: .task/languages/python.yml
-  node:
-    taskfile: .task/languages/node.yml
-  wasm:
-    taskfile: .task/languages/wasm.yml
-  ruby:
-    taskfile: .task/languages/ruby.yml
-  go:
-    taskfile: .task/languages/go.yml
-  java:
-    taskfile: .task/languages/java.yml
-  csharp:
-    taskfile: .task/languages/csharp.yml
-  php:
-    taskfile: .task/languages/php.yml
-  elixir:
-    taskfile: .task/languages/elixir.yml
-  c:
-    taskfile: .task/languages/c.yml
-  brew:
-    taskfile: .task/languages/brew.yml
-  dart:
-    taskfile: .task/languages/dart.yml
-  kotlin-android:
-    taskfile: .task/languages/kotlin-android.yml
-  swift:
-    taskfile: .task/languages/swift.yml
-  zig:
-    taskfile: .task/languages/zig.yml
+    rust:
+        taskfile: .task/languages/rust.yml
+    python:
+        taskfile: .task/languages/python.yml
+    node:
+        taskfile: .task/languages/node.yml
+    wasm:
+        taskfile: .task/languages/wasm.yml
+    ruby:
+        taskfile: .task/languages/ruby.yml
+    go:
+        taskfile: .task/languages/go.yml
+    java:
+        taskfile: .task/languages/java.yml
+    csharp:
+        taskfile: .task/languages/csharp.yml
+    php:
+        taskfile: .task/languages/php.yml
+    elixir:
+        taskfile: .task/languages/elixir.yml
+    c:
+        taskfile: .task/languages/c.yml
+    brew:
+        taskfile: .task/languages/brew.yml
+    dart:
+        taskfile: .task/languages/dart.yml
+    kotlin-android:
+        taskfile: .task/languages/kotlin-android.yml
+    swift:
+        taskfile: .task/languages/swift.yml
+    zig:
+        taskfile: .task/languages/zig.yml
 
-  _build_wf:
-    taskfile: .task/workflows/build.yml
-    internal: true
-  _test_wf:
-    taskfile: .task/workflows/test.yml
-    internal: true
-  _lint_wf:
-    taskfile: .task/workflows/lint.yml
-    internal: true
-  _e2e_wf:
-    taskfile: .task/workflows/e2e.yml
-    internal: true
-  _dev_wf:
-    taskfile: .task/workflows/dev-cycle.yml
-    internal: true
+    _build_wf:
+        taskfile: .task/workflows/build.yml
+        internal: true
+    _test_wf:
+        taskfile: .task/workflows/test.yml
+        internal: true
+    _lint_wf:
+        taskfile: .task/workflows/lint.yml
+        internal: true
+    _e2e_wf:
+        taskfile: .task/workflows/e2e.yml
+        internal: true
+    _dev_wf:
+        taskfile: .task/workflows/dev-cycle.yml
+        internal: true
 
-  version:
-    taskfile: .task/tools/version-sync.yml
-  docker:
-    taskfile: .task/tools/docker.yml
-  docs:
-    taskfile: .task/tools/docs.yml
-  test-apps:
-    taskfile: .task/tools/test-apps.yml
-  benchmark:
-    taskfile: .task/workflows/benchmark.yml
-  _tools:
-    taskfile: .task/tools/general.yml
-    flatten: true
+    version:
+        taskfile: .task/tools/version-sync.yml
+    docker:
+        taskfile: .task/tools/docker.yml
+    docs:
+        taskfile: .task/tools/docs.yml
+    test-apps:
+        taskfile: .task/tools/test-apps.yml
+    benchmark:
+        taskfile: .task/workflows/benchmark.yml
+    _tools:
+        taskfile: .task/tools/general.yml
+        flatten: true
 
 vars:
-  RUST_LOG: info
+    RUST_LOG: info
 
 # Preconditions for task setup:
 # - Rust toolchain (rustup) — install via https://rustup.rs
@@ -80,287 +80,287 @@ vars:
 #   - Go: go, Java: mvn (use sdkman if needed), C#: dotnet, Elixir: mix
 
 tasks:
-  setup:
-    desc: "Install all dependencies and dev tools"
-    cmds:
-      - task: rust:install
-      - alef setup
-      - prek install
-      - prek install --hook-type commit-msg
+    setup:
+        desc: "Install all dependencies and dev tools"
+        cmds:
+            - task: rust:install
+            - alef setup
+            - prek install
+            - prek install --hook-type commit-msg
 
-  build:
-    desc: Build core libraries and language bindings
-    cmds:
-      - task: rust:build
-      - task: python:build
-      - task: ruby:build
-      - task: node:build
-      - task: java:build
-      - task: csharp:build
-      - task: php:build
-      - task: elixir:build
-      - task: c:build
+    build:
+        desc: Build core libraries and language bindings
+        cmds:
+            - task: rust:build
+            - task: python:build
+            - task: ruby:build
+            - task: node:build
+            - task: java:build
+            - task: csharp:build
+            - task: php:build
+            - task: elixir:build
+            - task: c:build
 
-  test:
-    desc: Run test suites for all languages (in parallel)
-    deps:
-      - task: rust:test
-      - task: python:test
-      - task: ruby:test
-      - task: node:test
-      - task: java:test
-      - task: go:test
-      - task: csharp:test
-      - task: php:test
-      - task: elixir:test
-      - task: wasm:test
-      - task: c:test
+    test:
+        desc: Run test suites for all languages (in parallel)
+        deps:
+            - task: rust:test
+            - task: python:test
+            - task: ruby:test
+            - task: node:test
+            - task: java:test
+            - task: go:test
+            - task: csharp:test
+            - task: php:test
+            - task: elixir:test
+            - task: wasm:test
+            - task: c:test
 
-  update:
-    desc: Update all dependencies within current major versions (no breaking changes)
-    cmds:
-      - alef update
-      - prek autoupdate
-      - cargo update
-      - gau --update .
-      - cmd: cd packages/python && uv sync --all-extras --no-install-workspace --no-install-project
-        ignore_error: true
-      - cmd: pnpm up -r
-        ignore_error: true
-      - cmd: cd packages/go && go get -u=patch ./... && go mod tidy
-        ignore_error: true
-      - cmd: cd packages/ruby && bundle update --conservative
-        ignore_error: true
-      - cmd: cd packages/php && composer update --no-interaction
-        ignore_error: true
-      - cmd: cd packages/elixir && mix deps.update --all
-        ignore_error: true
-      - cmd: cd packages/dart && dart pub upgrade --major-versions=false || dart pub upgrade
-        ignore_error: true
-      - cmd: cd packages/swift && swift package update
-        ignore_error: true
+    update:
+        desc: Update all dependencies within current major versions (no breaking changes)
+        cmds:
+            - alef update
+            - prek autoupdate
+            - cargo update
+            - gau --update .
+            - cmd: cd packages/python && uv sync --all-extras --no-install-workspace --no-install-project
+              ignore_error: true
+            - cmd: pnpm up -r
+              ignore_error: true
+            - cmd: cd packages/go && go get -u=patch ./... && go mod tidy
+              ignore_error: true
+            - cmd: cd packages/ruby && bundle update --conservative
+              ignore_error: true
+            - cmd: cd packages/php && composer update --no-interaction
+              ignore_error: true
+            - cmd: cd packages/elixir && mix deps.update --all
+              ignore_error: true
+            - cmd: cd packages/dart && dart pub upgrade --major-versions=false || dart pub upgrade
+              ignore_error: true
+            - cmd: cd packages/swift && swift package update
+              ignore_error: true
 
-  upgrade:
-    desc: Upgrade all dependencies to latest versions including cross-major bumps
-    cmds:
-      - alef update --latest
-      - prek autoupdate
-      - cargo upgrade --incompatible
-      - gau --update .
-      - cmd: cd packages/python && uv sync --all-extras --upgrade --no-install-workspace --no-install-project
-        ignore_error: true
-      - cmd: pnpm up -r --latest
-        ignore_error: true
-      - cmd: cd packages/go && go get -u ./... && go mod tidy
-        ignore_error: true
-      - cmd: cd packages/ruby && bundle update
-        ignore_error: true
-      - cmd: cd packages/php && composer update --with-all-dependencies --no-interaction
-        ignore_error: true
-      - cmd: cd packages/elixir && mix deps.update --all
-        ignore_error: true
-      - cmd: cd packages/dart && dart pub upgrade --major-versions
-        ignore_error: true
-      - cmd: cd packages/swift && swift package update
-        ignore_error: true
-      - task: java:update
-      - task: csharp:update
+    upgrade:
+        desc: Upgrade all dependencies to latest versions including cross-major bumps
+        cmds:
+            - alef update --latest
+            - prek autoupdate
+            - cargo upgrade --incompatible
+            - gau --update .
+            - cmd: cd packages/python && uv sync --all-extras --upgrade --no-install-workspace --no-install-project
+              ignore_error: true
+            - cmd: pnpm up -r --latest
+              ignore_error: true
+            - cmd: cd packages/go && go get -u ./... && go mod tidy
+              ignore_error: true
+            - cmd: cd packages/ruby && bundle update
+              ignore_error: true
+            - cmd: cd packages/php && composer update --with-all-dependencies --no-interaction
+              ignore_error: true
+            - cmd: cd packages/elixir && mix deps.update --all
+              ignore_error: true
+            - cmd: cd packages/dart && dart pub upgrade --major-versions
+              ignore_error: true
+            - cmd: cd packages/swift && swift package update
+              ignore_error: true
+            - task: java:update
+            - task: csharp:update
 
-  clean:
-    desc: Clean all build artifacts (per-language only; see `clean:full` for cargo + e2e)
-    cmds:
-      - task: rust:clean
-      - task: python:clean
-      - task: ruby:clean
-      - task: node:clean
-      - task: java:clean
-      - task: go:clean
-      - task: csharp:clean
-      - task: php:clean
-      - task: elixir:clean
-      - task: wasm:clean
-      - task: c:clean
+    clean:
+        desc: Clean all build artifacts (per-language only; see `clean:full` for cargo + e2e)
+        cmds:
+            - task: rust:clean
+            - task: python:clean
+            - task: ruby:clean
+            - task: node:clean
+            - task: java:clean
+            - task: go:clean
+            - task: csharp:clean
+            - task: php:clean
+            - task: elixir:clean
+            - task: wasm:clean
+            - task: c:clean
 
-  clean:e2e:
-    desc: Remove per-language e2e test deps (venvs, node_modules, lockfiles, _build, etc.)
-    cmds:
-      - task: _dev_wf:clean:e2e
+    clean:e2e:
+        desc: Remove per-language e2e test deps (venvs, node_modules, lockfiles, _build, etc.)
+        cmds:
+            - task: _dev_wf:clean:e2e
 
-  clean:workspace:
-    desc: Clean Rust workspace target + alef IR cache + legacy mock-server binaries
-    cmds:
-      - task: _dev_wf:clean:workspace
+    clean:workspace:
+        desc: Clean Rust workspace target + alef IR cache + legacy mock-server binaries
+        cmds:
+            - task: _dev_wf:clean:workspace
 
-  clean:full:
-    desc: "Total cleanup: per-language clean + cargo workspace target + e2e test deps"
-    cmds:
-      - task: _dev_wf:clean:full
+    clean:full:
+        desc: "Total cleanup: per-language clean + cargo workspace target + e2e test deps"
+        cmds:
+            - task: _dev_wf:clean:full
 
-  alef:install:
-    desc: Install the alef CLI from the sibling repo (../alef) at HEAD
-    cmds:
-      - task: _dev_wf:alef:install
+    alef:install:
+        desc: Install the alef CLI from the sibling repo (../alef) at HEAD
+        cmds:
+            - task: _dev_wf:alef:install
 
-  alef:regen:
-    desc: "Regenerate bindings, packages, and e2e tests (alef all && alef e2e generate)"
-    cmds:
-      - task: _dev_wf:alef:regen
+    alef:regen:
+        desc: "Regenerate bindings, packages, and e2e tests (alef all && alef e2e generate)"
+        cmds:
+            - task: _dev_wf:alef:regen
 
-  alef:bump:
-    desc: "Bump alef pin in alef.toml + reinstall + regen (usage: VERSION=0.15.30 task alef:bump)"
-    cmds:
-      - task: _dev_wf:alef:bump
+    alef:bump:
+        desc: "Bump alef pin in alef.toml + reinstall + regen (usage: VERSION=0.15.30 task alef:bump)"
+        cmds:
+            - task: _dev_wf:alef:bump
 
-  rebuild:
-    desc: Rebuild all language bindings + the alef-generated e2e mock-server binary
-    cmds:
-      - task: _dev_wf:rebuild:bindings
+    rebuild:
+        desc: Rebuild all language bindings + the alef-generated e2e mock-server binary
+        cmds:
+            - task: _dev_wf:rebuild:bindings
 
-  rebuild:fast:
-    desc: "Fast rebuild: Rust core + Python + Node + mock-server only"
-    cmds:
-      - task: _dev_wf:rebuild:fast
+    rebuild:fast:
+        desc: "Fast rebuild: Rust core + Python + Node + mock-server only"
+        cmds:
+            - task: _dev_wf:rebuild:fast
 
-  e2e:reset:
-    desc: "Full e2e reset: clean + alef regen + rebuild all bindings + run all e2e"
-    cmds:
-      - task: _dev_wf:e2e:reset
+    e2e:reset:
+        desc: "Full e2e reset: clean + alef regen + rebuild all bindings + run all e2e"
+        cmds:
+            - task: _dev_wf:e2e:reset
 
-  e2e:refresh:
-    desc: "Quick e2e refresh: alef regen + rebuild + run all e2e (no clean)"
-    cmds:
-      - task: _dev_wf:e2e:refresh
+    e2e:refresh:
+        desc: "Quick e2e refresh: alef regen + rebuild + run all e2e (no clean)"
+        cmds:
+            - task: _dev_wf:e2e:refresh
 
-  e2e:refresh:fast:
-    desc: "Fast e2e feedback: alef regen + rebuild Rust/Python/Node + run their e2e"
-    cmds:
-      - task: _dev_wf:e2e:refresh:fast
+    e2e:refresh:fast:
+        desc: "Fast e2e feedback: alef regen + rebuild Rust/Python/Node + run their e2e"
+        cmds:
+            - task: _dev_wf:e2e:refresh:fast
 
-  python:cycle:
-    desc: "Python: rebuild binding + force-refresh e2e venv + run e2e (avoids stale .so)"
-    cmds:
-      - task: _dev_wf:python:cycle
+    python:cycle:
+        desc: "Python: rebuild binding + force-refresh e2e venv + run e2e (avoids stale .so)"
+        cmds:
+            - task: _dev_wf:python:cycle
 
-  build:all:
-    desc: Build all bindings across all languages
-    cmds:
-      - task: rust:build
-      - task: rust:ffi:build
-      - task: python:build
-      - task: node:build
-      - task: go:build
-      - task: java:build
-      - task: csharp:build
-      - task: wasm:build
-      - task: ruby:build
-      - task: php:build
-      - task: elixir:build
-      - task: c:build
+    build:all:
+        desc: Build all bindings across all languages
+        cmds:
+            - task: rust:build
+            - task: rust:ffi:build
+            - task: python:build
+            - task: node:build
+            - task: go:build
+            - task: java:build
+            - task: csharp:build
+            - task: wasm:build
+            - task: ruby:build
+            - task: php:build
+            - task: elixir:build
+            - task: c:build
 
-  build:all:dev:
-    desc: Build all bindings in debug mode
-    cmds:
-      - task: _build_wf:all:dev
+    build:all:dev:
+        desc: Build all bindings in debug mode
+        cmds:
+            - task: _build_wf:all:dev
 
-  build:all:release:
-    desc: Build all bindings in release mode (optimized)
-    cmds:
-      - task: _build_wf:all:release
+    build:all:release:
+        desc: Build all bindings in release mode (optimized)
+        cmds:
+            - task: _build_wf:all:release
 
-  build:all:ci:
-    desc: Build all bindings in CI mode
-    cmds:
-      - task: _build_wf:all:ci
+    build:all:ci:
+        desc: Build all bindings in CI mode
+        cmds:
+            - task: _build_wf:all:ci
 
-  test:all:
-    desc: Run all tests across all languages
-    cmds:
-      - task: _test_wf:all
+    test:all:
+        desc: Run all tests across all languages
+        cmds:
+            - task: _test_wf:all
 
-  test:all:parallel:
-    desc: Run all tests in parallel (using deps)
-    cmds:
-      - task: _test_wf:all:parallel
+    test:all:parallel:
+        desc: Run all tests in parallel (using deps)
+        cmds:
+            - task: _test_wf:all:parallel
 
-  test:all:ci:
-    desc: Run all tests in CI mode (with extra diagnostics)
-    cmds:
-      - task: _test_wf:all:ci
+    test:all:ci:
+        desc: Run all tests in CI mode (with extra diagnostics)
+        cmds:
+            - task: _test_wf:all:ci
 
-  lint:
-    desc: Run all linters and formatters via prek (pre-commit framework)
-    cmds:
-      - prek run --all-files
+    lint:
+        desc: Run all linters and formatters via prek (pre-commit framework)
+        cmds:
+            - prek run --all-files
 
-  format:
-    desc: Format all code
-    cmds:
-      - alef fmt
+    format:
+        desc: Format all code
+        cmds:
+            - alef fmt
 
-  check:
-    desc: Run all linting and formatting checks via prek
-    cmds:
-      - task: lint
+    check:
+        desc: Run all linting and formatting checks via prek
+        cmds:
+            - task: lint
 
-  e2e:generate:all:
-    desc: Generate E2E tests for all languages from fixtures
-    cmds:
-      - alef e2e generate
+    e2e:generate:all:
+        desc: Generate E2E tests for all languages from fixtures
+        cmds:
+            - alef e2e generate
 
-  e2e:test:all:
-    desc: Run e2e tests across all bindings (mock server auto-managed)
-    cmds:
-      - task: _dev_wf:mock-server:rebuild
-      - task: _e2e_wf:test:all
+    e2e:test:all:
+        desc: Run e2e tests across all bindings (mock server auto-managed)
+        cmds:
+            - task: _dev_wf:mock-server:rebuild
+            - task: _e2e_wf:test:all
 
-  e2e:test:quick:
-    desc: Quick e2e (Rust only — fastest feedback)
-    cmds:
-      - task: _dev_wf:mock-server:rebuild
-      - task: _e2e_wf:test:quick
+    e2e:test:quick:
+        desc: Quick e2e (Rust only — fastest feedback)
+        cmds:
+            - task: _dev_wf:mock-server:rebuild
+            - task: _e2e_wf:test:quick
 
-  e2e:verify:all:
-    desc: Full e2e pipeline — generate, lint, test all suites
-    cmds:
-      - task: _e2e_wf:verify:all
+    e2e:verify:all:
+        desc: Full e2e pipeline — generate, lint, test all suites
+        cmds:
+            - task: _e2e_wf:verify:all
 
-  e2e:lint:all:
-    desc: Lint all generated E2E test code
-    cmds:
-      - task: rust:e2e:lint
-      - task: python:e2e:lint
-      - task: node:e2e:lint
-      - task: go:e2e:lint
-      - task: java:e2e:lint
-      - task: csharp:e2e:lint
-      - task: wasm:e2e:lint
-      - task: ruby:e2e:lint
-      - task: php:e2e:lint
-      - task: c:e2e:lint
-      - task: brew:e2e:lint
+    e2e:lint:all:
+        desc: Lint all generated E2E test code
+        cmds:
+            - task: rust:e2e:lint
+            - task: python:e2e:lint
+            - task: node:e2e:lint
+            - task: go:e2e:lint
+            - task: java:e2e:lint
+            - task: csharp:e2e:lint
+            - task: wasm:e2e:lint
+            - task: ruby:e2e:lint
+            - task: php:e2e:lint
+            - task: c:e2e:lint
+            - task: brew:e2e:lint
 
-  mock-server:start:
-    desc: Start the e2e mock HTTP server (background)
-    cmds:
-      - task: _e2e_wf:mock-server:start
+    mock-server:start:
+        desc: Start the e2e mock HTTP server (background)
+        cmds:
+            - task: _e2e_wf:mock-server:start
 
-  mock-server:stop:
-    desc: Stop the e2e mock HTTP server
-    cmds:
-      - task: _e2e_wf:mock-server:stop
+    mock-server:stop:
+        desc: Stop the e2e mock HTTP server
+        cmds:
+            - task: _e2e_wf:mock-server:stop
 
-  # Backward-compat aliases (legacy task names).
-  test:e2e:
-    desc: "Alias for e2e:test:all"
-    cmds:
-      - task: e2e:test:all
+    # Backward-compat aliases (legacy task names).
+    test:e2e:
+        desc: "Alias for e2e:test:all"
+        cmds:
+            - task: e2e:test:all
 
-  e2e:generate:
-    desc: "Alias for e2e:generate:all"
-    cmds:
-      - task: e2e:generate:all
+    e2e:generate:
+        desc: "Alias for e2e:generate:all"
+        cmds:
+            - task: e2e:generate:all
 
-  e2e:test:
-    desc: "Alias for e2e:test:all"
-    cmds:
-      - task: e2e:test:all
+    e2e:test:
+        desc: "Alias for e2e:test:all"
+        cmds:
+            - task: e2e:test:all

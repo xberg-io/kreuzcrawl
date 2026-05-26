@@ -192,6 +192,11 @@ pub struct CrawlConfig {
     pub browser: BrowserConfig,
     /// Proxy configuration for HTTP requests.
     pub proxy: Option<ProxyConfig>,
+    /// Caller-supplied bypass provider. When `Some`, the engine routes every
+    /// URL through the provider, skipping native HTTP and chromiumoxide. Used
+    /// for integrating commercial bypass APIs (Bright Data, Zyte, etc.) at the
+    /// kreuzberg-cloud layer; kreuzcrawl itself ships no vendor adapters.
+    pub bypass: Option<String>,
     /// List of user-agent strings for rotation. If non-empty, overrides `user_agent`.
     pub user_agents: Vec<String>,
     /// Whether to capture a screenshot when using the browser.
@@ -1229,6 +1234,7 @@ impl From<kreuzcrawl::CrawlConfig> for CrawlConfig {
             max_asset_size: v.max_asset_size.map(|x| x as _),
             browser: BrowserConfig::from(v.browser),
             proxy: v.proxy.map(ProxyConfig::from),
+            bypass: Default::default(),
             user_agents: v.user_agents.into_iter().map(|s| s.into()).collect(),
             capture_screenshot: v.capture_screenshot as _,
             download_documents: v.download_documents as _,
@@ -1882,6 +1888,7 @@ impl From<CrawlConfig> for kreuzcrawl::CrawlConfig {
             max_asset_size: v.max_asset_size.map(|x| x as _),
             browser: v.browser.into(),
             proxy: v.proxy.map(Into::into),
+            bypass: Default::default(),
             user_agents: v.user_agents.into_iter().map(Into::into).collect(),
             capture_screenshot: v.capture_screenshot as _,
             download_documents: v.download_documents as _,

@@ -1,26 +1,23 @@
 {
-  "id": "error_data_loss_truncated",
-  "description": "Content-Length mismatch causes data loss error",
-  "tags": [
-    "error",
-    "data_loss"
-  ],
-  "assertions": [
-    {
-      "type": "error"
-    },
-    {
-      "type": "error",
-      "value": "data_loss"
-    }
-  ],
-  "mock_response": {
-    "status": 200,
-    "body": "<html><body>Incomplete content",
-    "headers": {
-      "content-type": "text/html; charset=utf-8",
-      "content-length": "500000",
-      "connection": "close"
-    }
-  }
+	"id": "error_data_loss_truncated",
+	"description": "Content-Length mismatch causes data loss error",
+	"tags": ["error", "data_loss"],
+	"assertions": [
+		{
+			"type": "error"
+		},
+		{
+			"type": "error",
+			"value": "data_loss"
+		}
+	],
+	"mock_response": {
+		"status": 200,
+		"body": "<html><body>Incomplete content",
+		"headers": {
+			"content-type": "text/html; charset=utf-8",
+			"content-length": "500000",
+			"connection": "close"
+		}
+	}
 }

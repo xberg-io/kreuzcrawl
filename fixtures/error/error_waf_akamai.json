@@ -1,28 +1,25 @@
 {
-  "id": "error_waf_akamai",
-  "description": "Akamai WAF detection returns WafBlocked error",
-  "tags": [
-    "error",
-    "waf"
-  ],
-  "input": {
-    "config": {
-      "browser": {
-        "mode": "never"
-      }
-    }
-  },
-  "assertions": [
-    {
-      "type": "error"
-    }
-  ],
-  "mock_response": {
-    "status": 403,
-    "body": "<html><body>Access Denied. Reference #18.abc123</body></html>",
-    "headers": {
-      "content-type": "text/html",
-      "server": "AkamaiGHost"
-    }
-  }
+	"id": "error_waf_akamai",
+	"description": "Akamai WAF detection returns WafBlocked error",
+	"tags": ["error", "waf"],
+	"input": {
+		"config": {
+			"browser": {
+				"mode": "never"
+			}
+		}
+	},
+	"assertions": [
+		{
+			"type": "error"
+		}
+	],
+	"mock_response": {
+		"status": 403,
+		"body": "<html><body>Access Denied. Reference #18.abc123</body></html>",
+		"headers": {
+			"content-type": "text/html",
+			"server": "AkamaiGHost"
+		}
+	}
 }

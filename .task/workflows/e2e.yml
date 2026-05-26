@@ -1,355 +1,355 @@
 version: "3"
 
 tasks:
-  mock-server:start:
-    desc: Start the alef-generated mock HTTP server (background)
-    cmds:
-      - |
-        ./e2e/rust/target/release/mock-server ./fixtures > .mock-server.out &
-        echo $! > .mock-server.pid
-        sleep 1
-        grep MOCK_SERVER_URL .mock-server.out > .mock-server.env
-        cat .mock-server.env
-    preconditions:
-      - sh: test -x e2e/rust/target/release/mock-server
-        msg: "alef mock-server binary not built. Run: task mock-server:rebuild"
-    generates:
-      - .mock-server.pid
-      - .mock-server.env
+    mock-server:start:
+        desc: Start the alef-generated mock HTTP server (background)
+        cmds:
+            - |
+                ./e2e/rust/target/release/mock-server ./fixtures > .mock-server.out &
+                echo $! > .mock-server.pid
+                sleep 1
+                grep MOCK_SERVER_URL .mock-server.out > .mock-server.env
+                cat .mock-server.env
+        preconditions:
+            - sh: test -x e2e/rust/target/release/mock-server
+              msg: "alef mock-server binary not built. Run: task mock-server:rebuild"
+        generates:
+            - .mock-server.pid
+            - .mock-server.env
 
-  mock-server:stop:
-    desc: Stop the e2e mock HTTP server
-    cmds:
-      - |
-        if [ -f .mock-server.pid ]; then
-          kill "$(cat .mock-server.pid)" 2>/dev/null || true
-          rm -f .mock-server.pid .mock-server.env
-        fi
+    mock-server:stop:
+        desc: Stop the e2e mock HTTP server
+        cmds:
+            - |
+                if [ -f .mock-server.pid ]; then
+                  kill "$(cat .mock-server.pid)" 2>/dev/null || true
+                  rm -f .mock-server.pid .mock-server.env
+                fi
 
-  generate:all:
-    desc: Generate all E2E tests from fixtures across all supported languages
-    cmds:
-      - task: rust:e2e:generate
-      - task: python:e2e:generate
-      - task: node:e2e:generate
-      - task: go:e2e:generate
-      - task: java:e2e:generate
-      - task: csharp:e2e:generate
-      - task: wasm:e2e:generate
-      - task: ruby:e2e:generate
-      - task: php:e2e:generate
-      - task: c:e2e:generate
-      - task: brew:e2e:generate
+    generate:all:
+        desc: Generate all E2E tests from fixtures across all supported languages
+        cmds:
+            - task: rust:e2e:generate
+            - task: python:e2e:generate
+            - task: node:e2e:generate
+            - task: go:e2e:generate
+            - task: java:e2e:generate
+            - task: csharp:e2e:generate
+            - task: wasm:e2e:generate
+            - task: ruby:e2e:generate
+            - task: php:e2e:generate
+            - task: c:e2e:generate
+            - task: brew:e2e:generate
 
-  test:all:
-    desc: Run all E2E tests across all supported languages (builds bindings, starts mock server)
-    deps: [mock-server:start]
-    cmds:
-      # Build bindings before testing.
-      - task: :rust:build
-      - task: :python:build:dev
-      - task: :node:build:dev
-      - task: :rust:ffi:build
-      - task: :go:build
-      - task: :java:build
-      - task: :csharp:build
-      - task: :ruby:build
-      - task: :php:build
-      - task: :elixir:build
-      # Run e2e tests (source mock server URL, run all suites, fail at end if any failed).
-      - cmd: |
-          eval "$(cat .mock-server.env 2>/dev/null)"
-          export MOCK_SERVER_URL
-          overall=0
-          MOCK_SERVER_URL="$MOCK_SERVER_URL" task rust:e2e:test    || overall=$?
-          MOCK_SERVER_URL="$MOCK_SERVER_URL" task python:e2e:test  || overall=$?
-          MOCK_SERVER_URL="$MOCK_SERVER_URL" task node:e2e:test    || overall=$?
-          MOCK_SERVER_URL="$MOCK_SERVER_URL" task go:e2e:test      || overall=$?
-          MOCK_SERVER_URL="$MOCK_SERVER_URL" task java:e2e:test    || overall=$?
-          MOCK_SERVER_URL="$MOCK_SERVER_URL" task csharp:e2e:test  || overall=$?
-          MOCK_SERVER_URL="$MOCK_SERVER_URL" task ruby:e2e:test    || overall=$?
-          MOCK_SERVER_URL="$MOCK_SERVER_URL" task php:e2e:test     || overall=$?
-          MOCK_SERVER_URL="$MOCK_SERVER_URL" task elixir:e2e:test  || overall=$?
-          if command -v pnpm >/dev/null 2>&1; then
-            MOCK_SERVER_URL="$MOCK_SERVER_URL" task wasm:e2e:test || overall=$?
-          else
-            echo "skip: wasm e2e (pnpm not found)"
-          fi
-          if command -v cc >/dev/null 2>&1 && command -v make >/dev/null 2>&1; then
-            MOCK_SERVER_URL="$MOCK_SERVER_URL" task c:e2e:test || overall=$?
-          else
-            echo "skip: c e2e (cc/make not found)"
-          fi
-          MOCK_SERVER_URL="$MOCK_SERVER_URL" task brew:e2e:test || overall=$?
-          exit $overall
-      - defer: { task: mock-server:stop }
+    test:all:
+        desc: Run all E2E tests across all supported languages (builds bindings, starts mock server)
+        deps: [mock-server:start]
+        cmds:
+            # Build bindings before testing.
+            - task: :rust:build
+            - task: :python:build:dev
+            - task: :node:build:dev
+            - task: :rust:ffi:build
+            - task: :go:build
+            - task: :java:build
+            - task: :csharp:build
+            - task: :ruby:build
+            - task: :php:build
+            - task: :elixir:build
+            # Run e2e tests (source mock server URL, run all suites, fail at end if any failed).
+            - cmd: |
+                  eval "$(cat .mock-server.env 2>/dev/null)"
+                  export MOCK_SERVER_URL
+                  overall=0
+                  MOCK_SERVER_URL="$MOCK_SERVER_URL" task rust:e2e:test    || overall=$?
+                  MOCK_SERVER_URL="$MOCK_SERVER_URL" task python:e2e:test  || overall=$?
+                  MOCK_SERVER_URL="$MOCK_SERVER_URL" task node:e2e:test    || overall=$?
+                  MOCK_SERVER_URL="$MOCK_SERVER_URL" task go:e2e:test      || overall=$?
+                  MOCK_SERVER_URL="$MOCK_SERVER_URL" task java:e2e:test    || overall=$?
+                  MOCK_SERVER_URL="$MOCK_SERVER_URL" task csharp:e2e:test  || overall=$?
+                  MOCK_SERVER_URL="$MOCK_SERVER_URL" task ruby:e2e:test    || overall=$?
+                  MOCK_SERVER_URL="$MOCK_SERVER_URL" task php:e2e:test     || overall=$?
+                  MOCK_SERVER_URL="$MOCK_SERVER_URL" task elixir:e2e:test  || overall=$?
+                  if command -v pnpm >/dev/null 2>&1; then
+                    MOCK_SERVER_URL="$MOCK_SERVER_URL" task wasm:e2e:test || overall=$?
+                  else
+                    echo "skip: wasm e2e (pnpm not found)"
+                  fi
+                  if command -v cc >/dev/null 2>&1 && command -v make >/dev/null 2>&1; then
+                    MOCK_SERVER_URL="$MOCK_SERVER_URL" task c:e2e:test || overall=$?
+                  else
+                    echo "skip: c e2e (cc/make not found)"
+                  fi
+                  MOCK_SERVER_URL="$MOCK_SERVER_URL" task brew:e2e:test || overall=$?
+                  exit $overall
+            - defer: { task: mock-server:stop }
 
-  test:quick:
-    desc: Quick E2E test (Rust only — fastest feedback)
-    deps: [mock-server:start]
-    env:
-      MOCK_SERVER_URL:
-        sh: cat .mock-server.env 2>/dev/null | grep MOCK_SERVER_URL | cut -d= -f2
-    cmds:
-      - task: :rust:build
-      - task: rust:e2e:test
-      - defer: { task: mock-server:stop }
+    test:quick:
+        desc: Quick E2E test (Rust only — fastest feedback)
+        deps: [mock-server:start]
+        env:
+            MOCK_SERVER_URL:
+                sh: cat .mock-server.env 2>/dev/null | grep MOCK_SERVER_URL | cut -d= -f2
+        cmds:
+            - task: :rust:build
+            - task: rust:e2e:test
+            - defer: { task: mock-server:stop }
 
-  verify:all:
-    desc: Full E2E pipeline - generate, lint, and test all suites
-    cmds:
-      - task: e2e:generate:all
-      - task: e2e:lint:all
-      - task: e2e:test:all
+    verify:all:
+        desc: Full E2E pipeline - generate, lint, and test all suites
+        cmds:
+            - task: e2e:generate:all
+            - task: e2e:lint:all
+            - task: e2e:test:all
 
-  lint:all:
-    desc: Lint all generated E2E test code
-    cmds:
-      - task: rust:e2e:lint
-      - task: python:e2e:lint
-      - task: node:e2e:lint
-      - task: go:e2e:lint
-      - task: java:e2e:lint
-      - task: csharp:e2e:lint
-      - task: wasm:e2e:lint
-      - task: ruby:e2e:lint
-      - task: php:e2e:lint
-      - task: c:e2e:lint
-      - task: brew:e2e:lint
+    lint:all:
+        desc: Lint all generated E2E test code
+        cmds:
+            - task: rust:e2e:lint
+            - task: python:e2e:lint
+            - task: node:e2e:lint
+            - task: go:e2e:lint
+            - task: java:e2e:lint
+            - task: csharp:e2e:lint
+            - task: wasm:e2e:lint
+            - task: ruby:e2e:lint
+            - task: php:e2e:lint
+            - task: c:e2e:lint
+            - task: brew:e2e:lint
 
-  rust:generate:
-    desc: Generate Rust E2E tests from fixtures
-    cmds:
-      - task: rust:e2e:generate
+    rust:generate:
+        desc: Generate Rust E2E tests from fixtures
+        cmds:
+            - task: rust:e2e:generate
 
-  rust:lint:
-    desc: Lint Rust E2E code
-    cmds:
-      - task: rust:e2e:lint
+    rust:lint:
+        desc: Lint Rust E2E code
+        cmds:
+            - task: rust:e2e:lint
 
-  rust:test:
-    desc: Run Rust E2E tests
-    cmds:
-      - task: rust:e2e:test
+    rust:test:
+        desc: Run Rust E2E tests
+        cmds:
+            - task: rust:e2e:test
 
-  rust:verify:
-    desc: Full Rust E2E pipeline (generate + format + lint + test)
-    cmds:
-      - task: rust:e2e:generate
-      - task: rust:e2e:format
-      - task: rust:e2e:lint
-      - task: rust:e2e:test
+    rust:verify:
+        desc: Full Rust E2E pipeline (generate + format + lint + test)
+        cmds:
+            - task: rust:e2e:generate
+            - task: rust:e2e:format
+            - task: rust:e2e:lint
+            - task: rust:e2e:test
 
-  python:generate:
-    desc: Generate Python E2E tests from fixtures
-    cmds:
-      - task: python:e2e:generate
+    python:generate:
+        desc: Generate Python E2E tests from fixtures
+        cmds:
+            - task: python:e2e:generate
 
-  python:lint:
-    desc: Lint Python E2E code
-    cmds:
-      - task: python:e2e:lint
+    python:lint:
+        desc: Lint Python E2E code
+        cmds:
+            - task: python:e2e:lint
 
-  python:test:
-    desc: Run Python E2E tests
-    cmds:
-      - task: python:e2e:test
+    python:test:
+        desc: Run Python E2E tests
+        cmds:
+            - task: python:e2e:test
 
-  python:verify:
-    desc: Full Python E2E pipeline (generate + lint + test)
-    cmds:
-      - task: python:e2e:generate
-      - task: python:e2e:lint
-      - task: python:e2e:test
+    python:verify:
+        desc: Full Python E2E pipeline (generate + lint + test)
+        cmds:
+            - task: python:e2e:generate
+            - task: python:e2e:lint
+            - task: python:e2e:test
 
-  go:generate:
-    desc: Generate Go E2E tests from fixtures
-    cmds:
-      - task: go:e2e:generate
+    go:generate:
+        desc: Generate Go E2E tests from fixtures
+        cmds:
+            - task: go:e2e:generate
 
-  go:test:
-    desc: Run Go E2E tests
-    cmds:
-      - task: go:e2e:test
+    go:test:
+        desc: Run Go E2E tests
+        cmds:
+            - task: go:e2e:test
 
-  go:verify:
-    desc: Full Go E2E pipeline (generate + test)
-    cmds:
-      - task: go:e2e:generate
-      - task: go:e2e:test
+    go:verify:
+        desc: Full Go E2E pipeline (generate + test)
+        cmds:
+            - task: go:e2e:generate
+            - task: go:e2e:test
 
-  node:generate:
-    desc: Generate Node E2E tests from fixtures
-    cmds:
-      - task: node:e2e:generate
+    node:generate:
+        desc: Generate Node E2E tests from fixtures
+        cmds:
+            - task: node:e2e:generate
 
-  node:lint:
-    desc: Lint Node E2E code
-    cmds:
-      - task: node:e2e:lint
+    node:lint:
+        desc: Lint Node E2E code
+        cmds:
+            - task: node:e2e:lint
 
-  node:test:
-    desc: Run Node E2E tests
-    cmds:
-      - task: node:e2e:test
+    node:test:
+        desc: Run Node E2E tests
+        cmds:
+            - task: node:e2e:test
 
-  node:verify:
-    desc: Full Node E2E pipeline (generate + lint + test)
-    cmds:
-      - task: node:e2e:generate
-      - task: node:e2e:lint
-      - task: node:e2e:test
+    node:verify:
+        desc: Full Node E2E pipeline (generate + lint + test)
+        cmds:
+            - task: node:e2e:generate
+            - task: node:e2e:lint
+            - task: node:e2e:test
 
-  java:generate:
-    desc: Generate Java E2E tests from fixtures
-    cmds:
-      - task: java:e2e:generate
+    java:generate:
+        desc: Generate Java E2E tests from fixtures
+        cmds:
+            - task: java:e2e:generate
 
-  java:test:
-    desc: Run Java E2E tests
-    cmds:
-      - task: java:e2e:test
+    java:test:
+        desc: Run Java E2E tests
+        cmds:
+            - task: java:e2e:test
 
-  java:verify:
-    desc: Full Java E2E pipeline (generate + test)
-    cmds:
-      - task: java:e2e:generate
-      - task: java:e2e:test
+    java:verify:
+        desc: Full Java E2E pipeline (generate + test)
+        cmds:
+            - task: java:e2e:generate
+            - task: java:e2e:test
 
-  csharp:generate:
-    desc: Generate C# E2E tests from fixtures
-    cmds:
-      - task: csharp:e2e:generate
+    csharp:generate:
+        desc: Generate C# E2E tests from fixtures
+        cmds:
+            - task: csharp:e2e:generate
 
-  csharp:test:
-    desc: Run C# E2E tests
-    cmds:
-      - task: csharp:e2e:test
+    csharp:test:
+        desc: Run C# E2E tests
+        cmds:
+            - task: csharp:e2e:test
 
-  csharp:verify:
-    desc: Full C# E2E pipeline (generate + test)
-    cmds:
-      - task: csharp:e2e:generate
-      - task: csharp:e2e:test
+    csharp:verify:
+        desc: Full C# E2E pipeline (generate + test)
+        cmds:
+            - task: csharp:e2e:generate
+            - task: csharp:e2e:test
 
-  wasm:generate:
-    desc: Generate WASM E2E tests from fixtures (alef-driven, vitest-style)
-    cmds:
-      - task: wasm:e2e:generate
+    wasm:generate:
+        desc: Generate WASM E2E tests from fixtures (alef-driven, vitest-style)
+        cmds:
+            - task: wasm:e2e:generate
 
-  wasm:lint:
-    desc: Lint generated WASM E2E TypeScript
-    cmds:
-      - task: wasm:e2e:lint
+    wasm:lint:
+        desc: Lint generated WASM E2E TypeScript
+        cmds:
+            - task: wasm:e2e:lint
 
-  wasm:test:
-    desc: Run WASM E2E tests (Node/vitest)
-    cmds:
-      - task: wasm:e2e:test
+    wasm:test:
+        desc: Run WASM E2E tests (Node/vitest)
+        cmds:
+            - task: wasm:e2e:test
 
-  wasm:verify:
-    desc: Regenerate and validate WASM E2E suite (generate + lint + test)
-    cmds:
-      - task: wasm:e2e:verify
+    wasm:verify:
+        desc: Regenerate and validate WASM E2E suite (generate + lint + test)
+        cmds:
+            - task: wasm:e2e:verify
 
-  php:generate:
-    desc: Generate PHP E2E tests from fixtures
-    cmds:
-      - task: php:e2e:generate
+    php:generate:
+        desc: Generate PHP E2E tests from fixtures
+        cmds:
+            - task: php:e2e:generate
 
-  php:test:
-    desc: Run PHP E2E tests
-    cmds:
-      - task: php:e2e:test
+    php:test:
+        desc: Run PHP E2E tests
+        cmds:
+            - task: php:e2e:test
 
-  php:verify:
-    desc: Full PHP E2E pipeline (generate + test)
-    cmds:
-      - task: php:e2e:generate
-      - task: php:e2e:test
+    php:verify:
+        desc: Full PHP E2E pipeline (generate + test)
+        cmds:
+            - task: php:e2e:generate
+            - task: php:e2e:test
 
-  quick:
-    desc: Run quick E2E tests (Rust + Go only)
-    cmds:
-      - task: rust:e2e:test
-      - task: go:e2e:test
+    quick:
+        desc: Run quick E2E tests (Rust + Go only)
+        cmds:
+            - task: rust:e2e:test
+            - task: go:e2e:test
 
-  quick:verify:
-    desc: Full quick E2E pipeline (Rust + Go)
-    cmds:
-      - task: rust:e2e:verify
-      - task: go:e2e:verify
+    quick:verify:
+        desc: Full quick E2E pipeline (Rust + Go)
+        cmds:
+            - task: rust:e2e:verify
+            - task: go:e2e:verify
 
-  systems:
-    desc: E2E test systems languages (Rust, Go, C#, C)
-    cmds:
-      - task: rust:e2e:test
-      - task: go:e2e:test
-      - task: csharp:e2e:test
-      - task: c:e2e:test
+    systems:
+        desc: E2E test systems languages (Rust, Go, C#, C)
+        cmds:
+            - task: rust:e2e:test
+            - task: go:e2e:test
+            - task: csharp:e2e:test
+            - task: c:e2e:test
 
-  systems:verify:
-    desc: Full systems E2E pipeline (generate + test)
-    cmds:
-      - task: rust:e2e:verify
-      - task: go:e2e:verify
-      - task: csharp:e2e:verify
-      - task: c:e2e:verify
+    systems:verify:
+        desc: Full systems E2E pipeline (generate + test)
+        cmds:
+            - task: rust:e2e:verify
+            - task: go:e2e:verify
+            - task: csharp:e2e:verify
+            - task: c:e2e:verify
 
-  jvm:
-    desc: E2E test JVM languages (Java, C#, PHP)
-    cmds:
-      - task: java:e2e:test
-      - task: csharp:e2e:test
-      - task: php:e2e:test
+    jvm:
+        desc: E2E test JVM languages (Java, C#, PHP)
+        cmds:
+            - task: java:e2e:test
+            - task: csharp:e2e:test
+            - task: php:e2e:test
 
-  jvm:verify:
-    desc: Full JVM E2E pipeline (generate + test)
-    cmds:
-      - task: java:e2e:verify
-      - task: csharp:e2e:verify
-      - task: php:e2e:verify
+    jvm:verify:
+        desc: Full JVM E2E pipeline (generate + test)
+        cmds:
+            - task: java:e2e:verify
+            - task: csharp:e2e:verify
+            - task: php:e2e:verify
 
-  ruby:generate:
-    desc: Generate Ruby E2E tests from fixtures
-    cmds:
-      - task: ruby:e2e:generate
+    ruby:generate:
+        desc: Generate Ruby E2E tests from fixtures
+        cmds:
+            - task: ruby:e2e:generate
 
-  ruby:lint:
-    desc: Lint Ruby E2E code
-    cmds:
-      - task: ruby:e2e:lint
+    ruby:lint:
+        desc: Lint Ruby E2E code
+        cmds:
+            - task: ruby:e2e:lint
 
-  ruby:test:
-    desc: Run Ruby E2E tests
-    cmds:
-      - task: ruby:e2e:test
+    ruby:test:
+        desc: Run Ruby E2E tests
+        cmds:
+            - task: ruby:e2e:test
 
-  ruby:verify:
-    desc: Full Ruby E2E pipeline (generate + lint + test)
-    cmds:
-      - task: ruby:e2e:generate
-      - task: ruby:e2e:lint
-      - task: ruby:e2e:test
+    ruby:verify:
+        desc: Full Ruby E2E pipeline (generate + lint + test)
+        cmds:
+            - task: ruby:e2e:generate
+            - task: ruby:e2e:lint
+            - task: ruby:e2e:test
 
-  c:generate:
-    desc: Generate C E2E tests from fixtures
-    cmds:
-      - task: c:e2e:generate
+    c:generate:
+        desc: Generate C E2E tests from fixtures
+        cmds:
+            - task: c:e2e:generate
 
-  c:lint:
-    desc: Lint C E2E code
-    cmds:
-      - task: c:e2e:lint
+    c:lint:
+        desc: Lint C E2E code
+        cmds:
+            - task: c:e2e:lint
 
-  c:test:
-    desc: Run C E2E tests
-    cmds:
-      - task: c:e2e:test
+    c:test:
+        desc: Run C E2E tests
+        cmds:
+            - task: c:e2e:test
 
-  c:verify:
-    desc: Full C E2E pipeline (generate + lint + test)
-    cmds:
-      - task: c:e2e:generate
-      - task: c:e2e:lint
-      - task: c:e2e:test
+    c:verify:
+        desc: Full C E2E pipeline (generate + lint + test)
+        cmds:
+            - task: c:e2e:generate
+            - task: c:e2e:lint
+            - task: c:e2e:test

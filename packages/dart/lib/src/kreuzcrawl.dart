@@ -83,6 +83,7 @@ class KreuzcrawlBridge {
               captureNetworkEvents: false,
             ),
             proxy: null,
+            bypass: null,
             userAgents: [],
             captureScreenshot: false,
             downloadDocuments: true,

@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |spec|
   spec.name = "kreuzcrawl"
-  spec.version = "0.3.0.pre.rc.30"
+  spec.version = "0.3.0.pre.rc.31"
   spec.authors       = ["Kreuzberg Team"]
   spec.summary       = "High-performance web crawling engine"
   spec.description   = "High-performance web crawling engine"
@@ -12,7 +12,9 @@ Gem::Specification.new do |spec|
   spec.metadata["keywords"] = %w[crawl scrape web spider].join(",")
   spec.metadata["rubygems_mfa_required"] = "true"
 
-  spec.files         = Dir.glob(%w[lib/**/* ext/**/* sig/**/* Steepfile]).reject { |f| f.include?("/native/target/") || f.include?("/native/tmp/") }
+  spec.files = Dir.glob(%w[lib/**/* ext/**/* sig/**/* Steepfile]).reject do |f|
+    f.include?("/native/target/") || f.include?("/native/tmp/")
+  end
   spec.require_paths = ["lib"]
   spec.extensions    = ["ext/kreuzcrawl_rb/extconf.rb"]
 

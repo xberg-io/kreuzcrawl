@@ -1,26 +1,23 @@
 {
-  "id": "encoding_mixed_charset_page",
-  "description": "Handles charset mismatch between HTTP header and HTML meta tag",
-  "tags": [
-    "encoding",
-    "charset"
-  ],
-  "input": {
-    "config": {},
-    "mock_responses": [
-      {
-        "status_code": 200,
-        "headers": {
-          "content-type": "text/html; charset=iso-8859-1"
-        },
-        "body_file": "html/mixed_charset.html"
-      }
-    ]
-  },
-  "assertions": [
-    {
-      "type": "not_empty",
-      "field": "html"
-    }
-  ]
+	"id": "encoding_mixed_charset_page",
+	"description": "Handles charset mismatch between HTTP header and HTML meta tag",
+	"tags": ["encoding", "charset"],
+	"input": {
+		"config": {},
+		"mock_responses": [
+			{
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=iso-8859-1"
+				},
+				"body_file": "html/mixed_charset.html"
+			}
+		]
+	},
+	"assertions": [
+		{
+			"type": "not_empty",
+			"field": "html"
+		}
+	]
 }

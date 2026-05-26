@@ -1,151 +1,151 @@
 version: "3"
 
 vars:
-  # Version from Cargo.toml (cross-platform compatible)
-  VERSION:
-    sh: |
-      if command -v grep &>/dev/null && command -v sed &>/dev/null; then
-        grep '^version = ' Cargo.toml | head -n1 | sed 's/version = "\([^"]*\)"/\1/'
-      else
-        # PowerShell fallback for Windows
-        powershell -Command "(Select-String -Path Cargo.toml -Pattern '^version = ' | Select-Object -First 1 | ForEach-Object {$_.Line -replace 'version = \"([^\"]*)\"', '$1'})" 2>/dev/null || echo "0.0.0"
-      fi
+    # Version from Cargo.toml (cross-platform compatible)
+    VERSION:
+        sh: |
+            if command -v grep &>/dev/null && command -v sed &>/dev/null; then
+              grep '^version = ' Cargo.toml | head -n1 | sed 's/version = "\([^"]*\)"/\1/'
+            else
+              # PowerShell fallback for Windows
+              powershell -Command "(Select-String -Path Cargo.toml -Pattern '^version = ' | Select-Object -First 1 | ForEach-Object {$_.Line -replace 'version = \"([^\"]*)\"', '$1'})" 2>/dev/null || echo "0.0.0"
+            fi
 
-  BUILD_PROFILE: '{{.BUILD_PROFILE | default "release"}}'
+    BUILD_PROFILE: '{{.BUILD_PROFILE | default "release"}}'
 
-  ROOT: "{{.ROOT}}"
-  CRATES_DIR: "{{.ROOT}}/crates"
-  PACKAGES_DIR: "{{.ROOT}}/packages"
-  E2E_DIR: "{{.ROOT}}/e2e"
-  DIST_DIR: "{{.ROOT}}/dist"
-  TARGET_DIR: "{{.ROOT}}/target"
+    ROOT: "{{.ROOT}}"
+    CRATES_DIR: "{{.ROOT}}/crates"
+    PACKAGES_DIR: "{{.ROOT}}/packages"
+    E2E_DIR: "{{.ROOT}}/e2e"
+    DIST_DIR: "{{.ROOT}}/dist"
+    TARGET_DIR: "{{.ROOT}}/target"
 
-  OS:
-    sh: |
-      # Try PowerShell for Windows (native, Git Bash, MSYS2, MinGW)
-      if command -v powershell &>/dev/null; then
-        os_env=$(powershell -NoProfile -Command '$env:OS' 2>/dev/null || echo "")
-        if [ -n "$os_env" ] && echo "$os_env" | grep -qi windows; then
-          echo "windows"
-          exit 0
-        fi
-      fi
+    OS:
+        sh: |
+            # Try PowerShell for Windows (native, Git Bash, MSYS2, MinGW)
+            if command -v powershell &>/dev/null; then
+              os_env=$(powershell -NoProfile -Command '$env:OS' 2>/dev/null || echo "")
+              if [ -n "$os_env" ] && echo "$os_env" | grep -qi windows; then
+                echo "windows"
+                exit 0
+              fi
+            fi
 
-      # Try GOOS environment variable (Go convention)
-      if [ -n "$GOOS" ]; then
-        echo "$GOOS" | tr '[:upper:]' '[:lower:]'
-        exit 0
-      fi
+            # Try GOOS environment variable (Go convention)
+            if [ -n "$GOOS" ]; then
+              echo "$GOOS" | tr '[:upper:]' '[:lower:]'
+              exit 0
+            fi
 
-      # Check for Windows environment indicators
-      if [ -n "$WINDIR" ] || [ -n "$SYSTEMROOT" ]; then
-        echo "windows"
-        exit 0
-      fi
+            # Check for Windows environment indicators
+            if [ -n "$WINDIR" ] || [ -n "$SYSTEMROOT" ]; then
+              echo "windows"
+              exit 0
+            fi
 
-      # Check for Git Bash/MSYS2/MinGW patterns
-      if [ -n "$MSYSTEM" ]; then
-        echo "windows"
-        exit 0
-      fi
+            # Check for Git Bash/MSYS2/MinGW patterns
+            if [ -n "$MSYSTEM" ]; then
+              echo "windows"
+              exit 0
+            fi
 
-      # Fall back to uname
-      if command -v uname &>/dev/null; then
-        uname -s | tr '[:upper:]' '[:lower:]'
-      else
-        # Last resort: check environment
-        if [ -n "$OS" ]; then
-          echo "$OS" | tr '[:upper:]' '[:lower:]'
-        else
-          echo "unknown"
-        fi
-      fi
-  ARCH:
-    sh: |
-      if command -v uname &>/dev/null; then
-        uname -m
-      else
-        # PowerShell fallback for Windows
-        powershell -NoProfile -Command '[System.Environment]::GetEnvironmentVariable("PROCESSOR_ARCHITECTURE")' 2>/dev/null || echo "unknown"
-      fi
+            # Fall back to uname
+            if command -v uname &>/dev/null; then
+              uname -s | tr '[:upper:]' '[:lower:]'
+            else
+              # Last resort: check environment
+              if [ -n "$OS" ]; then
+                echo "$OS" | tr '[:upper:]' '[:lower:]'
+              else
+                echo "unknown"
+              fi
+            fi
+    ARCH:
+        sh: |
+            if command -v uname &>/dev/null; then
+              uname -m
+            else
+              # PowerShell fallback for Windows
+              powershell -NoProfile -Command '[System.Environment]::GetEnvironmentVariable("PROCESSOR_ARCHITECTURE")' 2>/dev/null || echo "unknown"
+            fi
 
-  CARGO_PROFILE_DIR:
-    sh: |
-      profile='{{.BUILD_PROFILE}}'
-      case "$profile" in
-        dev)
-          echo "debug"
-          ;;
-        release|ci)
-          echo "release"
-          ;;
-        *)
-          echo "release"
-          ;;
-      esac
+    CARGO_PROFILE_DIR:
+        sh: |
+            profile='{{.BUILD_PROFILE}}'
+            case "$profile" in
+              dev)
+                echo "debug"
+                ;;
+              release|ci)
+                echo "release"
+                ;;
+              *)
+                echo "release"
+                ;;
+            esac
 
-  # CMake path for Windows (used to set CMAKE env var for build scripts)
-  CMAKE_PATH:
-    sh: |
-      if [ "{{.OS}}" != "windows" ]; then
-        echo ""
-        exit 0
-      fi
-      # Use PowerShell to reliably find cmake on Windows
-      powershell -NoProfile -Command '
-        $cmakePath = "C:\Program Files\CMake\bin\cmake.exe"
-        if (Test-Path $cmakePath) {
-          $cmakePath
-        }
-      ' 2>/dev/null || echo ""
+    # CMake path for Windows (used to set CMAKE env var for build scripts)
+    CMAKE_PATH:
+        sh: |
+            if [ "{{.OS}}" != "windows" ]; then
+              echo ""
+              exit 0
+            fi
+            # Use PowerShell to reliably find cmake on Windows
+            powershell -NoProfile -Command '
+              $cmakePath = "C:\Program Files\CMake\bin\cmake.exe"
+              if (Test-Path $cmakePath) {
+                $cmakePath
+              }
+            ' 2>/dev/null || echo ""
 
-  # Windows build tools paths (MSVC link.exe and CMake)
-  # Used to fix link.exe PATH conflicts with Git Bash
-  MSVC_BIN_PATH:
-    sh: |
-      # Only needed on Windows
-      if [ "{{.OS}}" != "windows" ]; then
-        echo ""
-        exit 0
-      fi
+    # Windows build tools paths (MSVC link.exe and CMake)
+    # Used to fix link.exe PATH conflicts with Git Bash
+    MSVC_BIN_PATH:
+        sh: |
+            # Only needed on Windows
+            if [ "{{.OS}}" != "windows" ]; then
+              echo ""
+              exit 0
+            fi
 
-      # Use vswhere to find MSVC, then construct paths
-      # Note: Using PowerShell for reliable path handling on Windows
-      powershell -NoProfile -Command '
-        $paths = @()
+            # Use vswhere to find MSVC, then construct paths
+            # Note: Using PowerShell for reliable path handling on Windows
+            powershell -NoProfile -Command '
+              $paths = @()
 
-        # Add CMake if installed
-        $cmakePath = "C:\Program Files\CMake\bin"
-        if (Test-Path $cmakePath) {
-          $paths += $cmakePath
-        }
+              # Add CMake if installed
+              $cmakePath = "C:\Program Files\CMake\bin"
+              if (Test-Path $cmakePath) {
+                $paths += $cmakePath
+              }
 
-        # Find MSVC via vswhere
-        $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
-        if (Test-Path $vswhere) {
-          $vsPath = & $vswhere -latest -products * -property installationPath 2>$null
-          if ($vsPath) {
-            $msvcBase = Join-Path $vsPath "VC\Tools\MSVC"
-            if (Test-Path $msvcBase) {
-              $msvcVersion = Get-ChildItem $msvcBase -Directory | Sort-Object Name | Select-Object -Last 1
-              if ($msvcVersion) {
-                $msvcBin = Join-Path $msvcVersion.FullName "bin\Hostx64\x64"
-                if (Test-Path $msvcBin) {
-                  $paths += $msvcBin
+              # Find MSVC via vswhere
+              $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+              if (Test-Path $vswhere) {
+                $vsPath = & $vswhere -latest -products * -property installationPath 2>$null
+                if ($vsPath) {
+                  $msvcBase = Join-Path $vsPath "VC\Tools\MSVC"
+                  if (Test-Path $msvcBase) {
+                    $msvcVersion = Get-ChildItem $msvcBase -Directory | Sort-Object Name | Select-Object -Last 1
+                    if ($msvcVersion) {
+                      $msvcBin = Join-Path $msvcVersion.FullName "bin\Hostx64\x64"
+                      if (Test-Path $msvcBin) {
+                        $paths += $msvcBin
+                      }
+                    }
+                  }
                 }
               }
-            }
-          }
-        }
 
-        # Convert to Unix-style paths for Git Bash and join with colons
-        $unixPaths = $paths | ForEach-Object {
-          $p = $_ -replace "\\", "/"
-          if ($p -match "^([A-Za-z]):") {
-            "/" + $matches[1].ToLower() + $p.Substring(2)
-          } else {
-            $p
-          }
-        }
-        $unixPaths -join ":"
-      ' 2>/dev/null || echo ""
+              # Convert to Unix-style paths for Git Bash and join with colons
+              $unixPaths = $paths | ForEach-Object {
+                $p = $_ -replace "\\", "/"
+                if ($p -match "^([A-Za-z]):") {
+                  "/" + $matches[1].ToLower() + $p.Substring(2)
+                } else {
+                  $p
+                }
+              }
+              $unixPaths -join ":"
+            ' 2>/dev/null || echo ""

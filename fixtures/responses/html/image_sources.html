@@ -1,28 +1,30 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>Image Gallery - Example Site</title>
-    <meta property="og:image" content="https://example.com/images/og-hero.jpg">
-    <meta name="twitter:image" content="https://example.com/images/twitter-card.jpg">
-    <link rel="icon" href="/favicon.ico">
-    <style>
-        .hero { background-image: url('/images/hero-bg.jpg'); }
-    </style>
-</head>
-<body>
-    <h1>Image Gallery</h1>
-    <img src="/images/photo1.jpg" alt="Photo 1" width="800" height="600">
-    <img src="/images/photo2.png" alt="Photo 2">
-    <picture>
-        <source srcset="/images/hero-large.webp" media="(min-width: 800px)">
-        <source srcset="/images/hero-small.webp" media="(max-width: 799px)">
-        <img src="/images/hero-fallback.jpg" alt="Hero image">
-    </picture>
-    <figure>
-        <img src="https://cdn.example.com/images/external.jpg" alt="External image" loading="lazy">
-        <figcaption>An external image from CDN</figcaption>
-    </figure>
-    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Pixel">
-</body>
+	<head>
+		<meta charset="utf-8" />
+		<title>Image Gallery - Example Site</title>
+		<meta property="og:image" content="https://example.com/images/og-hero.jpg" />
+		<meta name="twitter:image" content="https://example.com/images/twitter-card.jpg" />
+		<link rel="icon" href="/favicon.ico" />
+		<style>
+			.hero {
+				background-image: url("/images/hero-bg.jpg");
+			}
+		</style>
+	</head>
+	<body>
+		<h1>Image Gallery</h1>
+		<img src="/images/photo1.jpg" alt="Photo 1" width="800" height="600" />
+		<img src="/images/photo2.png" alt="Photo 2" />
+		<picture>
+			<source srcset="/images/hero-large.webp" media="(min-width: 800px)" />
+			<source srcset="/images/hero-small.webp" media="(max-width: 799px)" />
+			<img src="/images/hero-fallback.jpg" alt="Hero image" />
+		</picture>
+		<figure>
+			<img src="https://cdn.example.com/images/external.jpg" alt="External image" loading="lazy" />
+			<figcaption>An external image from CDN</figcaption>
+		</figure>
+		<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Pixel" />
+	</body>
 </html>

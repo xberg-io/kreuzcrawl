@@ -1,51 +1,49 @@
 {
-  "id": "metadata_article_times",
-  "description": "Extracts article:published_time, modified_time, author, section, and tags",
-  "tags": [
-    "metadata"
-  ],
-  "input": {
-    "config": {},
-    "mock_responses": [
-      {
-        "status_code": 200,
-        "headers": {
-          "content-type": "text/html; charset=utf-8"
-        },
-        "body_file": "html/comprehensive_metadata.html"
-      }
-    ]
-  },
-  "assertions": [
-    {
-      "type": "equals",
-      "field": "status_code",
-      "value": 200
-    },
-    {
-      "type": "equals",
-      "field": "article.published_time",
-      "value": "2024-01-15T10:00:00Z"
-    },
-    {
-      "type": "equals",
-      "field": "article.modified_time",
-      "value": "2024-06-20T14:30:00Z"
-    },
-    {
-      "type": "equals",
-      "field": "article.author",
-      "value": "Jane Developer"
-    },
-    {
-      "type": "equals",
-      "field": "article.section",
-      "value": "Technology"
-    },
-    {
-      "type": "equals",
-      "field": "article.tags.length",
-      "value": 3
-    }
-  ]
+	"id": "metadata_article_times",
+	"description": "Extracts article:published_time, modified_time, author, section, and tags",
+	"tags": ["metadata"],
+	"input": {
+		"config": {},
+		"mock_responses": [
+			{
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_file": "html/comprehensive_metadata.html"
+			}
+		]
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "status_code",
+			"value": 200
+		},
+		{
+			"type": "equals",
+			"field": "article.published_time",
+			"value": "2024-01-15T10:00:00Z"
+		},
+		{
+			"type": "equals",
+			"field": "article.modified_time",
+			"value": "2024-06-20T14:30:00Z"
+		},
+		{
+			"type": "equals",
+			"field": "article.author",
+			"value": "Jane Developer"
+		},
+		{
+			"type": "equals",
+			"field": "article.section",
+			"value": "Technology"
+		},
+		{
+			"type": "equals",
+			"field": "article.tags.length",
+			"value": 3
+		}
+	]
 }

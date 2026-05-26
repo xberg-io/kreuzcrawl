@@ -1,42 +1,38 @@
 {
-  "id": "scrape_twitter_card",
-  "description": "Extracts Twitter Card metadata from a page",
-  "tags": [
-    "scrape",
-    "metadata",
-    "twitter"
-  ],
-  "input": {
-    "config": {},
-    "mock_responses": [
-      {
-        "status_code": 200,
-        "headers": {
-          "content-type": "text/html; charset=utf-8"
-        },
-        "body_file": "html/twitter_card.html"
-      }
-    ]
-  },
-  "assertions": [
-    {
-      "type": "equals",
-      "field": "status_code",
-      "value": 200
-    },
-    {
-      "type": "not_empty",
-      "field": "twitter.card"
-    },
-    {
-      "type": "equals",
-      "field": "twitter.card_type",
-      "value": "summary_large_image"
-    },
-    {
-      "type": "equals",
-      "field": "twitter.title",
-      "value": "New Product Launch"
-    }
-  ]
+	"id": "scrape_twitter_card",
+	"description": "Extracts Twitter Card metadata from a page",
+	"tags": ["scrape", "metadata", "twitter"],
+	"input": {
+		"config": {},
+		"mock_responses": [
+			{
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_file": "html/twitter_card.html"
+			}
+		]
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "status_code",
+			"value": 200
+		},
+		{
+			"type": "not_empty",
+			"field": "twitter.card"
+		},
+		{
+			"type": "equals",
+			"field": "twitter.card_type",
+			"value": "summary_large_image"
+		},
+		{
+			"type": "equals",
+			"field": "twitter.title",
+			"value": "New Product Launch"
+		}
+	]
 }

@@ -1,218 +1,218 @@
 name: Publish Docker Images
 
 on:
-  workflow_dispatch:
-    inputs:
-      tag:
-        description: "Release tag to build (e.g., v0.1.0)"
-        required: true
-        type: string
-      dry_run:
-        description: "Prepare artifacts without publishing"
-        required: false
-        type: boolean
-        default: false
-      ref:
-        description: "Git ref (branch, tag, or commit) to build; defaults to the tag"
-        required: false
-        type: string
-      force_republish:
-        description: "Force re-publish even if artifacts already exist"
-        required: false
-        type: boolean
-        default: false
-  release:
-    types: [published]
-  repository_dispatch:
-    types: [publish-docker]
+    workflow_dispatch:
+        inputs:
+            tag:
+                description: "Release tag to build (e.g., v0.1.0)"
+                required: true
+                type: string
+            dry_run:
+                description: "Prepare artifacts without publishing"
+                required: false
+                type: boolean
+                default: false
+            ref:
+                description: "Git ref (branch, tag, or commit) to build; defaults to the tag"
+                required: false
+                type: string
+            force_republish:
+                description: "Force re-publish even if artifacts already exist"
+                required: false
+                type: boolean
+                default: false
+    release:
+        types: [published]
+    repository_dispatch:
+        types: [publish-docker]
 
 concurrency:
-  group: ${{ github.workflow }}-${{ (github.event_name == 'workflow_dispatch' && (github.event.inputs.ref || github.event.inputs.tag)) || github.ref || github.run_id }}
-  cancel-in-progress: false
+    group: ${{ github.workflow }}-${{ (github.event_name == 'workflow_dispatch' && (github.event.inputs.ref || github.event.inputs.tag)) || github.ref || github.run_id }}
+    cancel-in-progress: false
 
 env:
-  CARGO_TERM_COLOR: always
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+    CARGO_TERM_COLOR: always
+    REGISTRY: ghcr.io
+    IMAGE_NAME: ${{ github.repository }}
 
 permissions:
-  contents: read
+    contents: read
 
 jobs:
-  prepare:
-    name: Prepare metadata
-    if: ${{ github.event_name != 'release' || !github.event.release.prerelease }}
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    outputs:
-      tag: ${{ steps.meta.outputs.tag }}
-      version: ${{ steps.meta.outputs.version }}
-      ref: ${{ steps.meta.outputs.ref }}
-      dry_run: ${{ steps.meta.outputs.dry_run }}
-      force_republish: ${{ steps.meta.outputs.force_republish }}
-      checkout_ref: ${{ steps.meta.outputs.checkout_ref }}
-      target_sha: ${{ steps.meta.outputs.target_sha }}
-      is_tag: ${{ steps.meta.outputs.is_tag }}
-      release_docker: ${{ steps.meta.outputs.release_docker }}
-    steps:
-      - name: Checkout code (default)
-        uses: actions/checkout@v6
+    prepare:
+        name: Prepare metadata
+        if: ${{ github.event_name != 'release' || !github.event.release.prerelease }}
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+        outputs:
+            tag: ${{ steps.meta.outputs.tag }}
+            version: ${{ steps.meta.outputs.version }}
+            ref: ${{ steps.meta.outputs.ref }}
+            dry_run: ${{ steps.meta.outputs.dry_run }}
+            force_republish: ${{ steps.meta.outputs.force_republish }}
+            checkout_ref: ${{ steps.meta.outputs.checkout_ref }}
+            target_sha: ${{ steps.meta.outputs.target_sha }}
+            is_tag: ${{ steps.meta.outputs.is_tag }}
+            release_docker: ${{ steps.meta.outputs.release_docker }}
+        steps:
+            - name: Checkout code (default)
+              uses: actions/checkout@v6
 
-      - name: Resolve release metadata
-        id: meta
-        uses: kreuzberg-dev/actions/prepare-release-metadata@v1
-        with:
-          tag: ${{ inputs.tag }}
-          ref: ${{ inputs.ref }}
-          targets: docker
-          dry-run: ${{ inputs.dry_run }}
-          force-republish: ${{ inputs.force_republish }}
+            - name: Resolve release metadata
+              id: meta
+              uses: kreuzberg-dev/actions/prepare-release-metadata@v1
+              with:
+                  tag: ${{ inputs.tag }}
+                  ref: ${{ inputs.ref }}
+                  targets: docker
+                  dry-run: ${{ inputs.dry_run }}
+                  force-republish: ${{ inputs.force_republish }}
 
-      - name: Re-checkout at target ref
-        if: ${{ steps.meta.outputs.checkout_ref != '' }}
-        uses: actions/checkout@v6
-        with:
-          ref: ${{ steps.meta.outputs.checkout_ref }}
-          fetch-depth: 0
-          submodules: recursive
+            - name: Re-checkout at target ref
+              if: ${{ steps.meta.outputs.checkout_ref != '' }}
+              uses: actions/checkout@v6
+              with:
+                  ref: ${{ steps.meta.outputs.checkout_ref }}
+                  fetch-depth: 0
+                  submodules: recursive
 
-      - name: Show metadata
-        env:
-          META_TAG: ${{ steps.meta.outputs.tag }}
-          META_VERSION: ${{ steps.meta.outputs.version }}
-          META_DRY_RUN: ${{ steps.meta.outputs.dry_run }}
-          META_RELEASE_DOCKER: ${{ steps.meta.outputs.release_docker }}
-        run: |
-          {
-            echo "## Release Metadata"
-            echo "- **Tag**: \`$META_TAG\`"
-            echo "- **Version**: \`$META_VERSION\`"
-            echo "- **Dry Run**: \`$META_DRY_RUN\`"
-            echo "- **Release Docker**: \`$META_RELEASE_DOCKER\`"
-          } >> "$GITHUB_STEP_SUMMARY"
+            - name: Show metadata
+              env:
+                  META_TAG: ${{ steps.meta.outputs.tag }}
+                  META_VERSION: ${{ steps.meta.outputs.version }}
+                  META_DRY_RUN: ${{ steps.meta.outputs.dry_run }}
+                  META_RELEASE_DOCKER: ${{ steps.meta.outputs.release_docker }}
+              run: |
+                  {
+                    echo "## Release Metadata"
+                    echo "- **Tag**: \`$META_TAG\`"
+                    echo "- **Version**: \`$META_VERSION\`"
+                    echo "- **Dry Run**: \`$META_DRY_RUN\`"
+                    echo "- **Release Docker**: \`$META_RELEASE_DOCKER\`"
+                  } >> "$GITHUB_STEP_SUMMARY"
 
-  check-docker:
-    name: Check if Docker image tag exists
-    needs: prepare
-    if: ${{ needs.prepare.outputs.release_docker == 'true' }}
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: read
-    outputs:
-      image_exists: ${{ steps.check.outputs.exists }}
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          ref: ${{ needs.prepare.outputs.tag }}
+    check-docker:
+        name: Check if Docker image tag exists
+        needs: prepare
+        if: ${{ needs.prepare.outputs.release_docker == 'true' }}
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            packages: read
+        outputs:
+            image_exists: ${{ steps.check.outputs.exists }}
+        steps:
+            - uses: actions/checkout@v6
+              with:
+                  ref: ${{ needs.prepare.outputs.tag }}
 
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v4
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+            - name: Log in to GitHub Container Registry
+              uses: docker/login-action@v4
+              with:
+                  registry: ${{ env.REGISTRY }}
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Check image tag
-        id: check
-        env:
-          DOCKER_TAG: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.prepare.outputs.version }}
-          SUMMARY_LABEL: cli
-        run: scripts/publish/check-docker-tag.sh
+            - name: Check image tag
+              id: check
+              env:
+                  DOCKER_TAG: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.prepare.outputs.version }}
+                  SUMMARY_LABEL: cli
+              run: scripts/publish/check-docker-tag.sh
 
-  publish-docker:
-    name: Publish Docker image
-    needs:
-      - prepare
-      - check-docker
-    runs-on: ubuntu-latest
-    timeout-minutes: 120
-    permissions:
-      contents: read
-      packages: write
-    if: ${{ needs.prepare.outputs.release_docker == 'true' }}
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          ref: ${{ needs.prepare.outputs.checkout_ref }}
-          fetch-depth: 0
+    publish-docker:
+        name: Publish Docker image
+        needs:
+            - prepare
+            - check-docker
+        runs-on: ubuntu-latest
+        timeout-minutes: 120
+        permissions:
+            contents: read
+            packages: write
+        if: ${{ needs.prepare.outputs.release_docker == 'true' }}
+        steps:
+            - uses: actions/checkout@v6
+              with:
+                  ref: ${{ needs.prepare.outputs.checkout_ref }}
+                  fetch-depth: 0
 
-      - name: Free up disk space
-        run: scripts/publish/ubuntu/free-disk-space.sh
+            - name: Free up disk space
+              run: scripts/publish/ubuntu/free-disk-space.sh
 
-      - name: Ensure target commit
-        if: ${{ needs.prepare.outputs.target_sha != '' }}
-        run: git checkout --progress --force ${{ needs.prepare.outputs.target_sha }}
+            - name: Ensure target commit
+              if: ${{ needs.prepare.outputs.target_sha != '' }}
+              run: git checkout --progress --force ${{ needs.prepare.outputs.target_sha }}
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v4
+            - name: Set up QEMU
+              uses: docker/setup-qemu-action@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v4
 
-      - name: Skip because tag already exists
-        if: ${{ needs.prepare.outputs.force_republish != 'true' && needs.check-docker.outputs.image_exists == 'true' }}
-        run: echo "Docker tag already exists; skipping publish." >> "$GITHUB_STEP_SUMMARY"
+            - name: Skip because tag already exists
+              if: ${{ needs.prepare.outputs.force_republish != 'true' && needs.check-docker.outputs.image_exists == 'true' }}
+              run: echo "Docker tag already exists; skipping publish." >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Build test image (amd64)
-        if: ${{ needs.prepare.outputs.force_republish == 'true' || needs.check-docker.outputs.image_exists != 'true' }}
-        run: docker build -f docker/Dockerfile.alpine -t kreuzcrawl-test:latest .
+            - name: Build test image (amd64)
+              if: ${{ needs.prepare.outputs.force_republish == 'true' || needs.check-docker.outputs.image_exists != 'true' }}
+              run: docker build -f docker/Dockerfile.alpine -t kreuzcrawl-test:latest .
 
-      - name: Check Docker image size
-        if: ${{ needs.prepare.outputs.force_republish == 'true' || needs.check-docker.outputs.image_exists != 'true' }}
-        uses: kreuzberg-dev/actions/check-docker-image-size@v1
-        with:
-          image: kreuzcrawl-test:latest
-          warn-mb: "200"
-          label: kreuzcrawl-cli
+            - name: Check Docker image size
+              if: ${{ needs.prepare.outputs.force_republish == 'true' || needs.check-docker.outputs.image_exists != 'true' }}
+              uses: kreuzberg-dev/actions/check-docker-image-size@v1
+              with:
+                  image: kreuzcrawl-test:latest
+                  warn-mb: "200"
+                  label: kreuzcrawl-cli
 
-      - name: Run Docker tests
-        if: ${{ needs.prepare.outputs.force_republish == 'true' || needs.check-docker.outputs.image_exists != 'true' }}
-        run: python3 scripts/ci/docker/test_docker.py --image kreuzcrawl-test:latest --variant cli --verbose
+            - name: Run Docker tests
+              if: ${{ needs.prepare.outputs.force_republish == 'true' || needs.check-docker.outputs.image_exists != 'true' }}
+              run: python3 scripts/ci/docker/test_docker.py --image kreuzcrawl-test:latest --variant cli --verbose
 
-      - name: Log in to GitHub Container Registry
-        if: ${{ needs.prepare.outputs.dry_run != 'true' && (needs.prepare.outputs.force_republish == 'true' || needs.check-docker.outputs.image_exists != 'true') }}
-        uses: docker/login-action@v4
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+            - name: Log in to GitHub Container Registry
+              if: ${{ needs.prepare.outputs.dry_run != 'true' && (needs.prepare.outputs.force_republish == 'true' || needs.check-docker.outputs.image_exists != 'true') }}
+              uses: docker/login-action@v4
+              with:
+                  registry: ${{ env.REGISTRY }}
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract Docker metadata
-        if: ${{ needs.prepare.outputs.dry_run != 'true' && (needs.prepare.outputs.force_republish == 'true' || needs.check-docker.outputs.image_exists != 'true') }}
-        id: docker_meta
-        uses: docker/metadata-action@v6
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=raw,value=${{ needs.prepare.outputs.version }}
-            type=raw,value=latest
+            - name: Extract Docker metadata
+              if: ${{ needs.prepare.outputs.dry_run != 'true' && (needs.prepare.outputs.force_republish == 'true' || needs.check-docker.outputs.image_exists != 'true') }}
+              id: docker_meta
+              uses: docker/metadata-action@v6
+              with:
+                  images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+                  tags: |
+                      type=raw,value=${{ needs.prepare.outputs.version }}
+                      type=raw,value=latest
 
-      - name: Build and push image
-        if: ${{ needs.prepare.outputs.dry_run != 'true' && (needs.prepare.outputs.force_republish == 'true' || needs.check-docker.outputs.image_exists != 'true') }}
-        uses: docker/build-push-action@v7
-        with:
-          context: .
-          file: docker/Dockerfile.alpine
-          push: true
-          tags: ${{ steps.docker_meta.outputs.tags }}
-          labels: |
-            ${{ steps.docker_meta.outputs.labels }}
-            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
-            org.opencontainers.image.description=Kreuzcrawl web crawling engine — Alpine CLI
-            org.opencontainers.image.licenses=Elastic-2.0
-          platforms: linux/amd64,linux/arm64
-          cache-from: type=gha
-          cache-to: type=gha,mode=max,scope=publish-docker
+            - name: Build and push image
+              if: ${{ needs.prepare.outputs.dry_run != 'true' && (needs.prepare.outputs.force_republish == 'true' || needs.check-docker.outputs.image_exists != 'true') }}
+              uses: docker/build-push-action@v7
+              with:
+                  context: .
+                  file: docker/Dockerfile.alpine
+                  push: true
+                  tags: ${{ steps.docker_meta.outputs.tags }}
+                  labels: |
+                      ${{ steps.docker_meta.outputs.labels }}
+                      org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+                      org.opencontainers.image.description=Kreuzcrawl web crawling engine — Alpine CLI
+                      org.opencontainers.image.licenses=Elastic-2.0
+                  platforms: linux/amd64,linux/arm64
+                  cache-from: type=gha
+                  cache-to: type=gha,mode=max,scope=publish-docker
 
-      - name: Docker dry-run summary
-        if: ${{ needs.prepare.outputs.dry_run == 'true' }}
-        env:
-          IMAGE: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          VERSION: ${{ needs.prepare.outputs.version }}
-        run: scripts/publish/docker/dry-run-summary.sh
+            - name: Docker dry-run summary
+              if: ${{ needs.prepare.outputs.dry_run == 'true' }}
+              env:
+                  IMAGE: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+                  VERSION: ${{ needs.prepare.outputs.version }}
+              run: scripts/publish/docker/dry-run-summary.sh
 
-      - name: Clean up test images
-        if: ${{ always() }}
-        run: docker rmi kreuzcrawl-test:latest || true
+            - name: Clean up test images
+              if: ${{ always() }}
+              run: docker rmi kreuzcrawl-test:latest || true

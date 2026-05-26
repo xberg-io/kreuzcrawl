@@ -1,64 +1,61 @@
 {
-  "id": "sitemap_index",
-  "description": "Follows sitemap index to discover child sitemaps",
-  "tags": [
-    "sitemap",
-    "map"
-  ],
-  "input": {
-    "config": {},
-    "mock_responses": [
-      {
-        "path": "/",
-        "status_code": 200,
-        "headers": {
-          "content-type": "text/html; charset=utf-8"
-        },
-        "body_inline": "<html><body><h1>Sitemap Index Root</h1></body></html>"
-      },
-      {
-        "path": "/sitemap.xml",
-        "method": "GET",
-        "status_code": 200,
-        "headers": {
-          "content-type": "application/xml"
-        },
-        "body_file": "xml/sitemap_index.xml"
-      },
-      {
-        "path": "/sitemap-pages.xml",
-        "method": "GET",
-        "status_code": 200,
-        "headers": {
-          "content-type": "application/xml"
-        },
-        "body_inline": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"><url><loc>https://example.com/</loc></url></urlset>"
-      },
-      {
-        "path": "/sitemap-blog.xml",
-        "method": "GET",
-        "status_code": 200,
-        "headers": {
-          "content-type": "application/xml"
-        },
-        "body_inline": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"><url><loc>https://example.com/blog/post1</loc></url></urlset>"
-      },
-      {
-        "path": "/sitemap-products.xml",
-        "method": "GET",
-        "status_code": 200,
-        "headers": {
-          "content-type": "application/xml"
-        },
-        "body_inline": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"><url><loc>https://example.com/products/item1</loc></url></urlset>"
-      }
-    ]
-  },
-  "assertions": [
-    {
-      "type": "equals",
-      "field": "urls.length",
-      "value": 3
-    }
-  ]
+	"id": "sitemap_index",
+	"description": "Follows sitemap index to discover child sitemaps",
+	"tags": ["sitemap", "map"],
+	"input": {
+		"config": {},
+		"mock_responses": [
+			{
+				"path": "/",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><body><h1>Sitemap Index Root</h1></body></html>"
+			},
+			{
+				"path": "/sitemap.xml",
+				"method": "GET",
+				"status_code": 200,
+				"headers": {
+					"content-type": "application/xml"
+				},
+				"body_file": "xml/sitemap_index.xml"
+			},
+			{
+				"path": "/sitemap-pages.xml",
+				"method": "GET",
+				"status_code": 200,
+				"headers": {
+					"content-type": "application/xml"
+				},
+				"body_inline": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"><url><loc>https://example.com/</loc></url></urlset>"
+			},
+			{
+				"path": "/sitemap-blog.xml",
+				"method": "GET",
+				"status_code": 200,
+				"headers": {
+					"content-type": "application/xml"
+				},
+				"body_inline": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"><url><loc>https://example.com/blog/post1</loc></url></urlset>"
+			},
+			{
+				"path": "/sitemap-products.xml",
+				"method": "GET",
+				"status_code": 200,
+				"headers": {
+					"content-type": "application/xml"
+				},
+				"body_inline": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"><url><loc>https://example.com/products/item1</loc></url></urlset>"
+			}
+		]
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "urls.length",
+			"value": 3
+		}
+	]
 }

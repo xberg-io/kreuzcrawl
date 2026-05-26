@@ -13,145 +13,145 @@ version: "3"
 #     a stale precompiled binary from the package's tagged release.
 
 tasks:
-  # ============================================================
-  # ALEF lifecycle
-  # ============================================================
+    # ============================================================
+    # ALEF lifecycle
+    # ============================================================
 
-  alef:install:
-    desc: Install the alef CLI from the sibling repo (../alef) at HEAD
-    cmds:
-      - cargo install --path ../alef --locked
+    alef:install:
+        desc: Install the alef CLI from the sibling repo (../alef) at HEAD
+        cmds:
+            - cargo install --path ../alef --locked
 
-  alef:regen:
-    desc: Regenerate bindings, packages, READMEs, docs, and e2e tests against the installed alef
-    cmds:
-      # --format invokes alef.toml [workspace.format_overrides] entries so
-      # generated output passes prek's per-language formatters (mix format, etc).
-      - alef all --format
-      - alef readme
-      - alef docs
-      - alef e2e generate
+    alef:regen:
+        desc: Regenerate bindings, packages, READMEs, docs, and e2e tests against the installed alef
+        cmds:
+            # --format invokes alef.toml [workspace.format_overrides] entries so
+            # generated output passes prek's per-language formatters (mix format, etc).
+            - alef all --format
+            - alef readme
+            - alef docs
+            - alef e2e generate
 
-  alef:bump:
-    desc: "Bump alef version pin in alef.toml + reinstall + regen (usage: VERSION=0.15.30 task alef:bump)"
-    requires:
-      vars: [VERSION]
-    cmds:
-      - sed -i.bak 's/^alef_version = .*/alef_version = "{{.VERSION}}"/' alef.toml
-      - rm -f alef.toml.bak
-      - task: alef:install
-      - task: alef:regen
+    alef:bump:
+        desc: "Bump alef version pin in alef.toml + reinstall + regen (usage: VERSION=0.15.30 task alef:bump)"
+        requires:
+            vars: [VERSION]
+        cmds:
+            - sed -i.bak 's/^alef_version = .*/alef_version = "{{.VERSION}}"/' alef.toml
+            - rm -f alef.toml.bak
+            - task: alef:install
+            - task: alef:regen
 
-  # ============================================================
-  # MOCK-SERVER (alef-generated; the binary bindings actually spawn)
-  # ============================================================
-  #
-  # Note: there are two mock-server binaries in this repo —
-  #   - target/release/mock-server         from tools/mock-server (legacy, unused)
-  #   - e2e/rust/target/release/mock-server from e2e/rust (alef-generated)
-  # All language conftests spawn the latter; this task builds it.
+    # ============================================================
+    # MOCK-SERVER (alef-generated; the binary bindings actually spawn)
+    # ============================================================
+    #
+    # Note: there are two mock-server binaries in this repo —
+    #   - target/release/mock-server         from tools/mock-server (legacy, unused)
+    #   - e2e/rust/target/release/mock-server from e2e/rust (alef-generated)
+    # All language conftests spawn the latter; this task builds it.
 
-  mock-server:rebuild:
-    desc: Rebuild the alef-generated e2e mock-server binary
-    dir: e2e/rust
-    cmds:
-      - cargo build --release --bin mock-server
+    mock-server:rebuild:
+        desc: Rebuild the alef-generated e2e mock-server binary
+        dir: e2e/rust
+        cmds:
+            - cargo build --release --bin mock-server
 
-  # ============================================================
-  # CLEANUP
-  # ============================================================
+    # ============================================================
+    # CLEANUP
+    # ============================================================
 
-  clean:e2e:
-    desc: Remove per-language e2e test dependencies (venvs, lockfiles, build dirs)
-    cmds:
-      - rm -rf e2e/python/.venv e2e/python/.pytest_cache
-      - rm -rf e2e/node/node_modules
-      - rm -rf e2e/ruby/.bundle e2e/ruby/Gemfile.lock e2e/ruby/spec/coverage
-      - rm -rf e2e/php/vendor e2e/php/composer.lock
-      - rm -rf e2e/elixir/_build e2e/elixir/deps
-      - rm -rf e2e/csharp/bin e2e/csharp/obj
-      - rm -rf e2e/java/target
-      - rm -rf e2e/go/.gocache
-      - rm -rf e2e/rust/target
-      - rm -rf e2e/wasm/node_modules e2e/wasm/dist
-      - rm -f .mock-server.pid .mock-server.env .mock-server.out
+    clean:e2e:
+        desc: Remove per-language e2e test dependencies (venvs, lockfiles, build dirs)
+        cmds:
+            - rm -rf e2e/python/.venv e2e/python/.pytest_cache
+            - rm -rf e2e/node/node_modules
+            - rm -rf e2e/ruby/.bundle e2e/ruby/Gemfile.lock e2e/ruby/spec/coverage
+            - rm -rf e2e/php/vendor e2e/php/composer.lock
+            - rm -rf e2e/elixir/_build e2e/elixir/deps
+            - rm -rf e2e/csharp/bin e2e/csharp/obj
+            - rm -rf e2e/java/target
+            - rm -rf e2e/go/.gocache
+            - rm -rf e2e/rust/target
+            - rm -rf e2e/wasm/node_modules e2e/wasm/dist
+            - rm -f .mock-server.pid .mock-server.env .mock-server.out
 
-  clean:workspace:
-    desc: Clean Rust workspace target + alef IR cache + legacy mock-server binaries
-    cmds:
-      - cargo clean
-      - rm -rf .alef-cache
-      - rm -f target/release/mock-server target/debug/mock-server
+    clean:workspace:
+        desc: Clean Rust workspace target + alef IR cache + legacy mock-server binaries
+        cmds:
+            - cargo clean
+            - rm -rf .alef-cache
+            - rm -f target/release/mock-server target/debug/mock-server
 
-  clean:full:
-    desc: "Total cleanup: per-language clean + workspace + e2e deps"
-    cmds:
-      - task: :clean
-      - task: clean:workspace
-      - task: clean:e2e
+    clean:full:
+        desc: "Total cleanup: per-language clean + workspace + e2e deps"
+        cmds:
+            - task: :clean
+            - task: clean:workspace
+            - task: clean:e2e
 
-  # ============================================================
-  # REBUILD (after kreuzcrawl-core or binding-source changes)
-  # ============================================================
+    # ============================================================
+    # REBUILD (after kreuzcrawl-core or binding-source changes)
+    # ============================================================
 
-  rebuild:bindings:
-    desc: Rebuild all language bindings + the alef-generated mock-server
-    cmds:
-      - task: :rust:ffi:build:dev
-      - task: :c:build:dev
-      - task: :python:build:dev
-      - task: :node:build:dev
-      - task: :ruby:build
-      - task: :php:build
-      - task: :go:build
-      - task: :java:build
-      - task: :csharp:build
-      - task: :wasm:build:dev
-      - task: mock-server:rebuild
+    rebuild:bindings:
+        desc: Rebuild all language bindings + the alef-generated mock-server
+        cmds:
+            - task: :rust:ffi:build:dev
+            - task: :c:build:dev
+            - task: :python:build:dev
+            - task: :node:build:dev
+            - task: :ruby:build
+            - task: :php:build
+            - task: :go:build
+            - task: :java:build
+            - task: :csharp:build
+            - task: :wasm:build:dev
+            - task: mock-server:rebuild
 
-  rebuild:fast:
-    desc: "Fast rebuild: Rust core + Python + Node + mock-server (skip JVM/CLR/etc.)"
-    cmds:
-      - task: :rust:ffi:build:dev
-      - task: :python:build:dev
-      - task: :node:build:dev
-      - task: mock-server:rebuild
+    rebuild:fast:
+        desc: "Fast rebuild: Rust core + Python + Node + mock-server (skip JVM/CLR/etc.)"
+        cmds:
+            - task: :rust:ffi:build:dev
+            - task: :python:build:dev
+            - task: :node:build:dev
+            - task: mock-server:rebuild
 
-  # ============================================================
-  # PYTHON-SPECIFIC CYCLE (handles stale .so in e2e venv)
-  # ============================================================
+    # ============================================================
+    # PYTHON-SPECIFIC CYCLE (handles stale .so in e2e venv)
+    # ============================================================
 
-  python:cycle:
-    desc: "Python: rebuild binding + force-refresh e2e venv + run e2e"
-    cmds:
-      - task: :python:build:dev
-      - cmd: cd e2e/python && uv sync --reinstall --quiet
-      - task: :python:e2e:test
+    python:cycle:
+        desc: "Python: rebuild binding + force-refresh e2e venv + run e2e"
+        cmds:
+            - task: :python:build:dev
+            - cmd: cd e2e/python && uv sync --reinstall --quiet
+            - task: :python:e2e:test
 
-  # ============================================================
-  # END-TO-END CYCLES
-  # ============================================================
+    # ============================================================
+    # END-TO-END CYCLES
+    # ============================================================
 
-  e2e:reset:
-    desc: "Full reset: clean + alef regen + rebuild all bindings + run all e2e"
-    cmds:
-      - task: clean:full
-      - task: alef:regen
-      - task: rebuild:bindings
-      - task: :e2e:test:all
+    e2e:reset:
+        desc: "Full reset: clean + alef regen + rebuild all bindings + run all e2e"
+        cmds:
+            - task: clean:full
+            - task: alef:regen
+            - task: rebuild:bindings
+            - task: :e2e:test:all
 
-  e2e:refresh:
-    desc: "Quick refresh: alef regen + rebuild all bindings + run all e2e (no clean)"
-    cmds:
-      - task: alef:regen
-      - task: rebuild:bindings
-      - task: :e2e:test:all
+    e2e:refresh:
+        desc: "Quick refresh: alef regen + rebuild all bindings + run all e2e (no clean)"
+        cmds:
+            - task: alef:regen
+            - task: rebuild:bindings
+            - task: :e2e:test:all
 
-  e2e:refresh:fast:
-    desc: "Fast feedback: alef regen + rebuild Rust/Python/Node + run their e2e suites"
-    cmds:
-      - task: alef:regen
-      - task: rebuild:fast
-      - task: :rust:e2e:test
-      - task: python:cycle
-      - task: :node:e2e:test
+    e2e:refresh:fast:
+        desc: "Fast feedback: alef regen + rebuild Rust/Python/Node + run their e2e suites"
+        cmds:
+            - task: alef:regen
+            - task: rebuild:fast
+            - task: :rust:e2e:test
+            - task: python:cycle
+            - task: :node:e2e:test

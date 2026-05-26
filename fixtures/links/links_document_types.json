@@ -1,29 +1,24 @@
 {
-  "id": "links_document_types",
-  "description": "Detects PDF, DOCX, XLSX links as document type",
-  "tags": [
-    "links",
-    "documents"
-  ],
-  "input": {
-    "config": {},
-    "mock_responses": [
-      {
-        "status_code": 200,
-        "headers": {
-          "content-type": "text/html; charset=utf-8"
-        },
-        "body_inline": "<html><body><a href=\"/files/report.pdf\">PDF Report</a><a href=\"/about\">About</a></body></html>"
-      }
-    ]
-  },
-  "assertions": [
-    {
-      "type": "contains_all",
-      "field": "links[].link_type",
-      "values": [
-        "document"
-      ]
-    }
-  ]
+	"id": "links_document_types",
+	"description": "Detects PDF, DOCX, XLSX links as document type",
+	"tags": ["links", "documents"],
+	"input": {
+		"config": {},
+		"mock_responses": [
+			{
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><body><a href=\"/files/report.pdf\">PDF Report</a><a href=\"/about\">About</a></body></html>"
+			}
+		]
+	},
+	"assertions": [
+		{
+			"type": "contains_all",
+			"field": "links[].link_type",
+			"values": ["document"]
+		}
+	]
 }

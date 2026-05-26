@@ -1,42 +1,38 @@
 {
-  "id": "scrape_dublin_core",
-  "description": "Extracts Dublin Core metadata from a page",
-  "tags": [
-    "scrape",
-    "metadata",
-    "dublin-core"
-  ],
-  "input": {
-    "config": {},
-    "mock_responses": [
-      {
-        "status_code": 200,
-        "headers": {
-          "content-type": "text/html; charset=utf-8"
-        },
-        "body_file": "html/dublin_core.html"
-      }
-    ]
-  },
-  "assertions": [
-    {
-      "type": "equals",
-      "field": "status_code",
-      "value": 200
-    },
-    {
-      "type": "not_empty",
-      "field": "dublin_core.title"
-    },
-    {
-      "type": "equals",
-      "field": "dublin_core.title",
-      "value": "Effects of Climate Change on Marine Biodiversity"
-    },
-    {
-      "type": "equals",
-      "field": "dublin_core.creator",
-      "value": "Dr. Jane Smith"
-    }
-  ]
+	"id": "scrape_dublin_core",
+	"description": "Extracts Dublin Core metadata from a page",
+	"tags": ["scrape", "metadata", "dublin-core"],
+	"input": {
+		"config": {},
+		"mock_responses": [
+			{
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_file": "html/dublin_core.html"
+			}
+		]
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "status_code",
+			"value": 200
+		},
+		{
+			"type": "not_empty",
+			"field": "dublin_core.title"
+		},
+		{
+			"type": "equals",
+			"field": "dublin_core.title",
+			"value": "Effects of Climate Change on Marine Biodiversity"
+		},
+		{
+			"type": "equals",
+			"field": "dublin_core.creator",
+			"value": "Dr. Jane Smith"
+		}
+	]
 }

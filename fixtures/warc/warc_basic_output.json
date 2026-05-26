@@ -1,17 +1,9 @@
 {
 	"id": "warc_basic_output",
 	"description": "Scrape single page with WARC output enabled writes to file",
-	"tags": [
-		"warc",
-		"output",
-		"basic",
-		"crawl"
-	],
+	"tags": ["warc", "output", "basic", "crawl"],
 	"skip": {
-		"languages": [
-			"wasm",
-			"homebrew"
-		],
+		"languages": ["wasm", "homebrew"],
 		"reason": "WARC output requires filesystem access"
 	},
 	"input": {

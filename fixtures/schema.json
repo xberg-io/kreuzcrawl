@@ -44,7 +44,10 @@
 							"status_code": { "type": "integer" },
 							"headers": { "type": "object", "additionalProperties": { "type": "string" } },
 							"body_file": { "type": "string", "description": "Path relative to fixtures/responses/" },
-							"body_inline": { "type": "string", "description": "Inline response body (alternative to body_file)" }
+							"body_inline": {
+								"type": "string",
+								"description": "Inline response body (alternative to body_file)"
+							}
 						}
 					},
 					"description": "Mock HTTP responses for the test scenario."
@@ -82,7 +85,11 @@
 						"max_depth": { "type": "integer", "minimum": 0 },
 						"max_pages": { "type": "integer", "minimum": 1 },
 						"respect_robots_txt": { "type": "boolean" },
-						"request_timeout": { "type": "integer", "minimum": 0, "description": "Request timeout in milliseconds" },
+						"request_timeout": {
+							"type": "integer",
+							"minimum": 0,
+							"description": "Request timeout in milliseconds"
+						},
 						"user_agent": { "type": "string" },
 						"stay_on_domain": { "type": "boolean" },
 						"include_paths": {
@@ -149,8 +156,15 @@
 									"enum": ["auto", "always", "never"],
 									"description": "When to use browser fallback"
 								},
-								"endpoint": { "type": "string", "description": "CDP WebSocket endpoint URL for external browser" },
-								"timeout": { "type": "integer", "minimum": 0, "description": "Browser page load timeout in ms" },
+								"endpoint": {
+									"type": "string",
+									"description": "CDP WebSocket endpoint URL for external browser"
+								},
+								"timeout": {
+									"type": "integer",
+									"minimum": 0,
+									"description": "Browser page load timeout in ms"
+								},
 								"wait": {
 									"type": "string",
 									"enum": ["network_idle", "selector", "fixed"],
@@ -174,16 +188,29 @@
 								"url": { "type": "string" }
 							}
 						},
-						"download_documents": { "type": "boolean", "description": "Enable document downloading (PDF, etc.)" },
+						"download_documents": {
+							"type": "boolean",
+							"description": "Enable document downloading (PDF, etc.)"
+						},
 						"document_mime_types": {
 							"type": "array",
 							"items": { "type": "string" },
 							"description": "Allowlist of MIME types to download"
 						},
-						"document_max_size": { "type": "integer", "minimum": 0, "description": "Max document size in bytes" },
+						"document_max_size": {
+							"type": "integer",
+							"minimum": 0,
+							"description": "Max document size in bytes"
+						},
 						"warc_output": { "type": "string", "description": "Path to write WARC output file" },
-						"browser_profile": { "type": "string", "description": "Named browser profile for persistent sessions" },
-						"save_browser_profile": { "type": "boolean", "description": "Save changes back to browser profile" }
+						"browser_profile": {
+							"type": "string",
+							"description": "Named browser profile for persistent sessions"
+						},
+						"save_browser_profile": {
+							"type": "boolean",
+							"description": "Save changes back to browser profile"
+						}
 					}
 				},
 				"actions": {

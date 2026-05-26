@@ -1,41 +1,38 @@
 {
-  "id": "browser_detect_next_rendered",
-  "description": "Does NOT flag Next.js page with full SSR content as needing JS rendering",
-  "tags": [
-    "browser",
-    "detection"
-  ],
-  "input": {
-    "config": {},
-    "mock_responses": [
-      {
-        "status_code": 200,
-        "headers": {
-          "content-type": "text/html; charset=utf-8"
-        },
-        "body_file": "html/spa_next_rendered.html"
-      }
-    ]
-  },
-  "assertions": [
-    {
-      "type": "equals",
-      "field": "status_code",
-      "value": 200
-    },
-    {
-      "type": "not_empty",
-      "field": "html"
-    },
-    {
-      "type": "equals",
-      "field": "js_render_hint",
-      "value": false
-    },
-    {
-      "type": "equals",
-      "field": "browser_used",
-      "value": false
-    }
-  ]
+	"id": "browser_detect_next_rendered",
+	"description": "Does NOT flag Next.js page with full SSR content as needing JS rendering",
+	"tags": ["browser", "detection"],
+	"input": {
+		"config": {},
+		"mock_responses": [
+			{
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_file": "html/spa_next_rendered.html"
+			}
+		]
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "status_code",
+			"value": 200
+		},
+		{
+			"type": "not_empty",
+			"field": "html"
+		},
+		{
+			"type": "equals",
+			"field": "js_render_hint",
+			"value": false
+		},
+		{
+			"type": "equals",
+			"field": "browser_used",
+			"value": false
+		}
+	]
 }

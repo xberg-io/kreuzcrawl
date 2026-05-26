@@ -1,70 +1,70 @@
 name: CI Docker
 
 on:
-  workflow_dispatch:
+    workflow_dispatch:
 
 concurrency:
-  group: ci-docker-${{ github.ref }}
-  cancel-in-progress: true
+    group: ci-docker-${{ github.ref }}
+    cancel-in-progress: true
 
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+    FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 permissions:
-  contents: read
+    contents: read
 
 jobs:
-  docker:
-    name: Docker (${{ matrix.variant }})
-    if: github.repository == 'kreuzberg-dev/kreuzcrawl' && github.actor != 'dependabot[bot]'
-    runs-on: ubuntu-latest
-    timeout-minutes: 120
-    strategy:
-      fail-fast: false
-      matrix:
-        variant: [full, cli]
-    steps:
-      - uses: actions/checkout@v6
+    docker:
+        name: Docker (${{ matrix.variant }})
+        if: github.repository == 'kreuzberg-dev/kreuzcrawl' && github.actor != 'dependabot[bot]'
+        runs-on: ubuntu-latest
+        timeout-minutes: 120
+        strategy:
+            fail-fast: false
+            matrix:
+                variant: [full, cli]
+        steps:
+            - uses: actions/checkout@v6
 
-      - name: Free disk space
-        uses: kreuzberg-dev/actions/free-disk-space-linux@v1
+            - name: Free disk space
+              uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v4
 
-      - name: Build Docker image
-        uses: docker/build-push-action@v7
-        with:
-          context: .
-          file: docker/Dockerfile${{ matrix.variant == 'cli' && '.cli' || '' }}
-          push: false
-          load: true
-          tags: kreuzcrawl:${{ matrix.variant }}
-          cache-from: type=gha,scope=ci-docker-${{ matrix.variant }}
-          cache-to: type=gha,mode=max,scope=ci-docker-${{ matrix.variant }}
+            - name: Build Docker image
+              uses: docker/build-push-action@v7
+              with:
+                  context: .
+                  file: docker/Dockerfile${{ matrix.variant == 'cli' && '.cli' || '' }}
+                  push: false
+                  load: true
+                  tags: kreuzcrawl:${{ matrix.variant }}
+                  cache-from: type=gha,scope=ci-docker-${{ matrix.variant }}
+                  cache-to: type=gha,mode=max,scope=ci-docker-${{ matrix.variant }}
 
-      - name: Save Docker image
-        shell: bash
-        run: |
-          mkdir -p /tmp
-          docker save kreuzcrawl:${{ matrix.variant }} | gzip > /tmp/kreuzcrawl-${{ matrix.variant }}.tar.gz
-          ls -lh /tmp/kreuzcrawl-${{ matrix.variant }}.tar.gz
+            - name: Save Docker image
+              shell: bash
+              run: |
+                  mkdir -p /tmp
+                  docker save kreuzcrawl:${{ matrix.variant }} | gzip > /tmp/kreuzcrawl-${{ matrix.variant }}.tar.gz
+                  ls -lh /tmp/kreuzcrawl-${{ matrix.variant }}.tar.gz
 
-      - name: Check image size
-        uses: kreuzberg-dev/actions/check-docker-image-size@v1
-        with:
-          image: kreuzcrawl:${{ matrix.variant }}
-          warn-mb: ${{ matrix.variant == 'cli' && '200' || '' }}
-          label: "${{ matrix.variant }} image"
+            - name: Check image size
+              uses: kreuzberg-dev/actions/check-docker-image-size@v1
+              with:
+                  image: kreuzcrawl:${{ matrix.variant }}
+                  warn-mb: ${{ matrix.variant == 'cli' && '200' || '' }}
+                  label: "${{ matrix.variant }} image"
 
-      - name: Run feature tests
-        if: matrix.variant != 'cli'
-        run: scripts/ci/docker/run-feature-tests.sh "${{ matrix.variant }}"
+            - name: Run feature tests
+              if: matrix.variant != 'cli'
+              run: scripts/ci/docker/run-feature-tests.sh "${{ matrix.variant }}"
 
-      - name: Run configuration tests
-        if: matrix.variant != 'cli'
-        run: scripts/ci/docker/run-config-tests.sh "${{ matrix.variant }}"
+            - name: Run configuration tests
+              if: matrix.variant != 'cli'
+              run: scripts/ci/docker/run-config-tests.sh "${{ matrix.variant }}"
 
-      - name: Run CLI tests
-        if: matrix.variant == 'cli'
-        run: scripts/ci/docker/run-cli-tests.sh
+            - name: Run CLI tests
+              if: matrix.variant == 'cli'
+              run: scripts/ci/docker/run-cli-tests.sh

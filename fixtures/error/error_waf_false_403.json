@@ -1,32 +1,29 @@
 {
-  "id": "error_waf_false_403",
-  "description": "Detects WAF/bot protection false 403 (Cloudflare challenge page)",
-  "tags": [
-    "error",
-    "waf"
-  ],
-  "input": {
-    "config": {
-      "browser": {
-        "mode": "never"
-      }
-    }
-  },
-  "assertions": [
-    {
-      "type": "error"
-    },
-    {
-      "type": "error",
-      "value": "waf"
-    }
-  ],
-  "mock_response": {
-    "status": 403,
-    "headers": {
-      "content-type": "text/html; charset=utf-8",
-      "server": "cloudflare"
-    },
-    "body": "<html><head><title>Just a moment...</title></head><body><div class=\"cf-browser-verification\"></div></body></html>"
-  }
+	"id": "error_waf_false_403",
+	"description": "Detects WAF/bot protection false 403 (Cloudflare challenge page)",
+	"tags": ["error", "waf"],
+	"input": {
+		"config": {
+			"browser": {
+				"mode": "never"
+			}
+		}
+	},
+	"assertions": [
+		{
+			"type": "error"
+		},
+		{
+			"type": "error",
+			"value": "waf"
+		}
+	],
+	"mock_response": {
+		"status": 403,
+		"headers": {
+			"content-type": "text/html; charset=utf-8",
+			"server": "cloudflare"
+		},
+		"body": "<html><head><title>Just a moment...</title></head><body><div class=\"cf-browser-verification\"></div></body></html>"
+	}
 }

@@ -1,26 +1,24 @@
 {
-  "id": "links_rel_attributes",
-  "description": "Preserves rel=nofollow and rel=canonical attributes",
-  "tags": [
-    "links"
-  ],
-  "input": {
-    "config": {},
-    "mock_responses": [
-      {
-        "status_code": 200,
-        "headers": {
-          "content-type": "text/html; charset=utf-8"
-        },
-        "body_file": "html/complex_links.html"
-      }
-    ]
-  },
-  "assertions": [
-    {
-      "type": "greater_than",
-      "field": "links.length",
-      "value": 0
-    }
-  ]
+	"id": "links_rel_attributes",
+	"description": "Preserves rel=nofollow and rel=canonical attributes",
+	"tags": ["links"],
+	"input": {
+		"config": {},
+		"mock_responses": [
+			{
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_file": "html/complex_links.html"
+			}
+		]
+	},
+	"assertions": [
+		{
+			"type": "greater_than",
+			"field": "links.length",
+			"value": 0
+		}
+	]
 }

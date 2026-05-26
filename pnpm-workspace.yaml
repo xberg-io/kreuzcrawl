@@ -1,7 +1,7 @@
 packages:
-  - "crates/kreuzcrawl-node"
-  - "crates/kreuzcrawl-wasm"
-  - "e2e/node"
-  - "!e2e/wasm" # excluded: depends on wasm-pack build output (crates/kreuzcrawl-wasm/pkg) which doesn't exist on fresh checkout
+    - "crates/kreuzcrawl-node"
+    - "crates/kreuzcrawl-wasm"
+    - "e2e/node"
+    - "!e2e/wasm" # excluded: depends on wasm-pack build output (crates/kreuzcrawl-wasm/pkg) which doesn't exist on fresh checkout
 allowBuilds:
-  esbuild: true
+    esbuild: true

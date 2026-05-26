@@ -1,42 +1,42 @@
 version: "3"
 
 tasks:
-  sync:
-    desc: Sync version from Cargo.toml to all package manifests
-    cmds:
-      - alef sync-versions
-      - alef readme
-      - alef docs
-      - alef generate --clean
-      - alef stubs
-      - alef e2e generate
+    sync:
+        desc: Sync version from Cargo.toml to all package manifests
+        cmds:
+            - alef sync-versions
+            - alef readme
+            - alef docs
+            - alef generate --clean
+            - alef stubs
+            - alef e2e generate
 
-  bump:major:
-    desc: Bump major version and sync all packages
-    cmds:
-      - alef sync-versions --bump major
-      - task: sync
+    bump:major:
+        desc: Bump major version and sync all packages
+        cmds:
+            - alef sync-versions --bump major
+            - task: sync
 
-  bump:minor:
-    desc: Bump minor version and sync all packages
-    cmds:
-      - alef sync-versions --bump minor
-      - task: sync
+    bump:minor:
+        desc: Bump minor version and sync all packages
+        cmds:
+            - alef sync-versions --bump minor
+            - task: sync
 
-  bump:patch:
-    desc: Bump patch version and sync all packages
-    cmds:
-      - alef sync-versions --bump patch
-      - task: sync
+    bump:patch:
+        desc: Bump patch version and sync all packages
+        cmds:
+            - alef sync-versions --bump patch
+            - task: sync
 
-  check:
-    desc: "Check if versions are synchronized (dry-run)"
-    cmds:
-      - cmd: grep -m 1 'version = ' Cargo.toml | sed 's/version = "\(.*\)"/\1/'
-        silent: false
+    check:
+        desc: "Check if versions are synchronized (dry-run)"
+        cmds:
+            - cmd: grep -m 1 'version = ' Cargo.toml | sed 's/version = "\(.*\)"/\1/'
+              silent: false
 
-  show:
-    desc: "Show current version from Cargo.toml"
-    cmds:
-      - cmd: grep -m 1 'version = ' Cargo.toml | sed 's/version = "\(.*\)"/\1/'
-        silent: false
+    show:
+        desc: "Show current version from Cargo.toml"
+        cmds:
+            - cmd: grep -m 1 'version = ' Cargo.toml | sed 's/version = "\(.*\)"/\1/'
+              silent: false

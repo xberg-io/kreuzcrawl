@@ -1,28 +1,24 @@
 {
-  "id": "links_anchor_fragment",
-  "description": "Identifies fragment-only links as anchor type",
-  "tags": [
-    "links"
-  ],
-  "input": {
-    "config": {},
-    "mock_responses": [
-      {
-        "status_code": 200,
-        "headers": {
-          "content-type": "text/html; charset=utf-8"
-        },
-        "body_inline": "<html><body><a href=\"#section-1\">Section 1</a><a href=\"/about\">About</a></body></html>"
-      }
-    ]
-  },
-  "assertions": [
-    {
-      "type": "contains_all",
-      "field": "links[].link_type",
-      "values": [
-        "anchor"
-      ]
-    }
-  ]
+	"id": "links_anchor_fragment",
+	"description": "Identifies fragment-only links as anchor type",
+	"tags": ["links"],
+	"input": {
+		"config": {},
+		"mock_responses": [
+			{
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><body><a href=\"#section-1\">Section 1</a><a href=\"/about\">About</a></body></html>"
+			}
+		]
+	},
+	"assertions": [
+		{
+			"type": "contains_all",
+			"field": "links[].link_type",
+			"values": ["anchor"]
+		}
+	]
 }

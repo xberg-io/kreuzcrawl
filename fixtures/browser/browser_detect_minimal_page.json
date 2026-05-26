@@ -1,37 +1,34 @@
 {
-  "id": "browser_detect_minimal_page",
-  "description": "Does NOT flag a short but real content page as needing JS rendering",
-  "tags": [
-    "browser",
-    "detection"
-  ],
-  "input": {
-    "config": {},
-    "mock_responses": [
-      {
-        "status_code": 200,
-        "headers": {
-          "content-type": "text/html; charset=utf-8"
-        },
-        "body_file": "html/spa_minimal_page.html"
-      }
-    ]
-  },
-  "assertions": [
-    {
-      "type": "equals",
-      "field": "status_code",
-      "value": 200
-    },
-    {
-      "type": "equals",
-      "field": "js_render_hint",
-      "value": false
-    },
-    {
-      "type": "equals",
-      "field": "browser_used",
-      "value": false
-    }
-  ]
+	"id": "browser_detect_minimal_page",
+	"description": "Does NOT flag a short but real content page as needing JS rendering",
+	"tags": ["browser", "detection"],
+	"input": {
+		"config": {},
+		"mock_responses": [
+			{
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_file": "html/spa_minimal_page.html"
+			}
+		]
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "status_code",
+			"value": 200
+		},
+		{
+			"type": "equals",
+			"field": "js_render_hint",
+			"value": false
+		},
+		{
+			"type": "equals",
+			"field": "browser_used",
+			"value": false
+		}
+	]
 }

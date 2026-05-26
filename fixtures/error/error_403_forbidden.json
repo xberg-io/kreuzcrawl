@@ -1,30 +1,28 @@
 {
-  "id": "error_403_forbidden",
-  "description": "Handles 403 Forbidden response correctly",
-  "tags": [
-    "error"
-  ],
-  "input": {
-    "config": {
-      "browser": {
-        "mode": "never"
-      }
-    }
-  },
-  "assertions": [
-    {
-      "type": "error"
-    },
-    {
-      "type": "error",
-      "value": "forbidden"
-    }
-  ],
-  "mock_response": {
-    "status": 403,
-    "body": "<html><body><h1>403 Forbidden</h1></body></html>",
-    "headers": {
-      "content-type": "text/html; charset=utf-8"
-    }
-  }
+	"id": "error_403_forbidden",
+	"description": "Handles 403 Forbidden response correctly",
+	"tags": ["error"],
+	"input": {
+		"config": {
+			"browser": {
+				"mode": "never"
+			}
+		}
+	},
+	"assertions": [
+		{
+			"type": "error"
+		},
+		{
+			"type": "error",
+			"value": "forbidden"
+		}
+	],
+	"mock_response": {
+		"status": 403,
+		"body": "<html><body><h1>403 Forbidden</h1></body></html>",
+		"headers": {
+			"content-type": "text/html; charset=utf-8"
+		}
+	}
 }

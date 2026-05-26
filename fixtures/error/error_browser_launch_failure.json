@@ -1,39 +1,36 @@
 {
-  "id": "error_browser_launch_failure",
-  "description": "Browser launch fails when browser mode is always but browser is unavailable",
-  "tags": [
-    "error",
-    "browser"
-  ],
-  "skip": {
-    "languages": ["wasm", "homebrew"],
-    "reason": "Requires browser feature and specific environment"
-  },
-  "input": {
-    "mock_responses": [
-      {
-        "path": "/",
-        "status_code": 200,
-        "headers": {
-          "content-type": "text/html; charset=utf-8"
-        },
-        "body_inline": "<html><body><h1>Test</h1></body></html>"
-      }
-    ],
-    "config": {
-      "browser": {
-        "mode": "always",
-        "timeout": 1
-      }
-    }
-  },
-  "assertions": [
-    {
-      "type": "error"
-    },
-    {
-      "type": "error",
-      "value": "browser"
-    }
-  ]
+	"id": "error_browser_launch_failure",
+	"description": "Browser launch fails when browser mode is always but browser is unavailable",
+	"tags": ["error", "browser"],
+	"skip": {
+		"languages": ["wasm", "homebrew"],
+		"reason": "Requires browser feature and specific environment"
+	},
+	"input": {
+		"mock_responses": [
+			{
+				"path": "/",
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_inline": "<html><body><h1>Test</h1></body></html>"
+			}
+		],
+		"config": {
+			"browser": {
+				"mode": "always",
+				"timeout": 1
+			}
+		}
+	},
+	"assertions": [
+		{
+			"type": "error"
+		},
+		{
+			"type": "error",
+			"value": "browser"
+		}
+	]
 }

@@ -1,10 +1,7 @@
 {
 	"id": "crawl_trailing_slash_dedup",
 	"description": "Deduplicates /page and /page/ as the same URL",
-	"tags": [
-		"crawl",
-		"normalization"
-	],
+	"tags": ["crawl", "normalization"],
 	"input": {
 		"mock_responses": [
 			{

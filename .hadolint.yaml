@@ -5,6 +5,6 @@
 # DL4006: the Alpine images run busybox `ash`, where `set -o pipefail` is the
 #   default-safe behaviour and the explicit SHELL directive is unnecessary.
 ignored:
-  - DL3008
-  - DL3018
-  - DL4006
+    - DL3008
+    - DL3018
+    - DL4006

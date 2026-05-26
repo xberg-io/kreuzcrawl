@@ -1,56 +1,52 @@
 {
-  "id": "scrape_og_metadata",
-  "description": "Extracts full Open Graph metadata from a page",
-  "tags": [
-    "scrape",
-    "metadata",
-    "og"
-  ],
-  "input": {
-    "config": {},
-    "mock_responses": [
-      {
-        "status_code": 200,
-        "headers": {
-          "content-type": "text/html; charset=utf-8"
-        },
-        "body_file": "html/og_metadata.html"
-      }
-    ]
-  },
-  "assertions": [
-    {
-      "type": "equals",
-      "field": "status_code",
-      "value": 200
-    },
-    {
-      "type": "not_empty",
-      "field": "og.title"
-    },
-    {
-      "type": "equals",
-      "field": "og.title",
-      "value": "Article Title"
-    },
-    {
-      "type": "equals",
-      "field": "og.type",
-      "value": "article"
-    },
-    {
-      "type": "equals",
-      "field": "og.image",
-      "value": "https://example.com/images/article-hero.jpg"
-    },
-    {
-      "type": "not_empty",
-      "field": "og.description"
-    },
-    {
-      "type": "equals",
-      "field": "metadata.title",
-      "value": "Article Title - Example Blog"
-    }
-  ]
+	"id": "scrape_og_metadata",
+	"description": "Extracts full Open Graph metadata from a page",
+	"tags": ["scrape", "metadata", "og"],
+	"input": {
+		"config": {},
+		"mock_responses": [
+			{
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_file": "html/og_metadata.html"
+			}
+		]
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "status_code",
+			"value": 200
+		},
+		{
+			"type": "not_empty",
+			"field": "og.title"
+		},
+		{
+			"type": "equals",
+			"field": "og.title",
+			"value": "Article Title"
+		},
+		{
+			"type": "equals",
+			"field": "og.type",
+			"value": "article"
+		},
+		{
+			"type": "equals",
+			"field": "og.image",
+			"value": "https://example.com/images/article-hero.jpg"
+		},
+		{
+			"type": "not_empty",
+			"field": "og.description"
+		},
+		{
+			"type": "equals",
+			"field": "metadata.title",
+			"value": "Article Title - Example Blog"
+		}
+	]
 }

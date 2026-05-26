@@ -4,7 +4,7 @@ defmodule Kreuzcrawl.MixProject do
   def project do
     [
       app: :kreuzcrawl,
-      version: "0.3.0-rc.30",
+      version: "0.3.0-rc.31",
       elixir: "~> 1.14",
       elixirc_paths: ["lib", Path.expand("../../packages/elixir/native/kreuzcrawl_nif/src", __DIR__)],
       rustler_crates: [kreuzcrawl_nif: [mode: :release]],

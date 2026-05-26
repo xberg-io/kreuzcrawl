@@ -1,38 +1,57 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width">
-    <title>Next.js Blog - Server Rendered</title>
-    <meta name="description" content="A server-side rendered Next.js blog with real content">
-</head>
-<body>
-    <div id="__next">
-        <header>
-            <nav>
-                <a href="/">Home</a>
-                <a href="/blog">Blog</a>
-                <a href="/about">About</a>
-            </nav>
-        </header>
-        <main>
-            <article>
-                <h1>Understanding Server-Side Rendering</h1>
-                <p>Server-side rendering is a technique where the server generates the full HTML for a page before sending it to the client. This means the browser receives a complete document that can be displayed immediately, without waiting for JavaScript to load and execute.</p>
-                <p>When a page is server-rendered, search engines and crawlers can read the content directly from the HTML response. This is important for SEO and accessibility, as it ensures that the content is available to all users and bots regardless of their JavaScript capabilities.</p>
-                <p>Next.js provides several rendering strategies including static generation, server-side rendering, and incremental static regeneration. Each approach has different trade-offs in terms of performance, freshness, and build complexity.</p>
-                <h2>Benefits of SSR</h2>
-                <ul>
-                    <li>Better SEO since content is in the initial HTML</li>
-                    <li>Faster first contentful paint</li>
-                    <li>Works without JavaScript enabled</li>
-                    <li>Better social media preview cards</li>
-                </ul>
-            </article>
-        </main>
-    </div>
-    <script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"title":"Understanding Server-Side Rendering"}},"page":"/blog/ssr","query":{},"buildId":"abc123"}</script>
-    <script src="/_next/static/chunks/webpack.js" defer></script>
-    <script src="/_next/static/chunks/main.js" defer></script>
-</body>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width" />
+		<title>Next.js Blog - Server Rendered</title>
+		<meta name="description" content="A server-side rendered Next.js blog with real content" />
+	</head>
+	<body>
+		<div id="__next">
+			<header>
+				<nav>
+					<a href="/">Home</a>
+					<a href="/blog">Blog</a>
+					<a href="/about">About</a>
+				</nav>
+			</header>
+			<main>
+				<article>
+					<h1>Understanding Server-Side Rendering</h1>
+					<p>
+						Server-side rendering is a technique where the server generates the full HTML for a page before
+						sending it to the client. This means the browser receives a complete document that can be
+						displayed immediately, without waiting for JavaScript to load and execute.
+					</p>
+					<p>
+						When a page is server-rendered, search engines and crawlers can read the content directly from
+						the HTML response. This is important for SEO and accessibility, as it ensures that the content
+						is available to all users and bots regardless of their JavaScript capabilities.
+					</p>
+					<p>
+						Next.js provides several rendering strategies including static generation, server-side
+						rendering, and incremental static regeneration. Each approach has different trade-offs in terms
+						of performance, freshness, and build complexity.
+					</p>
+					<h2>Benefits of SSR</h2>
+					<ul>
+						<li>Better SEO since content is in the initial HTML</li>
+						<li>Faster first contentful paint</li>
+						<li>Works without JavaScript enabled</li>
+						<li>Better social media preview cards</li>
+					</ul>
+				</article>
+			</main>
+		</div>
+		<script id="__NEXT_DATA__" type="application/json">
+			{
+				"props": { "pageProps": { "title": "Understanding Server-Side Rendering" } },
+				"page": "/blog/ssr",
+				"query": {},
+				"buildId": "abc123"
+			}
+		</script>
+		<script src="/_next/static/chunks/webpack.js" defer></script>
+		<script src="/_next/static/chunks/main.js" defer></script>
+	</body>
 </html>

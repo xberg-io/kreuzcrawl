@@ -1,23 +1,21 @@
 {
-  "id": "error_408_request_timeout",
-  "description": "Handles 408 Request Timeout response correctly",
-  "tags": [
-    "error"
-  ],
-  "assertions": [
-    {
-      "type": "error"
-    },
-    {
-      "type": "error",
-      "value": "timeout"
-    }
-  ],
-  "mock_response": {
-    "status": 408,
-    "body": "<html><body><h1>408 Request Timeout</h1></body></html>",
-    "headers": {
-      "content-type": "text/html; charset=utf-8"
-    }
-  }
+	"id": "error_408_request_timeout",
+	"description": "Handles 408 Request Timeout response correctly",
+	"tags": ["error"],
+	"assertions": [
+		{
+			"type": "error"
+		},
+		{
+			"type": "error",
+			"value": "timeout"
+		}
+	],
+	"mock_response": {
+		"status": 408,
+		"body": "<html><body><h1>408 Request Timeout</h1></body></html>",
+		"headers": {
+			"content-type": "text/html; charset=utf-8"
+		}
+	}
 }

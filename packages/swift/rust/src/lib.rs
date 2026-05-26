@@ -175,6 +175,7 @@ mod ffi {
             max_asset_size: Option<usize>,
             browser: BrowserConfig,
             proxy: Option<ProxyConfig>,
+            bypass: Option<String>,
             user_agents: Vec<String>,
             capture_screenshot: bool,
             download_documents: bool,
@@ -236,6 +237,7 @@ mod ffi {
         fn max_asset_size(&self) -> Option<usize>;
         fn browser(&self) -> BrowserConfig;
         fn proxy(&self) -> Option<ProxyConfig>;
+        fn bypass(&self) -> Option<String>;
         #[swift_bridge(swift_name = "userAgents")]
         fn user_agents(&self) -> Vec<String>;
         #[swift_bridge(swift_name = "captureScreenshot")]
@@ -1491,6 +1493,7 @@ impl CrawlConfig {
         max_asset_size: Option<usize>,
         browser: BrowserConfig,
         proxy: Option<ProxyConfig>,
+        bypass: Option<String>,
         user_agents: Vec<String>,
         capture_screenshot: bool,
         download_documents: bool,
@@ -1568,6 +1571,16 @@ impl CrawlConfig {
         __target.browser = browser.0;
         if let Some(w) = proxy {
             __target.proxy = Some(w.0);
+        }
+        if let Some(s) = bypass {
+            // Try JSON parse first (handles enum/object values); on parse failure
+            // treat the raw input as a JSON string scalar so plain `String` /
+            // string-like enum fields don't end up empty for inputs that aren't
+            // valid JSON tokens (e.g. `tts-1`).
+            let __v = ::serde_json::from_str::<::serde_json::Value>(&s).unwrap_or(::serde_json::Value::String(s));
+            if let Ok(t) = ::serde_json::from_value(__v) {
+                __target.bypass = Some(t);
+            }
         }
         if let Ok(__v) = ::serde_json::to_value(user_agents) {
             if let Ok(t) = ::serde_json::from_value(__v) {
@@ -1756,6 +1769,9 @@ impl CrawlConfig {
     }
     pub fn proxy(&self) -> Option<ProxyConfig> {
         self.0.proxy.clone().map(ProxyConfig)
+    }
+    pub fn bypass(&self) -> Option<String> {
+        self.0.bypass.as_ref().and_then(|v| serde_json::to_string(v).ok())
     }
     pub fn user_agents(&self) -> Vec<String> {
         ::serde_json::to_value(&self.0.user_agents)

@@ -1,24 +1,22 @@
 {
-  "id": "error_401_unauthorized",
-  "description": "Handles 401 Unauthorized response correctly",
-  "tags": [
-    "error"
-  ],
-  "assertions": [
-    {
-      "type": "error"
-    },
-    {
-      "type": "error",
-      "value": "unauthorized"
-    }
-  ],
-  "mock_response": {
-    "status": 401,
-    "body": "<html><body><h1>401 Unauthorized</h1></body></html>",
-    "headers": {
-      "content-type": "text/html; charset=utf-8",
-      "www-authenticate": "Basic realm=\"test\""
-    }
-  }
+	"id": "error_401_unauthorized",
+	"description": "Handles 401 Unauthorized response correctly",
+	"tags": ["error"],
+	"assertions": [
+		{
+			"type": "error"
+		},
+		{
+			"type": "error",
+			"value": "unauthorized"
+		}
+	],
+	"mock_response": {
+		"status": 401,
+		"body": "<html><body><h1>401 Unauthorized</h1></body></html>",
+		"headers": {
+			"content-type": "text/html; charset=utf-8",
+			"www-authenticate": "Basic realm=\"test\""
+		}
+	}
 }

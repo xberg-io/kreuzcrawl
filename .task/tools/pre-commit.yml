@@ -1,18 +1,18 @@
 version: "3"
 
 includes:
-  _cfg:
-    taskfile: ../config/vars.yml
-    internal: true
+    _cfg:
+        taskfile: ../config/vars.yml
+        internal: true
 
 tasks:
-  install:
-    desc: Install pre-commit hooks
-    cmds:
-      - pre-commit install
-      - pre-commit install --hook-type commit-msg
+    install:
+        desc: Install pre-commit hooks
+        cmds:
+            - pre-commit install
+            - pre-commit install --hook-type commit-msg
 
-  run:
-    desc: Run pre-commit on all files
-    cmds:
-      - pre-commit run --all-files
+    run:
+        desc: Run pre-commit on all files
+        cmds:
+            - pre-commit run --all-files

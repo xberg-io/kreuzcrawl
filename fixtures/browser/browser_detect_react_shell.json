@@ -1,45 +1,42 @@
 {
-  "id": "browser_detect_react_shell",
-  "description": "Detects React SPA shell with empty #root div as needing JS rendering",
-  "tags": [
-    "browser",
-    "detection"
-  ],
-  "input": {
-    "config": {
-      "browser": {
-        "mode": "never"
-      }
-    },
-    "mock_responses": [
-      {
-        "status_code": 200,
-        "headers": {
-          "content-type": "text/html; charset=utf-8"
-        },
-        "body_file": "html/spa_react_shell.html"
-      }
-    ]
-  },
-  "assertions": [
-    {
-      "type": "equals",
-      "field": "status_code",
-      "value": 200
-    },
-    {
-      "type": "not_empty",
-      "field": "html"
-    },
-    {
-      "type": "equals",
-      "field": "js_render_hint",
-      "value": true
-    },
-    {
-      "type": "equals",
-      "field": "browser_used",
-      "value": false
-    }
-  ]
+	"id": "browser_detect_react_shell",
+	"description": "Detects React SPA shell with empty #root div as needing JS rendering",
+	"tags": ["browser", "detection"],
+	"input": {
+		"config": {
+			"browser": {
+				"mode": "never"
+			}
+		},
+		"mock_responses": [
+			{
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_file": "html/spa_react_shell.html"
+			}
+		]
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "status_code",
+			"value": 200
+		},
+		{
+			"type": "not_empty",
+			"field": "html"
+		},
+		{
+			"type": "equals",
+			"field": "js_render_hint",
+			"value": true
+		},
+		{
+			"type": "equals",
+			"field": "browser_used",
+			"value": false
+		}
+	]
 }

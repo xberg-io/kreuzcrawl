@@ -1,21 +1,18 @@
 {
-  "id": "error_unsupported_scheme",
-  "description": "Unsupported URL scheme (gopher) is rejected",
-  "tags": [
-    "error",
-    "scheme"
-  ],
-  "assertions": [
-    {
-      "type": "error"
-    },
-    {
-      "type": "error",
-      "value": "unsupported"
-    }
-  ],
-  "input": {
-    "url": "gopher://invalid.example.com/",
-    "config": {}
-  }
+	"id": "error_unsupported_scheme",
+	"description": "Unsupported URL scheme (gopher) is rejected",
+	"tags": ["error", "scheme"],
+	"assertions": [
+		{
+			"type": "error"
+		},
+		{
+			"type": "error",
+			"value": "unsupported"
+		}
+	],
+	"input": {
+		"url": "gopher://invalid.example.com/",
+		"config": {}
+	}
 }

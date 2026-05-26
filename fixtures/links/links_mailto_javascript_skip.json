@@ -1,32 +1,29 @@
 {
-  "id": "links_mailto_javascript_skip",
-  "description": "Skips mailto:, javascript:, and tel: scheme links",
-  "tags": [
-    "links",
-    "filtering"
-  ],
-  "input": {
-    "config": {},
-    "mock_responses": [
-      {
-        "status_code": 200,
-        "headers": {
-          "content-type": "text/html; charset=utf-8"
-        },
-        "body_file": "html/mailto_javascript_links.html"
-      }
-    ]
-  },
-  "assertions": [
-    {
-      "type": "greater_than",
-      "field": "links.length",
-      "value": 0
-    },
-    {
-      "type": "not_contains",
-      "field": "links[].url",
-      "value": "mailto:"
-    }
-  ]
+	"id": "links_mailto_javascript_skip",
+	"description": "Skips mailto:, javascript:, and tel: scheme links",
+	"tags": ["links", "filtering"],
+	"input": {
+		"config": {},
+		"mock_responses": [
+			{
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_file": "html/mailto_javascript_links.html"
+			}
+		]
+	},
+	"assertions": [
+		{
+			"type": "greater_than",
+			"field": "links.length",
+			"value": 0
+		},
+		{
+			"type": "not_contains",
+			"field": "links[].url",
+			"value": "mailto:"
+		}
+	]
 }

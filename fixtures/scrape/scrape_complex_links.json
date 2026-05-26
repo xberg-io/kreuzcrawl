@@ -1,36 +1,33 @@
 {
-  "id": "scrape_complex_links",
-  "description": "Classifies links by type: internal, external, anchor, document, image",
-  "tags": [
-    "scrape",
-    "links"
-  ],
-  "input": {
-    "config": {},
-    "mock_responses": [
-      {
-        "status_code": 200,
-        "headers": {
-          "content-type": "text/html; charset=utf-8"
-        },
-        "body_file": "html/complex_links.html"
-      }
-    ]
-  },
-  "assertions": [
-    {
-      "type": "equals",
-      "field": "status_code",
-      "value": 200
-    },
-    {
-      "type": "greater_than",
-      "field": "links.length",
-      "value": 9
-    },
-    {
-      "type": "not_empty",
-      "field": "links[].url"
-    }
-  ]
+	"id": "scrape_complex_links",
+	"description": "Classifies links by type: internal, external, anchor, document, image",
+	"tags": ["scrape", "links"],
+	"input": {
+		"config": {},
+		"mock_responses": [
+			{
+				"status_code": 200,
+				"headers": {
+					"content-type": "text/html; charset=utf-8"
+				},
+				"body_file": "html/complex_links.html"
+			}
+		]
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "status_code",
+			"value": 200
+		},
+		{
+			"type": "greater_than",
+			"field": "links.length",
+			"value": 9
+		},
+		{
+			"type": "not_empty",
+			"field": "links[].url"
+		}
+	]
 }

@@ -1,23 +1,21 @@
 {
-  "id": "error_500_server",
-  "description": "Handles 500 server error",
-  "tags": [
-    "error"
-  ],
-  "assertions": [
-    {
-      "type": "error"
-    },
-    {
-      "type": "error",
-      "value": "server_error"
-    }
-  ],
-  "mock_response": {
-    "status": 500,
-    "body": "<html><body><h1>Internal Server Error</h1></body></html>",
-    "headers": {
-      "content-type": "text/html; charset=utf-8"
-    }
-  }
+	"id": "error_500_server",
+	"description": "Handles 500 server error",
+	"tags": ["error"],
+	"assertions": [
+		{
+			"type": "error"
+		},
+		{
+			"type": "error",
+			"value": "server_error"
+		}
+	],
+	"mock_response": {
+		"status": 500,
+		"body": "<html><body><h1>Internal Server Error</h1></body></html>",
+		"headers": {
+			"content-type": "text/html; charset=utf-8"
+		}
+	}
 }

@@ -1,27 +1,24 @@
 {
-  "id": "sitemap_basic",
-  "description": "Parses a standard urlset sitemap",
-  "tags": [
-    "sitemap",
-    "map"
-  ],
-  "input": {
-    "config": {},
-    "mock_responses": [
-      {
-        "status_code": 200,
-        "headers": {
-          "content-type": "application/xml"
-        },
-        "body_file": "xml/sitemap_basic.xml"
-      }
-    ]
-  },
-  "assertions": [
-    {
-      "type": "equals",
-      "field": "urls.length",
-      "value": 4
-    }
-  ]
+	"id": "sitemap_basic",
+	"description": "Parses a standard urlset sitemap",
+	"tags": ["sitemap", "map"],
+	"input": {
+		"config": {},
+		"mock_responses": [
+			{
+				"status_code": 200,
+				"headers": {
+					"content-type": "application/xml"
+				},
+				"body_file": "xml/sitemap_basic.xml"
+			}
+		]
+	},
+	"assertions": [
+		{
+			"type": "equals",
+			"field": "urls.length",
+			"value": 4
+		}
+	]
 }
