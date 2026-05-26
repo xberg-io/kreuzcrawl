@@ -91,7 +91,6 @@ the C FFI layer for native performance with idiomatic Go error handling.
 ```bash
 go get github.com/kreuzberg-dev/kreuzcrawl/packages/go
 ```
-
 ## Quick Start
 
 ```go title="Go"
@@ -139,7 +138,6 @@ func main() {
     fmt.Printf("Pages crawled: %d\n", len(crawlResult.Pages))
 }
 ```
-
 ## API Reference
 
 Full API documentation is available at [docs.kreuzcrawl.kreuzberg.dev](https://docs.kreuzcrawl.kreuzberg.dev).

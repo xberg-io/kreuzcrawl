@@ -91,7 +91,6 @@ Magnus with native Ruby objects, full metadata extraction, and Markdown conversi
 ```bash
 gem install kreuzcrawl
 ```
-
 ## Quick Start
 
 ```ruby title="Ruby"
@@ -110,7 +109,6 @@ crawl_engine = Kreuzcrawl.create_engine(config)
 crawl_result = Kreuzcrawl.crawl(crawl_engine, "https://en.wikipedia.org/wiki/Web_scraping")
 puts "Pages crawled: #{crawl_result.pages.length}"
 ```
-
 ## API Reference
 
 Full API documentation is available at [docs.kreuzcrawl.kreuzberg.dev](https://docs.kreuzcrawl.kreuzberg.dev).

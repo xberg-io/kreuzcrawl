@@ -24,84 +24,12 @@ class KreuzcrawlBridge {
   /// Returns an error if the configuration is invalid.
   /// throws CrawlError on failure
   static Future<CrawlEngineHandle> createEngine([CrawlConfig? config]) async {
-    return await rust_bridge.createEngine(
-      config:
-          config ??
-          CrawlConfig(
-            maxDepth: null,
-            maxPages: null,
-            maxConcurrent: null,
-            respectRobotsTxt: false,
-            softHttpErrors: false,
-            userAgent: null,
-            stayOnDomain: false,
-            allowSubdomains: false,
-            includePaths: [],
-            excludePaths: [],
-            customHeaders: {},
-            requestTimeout: 30000,
-            rateLimitMs: null,
-            maxRedirects: 10,
-            retryCount: 0,
-            retryCodes: Int64List(0),
-            cookiesEnabled: false,
-            auth: null,
-            maxBodySize: null,
-            removeTags: [],
-            content: ContentConfig(
-              outputFormat: 'markdown',
-              preprocessingPreset: 'standard',
-              removeNavigation: true,
-              removeForms: true,
-              stripTags: [],
-              preserveTags: [],
-              excludeSelectors: [],
-              skipImages: false,
-              maxDepth: null,
-              wrap: false,
-              wrapWidth: 80,
-              includeDocumentStructure: true,
-            ),
-            mapLimit: null,
-            mapSearch: null,
-            downloadAssets: false,
-            assetTypes: [],
-            maxAssetSize: null,
-            browser: BrowserConfig(
-              mode: BrowserMode.auto,
-              backend: BrowserBackend.chromiumoxide,
-              endpoint: null,
-              timeout: 30000,
-              wait: BrowserWait.networkIdle,
-              waitSelector: null,
-              extraWait: null,
-              stealth: false,
-              proxy: null,
-              blockUrlPatterns: [],
-              evalScript: null,
-              robotsUserAgent: null,
-              captureNetworkEvents: false,
-              sessionAffinity: true,
-            ),
-            proxy: null,
-            userAgents: [],
-            captureScreenshot: false,
-            downloadDocuments: true,
-            documentMaxSize: 0,
-            documentMimeTypes: [],
-            warcOutput: null,
-            browserProfile: null,
-            saveBrowserProfile: false,
-          ),
-    );
+    return await rust_bridge.createEngine(config: config ?? CrawlConfig(maxDepth: null, maxPages: null, maxConcurrent: null, respectRobotsTxt: false, softHttpErrors: false, userAgent: null, stayOnDomain: false, allowSubdomains: false, includePaths: [], excludePaths: [], customHeaders: {}, requestTimeout: 30000, rateLimitMs: null, maxRedirects: 10, retryCount: 0, retryCodes: Int64List(0), cookiesEnabled: false, auth: null, maxBodySize: null, removeTags: [], content: ContentConfig(outputFormat: 'markdown', preprocessingPreset: 'standard', removeNavigation: true, removeForms: true, stripTags: [], preserveTags: [], excludeSelectors: [], skipImages: false, maxDepth: null, wrap: false, wrapWidth: 80, includeDocumentStructure: true), mapLimit: null, mapSearch: null, downloadAssets: false, assetTypes: [], maxAssetSize: null, browser: BrowserConfig(mode: BrowserMode.auto, backend: BrowserBackend.chromiumoxide, endpoint: null, timeout: 30000, wait: BrowserWait.networkIdle, waitSelector: null, extraWait: null, stealth: false, proxy: null, blockUrlPatterns: [], evalScript: null, robotsUserAgent: null, captureNetworkEvents: false, sessionAffinity: true), proxy: null, userAgents: [], captureScreenshot: false, downloadDocuments: true, documentMaxSize: 0, documentMimeTypes: [], warcOutput: null, browserProfile: null, saveBrowserProfile: false));
   }
 
   /// Scrape a single URL, returning extracted page data.
   /// throws CrawlError on failure
-  static Future<ScrapeResult> scrape(
-    CrawlEngineHandle engine,
-    String url,
-  ) async {
+  static Future<ScrapeResult> scrape(CrawlEngineHandle engine, String url) async {
     return await rust_bridge.scrape(engine: engine, url: url);
   }
 
@@ -119,47 +47,28 @@ class KreuzcrawlBridge {
 
   /// Execute browser actions on a single page.
   /// throws CrawlError on failure
-  static Future<InteractionResult> interact(
-    CrawlEngineHandle engine,
-    String url,
-    List<PageAction> actions,
-  ) async {
-    return await rust_bridge.interact(
-      engine: engine,
-      url: url,
-      actions: actions,
-    );
+  static Future<InteractionResult> interact(CrawlEngineHandle engine, String url, List<PageAction> actions) async {
+    return await rust_bridge.interact(engine: engine, url: url, actions: actions);
   }
 
   /// Scrape multiple URLs concurrently.
   /// throws CrawlError on failure
-  static Future<BatchScrapeResults> batchScrape(
-    CrawlEngineHandle engine,
-    List<String> urls,
-  ) async {
+  static Future<BatchScrapeResults> batchScrape(CrawlEngineHandle engine, List<String> urls) async {
     return await rust_bridge.batchScrape(engine: engine, urls: urls);
   }
 
   /// Crawl multiple seed URLs concurrently, each following links to configured depth.
   /// throws CrawlError on failure
-  static Future<BatchCrawlResults> batchCrawl(
-    CrawlEngineHandle engine,
-    List<String> urls,
-  ) async {
+  static Future<BatchCrawlResults> batchCrawl(CrawlEngineHandle engine, List<String> urls) async {
     return await rust_bridge.batchCrawl(engine: engine, urls: urls);
   }
 
-  static Stream<CrawlEvent> crawlStream(
-    CrawlEngineHandle crawlEngineHandle,
-    CrawlStreamRequest req,
-  ) {
+  static Stream<CrawlEvent> crawlStream(CrawlEngineHandle crawlEngineHandle, CrawlStreamRequest req) {
     return crawlEngineHandle.crawlStream(req: req);
   }
 
-  static Stream<CrawlEvent> batchCrawlStream(
-    CrawlEngineHandle crawlEngineHandle,
-    BatchCrawlStreamRequest req,
-  ) {
+  static Stream<CrawlEvent> batchCrawlStream(CrawlEngineHandle crawlEngineHandle, BatchCrawlStreamRequest req) {
     return crawlEngineHandle.batchCrawlStream(req: req);
   }
+
 }

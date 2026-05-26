@@ -5,11 +5,11 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 
 import { describe, expect, it } from "vitest";
-import type { WasmAuthConfig } from "kreuzcrawl";
 import {
 	scrape,
 	createEngine,
 	WasmCrawlConfig,
+	WasmAuthConfig,
 	WasmBrowserConfig,
 	WasmContentConfig,
 	WasmProxyConfig,
