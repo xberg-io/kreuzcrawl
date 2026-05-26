@@ -201,10 +201,35 @@ tasks:
         cmds:
             - task: _dev_wf:alef:install
 
-    alef:regen:
-        desc: "Regenerate bindings, packages, and e2e tests (alef all && alef e2e generate)"
+    alef:generate:
+        desc: "Regenerate all Alef-managed outputs without formatting or building"
         cmds:
-            - task: _dev_wf:alef:regen
+            - task: _dev_wf:alef:generate
+
+    alef:regen:
+        desc: "Alias for alef:generate"
+        cmds:
+            - task: alef:generate
+
+    alef:verify:
+        desc: "Check Alef-generated files are up to date"
+        cmds:
+            - task: _dev_wf:alef:verify
+
+    alef:build:
+        desc: "Build all language bindings"
+        cmds:
+            - task: _dev_wf:alef:build
+
+    alef:sync:
+        desc: "Sync version from Cargo.toml to all manifests"
+        cmds:
+            - alef sync-versions
+
+    alef:docs:
+        desc: "Generate API reference documentation"
+        cmds:
+            - alef docs
 
     alef:bump:
         desc: "Bump alef pin in alef.toml + reinstall + regen (usage: VERSION=0.15.30 task alef:bump)"
@@ -256,6 +281,11 @@ tasks:
             - task: php:build
             - task: elixir:build
             - task: c:build
+
+    build:bindings:
+        desc: Build all language bindings
+        cmds:
+            - task: alef:build
 
     build:all:dev:
         desc: Build all bindings in debug mode

@@ -41,6 +41,9 @@ csharp = "record"
 dart = "dataclass"
 kotlin_android = "data-class"
 
+[workspace.format]
+enabled = false
+
 # Java is formatted by Spotless (Eclipse 4.31) via maven verify in prek's
 # `java-verify` hook. alef's default `google-java-format` produces different
 # output, breaking alef-verify. Use Spotless directly so the two pipelines
