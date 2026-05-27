@@ -25,29 +25,30 @@ package dev.kreuzberg.kreuzcrawl.android
 /** When to use the headless browser fallback. */
 enum class BrowserMode {
     /** Automatically detect when JS rendering is needed and fall back to browser. */
-    @com.fasterxml.jackson.annotation.JsonProperty("auto") AUTO,
+    @com.fasterxml.jackson.annotation.JsonProperty("auto")
+    AUTO,
     /** Always use the browser for every request. */
-    @com.fasterxml.jackson.annotation.JsonProperty("always") ALWAYS,
+    @com.fasterxml.jackson.annotation.JsonProperty("always")
+    ALWAYS,
     /** Never use the browser fallback. */
-    @com.fasterxml.jackson.annotation.JsonProperty("never") NEVER;
+    @com.fasterxml.jackson.annotation.JsonProperty("never")
+    NEVER;
 
     @com.fasterxml.jackson.annotation.JsonValue
-    fun toWire(): String =
-        when (this) {
-            AUTO -> "auto"
-            ALWAYS -> "always"
-            NEVER -> "never"
-        }
+    fun toWire(): String = when (this) {
+        AUTO -> "auto"
+        ALWAYS -> "always"
+        NEVER -> "never"
+    }
 
     companion object {
         @com.fasterxml.jackson.annotation.JsonCreator
         @JvmStatic
-        fun fromWire(value: String): BrowserMode =
-            when (value) {
-                "auto" -> AUTO
-                "always" -> ALWAYS
-                "never" -> NEVER
-                else -> throw IllegalArgumentException("Unknown BrowserMode value: $value")
-            }
+        fun fromWire(value: String): BrowserMode = when (value) {
+            "auto" -> AUTO
+            "always" -> ALWAYS
+            "never" -> NEVER
+            else -> throw IllegalArgumentException("Unknown BrowserMode value: $value")
+        }
     }
 }

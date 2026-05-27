@@ -77,15 +77,14 @@ data class ScrapeResult(
     /** Metadata about the LLM extraction pass (cost, tokens, model). */
     val extractionMeta: ExtractionMeta? = null,
     /**
-     * Screenshot of the page as PNG bytes. Populated when browser is used and capture_screenshot is
-     * enabled.
+     * Screenshot of the page as PNG bytes. Populated when browser is used and capture_screenshot is enabled.
      */
     val screenshot: ByteArray? = null,
     /** Downloaded non-HTML document (PDF, DOCX, image, code, etc.). */
     val downloadedDocument: DownloadedDocument? = null,
     /**
-     * Browser-specific extras (eval result, network events, cookies). Only populated when
-     * `BrowserBackend.Native` was used for this request.
+     * Browser-specific extras (eval result, network events, cookies). Only
+     * populated when `BrowserBackend.Native` was used for this request.
      */
     val browser: BrowserExtras? = null,
 )

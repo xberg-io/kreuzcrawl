@@ -25,89 +25,70 @@ package dev.kreuzberg.kreuzcrawl.android
 /**
  * A single page interaction action.
  *
- * Actions are serialized with a `type` tag using camelCase naming, except `ExecuteJs` which is
- * explicitly renamed to `"executeJs"`.
+ * Actions are serialized with a `type` tag using camelCase naming,
+ * except `ExecuteJs` which is explicitly renamed to `"executeJs"`.
  */
 @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = PageActionDeserializer::class)
 @com.fasterxml.jackson.databind.annotation.JsonSerialize(using = PageActionSerializer::class)
 sealed class PageAction {
     /** Click on an element matching the given CSS selector. */
-    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(
-        using = com.fasterxml.jackson.databind.JsonDeserializer.None::class
-    )
-    @com.fasterxml.jackson.databind.annotation.JsonSerialize(
-        using = com.fasterxml.jackson.databind.JsonSerializer.None::class
-    )
-    data class Click(val selector: String) : PageAction()
-
+    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = com.fasterxml.jackson.databind.JsonDeserializer.None::class)
+    @com.fasterxml.jackson.databind.annotation.JsonSerialize(using = com.fasterxml.jackson.databind.JsonSerializer.None::class)
+    data class Click(
+        val selector: String,
+    ) : PageAction()
     /** Type text into an element matching the given CSS selector. */
-    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(
-        using = com.fasterxml.jackson.databind.JsonDeserializer.None::class
-    )
-    @com.fasterxml.jackson.databind.annotation.JsonSerialize(
-        using = com.fasterxml.jackson.databind.JsonSerializer.None::class
-    )
-    data class TypeText(val selector: String, val text: String) : PageAction()
-
+    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = com.fasterxml.jackson.databind.JsonDeserializer.None::class)
+    @com.fasterxml.jackson.databind.annotation.JsonSerialize(using = com.fasterxml.jackson.databind.JsonSerializer.None::class)
+    data class TypeText(
+        val selector: String,
+        val text: String,
+    ) : PageAction()
     /** Press a keyboard key (e.g. "Enter", "Tab", "Escape"). */
-    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(
-        using = com.fasterxml.jackson.databind.JsonDeserializer.None::class
-    )
-    @com.fasterxml.jackson.databind.annotation.JsonSerialize(
-        using = com.fasterxml.jackson.databind.JsonSerializer.None::class
-    )
-    data class Press(val key: String) : PageAction()
-
+    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = com.fasterxml.jackson.databind.JsonDeserializer.None::class)
+    @com.fasterxml.jackson.databind.annotation.JsonSerialize(using = com.fasterxml.jackson.databind.JsonSerializer.None::class)
+    data class Press(
+        val key: String,
+    ) : PageAction()
     /** Scroll the page or a specific element. */
-    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(
-        using = com.fasterxml.jackson.databind.JsonDeserializer.None::class
-    )
-    @com.fasterxml.jackson.databind.annotation.JsonSerialize(
-        using = com.fasterxml.jackson.databind.JsonSerializer.None::class
-    )
-    data class Scroll(val direction: ScrollDirection, val selector: String?, val amount: Long?) :
-        PageAction()
-
+    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = com.fasterxml.jackson.databind.JsonDeserializer.None::class)
+    @com.fasterxml.jackson.databind.annotation.JsonSerialize(using = com.fasterxml.jackson.databind.JsonSerializer.None::class)
+    data class Scroll(
+        val direction: ScrollDirection,
+        val selector: String?,
+        val amount: Long?,
+    ) : PageAction()
     /** Wait for a duration or for an element to appear. */
-    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(
-        using = com.fasterxml.jackson.databind.JsonDeserializer.None::class
-    )
-    @com.fasterxml.jackson.databind.annotation.JsonSerialize(
-        using = com.fasterxml.jackson.databind.JsonSerializer.None::class
-    )
-    data class Wait(val milliseconds: Long?, val selector: String?) : PageAction()
-
+    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = com.fasterxml.jackson.databind.JsonDeserializer.None::class)
+    @com.fasterxml.jackson.databind.annotation.JsonSerialize(using = com.fasterxml.jackson.databind.JsonSerializer.None::class)
+    data class Wait(
+        val milliseconds: Long?,
+        val selector: String?,
+    ) : PageAction()
     /** Take a screenshot of the current page. */
-    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(
-        using = com.fasterxml.jackson.databind.JsonDeserializer.None::class
-    )
-    @com.fasterxml.jackson.databind.annotation.JsonSerialize(
-        using = com.fasterxml.jackson.databind.JsonSerializer.None::class
-    )
-    data class Screenshot(val fullPage: Boolean?) : PageAction()
-
+    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = com.fasterxml.jackson.databind.JsonDeserializer.None::class)
+    @com.fasterxml.jackson.databind.annotation.JsonSerialize(using = com.fasterxml.jackson.databind.JsonSerializer.None::class)
+    data class Screenshot(
+        val fullPage: Boolean?,
+    ) : PageAction()
     /**
      * Execute arbitrary JavaScript in the page context.
      *
      * **Safety:**
      *
-     * The script runs with full page privileges in the browser context. Only execute scripts from
-     * trusted sources.
+     * The script runs with full page privileges in the browser context.
+     * Only execute scripts from trusted sources.
      */
-    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(
-        using = com.fasterxml.jackson.databind.JsonDeserializer.None::class
-    )
-    @com.fasterxml.jackson.databind.annotation.JsonSerialize(
-        using = com.fasterxml.jackson.databind.JsonSerializer.None::class
-    )
-    data class ExecuteJs(val script: String) : PageAction()
-
+    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = com.fasterxml.jackson.databind.JsonDeserializer.None::class)
+    @com.fasterxml.jackson.databind.annotation.JsonSerialize(using = com.fasterxml.jackson.databind.JsonSerializer.None::class)
+    data class ExecuteJs(
+        val script: String,
+    ) : PageAction()
     /** Scrape the current page HTML. */
     object Scrape : PageAction()
 }
 
-private class PageActionDeserializer :
-    com.fasterxml.jackson.databind.deser.std.StdDeserializer<PageAction>(PageAction::class.java) {
+private class PageActionDeserializer : com.fasterxml.jackson.databind.deser.std.StdDeserializer<PageAction>(PageAction::class.java) {
     @Suppress("LongMethod")
     override fun deserialize(
         parser: com.fasterxml.jackson.core.JsonParser,
@@ -116,39 +97,24 @@ private class PageActionDeserializer :
         val node = parser.codec.readTree<com.fasterxml.jackson.databind.node.ObjectNode>(parser)
         val tag = node.get("type")?.asText()
         @Suppress("UNCHECKED_CAST")
-        val payload =
-            (node.deepCopy() as com.fasterxml.jackson.databind.node.ObjectNode).apply {
-                remove("type")
-            }
+        val payload = (node.deepCopy() as com.fasterxml.jackson.databind.node.ObjectNode).apply { remove("type") }
         return when (tag) {
             "click" -> ctx.readTreeAsValue<PageAction.Click>(payload, PageAction.Click::class.java)
-            "type" ->
-                ctx.readTreeAsValue<PageAction.TypeText>(payload, PageAction.TypeText::class.java)
+            "type" -> ctx.readTreeAsValue<PageAction.TypeText>(payload, PageAction.TypeText::class.java)
             "press" -> ctx.readTreeAsValue<PageAction.Press>(payload, PageAction.Press::class.java)
-            "scroll" ->
-                ctx.readTreeAsValue<PageAction.Scroll>(payload, PageAction.Scroll::class.java)
+            "scroll" -> ctx.readTreeAsValue<PageAction.Scroll>(payload, PageAction.Scroll::class.java)
             "wait" -> ctx.readTreeAsValue<PageAction.Wait>(payload, PageAction.Wait::class.java)
-            "screenshot" ->
-                ctx.readTreeAsValue<PageAction.Screenshot>(
-                    payload,
-                    PageAction.Screenshot::class.java,
-                )
-            "executeJs" ->
-                ctx.readTreeAsValue<PageAction.ExecuteJs>(payload, PageAction.ExecuteJs::class.java)
+            "screenshot" -> ctx.readTreeAsValue<PageAction.Screenshot>(payload, PageAction.Screenshot::class.java)
+            "executeJs" -> ctx.readTreeAsValue<PageAction.ExecuteJs>(payload, PageAction.ExecuteJs::class.java)
             "scrape" -> PageAction.Scrape
-            else ->
-                throw com.fasterxml.jackson.databind.exc.InvalidFormatException(
-                    parser,
-                    "Unknown PageAction tag",
-                    tag,
-                    PageAction::class.java,
-                )
+            else -> throw com.fasterxml.jackson.databind.exc.InvalidFormatException(
+                parser, "Unknown PageAction tag", tag, PageAction::class.java,
+            )
         }
     }
 }
 
-private class PageActionSerializer :
-    com.fasterxml.jackson.databind.ser.std.StdSerializer<PageAction>(PageAction::class.java) {
+private class PageActionSerializer : com.fasterxml.jackson.databind.ser.std.StdSerializer<PageAction>(PageAction::class.java) {
     @Suppress("LongMethod")
     override fun serialize(
         value: PageAction,
@@ -156,80 +122,56 @@ private class PageActionSerializer :
         provider: com.fasterxml.jackson.databind.SerializerProvider,
     ) {
         @Suppress("UNCHECKED_CAST")
-        val mapper =
-            (gen.codec as? com.fasterxml.jackson.databind.ObjectMapper)
-                ?: com.fasterxml.jackson.databind.ObjectMapper().findAndRegisterModules()
-        val node: com.fasterxml.jackson.databind.node.ObjectNode =
-            when (value) {
-                is PageAction.Click -> {
-                    @Suppress("UNCHECKED_CAST")
-                    val n =
-                        mapper.valueToTree<com.fasterxml.jackson.databind.node.ObjectNode>(
-                            value as PageAction.Click
-                        ) as com.fasterxml.jackson.databind.node.ObjectNode
-                    n.put("type", "click")
-                    n
-                }
-                is PageAction.TypeText -> {
-                    @Suppress("UNCHECKED_CAST")
-                    val n =
-                        mapper.valueToTree<com.fasterxml.jackson.databind.node.ObjectNode>(
-                            value as PageAction.TypeText
-                        ) as com.fasterxml.jackson.databind.node.ObjectNode
-                    n.put("type", "type")
-                    n
-                }
-                is PageAction.Press -> {
-                    @Suppress("UNCHECKED_CAST")
-                    val n =
-                        mapper.valueToTree<com.fasterxml.jackson.databind.node.ObjectNode>(
-                            value as PageAction.Press
-                        ) as com.fasterxml.jackson.databind.node.ObjectNode
-                    n.put("type", "press")
-                    n
-                }
-                is PageAction.Scroll -> {
-                    @Suppress("UNCHECKED_CAST")
-                    val n =
-                        mapper.valueToTree<com.fasterxml.jackson.databind.node.ObjectNode>(
-                            value as PageAction.Scroll
-                        ) as com.fasterxml.jackson.databind.node.ObjectNode
-                    n.put("type", "scroll")
-                    n
-                }
-                is PageAction.Wait -> {
-                    @Suppress("UNCHECKED_CAST")
-                    val n =
-                        mapper.valueToTree<com.fasterxml.jackson.databind.node.ObjectNode>(
-                            value as PageAction.Wait
-                        ) as com.fasterxml.jackson.databind.node.ObjectNode
-                    n.put("type", "wait")
-                    n
-                }
-                is PageAction.Screenshot -> {
-                    @Suppress("UNCHECKED_CAST")
-                    val n =
-                        mapper.valueToTree<com.fasterxml.jackson.databind.node.ObjectNode>(
-                            value as PageAction.Screenshot
-                        ) as com.fasterxml.jackson.databind.node.ObjectNode
-                    n.put("type", "screenshot")
-                    n
-                }
-                is PageAction.ExecuteJs -> {
-                    @Suppress("UNCHECKED_CAST")
-                    val n =
-                        mapper.valueToTree<com.fasterxml.jackson.databind.node.ObjectNode>(
-                            value as PageAction.ExecuteJs
-                        ) as com.fasterxml.jackson.databind.node.ObjectNode
-                    n.put("type", "executeJs")
-                    n
-                }
-                is PageAction.Scrape -> {
-                    val n = mapper.createObjectNode()
-                    n.put("type", "scrape")
-                    n
-                }
+        val mapper = (gen.codec as? com.fasterxml.jackson.databind.ObjectMapper) ?: com.fasterxml.jackson.databind.ObjectMapper().findAndRegisterModules()
+        val node: com.fasterxml.jackson.databind.node.ObjectNode = when (value) {
+            is PageAction.Click -> {
+                @Suppress("UNCHECKED_CAST")
+                val n = mapper.valueToTree<com.fasterxml.jackson.databind.node.ObjectNode>(value as PageAction.Click) as com.fasterxml.jackson.databind.node.ObjectNode
+                n.put("type", "click")
+                n
             }
+            is PageAction.TypeText -> {
+                @Suppress("UNCHECKED_CAST")
+                val n = mapper.valueToTree<com.fasterxml.jackson.databind.node.ObjectNode>(value as PageAction.TypeText) as com.fasterxml.jackson.databind.node.ObjectNode
+                n.put("type", "type")
+                n
+            }
+            is PageAction.Press -> {
+                @Suppress("UNCHECKED_CAST")
+                val n = mapper.valueToTree<com.fasterxml.jackson.databind.node.ObjectNode>(value as PageAction.Press) as com.fasterxml.jackson.databind.node.ObjectNode
+                n.put("type", "press")
+                n
+            }
+            is PageAction.Scroll -> {
+                @Suppress("UNCHECKED_CAST")
+                val n = mapper.valueToTree<com.fasterxml.jackson.databind.node.ObjectNode>(value as PageAction.Scroll) as com.fasterxml.jackson.databind.node.ObjectNode
+                n.put("type", "scroll")
+                n
+            }
+            is PageAction.Wait -> {
+                @Suppress("UNCHECKED_CAST")
+                val n = mapper.valueToTree<com.fasterxml.jackson.databind.node.ObjectNode>(value as PageAction.Wait) as com.fasterxml.jackson.databind.node.ObjectNode
+                n.put("type", "wait")
+                n
+            }
+            is PageAction.Screenshot -> {
+                @Suppress("UNCHECKED_CAST")
+                val n = mapper.valueToTree<com.fasterxml.jackson.databind.node.ObjectNode>(value as PageAction.Screenshot) as com.fasterxml.jackson.databind.node.ObjectNode
+                n.put("type", "screenshot")
+                n
+            }
+            is PageAction.ExecuteJs -> {
+                @Suppress("UNCHECKED_CAST")
+                val n = mapper.valueToTree<com.fasterxml.jackson.databind.node.ObjectNode>(value as PageAction.ExecuteJs) as com.fasterxml.jackson.databind.node.ObjectNode
+                n.put("type", "executeJs")
+                n
+            }
+            is PageAction.Scrape -> {
+                val n = mapper.createObjectNode()
+                n.put("type", "scrape")
+                n
+            }
+        }
         mapper.writeTree(gen, node)
     }
 }

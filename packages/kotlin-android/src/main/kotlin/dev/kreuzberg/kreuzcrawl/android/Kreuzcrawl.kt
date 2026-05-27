@@ -28,14 +28,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 object Kreuzcrawl {
-    private val mapper =
-        jacksonObjectMapper().setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
+    private val mapper = jacksonObjectMapper()
+        .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
 
     /**
      * Convert markdown links to numbered citations.
      *
-     * `[Example](https://example.com)` becomes `Example[1]` with `[1]: https://example.com` in the
-     * reference list. Images `![alt](url)` are preserved unchanged.
+     * `[Example](https://example.com)` becomes `Example[1]`
+     * with `[1]: https://example.com` in the reference list.
+     * Images `![alt](url)` are preserved unchanged.
      */
     fun generateCitations(markdown: String): CitationResult {
         val resultJson = KreuzcrawlBridge.nativeGenerateCitations(markdown)
@@ -45,8 +46,9 @@ object Kreuzcrawl {
     /**
      * Convert markdown links to numbered citations.
      *
-     * `[Example](https://example.com)` becomes `Example[1]` with `[1]: https://example.com` in the
-     * reference list. Images `![alt](url)` are preserved unchanged.
+     * `[Example](https://example.com)` becomes `Example[1]`
+     * with `[1]: https://example.com` in the reference list.
+     * Images `![alt](url)` are preserved unchanged.
      */
     suspend fun generateCitationsAsync(markdown: String): CitationResult =
         withContext(Dispatchers.IO) { generateCitations(markdown) }
@@ -54,14 +56,10 @@ object Kreuzcrawl {
     /**
      * Create a new crawl engine with the given configuration.
      *
-     * If `config` is `null`, uses `CrawlConfig.default()`. Returns an error if the configuration is
-     * invalid.
+     * If `config` is `null`, uses `CrawlConfig.default()`.
+     * Returns an error if the configuration is invalid.
      */
-    fun createEngine(config: CrawlConfig? = null): CrawlEngineHandle =
-        CrawlEngineHandle(
-            KreuzcrawlBridge.nativeCreateEngine(config?.let { mapper.writeValueAsString(it) } ?: "")
-        )
-
+    fun createEngine(config: CrawlConfig? = null): CrawlEngineHandle = CrawlEngineHandle(KreuzcrawlBridge.nativeCreateEngine(config?.let { mapper.writeValueAsString(it) } ?: ""))
     /** Scrape a single URL, returning extracted page data. */
     fun scrape(engine: CrawlEngineHandle, url: String): ScrapeResult {
         val resultJson = KreuzcrawlBridge.nativeScrape(engine.handle, url)
@@ -93,44 +91,33 @@ object Kreuzcrawl {
         withContext(Dispatchers.IO) { mapUrls(engine, url) }
 
     /** Execute browser actions on a single page. */
-    fun interact(
-        engine: CrawlEngineHandle,
-        url: String,
-        actions: List<PageAction>,
-    ): InteractionResult {
-        val resultJson =
-            KreuzcrawlBridge.nativeInteract(engine.handle, url, mapper.writeValueAsString(actions))
+    fun interact(engine: CrawlEngineHandle, url: String, actions: List<PageAction>): InteractionResult {
+        val resultJson = KreuzcrawlBridge.nativeInteract(engine.handle, url, mapper.writeValueAsString(actions))
         return mapper.readValue(resultJson, InteractionResult::class.java)
     }
 
     /** Execute browser actions on a single page. */
-    suspend fun interactAsync(
-        engine: CrawlEngineHandle,
-        url: String,
-        actions: List<PageAction>,
-    ): InteractionResult = withContext(Dispatchers.IO) { interact(engine, url, actions) }
+    suspend fun interactAsync(engine: CrawlEngineHandle, url: String, actions: List<PageAction>): InteractionResult =
+        withContext(Dispatchers.IO) { interact(engine, url, actions) }
 
     /** Scrape multiple URLs concurrently. */
     fun batchScrape(engine: CrawlEngineHandle, urls: List<String>): BatchScrapeResults {
-        val resultJson =
-            KreuzcrawlBridge.nativeBatchScrape(engine.handle, mapper.writeValueAsString(urls))
+        val resultJson = KreuzcrawlBridge.nativeBatchScrape(engine.handle, mapper.writeValueAsString(urls))
         return mapper.readValue(resultJson, BatchScrapeResults::class.java)
     }
 
     /** Scrape multiple URLs concurrently. */
-    suspend fun batchScrapeAsync(
-        engine: CrawlEngineHandle,
-        urls: List<String>,
-    ): BatchScrapeResults = withContext(Dispatchers.IO) { batchScrape(engine, urls) }
+    suspend fun batchScrapeAsync(engine: CrawlEngineHandle, urls: List<String>): BatchScrapeResults =
+        withContext(Dispatchers.IO) { batchScrape(engine, urls) }
 
     /** Crawl multiple seed URLs concurrently, each following links to configured depth. */
     fun batchCrawl(engine: CrawlEngineHandle, urls: List<String>): BatchCrawlResults {
-        val resultJson =
-            KreuzcrawlBridge.nativeBatchCrawl(engine.handle, mapper.writeValueAsString(urls))
+        val resultJson = KreuzcrawlBridge.nativeBatchCrawl(engine.handle, mapper.writeValueAsString(urls))
         return mapper.readValue(resultJson, BatchCrawlResults::class.java)
     }
 
     /** Crawl multiple seed URLs concurrently, each following links to configured depth. */
     suspend fun batchCrawlAsync(engine: CrawlEngineHandle, urls: List<String>): BatchCrawlResults =
         withContext(Dispatchers.IO) { batchCrawl(engine, urls) }
+
 }

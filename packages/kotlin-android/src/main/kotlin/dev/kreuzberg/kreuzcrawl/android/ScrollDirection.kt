@@ -25,25 +25,25 @@ package dev.kreuzberg.kreuzcrawl.android
 /** Direction for a scroll action. */
 enum class ScrollDirection {
     /** Scroll upward. */
-    @com.fasterxml.jackson.annotation.JsonProperty("up") UP,
+    @com.fasterxml.jackson.annotation.JsonProperty("up")
+    UP,
     /** Scroll downward. */
-    @com.fasterxml.jackson.annotation.JsonProperty("down") DOWN;
+    @com.fasterxml.jackson.annotation.JsonProperty("down")
+    DOWN;
 
     @com.fasterxml.jackson.annotation.JsonValue
-    fun toWire(): String =
-        when (this) {
-            UP -> "up"
-            DOWN -> "down"
-        }
+    fun toWire(): String = when (this) {
+        UP -> "up"
+        DOWN -> "down"
+    }
 
     companion object {
         @com.fasterxml.jackson.annotation.JsonCreator
         @JvmStatic
-        fun fromWire(value: String): ScrollDirection =
-            when (value) {
-                "up" -> UP
-                "down" -> DOWN
-                else -> throw IllegalArgumentException("Unknown ScrollDirection value: $value")
-            }
+        fun fromWire(value: String): ScrollDirection = when (value) {
+            "up" -> UP
+            "down" -> DOWN
+            else -> throw IllegalArgumentException("Unknown ScrollDirection value: $value")
+        }
     }
 }

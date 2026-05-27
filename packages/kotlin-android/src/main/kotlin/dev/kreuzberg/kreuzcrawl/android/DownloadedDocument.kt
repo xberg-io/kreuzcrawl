@@ -25,8 +25,9 @@ package dev.kreuzberg.kreuzcrawl.android
 /**
  * A downloaded non-HTML document (PDF, DOCX, image, code file, etc.).
  *
- * When the crawler encounters non-HTML content and `download_documents` is enabled, it downloads
- * the raw bytes and populates this struct instead of skipping the resource.
+ * When the crawler encounters non-HTML content and `download_documents` is
+ * enabled, it downloads the raw bytes and populates this struct instead of
+ * skipping the resource.
  */
 data class DownloadedDocument(
     /** The URL the document was fetched from. */

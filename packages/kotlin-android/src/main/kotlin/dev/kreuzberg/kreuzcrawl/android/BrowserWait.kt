@@ -25,29 +25,30 @@ package dev.kreuzberg.kreuzcrawl.android
 /** Wait strategy for browser page rendering. */
 enum class BrowserWait {
     /** Wait until network activity is idle. */
-    @com.fasterxml.jackson.annotation.JsonProperty("network_idle") NETWORK_IDLE,
+    @com.fasterxml.jackson.annotation.JsonProperty("network_idle")
+    NETWORK_IDLE,
     /** Wait for a specific CSS selector to appear in the DOM. */
-    @com.fasterxml.jackson.annotation.JsonProperty("selector") SELECTOR,
+    @com.fasterxml.jackson.annotation.JsonProperty("selector")
+    SELECTOR,
     /** Wait for a fixed duration after navigation. */
-    @com.fasterxml.jackson.annotation.JsonProperty("fixed") FIXED;
+    @com.fasterxml.jackson.annotation.JsonProperty("fixed")
+    FIXED;
 
     @com.fasterxml.jackson.annotation.JsonValue
-    fun toWire(): String =
-        when (this) {
-            NETWORK_IDLE -> "network_idle"
-            SELECTOR -> "selector"
-            FIXED -> "fixed"
-        }
+    fun toWire(): String = when (this) {
+        NETWORK_IDLE -> "network_idle"
+        SELECTOR -> "selector"
+        FIXED -> "fixed"
+    }
 
     companion object {
         @com.fasterxml.jackson.annotation.JsonCreator
         @JvmStatic
-        fun fromWire(value: String): BrowserWait =
-            when (value) {
-                "network_idle" -> NETWORK_IDLE
-                "selector" -> SELECTOR
-                "fixed" -> FIXED
-                else -> throw IllegalArgumentException("Unknown BrowserWait value: $value")
-            }
+        fun fromWire(value: String): BrowserWait = when (value) {
+            "network_idle" -> NETWORK_IDLE
+            "selector" -> SELECTOR
+            "fixed" -> FIXED
+            else -> throw IllegalArgumentException("Unknown BrowserWait value: $value")
+        }
     }
 }

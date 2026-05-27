@@ -25,29 +25,30 @@ package dev.kreuzberg.kreuzcrawl.android
 /** The type of a feed (RSS, Atom, or JSON Feed). */
 enum class FeedType {
     /** RSS feed. */
-    @com.fasterxml.jackson.annotation.JsonProperty("rss") RSS,
+    @com.fasterxml.jackson.annotation.JsonProperty("rss")
+    RSS,
     /** Atom feed. */
-    @com.fasterxml.jackson.annotation.JsonProperty("atom") ATOM,
+    @com.fasterxml.jackson.annotation.JsonProperty("atom")
+    ATOM,
     /** JSON Feed. */
-    @com.fasterxml.jackson.annotation.JsonProperty("json_feed") JSON_FEED;
+    @com.fasterxml.jackson.annotation.JsonProperty("json_feed")
+    JSON_FEED;
 
     @com.fasterxml.jackson.annotation.JsonValue
-    fun toWire(): String =
-        when (this) {
-            RSS -> "rss"
-            ATOM -> "atom"
-            JSON_FEED -> "json_feed"
-        }
+    fun toWire(): String = when (this) {
+        RSS -> "rss"
+        ATOM -> "atom"
+        JSON_FEED -> "json_feed"
+    }
 
     companion object {
         @com.fasterxml.jackson.annotation.JsonCreator
         @JvmStatic
-        fun fromWire(value: String): FeedType =
-            when (value) {
-                "rss" -> RSS
-                "atom" -> ATOM
-                "json_feed" -> JSON_FEED
-                else -> throw IllegalArgumentException("Unknown FeedType value: $value")
-            }
+        fun fromWire(value: String): FeedType = when (value) {
+            "rss" -> RSS
+            "atom" -> ATOM
+            "json_feed" -> JSON_FEED
+            else -> throw IllegalArgumentException("Unknown FeedType value: $value")
+        }
     }
 }

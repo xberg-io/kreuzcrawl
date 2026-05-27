@@ -1,0 +1,16 @@
+{
+  "name": "@kreuzberg/kreuzcrawl-linux-x64-musl",
+  "version": "0.3.0-rc.33",
+  "license": "Elastic-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kreuzberg-dev/kreuzcrawl.git"
+  },
+  "main": "kreuzcrawl-node.linux-x64-musl.node",
+  "files": ["kreuzcrawl-node.linux-x64-musl.node"],
+  "os": ["linux"],
+  "cpu": ["x64"],
+  "libc": ["musl"],
+  "engines": { "node": ">= 18" },
+  "publishConfig": { "access": "public" }
+}

@@ -25,33 +25,35 @@ package dev.kreuzberg.kreuzcrawl.android
 /** The classification of a link. */
 enum class LinkType {
     /** A link to the same domain. */
-    @com.fasterxml.jackson.annotation.JsonProperty("internal") INTERNAL,
+    @com.fasterxml.jackson.annotation.JsonProperty("internal")
+    INTERNAL,
     /** A link to a different domain. */
-    @com.fasterxml.jackson.annotation.JsonProperty("external") EXTERNAL,
+    @com.fasterxml.jackson.annotation.JsonProperty("external")
+    EXTERNAL,
     /** A fragment-only link (e.g., `#section`). */
-    @com.fasterxml.jackson.annotation.JsonProperty("anchor") ANCHOR,
+    @com.fasterxml.jackson.annotation.JsonProperty("anchor")
+    ANCHOR,
     /** A link to a downloadable document (PDF, DOC, etc.). */
-    @com.fasterxml.jackson.annotation.JsonProperty("document") DOCUMENT;
+    @com.fasterxml.jackson.annotation.JsonProperty("document")
+    DOCUMENT;
 
     @com.fasterxml.jackson.annotation.JsonValue
-    fun toWire(): String =
-        when (this) {
-            INTERNAL -> "internal"
-            EXTERNAL -> "external"
-            ANCHOR -> "anchor"
-            DOCUMENT -> "document"
-        }
+    fun toWire(): String = when (this) {
+        INTERNAL -> "internal"
+        EXTERNAL -> "external"
+        ANCHOR -> "anchor"
+        DOCUMENT -> "document"
+    }
 
     companion object {
         @com.fasterxml.jackson.annotation.JsonCreator
         @JvmStatic
-        fun fromWire(value: String): LinkType =
-            when (value) {
-                "internal" -> INTERNAL
-                "external" -> EXTERNAL
-                "anchor" -> ANCHOR
-                "document" -> DOCUMENT
-                else -> throw IllegalArgumentException("Unknown LinkType value: $value")
-            }
+        fun fromWire(value: String): LinkType = when (value) {
+            "internal" -> INTERNAL
+            "external" -> EXTERNAL
+            "anchor" -> ANCHOR
+            "document" -> DOCUMENT
+            else -> throw IllegalArgumentException("Unknown LinkType value: $value")
+        }
     }
 }

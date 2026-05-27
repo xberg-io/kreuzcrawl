@@ -25,33 +25,35 @@ package dev.kreuzberg.kreuzcrawl.android
 /** The source of an image reference. */
 enum class ImageSource {
     /** An `<img>` tag. */
-    @com.fasterxml.jackson.annotation.JsonProperty("img") IMG,
+    @com.fasterxml.jackson.annotation.JsonProperty("img")
+    IMG,
     /** A `<source>` tag inside `<picture>`. */
-    @com.fasterxml.jackson.annotation.JsonProperty("picture_source") PICTURE_SOURCE,
+    @com.fasterxml.jackson.annotation.JsonProperty("picture_source")
+    PICTURE_SOURCE,
     /** An `og:image` meta tag. */
-    @com.fasterxml.jackson.annotation.JsonProperty("og:image") OG_IMAGE,
+    @com.fasterxml.jackson.annotation.JsonProperty("og:image")
+    OG_IMAGE,
     /** A `twitter:image` meta tag. */
-    @com.fasterxml.jackson.annotation.JsonProperty("twitter:image") TWITTER_IMAGE;
+    @com.fasterxml.jackson.annotation.JsonProperty("twitter:image")
+    TWITTER_IMAGE;
 
     @com.fasterxml.jackson.annotation.JsonValue
-    fun toWire(): String =
-        when (this) {
-            IMG -> "img"
-            PICTURE_SOURCE -> "picture_source"
-            OG_IMAGE -> "og:image"
-            TWITTER_IMAGE -> "twitter:image"
-        }
+    fun toWire(): String = when (this) {
+        IMG -> "img"
+        PICTURE_SOURCE -> "picture_source"
+        OG_IMAGE -> "og:image"
+        TWITTER_IMAGE -> "twitter:image"
+    }
 
     companion object {
         @com.fasterxml.jackson.annotation.JsonCreator
         @JvmStatic
-        fun fromWire(value: String): ImageSource =
-            when (value) {
-                "img" -> IMG
-                "picture_source" -> PICTURE_SOURCE
-                "og:image" -> OG_IMAGE
-                "twitter:image" -> TWITTER_IMAGE
-                else -> throw IllegalArgumentException("Unknown ImageSource value: $value")
-            }
+        fun fromWire(value: String): ImageSource = when (value) {
+            "img" -> IMG
+            "picture_source" -> PICTURE_SOURCE
+            "og:image" -> OG_IMAGE
+            "twitter:image" -> TWITTER_IMAGE
+            else -> throw IllegalArgumentException("Unknown ImageSource value: $value")
+        }
     }
 }

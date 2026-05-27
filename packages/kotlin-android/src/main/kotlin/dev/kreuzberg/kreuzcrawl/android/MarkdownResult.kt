@@ -35,9 +35,10 @@ data class MarkdownResult(
     /**
      * Whether citation conversion was applied and produced at least one reference.
      *
-     * `true` when the markdown contained inline links that were converted to numbered citation
-     * references. The converted content (with `[N]` markers) is available in `content`; the full
-     * reference list is accessible via `generate_citations` if needed separately.
+     * `true` when the markdown contained inline links that were converted to
+     * numbered citation references. The converted content (with `[N]` markers)
+     * is available in `content`; the full reference list is accessible via
+     * `generate_citations` if needed separately.
      */
     val citations: Boolean = false,
     /** Content-filtered markdown optimized for LLM consumption. */

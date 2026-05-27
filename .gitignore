@@ -364,6 +364,7 @@ chrome-memwatch.log
 .cursor/commands/review.md
 .cursor/commands/test.md
 .cursor/rules/agent-workflow.mdc
+.cursor/rules/alef-workflow.mdc
 .cursor/rules/anti-patterns.mdc
 .cursor/rules/atomic-commits.mdc
 .cursor/rules/avoid-duplication.mdc

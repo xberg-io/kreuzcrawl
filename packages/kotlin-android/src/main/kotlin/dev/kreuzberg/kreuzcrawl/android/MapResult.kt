@@ -25,5 +25,5 @@ package dev.kreuzberg.kreuzcrawl.android
 /** The result of a map operation, containing discovered URLs. */
 data class MapResult(
     /** The list of discovered URLs. */
-    val urls: List<SitemapUrl> = emptyList()
+    val urls: List<SitemapUrl> = emptyList(),
 )

@@ -25,57 +25,65 @@ package dev.kreuzberg.kreuzcrawl.android
 /** The category of a downloaded asset. */
 enum class AssetCategory {
     /** A document file (PDF, DOC, etc.). */
-    @com.fasterxml.jackson.annotation.JsonProperty("document") DOCUMENT,
+    @com.fasterxml.jackson.annotation.JsonProperty("document")
+    DOCUMENT,
     /** An image file. */
-    @com.fasterxml.jackson.annotation.JsonProperty("image") IMAGE,
+    @com.fasterxml.jackson.annotation.JsonProperty("image")
+    IMAGE,
     /** An audio file. */
-    @com.fasterxml.jackson.annotation.JsonProperty("audio") AUDIO,
+    @com.fasterxml.jackson.annotation.JsonProperty("audio")
+    AUDIO,
     /** A video file. */
-    @com.fasterxml.jackson.annotation.JsonProperty("video") VIDEO,
+    @com.fasterxml.jackson.annotation.JsonProperty("video")
+    VIDEO,
     /** A font file. */
-    @com.fasterxml.jackson.annotation.JsonProperty("font") FONT,
+    @com.fasterxml.jackson.annotation.JsonProperty("font")
+    FONT,
     /** A CSS stylesheet. */
-    @com.fasterxml.jackson.annotation.JsonProperty("stylesheet") STYLESHEET,
+    @com.fasterxml.jackson.annotation.JsonProperty("stylesheet")
+    STYLESHEET,
     /** A JavaScript file. */
-    @com.fasterxml.jackson.annotation.JsonProperty("script") SCRIPT,
+    @com.fasterxml.jackson.annotation.JsonProperty("script")
+    SCRIPT,
     /** An archive file (ZIP, TAR, etc.). */
-    @com.fasterxml.jackson.annotation.JsonProperty("archive") ARCHIVE,
+    @com.fasterxml.jackson.annotation.JsonProperty("archive")
+    ARCHIVE,
     /** A data file (JSON, XML, CSV, etc.). */
-    @com.fasterxml.jackson.annotation.JsonProperty("data") DATA,
+    @com.fasterxml.jackson.annotation.JsonProperty("data")
+    DATA,
     /** An unrecognized asset type. */
-    @com.fasterxml.jackson.annotation.JsonProperty("other") OTHER;
+    @com.fasterxml.jackson.annotation.JsonProperty("other")
+    OTHER;
 
     @com.fasterxml.jackson.annotation.JsonValue
-    fun toWire(): String =
-        when (this) {
-            DOCUMENT -> "document"
-            IMAGE -> "image"
-            AUDIO -> "audio"
-            VIDEO -> "video"
-            FONT -> "font"
-            STYLESHEET -> "stylesheet"
-            SCRIPT -> "script"
-            ARCHIVE -> "archive"
-            DATA -> "data"
-            OTHER -> "other"
-        }
+    fun toWire(): String = when (this) {
+        DOCUMENT -> "document"
+        IMAGE -> "image"
+        AUDIO -> "audio"
+        VIDEO -> "video"
+        FONT -> "font"
+        STYLESHEET -> "stylesheet"
+        SCRIPT -> "script"
+        ARCHIVE -> "archive"
+        DATA -> "data"
+        OTHER -> "other"
+    }
 
     companion object {
         @com.fasterxml.jackson.annotation.JsonCreator
         @JvmStatic
-        fun fromWire(value: String): AssetCategory =
-            when (value) {
-                "document" -> DOCUMENT
-                "image" -> IMAGE
-                "audio" -> AUDIO
-                "video" -> VIDEO
-                "font" -> FONT
-                "stylesheet" -> STYLESHEET
-                "script" -> SCRIPT
-                "archive" -> ARCHIVE
-                "data" -> DATA
-                "other" -> OTHER
-                else -> throw IllegalArgumentException("Unknown AssetCategory value: $value")
-            }
+        fun fromWire(value: String): AssetCategory = when (value) {
+            "document" -> DOCUMENT
+            "image" -> IMAGE
+            "audio" -> AUDIO
+            "video" -> VIDEO
+            "font" -> FONT
+            "stylesheet" -> STYLESHEET
+            "script" -> SCRIPT
+            "archive" -> ARCHIVE
+            "data" -> DATA
+            "other" -> OTHER
+            else -> throw IllegalArgumentException("Unknown AssetCategory value: $value")
+        }
     }
 }

@@ -25,8 +25,8 @@ package dev.kreuzberg.kreuzcrawl.android
 /**
  * Aggregate result of a batch scrape, exposing per-URL results plus precomputed counts.
  *
- * The counts are derived once at construction so every binding language can read them as plain
- * integer fields without re-iterating the `results` vector.
+ * The counts are derived once at construction so every binding language can read them
+ * as plain integer fields without re-iterating the `results` vector.
  */
 data class BatchScrapeResults(
     /** Per-URL scrape results, in the order URLs were submitted. */

@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	moduleVersion = "0.3.0-rc.31"
+	moduleVersion = "0.3.0-rc.33"
 	repoURL       = "https://github.com/kreuzberg-dev/kreuzcrawl"
 	assetPrefix   = "kreuzcrawl"
 )
@@ -74,6 +74,7 @@ func determinePaths() (string, string, error) {
 
 	return libDir, libPath, nil
 }
+
 
 func libFilename(libName, goos string) string {
 	switch goos {

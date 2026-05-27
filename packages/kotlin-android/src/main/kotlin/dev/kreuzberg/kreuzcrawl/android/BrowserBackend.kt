@@ -25,25 +25,25 @@ package dev.kreuzberg.kreuzcrawl.android
 /** Browser backend used for JavaScript rendering. */
 enum class BrowserBackend {
     /** Existing Chromium/CDP backend powered by chromiumoxide. */
-    @com.fasterxml.jackson.annotation.JsonProperty("chromiumoxide") CHROMIUMOXIDE,
+    @com.fasterxml.jackson.annotation.JsonProperty("chromiumoxide")
+    CHROMIUMOXIDE,
     /** Kreuzcrawl-owned native browser backend derived from Obscura. */
-    @com.fasterxml.jackson.annotation.JsonProperty("native") NATIVE;
+    @com.fasterxml.jackson.annotation.JsonProperty("native")
+    NATIVE;
 
     @com.fasterxml.jackson.annotation.JsonValue
-    fun toWire(): String =
-        when (this) {
-            CHROMIUMOXIDE -> "chromiumoxide"
-            NATIVE -> "native"
-        }
+    fun toWire(): String = when (this) {
+        CHROMIUMOXIDE -> "chromiumoxide"
+        NATIVE -> "native"
+    }
 
     companion object {
         @com.fasterxml.jackson.annotation.JsonCreator
         @JvmStatic
-        fun fromWire(value: String): BrowserBackend =
-            when (value) {
-                "chromiumoxide" -> CHROMIUMOXIDE
-                "native" -> NATIVE
-                else -> throw IllegalArgumentException("Unknown BrowserBackend value: $value")
-            }
+        fun fromWire(value: String): BrowserBackend = when (value) {
+            "chromiumoxide" -> CHROMIUMOXIDE
+            "native" -> NATIVE
+            else -> throw IllegalArgumentException("Unknown BrowserBackend value: $value")
+        }
     }
 }
