@@ -8,7 +8,7 @@ importers:
 
   .:
     devDependencies:
-      kreuzcrawl:
+      '@kreuzberg/kreuzcrawl-wasm':
         specifier: file:../../crates/kreuzcrawl-wasm/pkg/nodejs
         version: kreuzcrawl-wasm@file:../../crates/kreuzcrawl-wasm/pkg/nodejs
       rollup:

@@ -1,6 +1,6 @@
 [package]
 name = "kreuzcrawl-ffi"
-version = "0.3.0-rc.35"
+version = "0.3.0-rc.36"
 edition = "2021"
 license = "Elastic-2.0"
 description = "High-performance web crawling engine"
@@ -13,7 +13,7 @@ repository = "https://github.com/kreuzberg-dev/kreuzcrawl"
 crate-type = ["cdylib", "staticlib"]
 
 [dependencies]
-kreuzcrawl = { path = "../kreuzcrawl", version = "0.3.0-rc.35", features = ["interact", "browser-chromiumoxide"] }
+kreuzcrawl = { path = "../kreuzcrawl", version = "0.3.0-rc.36", features = ["interact", "browser-chromiumoxide"] }
 ahash = "0.8"
 serde_json = "1"
 tokio = { version = "1", features = ["full"] }
