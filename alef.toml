@@ -1,5 +1,5 @@
 [workspace]
-alef_version = "0.19.24"
+alef_version = "0.20.0"
 languages = [
   "python",
   "node",
@@ -1493,51 +1493,51 @@ categories = ["scrape", "markdown", "metadata"]
 
 [crates.e2e.registry.packages.python]
 name = "kreuzcrawl"
-version = ">=0.3.0rc36"
+version = ">=0.3.0rc37"
 
 [crates.e2e.registry.packages.node]
 name = "@kreuzberg/kreuzcrawl"
-version = "^0.3.0-rc.36"
+version = "^0.3.0-rc.37"
 
 [crates.e2e.registry.packages.rust]
 name = "kreuzcrawl"
-version = "0.3.0-rc.36"
+version = "0.3.0-rc.37"
 
 [crates.e2e.registry.packages.go]
 module = "github.com/kreuzberg-dev/kreuzcrawl/packages/go"
-version = "v0.3.0-rc.36"
+version = "v0.3.0-rc.37"
 
 [crates.e2e.registry.packages.java]
 name = "dev.kreuzberg.kreuzcrawl:kreuzcrawl"
-version = "0.3.0-rc.36"
+version = "0.3.0-rc.37"
 
 [crates.e2e.registry.packages.csharp]
 name = "Kreuzcrawl"
-version = "0.3.0-rc.36"
+version = "0.3.0-rc.37"
 
 [crates.e2e.registry.packages.php]
 name = "kreuzberg-dev/kreuzcrawl"
-version = ">=0.3.0-rc.36"
+version = ">=0.3.0-rc.37"
 
 [crates.e2e.registry.packages.ruby]
 name = "kreuzcrawl"
-version = ">= 0.3.0.pre.rc.36"
+version = ">= 0.3.0.pre.rc.37"
 
 [crates.e2e.registry.packages.elixir]
 name = "kreuzcrawl"
-version = "~> 0.3.0-rc.36"
+version = "~> 0.3.0-rc.37"
 
 [crates.e2e.registry.packages.wasm]
 name = "@kreuzberg/kreuzcrawl-wasm"
-version = "^0.3.0-rc.36"
+version = "^0.3.0-rc.37"
 
 [crates.e2e.registry.packages.brew]
 name = "kreuzcrawl"
-version = "0.3.0-rc.36"
+version = "0.3.0-rc.37"
 
 [crates.e2e.registry.packages.c]
 name = "kreuzcrawl-ffi"
-version = "0.3.0-rc.36"
+version = "0.3.0-rc.37"
 
 [crates.scaffold]
 description = "High-performance web crawling engine"

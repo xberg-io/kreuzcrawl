@@ -1,6 +1,6 @@
 [package]
 name = "kreuzcrawl-py"
-version = "0.3.0-rc.36"
+version = "0.3.0-rc.37"
 edition = "2024"
 license = "Elastic-2.0"
 description = "High-performance web crawling engine"
@@ -13,7 +13,7 @@ name = "_kreuzcrawl"
 crate-type = ["cdylib"]
 
 [dependencies]
-kreuzcrawl = { version = "0.3.0-rc.36", path = "../kreuzcrawl", features = ["interact", "browser-chromiumoxide"] }
+kreuzcrawl = { version = "0.3.0-rc.37", path = "../kreuzcrawl", features = ["interact", "browser-chromiumoxide"] }
 pyo3 = { version = "0.28" }
 pyo3-async-runtimes = { version = "0.28", features = ["tokio-runtime"] }
 serde = { version = "1", features = ["derive"] }

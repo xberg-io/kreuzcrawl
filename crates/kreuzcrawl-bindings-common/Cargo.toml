@@ -14,7 +14,7 @@ keywords = ["crawl", "scrape", "bindings", "web", "ffi"]
 categories = ["api-bindings"]
 
 [dependencies]
-kreuzcrawl = { path = "../kreuzcrawl", version = "0.3.0-rc.36", features = ["native-runtime"] }
+kreuzcrawl = { path = "../kreuzcrawl", version = "0.3.0-rc.37", features = ["native-runtime"] }
 
 [lints]
 workspace = true
