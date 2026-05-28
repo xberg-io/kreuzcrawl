@@ -432,3 +432,54 @@ async fn turnstile_challenge_html_triggers_escalation() {
     );
     assert_eq!(provider.calls(), 1, "bypass must be called exactly once");
 }
+
+// ─── M6 regression — content_density populated from response body ─────────────
+
+/// Wiremock returns an HTML body with meaningful text content.
+/// The retry policy records the `content_density` from `AttemptOutcome` and the
+/// test asserts that it is in the expected range (> 0.2) rather than being the
+/// previously hardcoded 0.0.
+#[tokio::test]
+async fn content_density_populated_for_html_response() {
+    use std::sync::Mutex;
+
+    let mock = MockServer::start().await;
+    let html_body = "<html><body><p>Hello world</p><p>More content here</p></body></html>";
+    Mock::given(method("GET"))
+        .and(path("/dense"))
+        .respond_with(ResponseTemplate::new(200).set_body_string(html_body))
+        .mount(&mock)
+        .await;
+
+    // Custom RetryPolicy that records the content_density it observes and returns Stop.
+    #[derive(Debug)]
+    struct RecordingPolicy(Arc<Mutex<f32>>);
+
+    #[async_trait::async_trait]
+    impl RetryPolicy for RecordingPolicy {
+        async fn decide(&self, outcome: &AttemptOutcome) -> RetryDirective {
+            *self.0.lock().unwrap() = outcome.content_density;
+            RetryDirective::Stop
+        }
+
+        fn name(&self) -> &'static str {
+            "recording"
+        }
+    }
+
+    let recorded = Arc::new(Mutex::new(-1.0_f32));
+    let config = CrawlConfig {
+        retry_policy: Some(Arc::new(RecordingPolicy(recorded.clone()))),
+        ..CrawlConfig::default()
+    };
+    let engine = build_engine(config);
+    let _ = engine.scrape(&format!("{}/dense", mock.uri())).await.unwrap();
+
+    let observed = *recorded.lock().unwrap();
+    // "Hello worldMore content here" is 28 chars; total body is 65 chars.
+    // Density should be in roughly (0.3, 0.6) — well above the hardcoded 0.0.
+    assert!(
+        observed > 0.2 && observed < 0.8,
+        "expected content_density in (0.2, 0.8) for an HTML body with real text, got {observed}"
+    );
+}

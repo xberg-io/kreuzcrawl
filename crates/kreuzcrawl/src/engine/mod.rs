@@ -6,9 +6,65 @@ mod builder;
 #[cfg(not(target_arch = "wasm32"))]
 mod crawl_loop;
 
-use std::sync::Arc;
+use std::sync::{Arc, OnceLock};
+
+use opentelemetry::metrics::Counter;
+use opentelemetry::{KeyValue, global};
 
 use crate::error::CrawlError;
+
+// ---------------------------------------------------------------------------
+// OTel escalation counter — always-on (not feature-gated); metrics are
+// unconditional per the M10 split from commit 1.5.6.
+// ---------------------------------------------------------------------------
+
+static ESCALATIONS_COUNTER: OnceLock<Counter<u64>> = OnceLock::new();
+
+fn escalations_counter() -> &'static Counter<u64> {
+    ESCALATIONS_COUNTER.get_or_init(|| {
+        global::meter("kreuzcrawl")
+            .u64_counter("kreuzcrawl_escalations_total")
+            .with_description(
+                "Count of tier escalations in the dispatch loop, labelled by \
+                 from_tier, to_tier, and escalation reason",
+            )
+            .build()
+    })
+}
+
+fn escalation_reason_label(reason: &crate::types::EscalationReason) -> &'static str {
+    use crate::types::EscalationReason;
+    match reason {
+        EscalationReason::WafBlocked { .. } => "waf_blocked",
+        EscalationReason::SoftBlock => "soft_block",
+        EscalationReason::RenderNeeded => "render_needed",
+        EscalationReason::OriginUnreliable => "origin_unreliable",
+    }
+}
+
+/// Cheap content-density ratio: `text_bytes / html_bytes`.
+///
+/// Returns `0.0` for empty bodies. Uses a 5-line tag-stripping pass
+/// (count chars outside `<...>`), NOT a full DOM parse — adequate for
+/// detecting SPA shells (typical density 0.0–0.05) and soft-blocked
+/// pages (typical density 0.0–0.1) vs. content pages (typical 0.3+).
+pub(crate) fn content_density(body: &str) -> f32 {
+    if body.is_empty() {
+        return 0.0;
+    }
+    let total = body.len();
+    let mut text = 0usize;
+    let mut in_tag = false;
+    for ch in body.chars() {
+        match ch {
+            '<' => in_tag = true,
+            '>' => in_tag = false,
+            _ if !in_tag => text += ch.len_utf8(),
+            _ => {}
+        }
+    }
+    text as f32 / total as f32
+}
 #[cfg(not(target_arch = "wasm32"))]
 use crate::tower::CrawlRequest;
 use crate::traits::*;
@@ -166,6 +222,8 @@ impl CrawlEngine {
         let mut last_escalation_reason: Option<&'static str> = None;
         #[cfg(feature = "tracing")]
         let policy_name = retry_policy.name();
+        #[cfg(feature = "tracing")]
+        let mut last_content_density: f32 = 0.0;
 
         loop {
             total_attempts += 1;
@@ -232,6 +290,12 @@ impl CrawlEngine {
                     // Track last successful response for the cap-exceeded fallback path.
                     last_ok = Some((resp.clone(), browser_used));
 
+                    let density = content_density(&resp.body);
+                    #[cfg(feature = "tracing")]
+                    {
+                        last_content_density = density;
+                    }
+
                     let outcome = crate::types::AttemptOutcome {
                         attempt,
                         url: std::sync::Arc::from(url),
@@ -239,7 +303,7 @@ impl CrawlEngine {
                         error: None,
                         waf_signal,
                         body_size: resp.body.len(),
-                        content_density: 0.0, // placeholder — computed in a later commit
+                        content_density: density,
                         bytes_transferred: Some(resp.body_bytes.len() as u64),
                         previous_tier: current_tier,
                     };
@@ -252,6 +316,7 @@ impl CrawlEngine {
                                 last_escalation_reason,
                                 attempt,
                                 policy_name,
+                                last_content_density,
                             );
                             return Ok((resp, browser_used));
                         }
@@ -264,6 +329,14 @@ impl CrawlEngine {
                             if let Some(next) = Self::next_tier(current_tier, effective_strategy)
                                 && budget.try_consume(Self::tier_cost_cents(next)).await.is_ok()
                             {
+                                escalations_counter().add(
+                                    1,
+                                    &[
+                                        KeyValue::new("from_tier", Self::tier_name(current_tier)),
+                                        KeyValue::new("to_tier", Self::tier_name(next)),
+                                        KeyValue::new("reason", escalation_reason_label(&reason)),
+                                    ],
+                                );
                                 #[cfg(feature = "tracing")]
                                 {
                                     last_escalation_reason = Some(Self::escalation_reason_str(&reason));
@@ -283,6 +356,7 @@ impl CrawlEngine {
                                 last_escalation_reason,
                                 attempt,
                                 policy_name,
+                                last_content_density,
                             );
                             return Err(Self::escalation_reason_to_error(&reason, url));
                         }
@@ -337,6 +411,7 @@ impl CrawlEngine {
                                 last_escalation_reason,
                                 attempt,
                                 policy_name,
+                                last_content_density,
                             );
                             return Err(err);
                         }
@@ -345,13 +420,21 @@ impl CrawlEngine {
                             attempt += 1;
                             continue;
                         }
-                        crate::types::RetryDirective::Escalate { reason: _reason } => {
+                        crate::types::RetryDirective::Escalate { reason } => {
                             if let Some(next) = Self::next_tier(current_tier, effective_strategy)
                                 && budget.try_consume(Self::tier_cost_cents(next)).await.is_ok()
                             {
+                                escalations_counter().add(
+                                    1,
+                                    &[
+                                        KeyValue::new("from_tier", Self::tier_name(current_tier)),
+                                        KeyValue::new("to_tier", Self::tier_name(next)),
+                                        KeyValue::new("reason", escalation_reason_label(&reason)),
+                                    ],
+                                );
                                 #[cfg(feature = "tracing")]
                                 {
-                                    last_escalation_reason = Some(Self::escalation_reason_str(&_reason));
+                                    last_escalation_reason = Some(Self::escalation_reason_str(&reason));
                                 }
                                 current_tier = next;
                                 attempt = 0;
@@ -365,6 +448,7 @@ impl CrawlEngine {
                                 last_escalation_reason,
                                 attempt,
                                 policy_name,
+                                last_content_density,
                             );
                             return Err(err);
                         }
@@ -544,8 +628,8 @@ impl CrawlEngine {
         }
     }
 
-    /// Stable lowercase name for a tier, used in span attributes.
-    #[cfg(all(not(target_arch = "wasm32"), feature = "tracing"))]
+    /// Stable lowercase name for a tier, used in span attributes and OTel labels.
+    #[cfg(not(target_arch = "wasm32"))]
     const fn tier_name(tier: crate::types::Tier) -> &'static str {
         match tier {
             crate::types::Tier::Http => "http",
@@ -569,7 +653,7 @@ impl CrawlEngine {
     /// Emit structured dispatch telemetry via tracing.
     ///
     /// Fields: `dispatch.tier_chain`, `dispatch.escalation_reason`,
-    /// `dispatch.attempt_count`, `dispatch.policy`.
+    /// `dispatch.attempt_count`, `dispatch.policy`, `dispatch.content_density`.
     #[cfg(all(not(target_arch = "wasm32"), feature = "tracing"))]
     fn emit_dispatch_span(
         url: &str,
@@ -577,6 +661,7 @@ impl CrawlEngine {
         escalation_reason: Option<&str>,
         attempt_count: u32,
         policy: &str,
+        content_density: f32,
     ) {
         let tier_chain = tiers_attempted.join(",");
         tracing::info!(
@@ -586,6 +671,7 @@ impl CrawlEngine {
             "dispatch.escalation_reason" = escalation_reason.unwrap_or("none"),
             "dispatch.attempt_count" = attempt_count,
             "dispatch.policy" = policy,
+            "dispatch.content_density" = content_density,
         );
     }
 
