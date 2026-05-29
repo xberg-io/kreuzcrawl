@@ -452,6 +452,11 @@ impl Default for CrawlConfig {
 }
 
 impl CrawlConfig {
+    /// Start a fluent builder for `CrawlConfig`. See [`crate::CrawlConfigBuilder`].
+    pub fn builder() -> crate::types::builder::CrawlConfigBuilder {
+        crate::types::builder::CrawlConfigBuilder::default()
+    }
+
     /// Validate the configuration, returning an error if any values are invalid.
     pub fn validate(&self) -> Result<(), crate::error::CrawlError> {
         use crate::error::CrawlError;

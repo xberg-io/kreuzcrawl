@@ -30,10 +30,10 @@ impl CrawlEngineHandle {
     /// Wrap a pre-built [`CrawlEngine`] as a handle.
     ///
     /// Use this when you need to inject Rust-only components (a pre-built
-    /// [`crate::browser_pool::BrowserPool`] or
-    /// [`kreuzcrawl_browser::adapter::NativeBrowserExecutor`]) via
-    /// [`crate::CrawlEngineBuilder`] and then expose the result through the
-    /// binding-friendly `CrawlEngineHandle` API.
+    /// `BrowserPool` from `crate::browser_pool` or `NativeBrowserExecutor`
+    /// from `kreuzcrawl_browser::adapter`, both feature-gated behind
+    /// `browser`) via [`crate::CrawlEngineBuilder`] and then expose the
+    /// result through the binding-friendly `CrawlEngineHandle` API.
     ///
     /// Rust-only: excluded from alef-generated polyglot bindings. Language
     /// clients construct handles via [`create_engine`] alone.

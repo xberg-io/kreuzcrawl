@@ -336,6 +336,13 @@ pub struct DispatchProfile {
     pub max_total_attempts: u32,
 }
 
+impl DispatchProfile {
+    /// Start a fluent builder for `DispatchProfile`. See [`crate::DispatchProfileBuilder`].
+    pub fn builder() -> crate::types::builder::DispatchProfileBuilder {
+        crate::types::builder::DispatchProfileBuilder::default()
+    }
+}
+
 impl Default for DispatchProfile {
     fn default() -> Self {
         Self {

@@ -1,5 +1,6 @@
 //! Public types used across the kreuzcrawl crate.
 
+mod builder;
 mod bypass;
 mod config;
 mod discovery;
@@ -9,6 +10,7 @@ mod results;
 #[cfg(not(target_arch = "wasm32"))]
 mod streaming;
 
+pub use builder::{CrawlConfigBuilder, DispatchProfileBuilder};
 pub use bypass::{BypassProvider, BypassResponse, DynBypassProvider};
 pub use config::{
     AuthConfig, BrowserBackend, BrowserConfig, BrowserMode, BrowserWait, ContentConfig, CrawlConfig, ExtractionMeta,
