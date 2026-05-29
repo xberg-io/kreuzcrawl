@@ -228,6 +228,9 @@ impl CrawlEngine {
 
         loop {
             total_attempts += 1;
+            // `max_total_attempts` is inclusive: attempts 1..=max_total are allowed.
+            // Strict `>` means attempt max_total passes through and attempt max_total+1
+            // is rejected here. Guards against a buggy RetryPolicy that never returns Stop.
             if total_attempts > max_total {
                 #[cfg(feature = "tracing")]
                 tracing::warn!(
@@ -381,13 +384,14 @@ impl CrawlEngine {
                     // B1 (error arm): the WAF detection in http.rs already consumed the
                     // response body and encoded the vendor into CrawlError::WafBlocked.
                     // Thread that vendor through into WafSignal so the policy can see it.
-                    // The fingerprint_id sentinel "from_error" indicates this came from the
-                    // error path rather than a direct classifier match — the per-fingerprint
-                    // metric won't double-count if named distinctly.
+                    // fingerprint_id is empty on this synthesized signal — the vendor field
+                    // carries attribution; there is no classifier fingerprint on the error path.
+                    // An empty string is safe to emit as a Prometheus label without creating
+                    // phantom cardinality from a sentinel value.
                     let waf_signal = match &err {
                         CrawlError::WafBlocked { vendor, .. } => Some(crate::types::WafSignal {
                             vendor: vendor.clone(),
-                            fingerprint_id: "from_error".to_string(),
+                            fingerprint_id: String::new(),
                             weight: 1.0,
                         }),
                         _ => None,
