@@ -6,14 +6,8 @@ pub fn build(b: *std.Build) void {
     const optimize = b.standardOptimizeOption(.{});
     const test_step = b.step("test", "Run tests");
 
-    // Select the platform-specific dependency based on build host.
-    const pkg_name = if (builtin.target.os.tag == .linux) (
-        if (builtin.target.cpu.arch == .x86_64) "kreuzcrawl_linux_x86_64" else "kreuzcrawl_linux_aarch64")
-    else if (builtin.target.os.tag == .macos) (
-        if (builtin.target.cpu.arch == .x86_64) "kreuzcrawl_macos_x86_64" else "kreuzcrawl_macos_arm64")
-    else if (builtin.target.os.tag == .windows) "kreuzcrawl_windows_x86_64" else @compileError("unsupported platform for this Zig package");
-
-    const kreuzcrawl_module = b.dependency(pkg_name, .{
+    // Fetch the published Zig package from the registry.
+    const kreuzcrawl_module = b.dependency("kreuzcrawl", .{
         .target = target,
         .optimize = optimize,
     }).module("kreuzcrawl");

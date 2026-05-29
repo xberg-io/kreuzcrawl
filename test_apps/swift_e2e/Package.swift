@@ -8,12 +8,12 @@ let package = Package(
         .iOS(.v16),
     ],
     dependencies: [
-        .package(url: "https://github.com/kreuzberg-dev/kreuzcrawl.git", from: "0.3.0-rc.38"),
+        .binaryTarget(name: "Kreuzcrawl", url: "https://github.com/kreuzberg-dev/kreuzcrawl/releases/download/v0.3.0-rc.38/Kreuzcrawl-rs.artifactbundle.zip", checksum: "__ALEF_SWIFT_CHECKSUM__"),
     ],
     targets: [
         .testTarget(
             name: "KreuzcrawlE2ETests",
-            dependencies: [.product(name: "Kreuzcrawl", package: "kreuzcrawl")]
+            dependencies: [.binaryTarget(name: "Kreuzcrawl")]
         ),
     ]
 )
