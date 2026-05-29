@@ -6,20 +6,28 @@ mod builder;
 #[cfg(not(target_arch = "wasm32"))]
 mod crawl_loop;
 
-use std::sync::{Arc, OnceLock};
+use std::sync::Arc;
+#[cfg(not(target_arch = "wasm32"))]
+use std::sync::OnceLock;
 
+#[cfg(not(target_arch = "wasm32"))]
 use opentelemetry::metrics::Counter;
+#[cfg(not(target_arch = "wasm32"))]
 use opentelemetry::{KeyValue, global};
 
 use crate::error::CrawlError;
 
 // ---------------------------------------------------------------------------
-// OTel escalation counter — always-on (not feature-gated); metrics are
-// unconditional per the M10 split from commit 1.5.6.
+// OTel escalation counter — always-on outside wasm; metrics are unconditional
+// per the M10 split from commit 1.5.6, but the wasm target has no dispatch
+// loop call sites so the counter and helpers are gated to keep the wasm build
+// free of dead-code warnings.
 // ---------------------------------------------------------------------------
 
+#[cfg(not(target_arch = "wasm32"))]
 static ESCALATIONS_COUNTER: OnceLock<Counter<u64>> = OnceLock::new();
 
+#[cfg(not(target_arch = "wasm32"))]
 fn escalations_counter() -> &'static Counter<u64> {
     ESCALATIONS_COUNTER.get_or_init(|| {
         global::meter("kreuzcrawl")
@@ -32,6 +40,7 @@ fn escalations_counter() -> &'static Counter<u64> {
     })
 }
 
+#[cfg(not(target_arch = "wasm32"))]
 fn escalation_reason_label(reason: &crate::types::EscalationReason) -> &'static str {
     use crate::types::EscalationReason;
     match reason {
@@ -48,6 +57,7 @@ fn escalation_reason_label(reason: &crate::types::EscalationReason) -> &'static 
 /// (count chars outside `<...>`), NOT a full DOM parse — adequate for
 /// detecting SPA shells (typical density 0.0–0.05) and soft-blocked
 /// pages (typical density 0.0–0.1) vs. content pages (typical 0.3+).
+#[cfg(not(target_arch = "wasm32"))]
 pub(crate) fn content_density(body: &str) -> f32 {
     if body.is_empty() {
         return 0.0;
