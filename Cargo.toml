@@ -71,6 +71,7 @@ napi-derive = "3"
 opentelemetry = { version = "0.32", features = ["metrics"] }
 png = "0.18"
 precomputed-hash = "0.1"
+proptest = "1"
 pyo3 = { version = "0.28", features = ["abi3-py310"] }
 pyo3-async-runtimes = { version = "0.28", features = ["tokio-runtime"] }
 quick-xml = "0.40"

@@ -114,7 +114,7 @@ impl RetryPolicy for SimpleRetryPolicy {
     }
 }
 
-fn compute_backoff_ms(attempt: u32, max_backoff_ms: u64) -> u64 {
+pub fn compute_backoff_ms(attempt: u32, max_backoff_ms: u64) -> u64 {
     // 2^attempt * 100ms, capped.
     let exp = 1u64.checked_shl(attempt).unwrap_or(u64::MAX);
     exp.saturating_mul(100).min(max_backoff_ms)
