@@ -291,6 +291,7 @@ fn classify_outcome(outcome: &AttemptOutcome) -> ObservedOutcome {
 
 /// Convenience constructor: `Arc<dyn DomainStatePort>` backed by an in-memory EWMA map.
 #[must_use]
+#[cfg_attr(alef, alef(skip))]
 pub fn in_memory_domain_state() -> Arc<dyn DomainStatePort> {
     Arc::new(EwmaDomainState::new())
 }

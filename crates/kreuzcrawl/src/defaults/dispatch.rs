@@ -182,12 +182,14 @@ impl EscalationBudget for FixedBudget {
 
 /// Convenience constructor: `Arc<dyn RetryPolicy>` for the default policy.
 #[must_use]
+#[cfg_attr(alef, alef(skip))]
 pub fn default_retry_policy() -> Arc<dyn RetryPolicy> {
     Arc::new(SimpleRetryPolicy::new())
 }
 
 /// Convenience constructor: `Arc<dyn EscalationBudget>` that never blocks.
 #[must_use]
+#[cfg_attr(alef, alef(skip))]
 pub fn unlimited_budget() -> Arc<dyn EscalationBudget> {
     Arc::new(UnlimitedBudget)
 }
