@@ -511,4 +511,62 @@ mod tests {
         assert!(snapshot.sample_count <= 50);
         assert!(snapshot.block_ewma > 0.0);
     }
+
+    #[tokio::test]
+    async fn ewma_oscillation_promotes_demotes_then_re_promotes() {
+        let state = EwmaDomainState::new();
+        let domain = "oscillating.example";
+
+        for _ in 0..20 {
+            let obs = DomainObservation::now(
+                Tier::Http,
+                ObservedOutcome::WafBlocked {
+                    vendor: "cloudflare".into(),
+                },
+            );
+            state.observe(domain, &obs).await;
+        }
+        assert_eq!(state.recommend(domain).await.starting_tier, Tier::Bypass);
+
+        for _ in 0..200 {
+            let obs = DomainObservation::now(Tier::Bypass, ObservedOutcome::Success);
+            state.observe(domain, &obs).await;
+        }
+        assert_eq!(state.recommend(domain).await.starting_tier, Tier::Http);
+
+        for _ in 0..200 {
+            let obs = DomainObservation::now(
+                Tier::Http,
+                ObservedOutcome::WafBlocked {
+                    vendor: "cloudflare".into(),
+                },
+            );
+            state.observe(domain, &obs).await;
+        }
+        assert_eq!(state.recommend(domain).await.starting_tier, Tier::Bypass);
+    }
+
+    #[tokio::test]
+    async fn learning_policy_does_not_panic_on_unparseable_url() {
+        let state: Arc<dyn DomainStatePort> = Arc::new(EwmaDomainState::new());
+        let policy = LearningRetryPolicy::new(state.clone());
+
+        let outcome = AttemptOutcome {
+            attempt: 0,
+            url: Arc::from("not a url"),
+            status: None,
+            error: None,
+            waf_signal: None,
+            body_size: 0,
+            content_density: 0.0,
+            bytes_transferred: None,
+            previous_tier: Tier::Http,
+        };
+
+        let _ = policy.decide(&outcome).await;
+
+        let rec = state.recommend("not a url").await;
+        assert_eq!(rec.starting_tier, Tier::Http);
+        assert_eq!(rec.confidence, 0.0);
+    }
 }
