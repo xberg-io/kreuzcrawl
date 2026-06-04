@@ -3069,19 +3069,19 @@ pub struct CrawlEngineHandle {
 
 #[php_impl]
 impl CrawlEngineHandle {
-    #[php(name = "crawlStream")]
-    pub fn crawl_stream(
+    #[php(name = "batchCrawlStream")]
+    pub fn batch_crawl_stream(
         &self,
-        req: &CrawlStreamRequest,
+        req: &BatchCrawlStreamRequest,
     ) -> std::result::Result<Vec<String>, ext_php_rs::exception::PhpException> {
         use futures_util::StreamExt;
         let rt =
             tokio::runtime::Runtime::new().map_err(|e| ext_php_rs::exception::PhpException::default(e.to_string()))?;
-        let core_req: kreuzcrawl::CrawlStreamRequest = req.clone().into();
+        let core_req: kreuzcrawl::BatchCrawlStreamRequest = req.clone().into();
         rt.block_on(async {
             let stream = self
                 .inner
-                .crawl_stream(core_req)
+                .batch_crawl_stream(core_req)
                 .await
                 .map_err(|e| ext_php_rs::exception::PhpException::default(e.to_string()))?;
             let chunks: Vec<String> = stream
@@ -3100,19 +3100,19 @@ impl CrawlEngineHandle {
         })
     }
 
-    #[php(name = "batchCrawlStream")]
-    pub fn batch_crawl_stream(
+    #[php(name = "crawlStream")]
+    pub fn crawl_stream(
         &self,
-        req: &BatchCrawlStreamRequest,
+        req: &CrawlStreamRequest,
     ) -> std::result::Result<Vec<String>, ext_php_rs::exception::PhpException> {
         use futures_util::StreamExt;
         let rt =
             tokio::runtime::Runtime::new().map_err(|e| ext_php_rs::exception::PhpException::default(e.to_string()))?;
-        let core_req: kreuzcrawl::BatchCrawlStreamRequest = req.clone().into();
+        let core_req: kreuzcrawl::CrawlStreamRequest = req.clone().into();
         rt.block_on(async {
             let stream = self
                 .inner
-                .batch_crawl_stream(core_req)
+                .crawl_stream(core_req)
                 .await
                 .map_err(|e| ext_php_rs::exception::PhpException::default(e.to_string()))?;
             let chunks: Vec<String> = stream

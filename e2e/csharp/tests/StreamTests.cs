@@ -31,21 +31,12 @@ namespace Kreuzcrawl
             var _pfBase_urls = Environment.GetEnvironmentVariable("MOCK_SERVER_BATCH_CRAWL_STREAM_EVENTS");
             var _base_urls = !string.IsNullOrEmpty(_pfBase_urls) ? _pfBase_urls : Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/batch_crawl_stream_events";
             var urls = new System.Collections.Generic.List<string>(new string[] { "/page1", "/page2", "/page3" }.Select(p => p.StartsWith("http") ? p : _base_urls + p));
+            var urlsReq = new BatchCrawlStreamRequest { Urls = urls };
             var chunks = new List<CrawlEvent>();
-            var streamContent = new System.Text.StringBuilder();
             var streamComplete = false;
-            await foreach (var chunk in KreuzcrawlLib.BatchCrawlStreamAsync(engine, urls))
+            await foreach (var chunk in KreuzcrawlLib.BatchCrawlStreamAsync(engine, urlsReq))
             {
                 chunks.Add(chunk);
-                var choice = chunk.Choices != null && chunk.Choices.Count > 0 ? chunk.Choices[0] : null;
-                if (choice != null)
-                {
-                    var delta = choice.Delta;
-                    if (delta != null && !string.IsNullOrEmpty(delta.Content))
-                    {
-                        streamContent.Append(delta.Content);
-                    }
-                }
             }
             streamComplete = true;
             // skipped: streaming assertion on unsupported field 'stream.event_count_min'
@@ -63,21 +54,12 @@ namespace Kreuzcrawl
             var _pfBase_urls = Environment.GetEnvironmentVariable("MOCK_SERVER_BATCH_CRAWL_STREAM_PARTIAL_FAILURE");
             var _base_urls = !string.IsNullOrEmpty(_pfBase_urls) ? _pfBase_urls : Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/batch_crawl_stream_partial_failure";
             var urls = new System.Collections.Generic.List<string>(new string[] { "/success1", "/fail", "/success2" }.Select(p => p.StartsWith("http") ? p : _base_urls + p));
+            var urlsReq = new BatchCrawlStreamRequest { Urls = urls };
             var chunks = new List<CrawlEvent>();
-            var streamContent = new System.Text.StringBuilder();
             var streamComplete = false;
-            await foreach (var chunk in KreuzcrawlLib.BatchCrawlStreamAsync(engine, urls))
+            await foreach (var chunk in KreuzcrawlLib.BatchCrawlStreamAsync(engine, urlsReq))
             {
                 chunks.Add(chunk);
-                var choice = chunk.Choices != null && chunk.Choices.Count > 0 ? chunk.Choices[0] : null;
-                if (choice != null)
-                {
-                    var delta = choice.Delta;
-                    if (delta != null && !string.IsNullOrEmpty(delta.Content))
-                    {
-                        streamContent.Append(delta.Content);
-                    }
-                }
             }
             streamComplete = true;
             // skipped: streaming assertion on unsupported field 'stream.has_page_event'
@@ -96,20 +78,10 @@ namespace Kreuzcrawl
             var url = !string.IsNullOrEmpty(_pfUrl_url) ? _pfUrl_url : Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/crawl_stream_events";
             var urlReq = new CrawlStreamRequest { Url = url };
             var chunks = new List<CrawlEvent>();
-            var streamContent = new System.Text.StringBuilder();
             var streamComplete = false;
             await foreach (var chunk in KreuzcrawlLib.CrawlStreamAsync(engine, urlReq))
             {
                 chunks.Add(chunk);
-                var choice = chunk.Choices != null && chunk.Choices.Count > 0 ? chunk.Choices[0] : null;
-                if (choice != null)
-                {
-                    var delta = choice.Delta;
-                    if (delta != null && !string.IsNullOrEmpty(delta.Content))
-                    {
-                        streamContent.Append(delta.Content);
-                    }
-                }
             }
             streamComplete = true;
             // skipped: streaming assertion on unsupported field 'stream.event_count_min'
@@ -128,20 +100,10 @@ namespace Kreuzcrawl
             var url = !string.IsNullOrEmpty(_pfUrl_url) ? _pfUrl_url : Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/stream_depth_crawl";
             var urlReq = new CrawlStreamRequest { Url = url };
             var chunks = new List<CrawlEvent>();
-            var streamContent = new System.Text.StringBuilder();
             var streamComplete = false;
             await foreach (var chunk in KreuzcrawlLib.CrawlStreamAsync(engine, urlReq))
             {
                 chunks.Add(chunk);
-                var choice = chunk.Choices != null && chunk.Choices.Count > 0 ? chunk.Choices[0] : null;
-                if (choice != null)
-                {
-                    var delta = choice.Delta;
-                    if (delta != null && !string.IsNullOrEmpty(delta.Content))
-                    {
-                        streamContent.Append(delta.Content);
-                    }
-                }
             }
             streamComplete = true;
             // skipped: streaming assertion on unsupported field 'stream.event_count_min'
@@ -160,20 +122,10 @@ namespace Kreuzcrawl
             var url = !string.IsNullOrEmpty(_pfUrl_url) ? _pfUrl_url : Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/stream_error_event_mid_crawl";
             var urlReq = new CrawlStreamRequest { Url = url };
             var chunks = new List<CrawlEvent>();
-            var streamContent = new System.Text.StringBuilder();
             var streamComplete = false;
             await foreach (var chunk in KreuzcrawlLib.CrawlStreamAsync(engine, urlReq))
             {
                 chunks.Add(chunk);
-                var choice = chunk.Choices != null && chunk.Choices.Count > 0 ? chunk.Choices[0] : null;
-                if (choice != null)
-                {
-                    var delta = choice.Delta;
-                    if (delta != null && !string.IsNullOrEmpty(delta.Content))
-                    {
-                        streamContent.Append(delta.Content);
-                    }
-                }
             }
             streamComplete = true;
             // skipped: streaming assertion on unsupported field 'stream.has_page_event'
@@ -192,20 +144,10 @@ namespace Kreuzcrawl
             var url = !string.IsNullOrEmpty(_pfUrl_url) ? _pfUrl_url : Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/stream_event_ordering";
             var urlReq = new CrawlStreamRequest { Url = url };
             var chunks = new List<CrawlEvent>();
-            var streamContent = new System.Text.StringBuilder();
             var streamComplete = false;
             await foreach (var chunk in KreuzcrawlLib.CrawlStreamAsync(engine, urlReq))
             {
                 chunks.Add(chunk);
-                var choice = chunk.Choices != null && chunk.Choices.Count > 0 ? chunk.Choices[0] : null;
-                if (choice != null)
-                {
-                    var delta = choice.Delta;
-                    if (delta != null && !string.IsNullOrEmpty(delta.Content))
-                    {
-                        streamContent.Append(delta.Content);
-                    }
-                }
             }
             streamComplete = true;
             // skipped: streaming assertion on unsupported field 'stream.has_complete_event'
@@ -224,20 +166,10 @@ namespace Kreuzcrawl
             var url = !string.IsNullOrEmpty(_pfUrl_url) ? _pfUrl_url : Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/stream_large_crawl";
             var urlReq = new CrawlStreamRequest { Url = url };
             var chunks = new List<CrawlEvent>();
-            var streamContent = new System.Text.StringBuilder();
             var streamComplete = false;
             await foreach (var chunk in KreuzcrawlLib.CrawlStreamAsync(engine, urlReq))
             {
                 chunks.Add(chunk);
-                var choice = chunk.Choices != null && chunk.Choices.Count > 0 ? chunk.Choices[0] : null;
-                if (choice != null)
-                {
-                    var delta = choice.Delta;
-                    if (delta != null && !string.IsNullOrEmpty(delta.Content))
-                    {
-                        streamContent.Append(delta.Content);
-                    }
-                }
             }
             streamComplete = true;
             // skipped: streaming assertion on unsupported field 'stream.event_count_min'
@@ -256,20 +188,10 @@ namespace Kreuzcrawl
             var url = !string.IsNullOrEmpty(_pfUrl_url) ? _pfUrl_url : Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/stream_with_error_event";
             var urlReq = new CrawlStreamRequest { Url = url };
             var chunks = new List<CrawlEvent>();
-            var streamContent = new System.Text.StringBuilder();
             var streamComplete = false;
             await foreach (var chunk in KreuzcrawlLib.CrawlStreamAsync(engine, urlReq))
             {
                 chunks.Add(chunk);
-                var choice = chunk.Choices != null && chunk.Choices.Count > 0 ? chunk.Choices[0] : null;
-                if (choice != null)
-                {
-                    var delta = choice.Delta;
-                    if (delta != null && !string.IsNullOrEmpty(delta.Content))
-                    {
-                        streamContent.Append(delta.Content);
-                    }
-                }
             }
             streamComplete = true;
             // skipped: streaming assertion on unsupported field 'stream.has_page_event'

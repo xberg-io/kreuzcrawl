@@ -82,20 +82,10 @@ namespace Kreuzcrawl
             var url = !string.IsNullOrEmpty(_pfUrl_url) ? _pfUrl_url : Environment.GetEnvironmentVariable("MOCK_SERVER_URL") + "/fixtures/engine_stream_basic";
             var urlReq = new CrawlStreamRequest { Url = url };
             var chunks = new List<CrawlEvent>();
-            var streamContent = new System.Text.StringBuilder();
             var streamComplete = false;
             await foreach (var chunk in KreuzcrawlLib.CrawlStreamAsync(engine, urlReq))
             {
                 chunks.Add(chunk);
-                var choice = chunk.Choices != null && chunk.Choices.Count > 0 ? chunk.Choices[0] : null;
-                if (choice != null)
-                {
-                    var delta = choice.Delta;
-                    if (delta != null && !string.IsNullOrEmpty(delta.Content))
-                    {
-                        streamContent.Append(delta.Content);
-                    }
-                }
             }
             streamComplete = true;
             // skipped: streaming assertion on unsupported field 'stream.has_page_event'
