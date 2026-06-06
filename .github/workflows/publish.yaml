@@ -2305,67 +2305,11 @@ jobs:
                   git commit -m "kreuzcrawl ${{ needs.prepare.outputs.version }} bottles"
                   git push origin HEAD
 
-    # ─── Post-publish verification ────────────────────────────────────────
-    # For each language, install the *just-published* package from its
-    # registry and run the test_apps/<lang>/ fixture suite against it.
-    # alef test-apps run builds + spawns the e2e mock-server internally
-    # and injects MOCK_SERVER_URL into the language's test command.
-
-    verify-published-packages:
-        name: Verify published packages (${{ matrix.language }})
-        needs:
-            - prepare
-            - publish-crates
-            - publish-pypi
-            - publish-rubygems
-            - publish-node
-            - publish-wasm
-            - publish-packagist
-            - publish-maven
-            - publish-nuget
-            - publish-hex
-            - publish-zig
-            - publish-homebrew-formula
-            - publish-homebrew-bottles
-            - upload-cli-release
-            - upload-go-release
-            - upload-c-ffi-release
-        if: |
-            always() &&
-            !cancelled() &&
-            needs.prepare.outputs.is_tag == 'true' &&
-            needs.prepare.outputs.dry_run != 'true' &&
-            !contains(needs.*.result, 'failure')
-        strategy:
-            fail-fast: false
-            matrix:
-                language: [python, node, ruby, php, go, java, csharp, elixir, wasm, c, brew]
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-              with:
-                  ref: ${{ needs.prepare.outputs.tag }}
-            - name: Build mock-server (needed by alef test-apps run)
-              # Rust ships preinstalled on ubuntu-latest. mock-server source lives
-              # under e2e/rust/ and is alef-generated; alef test-apps run shells
-              # out to its release binary.
-              run: cargo build --release --manifest-path e2e/rust/Cargo.toml
-            - name: Install tomlkit for test-apps runner
-              run: pip install tomlkit
-            - uses: kreuzberg-dev/actions/run-test-apps@v1
-              with:
-                  language: ${{ matrix.language }}
-                  version: ${{ needs.prepare.outputs.version }}
-            - name: Upload test-app log on failure
-              if: failure()
-              uses: actions/upload-artifact@v4
-              with:
-                  name: test-app-log-${{ matrix.language }}
-                  path: /tmp/test-apps-${{ matrix.language }}.log
-                  if-no-files-found: ignore
-                  retention-days: 7
-
     # ─── Finalization ─────────────────────────────────────────────────────
+    # Post-publish verification runs locally via `task test-apps:run` / `:smoke` /
+    # `:comprehensive` against the freshly-published artifacts. Mirrors the
+    # canonical sibling pattern (liter-llm, html-to-markdown, tslp). CI's job
+    # ends at publish + finalize; the operator runs test_apps locally.
 
     release-finalize:
         name: Finalize GitHub Release
@@ -2388,7 +2332,6 @@ jobs:
             - upload-cli-release
             - upload-go-release
             - upload-c-ffi-release
-            - verify-published-packages
         if: |
             always() &&
             !cancelled() &&
@@ -2427,7 +2370,6 @@ jobs:
             - upload-c-ffi-release
             - upload-elixir-release
             - upload-php-pie-release
-            - verify-published-packages
             - release-finalize
         if: |
             always() &&
