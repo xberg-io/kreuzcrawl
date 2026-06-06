@@ -173,10 +173,10 @@ packages:
     dependency: "direct main"
     description:
       name: kreuzcrawl
-      sha256: "663f51f2d7d6bea44acbf8b97a10309c61b65331db302f188210afff569c0e99"
+      sha256: "93c103dcfdbab83ec5f649c46c6611813f183d9f75436c2a51d7fa6f28aa31d5"
       url: "https://pub.dev"
     source: hosted
-    version: "0.3.0-rc.40"
+    version: "0.3.0-rc.43"
   logging:
     dependency: transitive
     description:

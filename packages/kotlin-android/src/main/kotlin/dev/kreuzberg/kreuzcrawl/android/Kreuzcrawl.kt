@@ -34,86 +34,63 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 object Kreuzcrawl {
-    // / Jackson module that marshals ByteArray as a JSON array of unsigned bytes,
-    // / matching how Rust serde encodes Vec<u8> on the wire.
-    // / Jackson's default writes ByteArray as a Base64 string, which Rust serde rejects
-    // / with "invalid type: string, expected a sequence".
-    private val byteArrayModule =
-        com.fasterxml.jackson.databind.module.SimpleModule().apply {
-            addSerializer(
-                ByteArray::class.java,
-                object :
-                    com.fasterxml.jackson.databind.ser.std.StdSerializer<ByteArray>(
-                        ByteArray::class.java
-                    ) {
-                    override fun serialize(
-                        value: ByteArray,
-                        gen: com.fasterxml.jackson.core.JsonGenerator,
-                        provider: com.fasterxml.jackson.databind.SerializerProvider,
-                    ) {
-                        gen.writeStartArray()
-                        for (b in value) gen.writeNumber(b.toInt() and 0xff)
-                        gen.writeEndArray()
+    /// Jackson module that marshals ByteArray as a JSON array of unsigned bytes,
+    /// matching how Rust serde encodes Vec<u8> on the wire.
+    /// Jackson's default writes ByteArray as a Base64 string, which Rust serde rejects
+    /// with "invalid type: string, expected a sequence".
+    private val byteArrayModule = com.fasterxml.jackson.databind.module.SimpleModule().apply {
+        addSerializer(
+            ByteArray::class.java,
+            object : com.fasterxml.jackson.databind.ser.std.StdSerializer<ByteArray>(ByteArray::class.java) {
+                override fun serialize(
+                    value: ByteArray,
+                    gen: com.fasterxml.jackson.core.JsonGenerator,
+                    provider: com.fasterxml.jackson.databind.SerializerProvider,
+                ) {
+                    gen.writeStartArray()
+                    for (b in value) gen.writeNumber(b.toInt() and 0xff)
+                    gen.writeEndArray()
+                }
+            },
+        )
+        addDeserializer(
+            ByteArray::class.java,
+            object : com.fasterxml.jackson.databind.deser.std.StdDeserializer<ByteArray>(ByteArray::class.java) {
+                override fun deserialize(
+                    parser: com.fasterxml.jackson.core.JsonParser,
+                    ctx: com.fasterxml.jackson.databind.DeserializationContext,
+                ): ByteArray {
+                    val node = parser.codec.readTree<com.fasterxml.jackson.databind.JsonNode>(parser)
+                    return when {
+                        node.isArray -> ByteArray(node.size()) { i -> node.get(i).asInt().toByte() }
+                        node.isTextual -> java.util.Base64.getDecoder().decode(node.asText())
+                        else -> ByteArray(0)
                     }
-                },
-            )
-            addDeserializer(
-                ByteArray::class.java,
-                object :
-                    com.fasterxml.jackson.databind.deser.std.StdDeserializer<ByteArray>(
-                        ByteArray::class.java
-                    ) {
-                    override fun deserialize(
-                        parser: com.fasterxml.jackson.core.JsonParser,
-                        ctx: com.fasterxml.jackson.databind.DeserializationContext,
-                    ): ByteArray {
-                        val node =
-                            parser.codec.readTree<com.fasterxml.jackson.databind.JsonNode>(parser)
-                        return when {
-                            node.isArray ->
-                                ByteArray(node.size()) { i -> node.get(i).asInt().toByte() }
-                            node.isTextual -> java.util.Base64.getDecoder().decode(node.asText())
-                            else -> ByteArray(0)
-                        }
-                    }
-                },
-            )
-        }
+                }
+            },
+        )
+    }
 
-    private val mapper =
-        jacksonObjectMapper()
-            .registerModule(com.fasterxml.jackson.datatype.jdk8.Jdk8Module())
-            .registerModule(byteArrayModule)
-            .registerModule(
-                com.fasterxml.jackson.module.kotlin.KotlinModule.Builder()
-                    .configure(
-                        com.fasterxml.jackson.module.kotlin.KotlinFeature.NullIsSameAsDefault,
-                        true,
-                    )
-                    .configure(
-                        com.fasterxml.jackson.module.kotlin.KotlinFeature.NullToEmptyCollection,
-                        true,
-                    )
-                    .configure(
-                        com.fasterxml.jackson.module.kotlin.KotlinFeature.NullToEmptyMap,
-                        true,
-                    )
-                    .build()
-            )
-            .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
-            .setSerializationInclusion(
-                com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY
-            )
-            .configure(
-                com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
-                false,
-            )
+    private val mapper = jacksonObjectMapper()
+        .registerModule(com.fasterxml.jackson.datatype.jdk8.Jdk8Module())
+        .registerModule(byteArrayModule)
+        .registerModule(
+            com.fasterxml.jackson.module.kotlin.KotlinModule.Builder()
+                .configure(com.fasterxml.jackson.module.kotlin.KotlinFeature.NullIsSameAsDefault, true)
+                .configure(com.fasterxml.jackson.module.kotlin.KotlinFeature.NullToEmptyCollection, true)
+                .configure(com.fasterxml.jackson.module.kotlin.KotlinFeature.NullToEmptyMap, true)
+                .build(),
+        )
+        .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
+        .setSerializationInclusion(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY)
+        .configure(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
     /**
      * Convert markdown links to numbered citations.
      *
-     * `[Example](https://example.com)` becomes `Example[1]` with `[1]: https://example.com` in the
-     * reference list. Images `![alt](url)` are preserved unchanged.
+     * `[Example](https://example.com)` becomes `Example[1]`
+     * with `[1]: https://example.com` in the reference list.
+     * Images `![alt](url)` are preserved unchanged.
      */
     fun generateCitations(markdown: String): CitationResult {
         val resultJson = KreuzcrawlBridge.nativeGenerateCitations(markdown)
@@ -123,8 +100,9 @@ object Kreuzcrawl {
     /**
      * Convert markdown links to numbered citations.
      *
-     * `[Example](https://example.com)` becomes `Example[1]` with `[1]: https://example.com` in the
-     * reference list. Images `![alt](url)` are preserved unchanged.
+     * `[Example](https://example.com)` becomes `Example[1]`
+     * with `[1]: https://example.com` in the reference list.
+     * Images `![alt](url)` are preserved unchanged.
      */
     suspend fun generateCitationsAsync(markdown: String): CitationResult =
         withContext(Dispatchers.IO) { generateCitations(markdown) }
@@ -132,14 +110,10 @@ object Kreuzcrawl {
     /**
      * Create a new crawl engine with the given configuration.
      *
-     * If `config` is `null`, uses `CrawlConfig.default()`. Returns an error if the configuration is
-     * invalid.
+     * If `config` is `null`, uses `CrawlConfig.default()`.
+     * Returns an error if the configuration is invalid.
      */
-    fun createEngine(config: CrawlConfig? = null): CrawlEngineHandle =
-        CrawlEngineHandle(
-            KreuzcrawlBridge.nativeCreateEngine(config?.let { mapper.writeValueAsString(it) } ?: "")
-        )
-
+    fun createEngine(config: CrawlConfig? = null): CrawlEngineHandle = CrawlEngineHandle(KreuzcrawlBridge.nativeCreateEngine(config?.let { mapper.writeValueAsString(it) } ?: ""))
     /** Scrape a single URL, returning extracted page data. */
     fun scrape(engine: CrawlEngineHandle, url: String): ScrapeResult {
         val resultJson = KreuzcrawlBridge.nativeScrape(engine.handle, url)
@@ -171,44 +145,33 @@ object Kreuzcrawl {
         withContext(Dispatchers.IO) { mapUrls(engine, url) }
 
     /** Execute browser actions on a single page. */
-    fun interact(
-        engine: CrawlEngineHandle,
-        url: String,
-        actions: List<PageAction>,
-    ): InteractionResult {
-        val resultJson =
-            KreuzcrawlBridge.nativeInteract(engine.handle, url, mapper.writeValueAsString(actions))
+    fun interact(engine: CrawlEngineHandle, url: String, actions: List<PageAction>): InteractionResult {
+        val resultJson = KreuzcrawlBridge.nativeInteract(engine.handle, url, mapper.writeValueAsString(actions))
         return mapper.readValue(resultJson, InteractionResult::class.java)
     }
 
     /** Execute browser actions on a single page. */
-    suspend fun interactAsync(
-        engine: CrawlEngineHandle,
-        url: String,
-        actions: List<PageAction>,
-    ): InteractionResult = withContext(Dispatchers.IO) { interact(engine, url, actions) }
+    suspend fun interactAsync(engine: CrawlEngineHandle, url: String, actions: List<PageAction>): InteractionResult =
+        withContext(Dispatchers.IO) { interact(engine, url, actions) }
 
     /** Scrape multiple URLs concurrently. */
     fun batchScrape(engine: CrawlEngineHandle, urls: List<String>): BatchScrapeResults {
-        val resultJson =
-            KreuzcrawlBridge.nativeBatchScrape(engine.handle, mapper.writeValueAsString(urls))
+        val resultJson = KreuzcrawlBridge.nativeBatchScrape(engine.handle, mapper.writeValueAsString(urls))
         return mapper.readValue(resultJson, BatchScrapeResults::class.java)
     }
 
     /** Scrape multiple URLs concurrently. */
-    suspend fun batchScrapeAsync(
-        engine: CrawlEngineHandle,
-        urls: List<String>,
-    ): BatchScrapeResults = withContext(Dispatchers.IO) { batchScrape(engine, urls) }
+    suspend fun batchScrapeAsync(engine: CrawlEngineHandle, urls: List<String>): BatchScrapeResults =
+        withContext(Dispatchers.IO) { batchScrape(engine, urls) }
 
     /** Crawl multiple seed URLs concurrently, each following links to configured depth. */
     fun batchCrawl(engine: CrawlEngineHandle, urls: List<String>): BatchCrawlResults {
-        val resultJson =
-            KreuzcrawlBridge.nativeBatchCrawl(engine.handle, mapper.writeValueAsString(urls))
+        val resultJson = KreuzcrawlBridge.nativeBatchCrawl(engine.handle, mapper.writeValueAsString(urls))
         return mapper.readValue(resultJson, BatchCrawlResults::class.java)
     }
 
     /** Crawl multiple seed URLs concurrently, each following links to configured depth. */
     suspend fun batchCrawlAsync(engine: CrawlEngineHandle, urls: List<String>): BatchCrawlResults =
         withContext(Dispatchers.IO) { batchCrawl(engine, urls) }
+
 }

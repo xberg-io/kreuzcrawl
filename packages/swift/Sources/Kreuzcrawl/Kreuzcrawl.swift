@@ -1656,9 +1656,9 @@ private func _loadBytesFromPathOrUtf8(_ pathOrContent: String) throws -> [UInt8]
     return [UInt8](pathOrContent.utf8)
 }
 
-public func createEngine(_ configJson: String) throws -> CrawlEngineHandle {
-    let config = try crawlConfigFromJson(configJson)
-    return try createEngine(config: config)
+public func createEngine(_ configcrawlConfigJson: String) throws -> CrawlEngineHandle {
+    let configcrawlConfig = try crawlConfigFromJson(configcrawlConfigJson)
+    return try createEngine(config: configcrawlConfig)
 }
 
 // MARK: - From-JSON Helpers

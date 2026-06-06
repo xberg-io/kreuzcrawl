@@ -13,14 +13,13 @@ package dev.kreuzberg.kreuzcrawl.android
 
 @Suppress("TooManyFunctions")
 object KreuzcrawlBridge {
-    init {
-        System.loadLibrary("kcrawl_jni")
-    }
+    init { System.loadLibrary("kcrawl_jni") }
 
     @Throws(KreuzcrawlBridgeException::class)
     external fun nativeGenerateCitations(markdown: String): String
 
-    @Throws(KreuzcrawlBridgeException::class) external fun nativeCreateEngine(config: String): Long
+    @Throws(KreuzcrawlBridgeException::class)
+    external fun nativeCreateEngine(config: String): Long
 
     @Throws(KreuzcrawlBridgeException::class)
     external fun nativeScrape(engine: Long, url: String): String
@@ -43,36 +42,24 @@ object KreuzcrawlBridge {
     // JNI external funs for client instance methods.
     @Throws(KreuzcrawlBridgeException::class)
     external fun nativeCrawlEngineHandleCrawlStream(handle: Long, requestJson: String): String
-
     @Throws(KreuzcrawlBridgeException::class)
     external fun nativeCrawlEngineHandleBatchCrawlStream(handle: Long, requestJson: String): String
-
     external fun nativeFreeCrawlEngineHandle(handle: Long)
 
     // JNI streaming external funs — implementations are Rust JNI shims.
 
     // Streaming JNI externs for CrawlEngineHandle.crawlStream
     @Throws(KreuzcrawlBridgeException::class)
-    external fun nativeCrawlEngineHandleCrawlStreamStart(
-        clientHandle: Long,
-        requestJson: String,
-    ): Long
-
+    external fun nativeCrawlEngineHandleCrawlStreamStart(clientHandle: Long, requestJson: String): Long
     @Throws(KreuzcrawlBridgeException::class)
     external fun nativeCrawlEngineHandleCrawlStreamNext(streamHandle: Long): String?
-
     external fun nativeCrawlEngineHandleCrawlStreamFree(streamHandle: Long)
 
     // Streaming JNI externs for CrawlEngineHandle.batchCrawlStream
     @Throws(KreuzcrawlBridgeException::class)
-    external fun nativeCrawlEngineHandleBatchCrawlStreamStart(
-        clientHandle: Long,
-        requestJson: String,
-    ): Long
-
+    external fun nativeCrawlEngineHandleBatchCrawlStreamStart(clientHandle: Long, requestJson: String): Long
     @Throws(KreuzcrawlBridgeException::class)
     external fun nativeCrawlEngineHandleBatchCrawlStreamNext(streamHandle: Long): String?
-
     external fun nativeCrawlEngineHandleBatchCrawlStreamFree(streamHandle: Long)
 
     // Destructor external funs for handle-only opaque types.

@@ -4,6 +4,14 @@ All notable changes to kreuzcrawl are documented here.
 
 ## [Unreleased]
 
+### Changed
+
+- Bump alef pin to `0.23.17` to consume the Python conftest MOCK_SERVERS-expansion fix and post-0.23.14 codegen fixes (swift JSON-overload async detection + RustString→String, swift Vec accessors + try wrapping, extendr binding compile fixes, rustler mutable refs, magnus mutable locals, csharp per-language async override, zig @tagName + @panic, binding edge cases).
+
+### Fixed
+
+- **test_apps regression on scrape-asset fixtures**: alef 0.23.17 ships `python/conftest.py` MOCK_SERVERS-expansion so per-fixture `MOCK_SERVER_<FIXTURE_ID>` env vars are populated when a parent process (`alef test-apps run`) starts a shared mock-server. Without this, per-fixture tests fell back to the shared-server URL where origin-relative asset paths 404'd.
+
 ## [0.3.0-rc.39] - 2026-05-29
 
 ### Changed

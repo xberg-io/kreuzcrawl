@@ -1,0 +1,211 @@
+<img alt="Finch" height="350px" src="assets/Finch_logo_onWhite.png#gh-light-mode-only">
+<img alt="Finch" height="350px" src="assets/Finch_logo_all-White.png#gh-dark-mode-only">
+
+[![CI](https://github.com/sneako/finch/actions/workflows/elixir.yml/badge.svg)](https://github.com/sneako/finch/actions/workflows/elixir.yml)
+[![Hex pm](https://img.shields.io/hexpm/v/finch.svg?style=flat)](https://hex.pm/packages/finch)
+[![Hexdocs.pm](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://hexdocs.pm/finch/)
+
+<!-- MDOC !-->
+
+An HTTP client with a focus on performance, built on top of
+[Mint](https://github.com/elixir-mint/mint) and [NimblePool](https://github.com/dashbitco/nimble_pool).
+
+We attempt to achieve this goal by providing efficient connection pooling strategies and avoiding copying of memory wherever possible.
+
+Most developers will most likely prefer to use the fabulous HTTP client [Req](https://github.com/wojtekmach/req) which takes advantage of Finch's pooling and provides an extremely friendly and pleasant to use API.
+
+## Usage
+
+In order to use Finch, you must start it and provide a `:name`. Often in your
+supervision tree:
+
+```elixir
+children = [
+  {Finch, name: MyFinch}
+]
+```
+
+Or, in rare cases, dynamically:
+
+```elixir
+Finch.start_link(name: MyFinch)
+```
+
+Once you have started your instance of Finch, you are ready to start making requests:
+
+```elixir
+Finch.build(:get, "https://hex.pm") |> Finch.request(MyFinch)
+```
+
+When using HTTP/1, Finch will parse the passed in URL into a `{scheme, host, port}`
+tuple, and maintain one or more connection pools for each `{scheme, host, port}` you
+interact with.
+
+You can also configure a pool size and count to be used for specific URLs that are
+known before starting Finch. The passed URLs will be parsed into `{scheme, host, port}`,
+and the corresponding pools will be started. See `Finch.start_link/1` for configuration
+options.
+
+```elixir
+children = [
+  {Finch,
+   name: MyConfiguredFinch,
+   pools: %{
+     :default => [size: 10, count: 2],
+     "https://hex.pm" => [size: 32, count: 8]
+   }}
+]
+```
+
+Pools will be started for each configured `{scheme, host, port}` when Finch is started.
+For any unconfigured `{scheme, host, port}`, the pool will be started the first time
+it is requested using the `:default` configuration. This means given the pool
+configuration above each origin/`{scheme, host, port}` will launch 2 (`:count`) new pool
+processes. So, if you encountered 10 separate combinations, that'd be 20 pool processes.
+
+For how `:size` and `:count` interact on HTTP/1, how workers are chosen when `:count` is
+greater than 1 (including the `:pool_strategy` request option), see the **Pool Configuration
+Options** and **Multiple workers** sections in `Finch.start_link/1`.
+
+### Pool Tagging
+
+Finch supports pool tagging, which allows you to create separate pools for the same
+`{scheme, host, port}` combination or Unix socket. This is useful when you need different
+configurations or want to isolate traffic for different purposes (e.g., API vs web requests,
+tenants, JWT tokens, etc).
+
+You can configure tagged pools using `Finch.Pool.new/2`:
+
+```elixir
+children = [
+  {Finch,
+   name: MyTaggedFinch,
+   pools: %{
+     Finch.Pool.new("https://api.example.com") => [size: 50, count: 4],
+     Finch.Pool.new("https://api.example.com", tag: :web) => [size: 20, count: 2],
+     Finch.Pool.new("http+unix:///tmp/api.sock", tag: :api) => [size: 30, count: 2],
+     Finch.Pool.new("http+unix:///tmp/api.sock", tag: :web) => [size: 10, count: 1],
+     :default => [size: 10, count: 1]
+   }}
+]
+```
+
+When making requests, you can specify which pool to use by setting the `:pool_tag` option:
+
+```elixir
+# Uses the :api tagged pool
+request = Finch.build(:get, "https://api.example.com/users", [], nil, pool_tag: :api)
+Finch.request(request, MyTaggedFinch)
+
+# Uses the :web tagged pool
+request = Finch.build(:get, "https://api.example.com/users", [], nil, pool_tag: :web)
+Finch.request(request, MyTaggedFinch)
+
+# Uses :default tag (or falls back to default config)
+request = Finch.build(:get, "https://api.example.com/users")
+Finch.request(request, MyTaggedFinch)
+
+# Tagged Unix socket pool
+request =
+  Finch.build(
+    :get,
+    "http://localhost/",
+    [],
+    nil,
+    unix_socket: "/tmp/api.sock",
+    pool_tag: :api
+  )
+Finch.request(request, MyTaggedFinch)
+```
+
+When making a request with a specific `:pool_tag`, the tag must exist in your pool
+configuration. If it doesn't exist, the request will use the `:default` configuration.
+This allows you to have specific configurations for tagged pools while maintaining
+sensible defaults for untagged requests.
+
+Note pools are not automatically terminated by default, if you need to
+terminate them after some idle time, use the `pool_max_idle_time` option (available only for HTTP1 pools).
+
+### User-managed pools
+
+You can start pools under your own supervision tree using `Finch.Pool.child_spec/1`. The Finch
+instance must be started first. User-managed pools integrate with `Finch.request/2`,
+`Finch.stop_pool/2`, `Finch.get_pool_status/2`, and `Finch.find_pool/2`:
+
+```elixir
+children = [
+  {Finch, name: MyFinch},
+  {Finch.Pool, finch: MyFinch, pool: Finch.Pool.new("https://api.internal", tag: :api), size: 10},
+  {Finch.Pool, finch: MyFinch, pool: Finch.Pool.new("https://node-2.internal", tag: :node2), size: 10}
+]
+Supervisor.start_link(children, strategy: :one_for_one)
+```
+
+To add pools dynamically under Finch's internal supervisor, use `Finch.start_pool/3`:
+
+```elixir
+Finch.start_pool(MyFinch, Finch.Pool.new("https://api.example.com", tag: :api), size: 10)
+```
+
+Use `Finch.find_pool/2` to check if a pool exists:
+
+```elixir
+case Finch.find_pool(MyFinch, Finch.Pool.new("https://api.internal", tag: :api)) do
+  {:ok, _pid} -> # Pool exists
+  :error -> # Pool not found
+end
+```
+
+## Telemetry
+
+Finch uses Telemetry to provide instrumentation. See the `Finch.Telemetry`
+module for details on specific events.
+
+## Logging TLS Secrets
+
+Finch supports logging TLS secrets to a file. These can be later used in a tool such as
+Wireshark to decrypt HTTPS sessions. To use this feature you must specify the file to
+which the secrets should be written. If you are using TLSv1.3 you must also add
+`keep_secrets: true` to your pool `:transport_opts`. For example:
+
+```elixir
+{Finch,
+ name: MyFinch,
+ pools: %{
+   default: [conn_opts: [transport_opts: [keep_secrets: true]]]
+ }}
+```
+
+There are two different ways to specify this file:
+
+1. The `:ssl_key_log_file` connection option in your pool configuration. For example:
+
+```elixir
+{Finch,
+ name: MyFinch,
+ pools: %{
+   default: [
+     conn_opts: [
+       ssl_key_log_file: "/writable/path/to/the/sslkey.log"
+     ]
+   ]
+ }}
+```
+
+2. Alternatively, you could also set the `SSLKEYLOGFILE` environment variable.
+
+<!-- MDOC !-->
+
+## Installation
+
+The package can be installed by adding `finch` to your list of dependencies in `mix.exs`:
+
+```elixir
+def deps do
+  [
+    {:finch, "~> 0.20"}
+  ]
+end
+```
+
+The docs can be found at [https://hexdocs.pm/finch](https://hexdocs.pm/finch).

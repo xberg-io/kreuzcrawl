@@ -1,0 +1,12 @@
+.{
+    .name = .kreuzcrawl,
+    .version = "0.3.0-rc.43",
+    .fingerprint = 0xeaf10589362aea97,
+    .minimum_zig_version = "0.16.0",
+    .dependencies = .{},
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}

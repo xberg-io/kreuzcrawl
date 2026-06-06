@@ -1095,6 +1095,299 @@ mod ffi {
         #[swift_bridge(swift_name = "scrollDirectionFromJson")]
         fn scroll_direction_from_json(json: String) -> Result<ScrollDirection, String>;
     }
+    extern "Rust" {
+        // Phantom Vec<T> functions: swift-bridge-build must emit the full Vec support
+        // C ABI symbols (__swift_bridge__$Vec_T$new, drop, push, pop, get, get_mut, as_ptr, len)
+        // which the auto-generated Swift Vec<T> conformances reference.
+        //
+        // swift-bridge 0.1.59 only emits these when Vec<T> appears as a return type
+        // in an extern block. Without these phantom functions, Swift linker fails when
+        // trying to construct or manipulate Vec<T> of opaque types.
+        //
+        // These declarations are paired with phantom_impl functions below the bridge module.
+        fn __alef_phantom_vec_extraction_meta() -> Vec<ExtractionMeta>;
+        fn __alef_phantom_vec_proxy_config() -> Vec<ProxyConfig>;
+        fn __alef_phantom_vec_content_config() -> Vec<ContentConfig>;
+        fn __alef_phantom_vec_browser_config() -> Vec<BrowserConfig>;
+        fn __alef_phantom_vec_crawl_config() -> Vec<CrawlConfig>;
+        fn __alef_phantom_vec_browser_extras() -> Vec<BrowserExtras>;
+        fn __alef_phantom_vec_downloaded_document() -> Vec<DownloadedDocument>;
+        fn __alef_phantom_vec_interaction_result() -> Vec<InteractionResult>;
+        fn __alef_phantom_vec_action_result() -> Vec<ActionResult>;
+        fn __alef_phantom_vec_scrape_result() -> Vec<ScrapeResult>;
+        fn __alef_phantom_vec_crawl_page_result() -> Vec<CrawlPageResult>;
+        fn __alef_phantom_vec_crawl_result() -> Vec<CrawlResult>;
+        fn __alef_phantom_vec_sitemap_url() -> Vec<SitemapUrl>;
+        fn __alef_phantom_vec_map_result() -> Vec<MapResult>;
+        fn __alef_phantom_vec_markdown_result() -> Vec<MarkdownResult>;
+        fn __alef_phantom_vec_link_info() -> Vec<LinkInfo>;
+        fn __alef_phantom_vec_image_info() -> Vec<ImageInfo>;
+        fn __alef_phantom_vec_feed_info() -> Vec<FeedInfo>;
+        fn __alef_phantom_vec_json_ld_entry() -> Vec<JsonLdEntry>;
+        fn __alef_phantom_vec_cookie_info() -> Vec<CookieInfo>;
+        fn __alef_phantom_vec_downloaded_asset() -> Vec<DownloadedAsset>;
+        fn __alef_phantom_vec_article_metadata() -> Vec<ArticleMetadata>;
+        fn __alef_phantom_vec_hreflang_entry() -> Vec<HreflangEntry>;
+        fn __alef_phantom_vec_favicon_info() -> Vec<FaviconInfo>;
+        fn __alef_phantom_vec_heading_info() -> Vec<HeadingInfo>;
+        fn __alef_phantom_vec_response_meta() -> Vec<ResponseMeta>;
+        fn __alef_phantom_vec_page_metadata() -> Vec<PageMetadata>;
+        fn __alef_phantom_vec_crawl_stream_request() -> Vec<CrawlStreamRequest>;
+        fn __alef_phantom_vec_batch_crawl_stream_request() -> Vec<BatchCrawlStreamRequest>;
+        fn __alef_phantom_vec_citation_result() -> Vec<CitationResult>;
+        fn __alef_phantom_vec_citation_reference() -> Vec<CitationReference>;
+        fn __alef_phantom_vec_crawl_engine_handle() -> Vec<CrawlEngineHandle>;
+        fn __alef_phantom_vec_batch_scrape_result() -> Vec<BatchScrapeResult>;
+        fn __alef_phantom_vec_batch_crawl_result() -> Vec<BatchCrawlResult>;
+        fn __alef_phantom_vec_batch_scrape_results() -> Vec<BatchScrapeResults>;
+        fn __alef_phantom_vec_batch_crawl_results() -> Vec<BatchCrawlResults>;
+        fn __alef_phantom_vec_browser_mode() -> Vec<BrowserMode>;
+        fn __alef_phantom_vec_browser_wait() -> Vec<BrowserWait>;
+        fn __alef_phantom_vec_browser_backend() -> Vec<BrowserBackend>;
+        fn __alef_phantom_vec_auth_config() -> Vec<AuthConfig>;
+        fn __alef_phantom_vec_link_type() -> Vec<LinkType>;
+        fn __alef_phantom_vec_image_source() -> Vec<ImageSource>;
+        fn __alef_phantom_vec_feed_type() -> Vec<FeedType>;
+        fn __alef_phantom_vec_asset_category() -> Vec<AssetCategory>;
+        fn __alef_phantom_vec_crawl_event() -> Vec<CrawlEvent>;
+        fn __alef_phantom_vec_page_action() -> Vec<PageAction>;
+        fn __alef_phantom_vec_scroll_direction() -> Vec<ScrollDirection>;
+    }
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_extraction_meta() -> Vec<ExtractionMeta> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_proxy_config() -> Vec<ProxyConfig> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_content_config() -> Vec<ContentConfig> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_browser_config() -> Vec<BrowserConfig> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_crawl_config() -> Vec<CrawlConfig> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_browser_extras() -> Vec<BrowserExtras> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_downloaded_document() -> Vec<DownloadedDocument> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_interaction_result() -> Vec<InteractionResult> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_action_result() -> Vec<ActionResult> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_scrape_result() -> Vec<ScrapeResult> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_crawl_page_result() -> Vec<CrawlPageResult> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_crawl_result() -> Vec<CrawlResult> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_sitemap_url() -> Vec<SitemapUrl> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_map_result() -> Vec<MapResult> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_markdown_result() -> Vec<MarkdownResult> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_link_info() -> Vec<LinkInfo> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_image_info() -> Vec<ImageInfo> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_feed_info() -> Vec<FeedInfo> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_json_ld_entry() -> Vec<JsonLdEntry> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_cookie_info() -> Vec<CookieInfo> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_downloaded_asset() -> Vec<DownloadedAsset> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_article_metadata() -> Vec<ArticleMetadata> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_hreflang_entry() -> Vec<HreflangEntry> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_favicon_info() -> Vec<FaviconInfo> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_heading_info() -> Vec<HeadingInfo> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_response_meta() -> Vec<ResponseMeta> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_page_metadata() -> Vec<PageMetadata> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_crawl_stream_request() -> Vec<CrawlStreamRequest> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_batch_crawl_stream_request() -> Vec<BatchCrawlStreamRequest> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_citation_result() -> Vec<CitationResult> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_citation_reference() -> Vec<CitationReference> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_crawl_engine_handle() -> Vec<CrawlEngineHandle> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_batch_scrape_result() -> Vec<BatchScrapeResult> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_batch_crawl_result() -> Vec<BatchCrawlResult> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_batch_scrape_results() -> Vec<BatchScrapeResults> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_batch_crawl_results() -> Vec<BatchCrawlResults> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_browser_mode() -> Vec<BrowserMode> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_browser_wait() -> Vec<BrowserWait> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_browser_backend() -> Vec<BrowserBackend> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_auth_config() -> Vec<AuthConfig> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_link_type() -> Vec<LinkType> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_image_source() -> Vec<ImageSource> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_feed_type() -> Vec<FeedType> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_asset_category() -> Vec<AssetCategory> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_crawl_event() -> Vec<CrawlEvent> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_page_action() -> Vec<PageAction> {
+    Vec::new()
+}
+
+#[doc(hidden)]
+pub fn __alef_phantom_vec_scroll_direction() -> Vec<ScrollDirection> {
+    Vec::new()
 }
 
 pub struct ExtractionMeta(pub kreuzcrawl::ExtractionMeta);
