@@ -90,7 +90,7 @@ JVM consumers should use the canonical `dev.kreuzberg.kreuzcrawl:kreuzcrawl-java
 ## Installation
 
 ```bash
-implementation("dev.kreuzberg.kreuzcrawl:kreuzcrawl-android:0.3.0-rc.44")
+implementation("dev.kreuzberg.kreuzcrawl:kreuzcrawl-android:0.3.0-rc.45")
 
 ```
 

@@ -15,6 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Kreuzcrawl" Version="0.3.0-rc.44" />
+    <PackageReference Include="Kreuzcrawl" Version="0.3.0-rc.45" />
   </ItemGroup>
 </Project>

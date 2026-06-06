@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	moduleVersion = "0.3.0-rc.44"
+	moduleVersion = "0.3.0-rc.45"
 	repoURL       = "https://github.com/kreuzberg-dev/kreuzcrawl"
 	assetPrefix   = "kreuzcrawl"
 )
