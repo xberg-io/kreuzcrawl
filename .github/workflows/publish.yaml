@@ -501,12 +501,42 @@ jobs:
             fail-fast: false
             matrix:
                 include:
-                    - { os: ubuntu-latest, target: x86_64-unknown-linux-gnu }
-                    - { os: ubuntu-24.04-arm, target: aarch64-unknown-linux-gnu }
-                    - { os: macos-latest, target: aarch64-apple-darwin }
-                    - { os: macos-15-intel, target: x86_64-apple-darwin }
-                    - { os: windows-latest, target: x86_64-pc-windows-msvc }
-                    - { os: windows-latest, target: aarch64-pc-windows-msvc }
+                    - {
+                          os: macos-latest,
+                          target: aarch64-apple-darwin,
+                          rust_target: "",
+                          use_napi_cross: false,
+                      }
+                    - {
+                          os: macos-15-intel,
+                          target: x86_64-apple-darwin,
+                          rust_target: "",
+                          use_napi_cross: false,
+                      }
+                    - {
+                          os: ubuntu-latest,
+                          target: x86_64-unknown-linux-gnu,
+                          rust_target: "",
+                          use_napi_cross: false,
+                      }
+                    - {
+                          os: ubuntu-latest,
+                          target: aarch64-unknown-linux-gnu,
+                          rust_target: aarch64-unknown-linux-gnu,
+                          use_napi_cross: true,
+                      }
+                    - {
+                          os: windows-latest,
+                          target: x86_64-pc-windows-msvc,
+                          rust_target: "",
+                          use_napi_cross: false,
+                      }
+                    - {
+                          os: windows-latest,
+                          target: aarch64-pc-windows-msvc,
+                          rust_target: aarch64-pc-windows-msvc,
+                          use_napi_cross: false,
+                      }
         steps:
             - uses: actions/checkout@v6
               with:
@@ -520,26 +550,25 @@ jobs:
 
             - uses: kreuzberg-dev/actions/setup-rust@v1
               with:
-                  target: ${{ matrix.target }}
+                  target: ${{ matrix.rust_target || matrix.target }}
                   cache-key-prefix: publish-node-${{ matrix.target }}
 
             - uses: kreuzberg-dev/actions/setup-node-workspace@v1
               with:
                   node-version: "22"
 
-            - name: Build NAPI binding
+            - name: Build native module
               uses: kreuzberg-dev/actions/build-node-napi@v1
               with:
                   crate-dir: crates/kreuzcrawl-node
-                  build-command: pnpm exec napi build --release --target ${{ matrix.target }} --platform
+                  target: ${{ matrix.target }}
+                  use-napi-cross: ${{ matrix.use_napi_cross }}
+                  pack-target-tarball: node-bindings-${{ matrix.target }}.tar.gz
 
             - uses: actions/upload-artifact@v7
               with:
                   name: node-bindings-${{ matrix.target }}
-                  path: |
-                      crates/kreuzcrawl-node/*.node
-                      crates/kreuzcrawl-node/index.js
-                      crates/kreuzcrawl-node/index.d.ts
+                  path: node-bindings-${{ matrix.target }}.tar.gz
                   retention-days: 14
 
     wasm-bindings:
@@ -600,11 +629,12 @@ jobs:
             fail-fast: false
             matrix:
                 include:
-                    - { os: ubuntu-latest, label: linux-x86_64 }
+                    - { os: ubuntu-latest, label: linux }
                     - { os: ubuntu-24.04-arm, label: linux-aarch64 }
                     - { os: macos-latest, label: macos-arm64 }
                     - { os: macos-15-intel, label: macos-x86_64 }
-                    - { os: windows-latest, label: windows-x64 }
+                    - { os: ubuntu-latest, label: windows-x64, dock_platform: x64-mingw-ucrt }
+                    # windows-11-arm: deferred until rb-sys + Magnus toolchain validated on aarch64-pc-windows-msvc
         steps:
             - uses: actions/checkout@v6
               with:
@@ -616,36 +646,118 @@ jobs:
               if: runner.os == 'Linux'
               uses: kreuzberg-dev/actions/free-disk-space-linux@v1
 
+            - name: Drop cached CLI binaries
+              # Inline: stale CLI artifacts under packages/ruby/exe/ confuse rake
+              # build's filtering. One-shot cleanup, no shared action equivalent.
+              shell: bash
+              run: rm -rf packages/ruby/exe/* packages/ruby/pkg
+
+            - name: Install MSYS2 toolchain (Windows)
+              if: runner.os == 'Windows'
+              # Inline: rb-sys requires the MSYS2 toolchain on Windows for clang +
+              # libffi headers. Magnus also needs ucrt64-prefixed binaries on PATH.
+              shell: pwsh
+              run: |
+                  ridk install 1 2 3
+                  $msys2Path = (ridk version).Split("`n") | Where-Object { $_ -match "msys2:" } | ForEach-Object { ($_ -split ":\s*")[1].Trim() }
+                  if (-not $msys2Path) { $msys2Path = "C:\msys64" }
+                  ridk exec pacman -S --noconfirm --needed mingw-w64-ucrt-x86_64-clang mingw-w64-ucrt-x86_64-libffi
+                  "$msys2Path\ucrt64\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+            - name: Install Rust (GNU on Windows)
+              if: runner.os == 'Windows'
+              # Inline: rb-sys/Magnus only build against the GNU ABI on Windows; the
+              # default MSVC toolchain produces incompatible artifacts.
+              shell: pwsh
+              run: |
+                  rustup install stable-x86_64-pc-windows-gnu
+                  rustup default stable-x86_64-pc-windows-gnu
+                  rustup target add x86_64-pc-windows-gnu
+                  rustc --version
+
+            - name: Configure bindgen sysroot (Windows)
+              if: runner.os == 'Windows'
+              # Inline: bindgen needs an explicit libclang sysroot pointing at the
+              # MSYS2 ucrt64 install — discovery fails on the GitHub runner image.
+              shell: bash
+              run: |
+                  UCRT="/c/msys64/ucrt64"
+                  echo "BINDGEN_EXTRA_CLANG_ARGS=--sysroot=${UCRT} -I${UCRT}/include" >>"$GITHUB_ENV"
+                  echo "LIBCLANG_PATH=${UCRT}/bin" >>"$GITHUB_ENV"
+
             - uses: kreuzberg-dev/actions/setup-rust@v1
+              if: runner.os != 'Windows'
               with:
                   cache-key-prefix: publish-ruby-${{ matrix.label }}
 
             - uses: ruby/setup-ruby@v1
               with:
                   ruby-version: "3.3"
+                  bundler: "4.0.3"
                   bundler-cache: false
 
+            - name: Install Ruby dependencies
+              # Inline: bundle config + install in the package dir; trivially small
+              # and identical across kreuzcrawl/kreuzberg/html-to-markdown.
+              shell: bash
+              working-directory: packages/ruby
+              run: |
+                  gem install bundler -v 4.0.3
+                  bundle config set --local path 'vendor/bundle'
+                  bundle install --jobs 4 --retry 3
+
             - uses: kreuzberg-dev/actions/build-ruby-gem@v1
+              if: matrix.dock_platform == ''
               with:
                   package-dir: packages/ruby
-                  dry-run: ${{ needs.prepare.outputs.dry_run }}
 
-            - name: Drop non-canonical gems
-              # Only the canonical `linux-x86_64` builder ships the gem; the action's
-              # `rake compile && rake build` produces a source ("ruby" platform) gem
-              # on every runner — keeping all of them would overwrite under
-              # merge-multiple. The platform-tagged `native[$target] gem` step that
-              # used to live here was removed in RC.41 because rake-compiler does not
-              # register `native` (no args) without RUBY_CC_VERSION + rake-compiler-dock,
-              # so it failed on every platform. Restore once the gem-build path is
-              # refactored onto rb-sys-dock.
-              if: ${{ matrix.label != 'linux-x86_64' }}
+            - name: Build platform gem
+              # Inline: each matrix runner builds the gem for its own native platform
+              # via `rake compile && rake build`. rake-compiler's compile step sets
+              # the gem's native platform tag from rb_config, so the produced gem is
+              # already platform-tagged (e.g. kreuzcrawl-X.Y.Z-x86_64-linux.gem). This
+              # mirrors the html-to-markdown sibling's proven Ruby publish path. For
+              # Windows we cross-compile inside rb-sys-dock so the GNU toolchain
+              # produces a x64-mingw-ucrt gem.
+              working-directory: packages/ruby
+              shell: bash
+              run: |
+                  if [ -n "${{ matrix.dock_platform }}" ]; then
+                    # Cross-compile for Windows via Docker using rb-sys-dock.
+                    # The rb-sys-dock container ships its own Ruby toolchain; bundler
+                    # must `install` inside the container before `exec rake` so the
+                    # lockfile materializes against the container's Ruby version
+                    # rather than the host's.
+                    # Pin gem below 0.9.128 to get the 0.9.127 container, then exclude
+                    # Ruby 4.0.2 via RUBY_CC_VERSION — both 0.9.127 and 0.9.128 ship
+                    # Ruby 4.0.2 whose <ruby/defines.h> pulls <sys/select.h>, which
+                    # clang cannot resolve in the mingw cross sysroot. 0.9.127's
+                    # container also ships 3.1.7/3.2.11/3.3.11/3.4.9; pin to those.
+                    gem install rb_sys -v '< 0.9.128'
+                    # Use `env VAR=val` to plant RUBY_CC_VERSION into the *command's* process
+                    # environment, surviving the container's /etc/profile.d default that
+                    # otherwise re-introduces Ruby 4.0.2 after `export`.
+                    rb-sys-dock --platform "${{ matrix.dock_platform }}" -- env RUBY_CC_VERSION=3.4.9:3.3.11:3.2.11:3.1.7 bash -c "bundle install --jobs=4 --retry=3 && bundle exec rake compile && bundle exec rake build"
+                  else
+                    # Native build on matching architecture
+                    bundle exec rake compile
+                    bundle exec rake build
+                  fi
+
+            - name: Drop source gem on non-canonical builders
+              if: ${{ matrix.label != 'linux' }}
+              # Inline: only the canonical `linux` builder ships the source gem; others
+              # would emit byte-different source gems that overwrite each other under
+              # merge-multiple and produce an invalid .gem at publish time.
               shell: bash
               run: |
                   shopt -s nullglob
                   for f in packages/ruby/pkg/*.gem; do
-                    echo "Removing duplicate source gem $(basename "$f")"
-                    rm -f "$f"
+                    base="$(basename "$f")"
+                    case "$base" in
+                      *-x86_64-linux.gem|*-aarch64-linux.gem|*-arm64-darwin.gem|*-x86_64-darwin.gem|*-x64-mingw32.gem|*-x64-mingw-ucrt.gem|*-arm64-mingw-ucrt.gem) ;;
+                      *) echo "Removing non-canonical source gem $base"; rm -f "$f" ;;
+                    esac
                   done
 
             - uses: actions/upload-artifact@v7
@@ -1514,7 +1626,7 @@ jobs:
     publish-rubygems:
         name: Publish Ruby gems
         needs: [prepare, ruby-gem, check-rubygems]
-        if: ${{ needs.prepare.outputs.release_ruby == 'true' && needs.prepare.outputs.is_tag == 'true' && (needs.check-rubygems.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
+        if: ${{ needs.prepare.outputs.release_ruby == 'true' && needs.prepare.outputs.is_tag == 'true' && needs.ruby-gem.result == 'success' && (needs.check-rubygems.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
         runs-on: ubuntu-latest
         permissions:
             contents: read
@@ -1555,7 +1667,7 @@ jobs:
             - uses: actions/download-artifact@v8
               with:
                   pattern: node-bindings-*
-                  path: crates/kreuzcrawl-node/artifacts
+                  path: node-artifacts
                   merge-multiple: true
 
             - uses: kreuzberg-dev/actions/setup-node-workspace@v1
@@ -1563,24 +1675,41 @@ jobs:
                   node-version: "22"
                   registry-url: "https://registry.npmjs.org/"
 
-            - name: Stage platform packages with napi
-              # Inline: napi artifacts → per-platform npm/ subpackages, then drop the
-              # downloaded index.js + index.d.ts (uploaded by every matrix build run;
-              # identical across platforms, merge-multiple deduplicates) at the
-              # package root so they ship in the published tarball.
-              working-directory: crates/kreuzcrawl-node
+            - name: Stage platform packages and main package
+              # Inline: kreuzcrawl's per-platform Node artifact layout is bespoke
+              # (one tarball per target containing pre-staged npm/<platform>/) and the
+              # main package needs an injected optionalDependencies map listing every
+              # platform sub-package. Tightly coupled to napi-rs + repo conventions;
+              # the generic publish-npm action operates on a single package dir.
               shell: bash
               run: |
-                  pnpm exec napi create-npm-dirs
-                  pnpm exec napi artifacts --output-dir artifacts --npm-dir npm
-                  cp artifacts/index.js artifacts/index.d.ts .
+                  rm -rf crates/kreuzcrawl-node/npm
+                  mkdir -p crates/kreuzcrawl-node/npm
+                  for pkg in node-artifacts/*.tar.gz; do
+                    tar -xzf "${pkg}" -C crates/kreuzcrawl-node
+                  done
 
-            - name: Pack platform tarballs for publishing
-              # Inline: per-platform package.json patching + npm pack. The wrapper
-              # script lives at scripts/publish/pack-node-platform-packages.sh
-              # because it is shared with manual reproduction.
-              shell: bash
-              run: scripts/publish/pack-node-platform-packages.sh crates/kreuzcrawl-node/npm
+                  # Pack each platform sub-package as a tarball
+                  cd crates/kreuzcrawl-node/npm
+                  for dir in */; do
+                    if [ -f "$dir/package.json" ]; then
+                      (cd "$dir" && npm pack && mv ./*.tgz ..)
+                    fi
+                  done
+                  cd ../../..
+
+                  # Stamp main package's optionalDependencies with all platform packages
+                  tmp_pkg_json="$(mktemp)"
+                  optional_deps_json='{}'
+                  for platform_pkg_json in crates/kreuzcrawl-node/npm/*/package.json; do
+                    name="$(jq -r '.name // empty' "$platform_pkg_json")"
+                    version="$(jq -r '.version // empty' "$platform_pkg_json")"
+                    [[ -z "$name" || -z "$version" ]] && { echo "Invalid: $platform_pkg_json" >&2; exit 1; }
+                    optional_deps_json="$(jq -c --arg n "$name" --arg v "$version" '. + {($n): $v}' <<<"$optional_deps_json")"
+                  done
+                  jq --argjson deps "$optional_deps_json" '.optionalDependencies = $deps' \
+                    crates/kreuzcrawl-node/package.json > "$tmp_pkg_json"
+                  mv "$tmp_pkg_json" crates/kreuzcrawl-node/package.json
 
             - name: Publish platform sub-packages
               uses: kreuzberg-dev/actions/publish-npm@v1
@@ -1596,12 +1725,63 @@ jobs:
                   registry: npm
                   package: "@kreuzberg/kreuzcrawl-linux-x64-gnu"
                   version: ${{ needs.prepare.outputs.version }}
-                  max-attempts: "25"
+                  max-attempts: "60"
+
+            - name: Wait for npm indexing (linux-arm64-gnu)
+              if: ${{ needs.prepare.outputs.dry_run != 'true' }}
+              uses: kreuzberg-dev/actions/wait-for-package@v1
+              with:
+                  registry: npm
+                  package: "@kreuzberg/kreuzcrawl-linux-arm64-gnu"
+                  version: ${{ needs.prepare.outputs.version }}
+                  max-attempts: "60"
 
             - name: Publish main @kreuzberg/kreuzcrawl package
               uses: kreuzberg-dev/actions/publish-npm@v1
               with:
                   package-dir: crates/kreuzcrawl-node
+                  npm-tag: ${{ needs.prepare.outputs.npm_tag }}
+                  dry-run: ${{ needs.prepare.outputs.dry_run }}
+
+            - name: Wait for main Node package indexing
+              if: ${{ needs.prepare.outputs.dry_run != 'true' }}
+              uses: kreuzberg-dev/actions/wait-for-package@v1
+              with:
+                  registry: npm
+                  package: "@kreuzberg/kreuzcrawl"
+                  version: ${{ needs.prepare.outputs.version }}
+                  max-attempts: "25"
+
+            - name: Build TypeScript wrapper package
+              if: ${{ hashFiles('packages/typescript/package.json') != '' }}
+              # Inline: pnpm tsc + workspace:* rewrite so npm publish ships an
+              # installable package. Tightly coupled to packages/typescript layout.
+              shell: bash
+              run: |
+                  (cd packages/typescript && pnpm install --no-frozen-lockfile && pnpm exec tsc --project tsconfig.json)
+                  version="$(node -p "require('./packages/typescript/package.json').version")"
+                  PKG_VERSION="$version" node -e '
+                    const fs = require("node:fs");
+                    const path = "packages/typescript/package.json";
+                    const pkg = JSON.parse(fs.readFileSync(path, "utf8"));
+                    const ver = process.env.PKG_VERSION;
+                    for (const field of ["dependencies", "peerDependencies", "optionalDependencies"]) {
+                      if (pkg[field]) {
+                        for (const [name, spec] of Object.entries(pkg[field])) {
+                          if (typeof spec === "string" && spec.startsWith("workspace:")) {
+                            pkg[field][name] = ver;
+                          }
+                        }
+                      }
+                    }
+                    fs.writeFileSync(path, JSON.stringify(pkg, null, 2) + "\n");
+                  '
+
+            - name: Publish TypeScript wrapper package
+              if: ${{ hashFiles('packages/typescript/package.json') != '' }}
+              uses: kreuzberg-dev/actions/publish-npm@v1
+              with:
+                  package-dir: packages/typescript
                   npm-tag: ${{ needs.prepare.outputs.npm_tag }}
                   dry-run: ${{ needs.prepare.outputs.dry_run }}
 
@@ -1764,24 +1944,22 @@ jobs:
 
     publish-hex:
         name: Publish Elixir Hex package
-        needs: [prepare, upload-elixir-release, check-hex]
-        if: ${{ needs.prepare.outputs.release_elixir == 'true' && needs.prepare.outputs.is_tag == 'true' && (needs.check-hex.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
+        needs: [prepare, upload-elixir-release, check-hex, publish-crates]
+        if: ${{ !cancelled() && needs.publish-crates.result != 'failure' && needs.prepare.outputs.release_elixir == 'true' && needs.prepare.outputs.is_tag == 'true' && (needs.check-hex.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
         runs-on: ubuntu-latest
+        environment: hex
+        permissions:
+            contents: write
+            id-token: write
         steps:
             - uses: actions/checkout@v6
               with:
-                  ref: ${{ needs.prepare.outputs.ref }}
+                  ref: ${{ needs.prepare.outputs.checkout_ref }}
                   fetch-depth: 0
                   submodules: recursive
 
-            - uses: erlef/setup-beam@v1
-              with:
-                  elixir-version: "1.17"
-                  otp-version: "27"
-
-            - uses: kreuzberg-dev/actions/setup-rust@v1
-
-            - name: Generate NIF checksum file
+            - name: Generate checksums from GitHub release
+              if: needs.prepare.outputs.dry_run != 'true'
               uses: kreuzberg-dev/actions/generate-elixir-checksums@v1
               with:
                   github-repo: ${{ github.repository }}
@@ -1792,15 +1970,56 @@ jobs:
                   targets: x86_64-unknown-linux-gnu,aarch64-unknown-linux-gnu,x86_64-unknown-linux-musl,aarch64-unknown-linux-musl,aarch64-apple-darwin,x86_64-apple-darwin,x86_64-pc-windows-msvc
                   output-path: packages/elixir/checksum-Elixir.Kreuzcrawl.Native.exs
 
-            - uses: kreuzberg-dev/actions/build-elixir-hex@v1
+            - name: Commit updated checksum file to main
+              if: needs.prepare.outputs.dry_run != 'true'
+              run: |
+                  git config user.name "github-actions[bot]"
+                  git config user.email "github-actions[bot]@users.noreply.github.com"
+                  git add packages/elixir/checksum-Elixir.Kreuzcrawl.Native.exs
+                  if git diff --cached --quiet; then
+                    echo "No checksum changes to commit — skipping"
+                    exit 0
+                  fi
+                  CHECKSUM_SNAPSHOT="$(mktemp)"
+                  cp packages/elixir/checksum-Elixir.Kreuzcrawl.Native.exs "$CHECKSUM_SNAPSHOT"
+                  git commit -m "chore: update Elixir NIF checksums for v${{ needs.prepare.outputs.version }}"
+                  for i in 1 2 3 4 5; do
+                    if git push origin HEAD:refs/heads/main; then
+                      echo "Push succeeded on attempt $i"
+                      exit 0
+                    fi
+                    echo "Push attempt $i failed; retrying after rebase"
+                    if [ "$i" -eq 5 ]; then
+                      echo "ERROR: push failed after 5 attempts" >&2
+                      exit 1
+                    fi
+                    git fetch origin main
+                    git reset --hard origin/main
+                    cp "$CHECKSUM_SNAPSHOT" packages/elixir/checksum-Elixir.Kreuzcrawl.Native.exs
+                    git add packages/elixir/checksum-Elixir.Kreuzcrawl.Native.exs
+                    if git diff --cached --quiet; then
+                      echo "Remote already has these checksums — done"
+                      exit 0
+                    fi
+                    git commit -m "chore: update Elixir NIF checksums for v${{ needs.prepare.outputs.version }}"
+                    sleep $((i * 2))
+                  done
+              shell: bash
+
+            - uses: erlef/setup-beam@v1
               with:
-                  package-dir: packages/elixir
-                  nif-crate-path: packages/elixir/native/kreuzcrawl_nif
-                  dry-run: ${{ needs.prepare.outputs.dry_run }}
+                  elixir-version: "1.17"
+                  otp-version: "27"
+
+            - name: Install Mix dependencies
+              run: mix local.hex --force && mix local.rebar --force && mix deps.get
+              working-directory: packages/elixir
+              shell: bash
 
             - uses: kreuzberg-dev/actions/publish-hex@v1
               with:
                   package-dir: packages/elixir
+                  skip-docs: "true"
                   dry-run: ${{ needs.prepare.outputs.dry_run }}
               env:
                   HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
@@ -2131,6 +2350,8 @@ jobs:
               # under e2e/rust/ and is alef-generated; alef test-apps run shells
               # out to its release binary.
               run: cargo build --release --manifest-path e2e/rust/Cargo.toml
+            - name: Install tomlkit for test-apps runner
+              run: pip install tomlkit
             - uses: kreuzberg-dev/actions/run-test-apps@v1
               with:
                   language: ${{ matrix.language }}

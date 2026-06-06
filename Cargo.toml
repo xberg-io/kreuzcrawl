@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/*", "packages/dart/rust", "packages/swift/rust", "tools/*"]
+members = ["crates/*", "packages/dart/rust", "packages/swift/rust", "tools/benchmark-harness"]
 exclude = [
     ".claude",
     "e2e/rust",
