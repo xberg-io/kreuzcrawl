@@ -14,8 +14,6 @@
 //!
 //! See `tests/fixtures/waf/README.md` for format details.
 
-#![allow(clippy::unwrap_used, clippy::panic)]
-
 use std::collections::HashMap;
 use std::path::Path;
 

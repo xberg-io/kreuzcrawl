@@ -4,7 +4,6 @@
 //! is set. We set it once via std::sync::OnceLock before any test runs.
 
 #![cfg(feature = "browser-native")]
-#![allow(clippy::unwrap_used, clippy::panic)]
 
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, OnceLock};

@@ -1,4 +1,3 @@
-#![allow(clippy::unwrap_used, clippy::panic)]
 //! Integration tests for WAF/bot-protection detection via actual HTTP responses.
 
 use kreuzcrawl::{BrowserMode, CrawlConfig, CrawlError, create_engine, scrape};
@@ -26,7 +25,8 @@ async fn assert_waf_blocked(body: &str, headers: Vec<(&str, &str)>) {
         .mount(&mock)
         .await;
 
-    let handle = create_engine(Some(no_browser_config())).unwrap();
+    let handle = create_engine(Some(no_browser_config()))
+        .expect("create_engine with no-browser config should succeed in integration test");
     let result = scrape(&handle, &mock.uri()).await;
     assert!(
         matches!(result, Err(CrawlError::WafBlocked { .. })),
@@ -99,7 +99,8 @@ async fn test_cloudflare_2xx_interstitial_detected() {
         .mount(&mock)
         .await;
 
-    let handle = create_engine(Some(no_browser_config())).unwrap();
+    let handle = create_engine(Some(no_browser_config()))
+        .expect("create_engine with no-browser config should succeed in integration test");
     let result = scrape(&handle, &mock.uri()).await;
     assert!(
         matches!(result, Err(CrawlError::WafBlocked { .. })),
@@ -124,7 +125,8 @@ async fn test_datadome_2xx_header_detected() {
         .mount(&mock)
         .await;
 
-    let handle = create_engine(Some(no_browser_config())).unwrap();
+    let handle = create_engine(Some(no_browser_config()))
+        .expect("create_engine with no-browser config should succeed in integration test");
     let result = scrape(&handle, &mock.uri()).await;
     assert!(
         matches!(result, Err(CrawlError::WafBlocked { .. })),
@@ -148,7 +150,8 @@ async fn test_perimeterx_2xx_header_detected() {
         .mount(&mock)
         .await;
 
-    let handle = create_engine(Some(no_browser_config())).unwrap();
+    let handle = create_engine(Some(no_browser_config()))
+        .expect("create_engine with no-browser config should succeed in integration test");
     let result = scrape(&handle, &mock.uri()).await;
     assert!(
         matches!(result, Err(CrawlError::WafBlocked { .. })),
@@ -178,7 +181,8 @@ async fn test_2xx_legitimate_long_page_not_flagged() {
         .mount(&mock)
         .await;
 
-    let handle = create_engine(Some(no_browser_config())).unwrap();
+    let handle = create_engine(Some(no_browser_config()))
+        .expect("create_engine with no-browser config should succeed in integration test");
     let result = scrape(&handle, &mock.uri()).await;
     assert!(
         result.is_ok(),
@@ -211,17 +215,16 @@ async fn test_datadome_2xx_body_leboncoin_detected() {
         .mount(&mock)
         .await;
 
-    let handle = create_engine(Some(no_browser_config())).unwrap();
+    let handle = create_engine(Some(no_browser_config()))
+        .expect("create_engine with no-browser config should succeed in integration test");
     let result = scrape(&handle, &mock.uri()).await;
-    match result {
-        Err(CrawlError::WafBlocked { vendor, .. }) => {
-            assert!(
-                vendor.contains("datadome"),
-                "expected vendor=datadome in WafBlocked vendor, got: {vendor}"
-            );
-        }
-        other => panic!("expected WafBlocked {{ datadome }}, got: {other:?}"),
-    }
+    let Err(CrawlError::WafBlocked { vendor, .. }) = result else {
+        unreachable!("expected WafBlocked {{ datadome }}, got: {result:?}");
+    };
+    assert!(
+        vendor.contains("datadome"),
+        "expected vendor=datadome in WafBlocked vendor, got: {vendor}"
+    );
 }
 
 /// A small (~1.5 KB) benign HTML page with no WAF tokens must not be classified
@@ -249,7 +252,8 @@ async fn test_small_benign_body_not_false_positive() {
         .mount(&mock)
         .await;
 
-    let handle = create_engine(Some(no_browser_config())).unwrap();
+    let handle = create_engine(Some(no_browser_config()))
+        .expect("create_engine with no-browser config should succeed in integration test");
     let result = scrape(&handle, &mock.uri()).await;
     assert!(
         result.is_ok(),
@@ -272,7 +276,8 @@ async fn test_plain_403_is_not_waf() {
         .mount(&mock)
         .await;
 
-    let handle = create_engine(Some(no_browser_config())).unwrap();
+    let handle = create_engine(Some(no_browser_config()))
+        .expect("create_engine with no-browser config should succeed in integration test");
     let result = scrape(&handle, &mock.uri()).await;
     assert!(
         matches!(result, Err(CrawlError::Forbidden(_))),

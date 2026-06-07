@@ -1,5 +1,3 @@
-#![allow(clippy::unwrap_used, clippy::panic)]
-
 #[cfg(feature = "browser-native")]
 use std::sync::OnceLock;
 #[cfg(any(feature = "browser-chromiumoxide", feature = "browser-native"))]

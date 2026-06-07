@@ -1,4 +1,3 @@
-#![allow(clippy::unwrap_used, clippy::panic)]
 //! Integration tests for frontier deduplication: verifying duplicate URLs are not re-fetched.
 
 use kreuzcrawl::{CrawlConfig, crawl, create_engine};

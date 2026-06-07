@@ -1,4 +1,3 @@
-#![allow(clippy::unwrap_used, clippy::panic)]
 //! Integration tests for the `soft_http_errors` configuration flag.
 //!
 //! Covers the five scenarios from the task spec:

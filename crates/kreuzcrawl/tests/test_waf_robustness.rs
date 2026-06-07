@@ -1,4 +1,3 @@
-#![allow(clippy::unwrap_used, clippy::panic)]
 //! Regression tests for TOML validation gates and classify edge cases.
 //!
 //! Covers:

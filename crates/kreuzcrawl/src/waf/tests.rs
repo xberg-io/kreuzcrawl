@@ -1,7 +1,6 @@
 //! Unit tests for the WAF module.
 
 #![cfg(test)]
-#![allow(clippy::unwrap_used)]
 
 use std::collections::HashMap;
 
@@ -41,7 +40,7 @@ fn classifier_cloudflare_challenge_detected() {
     );
     let signal = c.classify(&resp).expect("classify must not fail");
     assert!(signal.is_some(), "cloudflare challenge must be detected");
-    assert_eq!(signal.unwrap().vendor, "cloudflare");
+    assert_eq!(signal.expect("signal is Some — asserted above").vendor, "cloudflare");
 }
 
 #[test]
@@ -50,7 +49,7 @@ fn classifier_datadome_header_detected() {
     let resp = make_response(200, vec![("x-datadome", "blocked")], "<html>ok</html>");
     let signal = c.classify(&resp).expect("classify must not fail");
     assert!(signal.is_some(), "datadome x-datadome header must be detected");
-    assert_eq!(signal.unwrap().vendor, "datadome");
+    assert_eq!(signal.expect("signal is Some — asserted above").vendor, "datadome");
 }
 
 #[test]
@@ -62,7 +61,7 @@ fn classifier_perimeterx_header_detected() {
     // The TOML fingerprint checks for name="x-px-block" specifically;
     // the prefix-match for x-px-* is handled in header_matches via the "x-px-" sentinel.
     assert!(signal.is_some(), "perimeterx x-px-* header must be detected");
-    assert_eq!(signal.unwrap().vendor, "perimeterx");
+    assert_eq!(signal.expect("signal is Some — asserted above").vendor, "perimeterx");
 }
 
 #[test]
@@ -71,7 +70,7 @@ fn classifier_imperva_incap_ses_detected() {
     let resp = make_response(403, vec![], "<html>_incap_ses_xyz_123</html>");
     let signal = c.classify(&resp).expect("classify must not fail");
     assert!(signal.is_some(), "imperva _incap_ses_ must be detected");
-    assert_eq!(signal.unwrap().vendor, "imperva");
+    assert_eq!(signal.expect("signal is Some — asserted above").vendor, "imperva");
 }
 
 #[test]
@@ -80,7 +79,7 @@ fn classifier_aws_waf_action_header() {
     let resp = make_response(403, vec![("x-amzn-waf-action", "block")], "<html>blocked</html>");
     let signal = c.classify(&resp).expect("classify must not fail");
     assert!(signal.is_some(), "aws waf action header must be detected");
-    assert_eq!(signal.unwrap().vendor, "aws-waf");
+    assert_eq!(signal.expect("signal is Some — asserted above").vendor, "aws-waf");
 }
 
 #[test]
@@ -89,7 +88,7 @@ fn classifier_akamai_server_header() {
     let resp = make_response(403, vec![("server", "AkamaiGHost")], "<html>Access Denied</html>");
     let signal = c.classify(&resp).expect("classify must not fail");
     assert!(signal.is_some(), "akamai server header must be detected");
-    assert_eq!(signal.unwrap().vendor, "akamai");
+    assert_eq!(signal.expect("signal is Some — asserted above").vendor, "akamai");
 }
 
 #[test]
@@ -127,7 +126,7 @@ fn classifier_datadome_captcha_delivery() {
     let resp = make_response(200, vec![], body);
     let signal = c.classify(&resp).expect("classify must not fail");
     assert!(signal.is_some(), "captcha-delivery.com must be detected as datadome");
-    assert_eq!(signal.unwrap().vendor, "datadome");
+    assert_eq!(signal.expect("signal is Some — asserted above").vendor, "datadome");
 }
 
 // ---------------------------------------------------------------------------
@@ -145,14 +144,15 @@ weight = 1.0
 kind = "body_substring"
 pattern = "custom-challenge-token"
 "#;
-    let rules = load_from_str(toml_src).unwrap();
+    let rules = load_from_str(toml_src).expect("static test TOML is valid");
     use crate::waf::TomlClassifier;
     let c = TomlClassifier::from_rules(rules);
     let resp = make_response(403, vec![], "<html>custom-challenge-token</html>");
     let signal = c.classify(&resp).expect("classify must not fail");
     assert!(signal.is_some());
-    assert_eq!(signal.as_ref().unwrap().vendor, "custom");
-    assert_eq!(signal.unwrap().fingerprint_id, "custom_vendor_v1");
+    let signal = signal.expect("signal is Some — asserted above");
+    assert_eq!(signal.vendor, "custom");
+    assert_eq!(signal.fingerprint_id, "custom_vendor_v1");
 }
 
 #[test]
@@ -172,7 +172,7 @@ value_contains = "testvendor"
 kind = "body_substring"
 pattern = "tv-challenge-token"
 "#;
-    let rules = load_from_str(toml_src).unwrap();
+    let rules = load_from_str(toml_src).expect("static test TOML is valid");
     let c = TomlClassifier::from_rules(rules);
 
     // Missing body pattern — must not match.
@@ -214,11 +214,12 @@ pattern = "pattern_{i}"
     }
     let result = load_from_str(&toml);
     let err = result.expect_err("should reject too many fingerprints");
-    match err {
-        crate::waf::rules::RulesError::Validation { reason, .. } => {
-            assert!(reason.contains("too many fingerprints"), "got: {reason}");
-        }
-        other => panic!("expected Validation, got {other:?}"),
+    assert!(
+        matches!(err, crate::waf::rules::RulesError::Validation { .. }),
+        "expected Validation error, got {err:?}"
+    );
+    if let crate::waf::rules::RulesError::Validation { reason, .. } = err {
+        assert!(reason.contains("too many fingerprints"), "got: {reason}");
     }
 }
 
@@ -309,7 +310,7 @@ weight = 1.0
 kind = "body_substring"
 pattern = "THIS_PATTERN_WILL_NEVER_MATCH_ANYTHING_xyzzy_12345"
 "#;
-    let rules = load_from_str(toml_src).unwrap();
+    let rules = load_from_str(toml_src).expect("static test TOML is valid");
     let c = TomlClassifier::from_rules(rules);
     let resp = make_response(403, vec![], "<html>cf-chl-widget-abc</html>");
     // This must fail to detect — proving that if we break the pattern the test breaks.

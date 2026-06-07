@@ -1,4 +1,3 @@
-#![allow(clippy::unwrap_used, clippy::panic)]
 //! Integration test: verifies that a pre-built `BrowserPool` can be injected into
 //! `CrawlEngineBuilder` and is reused across multiple `batch_crawl` calls without
 //! being reconstructed.

@@ -1,4 +1,3 @@
-#![allow(clippy::unwrap_used, clippy::panic)]
 //! Integration tests verifying that Tower service layers (UA rotation, caching)
 //! actually affect HTTP requests sent to the server.
 

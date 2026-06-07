@@ -1,3 +1,4 @@
+//! libFuzzer target: WAF classifier robustness against random HTTP responses.
 #![no_main]
 
 use libfuzzer_sys::fuzz_target;

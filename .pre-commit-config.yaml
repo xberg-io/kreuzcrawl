@@ -14,7 +14,7 @@ repos:
             stages:
                 - commit-msg
     - repo: https://github.com/kreuzberg-dev/pre-commit-hooks
-      rev: v2.1.0
+      rev: v2.1.9
       hooks:
           # AI governance
           - id: ai-rulez-generate
@@ -53,7 +53,6 @@ repos:
 
           # Markdown
           - id: rumdl-fmt
-          - id: markdownlint-rumdl-strict
           - id: textlint
             files: ^docs/.*\.md$
             exclude: ^docs/(reference/|api-|snippets/|migration/)
@@ -142,6 +141,7 @@ repos:
                 - packages/java/checkstyle.properties
             exclude: ^(\.mvn/wrapper/|e2e/|test_apps/|packages/java/src/)
           - id: pmd
+            exclude: ^(\.mvn/wrapper/|e2e/|test_apps/|packages/java/src/)
           - id: cpd
             args:
                 - --minimum-tokens=120
@@ -175,6 +175,7 @@ repos:
             files: ^packages/ruby/.*\.(rb|rbs)$
             exclude: ^packages/ruby/(ext/|lib/kreuzcrawl/native\.rb$)
           - id: yard-coverage
+            exclude: ^(e2e/|test_apps/|packages/ruby/(ext/|lib/kreuzcrawl/native\.rb$|Rakefile$))
 
           # C#
           - id: dotnet-format
@@ -204,6 +205,7 @@ repos:
           - id: mix-credo
             files: ^packages/elixir/
           - id: ex-doc-coverage
+            files: ^packages/elixir/
 
           # Dart
           - id: dart-format

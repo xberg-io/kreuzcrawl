@@ -1,4 +1,3 @@
-#![allow(clippy::unwrap_used, clippy::panic)]
 //! Tests that streaming APIs emit CrawlEvent::Error when a seed URL fails with a 5xx response.
 //!
 //! Regression coverage for: batch_crawl_stream and crawl_stream silently swallowing seed-level

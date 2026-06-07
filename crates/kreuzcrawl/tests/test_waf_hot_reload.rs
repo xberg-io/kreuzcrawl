@@ -1,4 +1,3 @@
-#![allow(clippy::unwrap_used, clippy::panic)]
 //! Integration test: TomlClassifier::watch atomically swaps rules on file change.
 
 use std::collections::HashMap;

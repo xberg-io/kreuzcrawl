@@ -3,8 +3,6 @@
 //! Full integration tests with real HTTP responses live in the
 //! kreuzcrawl-bypass crate's wiremock suite.
 
-#![allow(clippy::unwrap_used)]
-
 use std::sync::Arc;
 
 use async_trait::async_trait;

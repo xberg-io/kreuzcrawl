@@ -6,8 +6,6 @@
 //!
 //! Tests are written RED-first: they prove the bug exists before the fix lands.
 
-#![allow(clippy::unwrap_used, clippy::panic)]
-
 use kreuzcrawl::{BrowserMode, CrawlConfig, CrawlError, DispatchProfile, EscalationStrategy, create_engine, scrape};
 use wiremock::matchers::{method, path};
 use wiremock::{Mock, MockServer, ResponseTemplate};

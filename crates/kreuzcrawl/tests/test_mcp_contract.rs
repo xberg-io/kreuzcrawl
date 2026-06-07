@@ -1,4 +1,3 @@
-#![allow(clippy::unwrap_used, clippy::panic)]
 #![cfg(feature = "mcp")]
 
 //! MCP contract tests.

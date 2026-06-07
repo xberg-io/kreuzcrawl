@@ -43,14 +43,14 @@ wheels = [
 
 [[package]]
 name = "kreuzcrawl"
-version = "0.3.0rc45"
+version = "0.3.0rc48"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/7f/55/533c8c1d3075c82c84bd6ee2c253ca800d5e88e37f733d039aecb2afab62/kreuzcrawl-0.3.0rc45.tar.gz", hash = "sha256:0d7cbcfe9ef9ae2b60512b751fddf0ff8421946d5136faf8fd80d78286f3303e", size = 86490, upload-time = "2026-06-06T15:13:57.259Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/1e/27/60a9a750ff3140e305c7ad496cae152835c88d379fa9f004944b100a22ec/kreuzcrawl-0.3.0rc48.tar.gz", hash = "sha256:a83a2f23dccceebfeafbc6f549141d292864af5e1621e6e2c37959c7486cb5b3", size = 86440, upload-time = "2026-06-07T13:00:38.472Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/77/b0/023a978522f8644c60019dc2efc0fdbe080dfc31debc93d2f15034678288/kreuzcrawl-0.3.0rc45-cp310-abi3-macosx_11_0_arm64.whl", hash = "sha256:43f341bdfff772215598d1263bfba3b0e22897cb8672d9352ed0c0a0e736b12a", size = 9079528, upload-time = "2026-06-06T15:13:45.25Z" },
-    { url = "https://files.pythonhosted.org/packages/63/e1/3ad778cc590670c5fb660dfa8f4c1487badec82ca927983c77fb02501cfe/kreuzcrawl-0.3.0rc45-cp310-abi3-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:10c5c31deeb84b61c9d792e04f8dbf07c3f91cfd49fe97529f901766b4151d35", size = 9603744, upload-time = "2026-06-06T15:13:50.937Z" },
-    { url = "https://files.pythonhosted.org/packages/63/dd/b0d8807cc49cf9543144dff49e6420c1872b742cf9eed07c10ad6e59120a/kreuzcrawl-0.3.0rc45-cp310-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:cc48cf3a52c570d350b9caaf2516919d9ad2926db7f67de49b8be6e3f7f4e0a8", size = 9568918, upload-time = "2026-06-06T15:13:48.029Z" },
-    { url = "https://files.pythonhosted.org/packages/60/0b/608df1f5d5c70aa0736f053c66f3d2e26cc6f71ff9c21a0bb9da5da65871/kreuzcrawl-0.3.0rc45-cp310-abi3-win_amd64.whl", hash = "sha256:5d1446d0926701451458137cd90553b2eb9e22506a2ed6f525b89c63611c990a", size = 15386946, upload-time = "2026-06-06T15:13:54.043Z" },
+    { url = "https://files.pythonhosted.org/packages/fd/73/6a96900bc94fea135e498a7a5af48f23e4ffaaf5d31f54a63d82a1471f85/kreuzcrawl-0.3.0rc48-cp310-abi3-macosx_11_0_arm64.whl", hash = "sha256:d8d394c98921432fca245cd3524d121124e9b954522052b45aa93f5352fb250a", size = 9077580, upload-time = "2026-06-07T13:00:45.654Z" },
+    { url = "https://files.pythonhosted.org/packages/1a/b7/1e9a22b83c2f2d64b6c10968f2ef415c5c93ec0fc8deedb0f161f9b151e9/kreuzcrawl-0.3.0rc48-cp310-abi3-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:ecccdf9730446f977e1704c20bd946e5660709ff2e041371e90dd8efa4c2e5d8", size = 9597568, upload-time = "2026-06-07T13:00:43.802Z" },
+    { url = "https://files.pythonhosted.org/packages/24/66/d51f0b6683f501c5583d55607230727fcfef4e92699280da4f9ad1f088ab/kreuzcrawl-0.3.0rc48-cp310-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:34df84b734d634b054167befd7f45667c0931c4604b7c0a8761a292e029cb94e", size = 9577088, upload-time = "2026-06-07T13:00:39.557Z" },
+    { url = "https://files.pythonhosted.org/packages/92/d2/5403e70b0e992f38118f7304aa6e6a435f0cbd66c3255f696f6ab0524213/kreuzcrawl-0.3.0rc48-cp310-abi3-win_amd64.whl", hash = "sha256:b8d3ca0bcb5c08328db35fd29717bbb3e3162748bd42c93ef5fc9e60e33683ae", size = 15383558, upload-time = "2026-06-07T13:00:41.782Z" },
 ]
 
 [[package]]
@@ -66,7 +66,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "kreuzcrawl", specifier = ">=0.3.0rc45" },
+    { name = "kreuzcrawl", specifier = ">=0.3.0rc48" },
     { name = "pytest", specifier = ">=7.4" },
     { name = "pytest-asyncio", specifier = ">=0.23" },
     { name = "pytest-timeout", specifier = ">=2.1" },

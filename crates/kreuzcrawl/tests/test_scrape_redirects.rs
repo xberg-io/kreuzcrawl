@@ -1,4 +1,3 @@
-#![allow(clippy::unwrap_used, clippy::panic)]
 //! Integration tests verifying that `scrape()` follows HTTP 3xx redirects,
 //! Refresh headers, and meta-refresh directives, and that network errors
 //! encountered during a redirect chain propagate with the correct tag.

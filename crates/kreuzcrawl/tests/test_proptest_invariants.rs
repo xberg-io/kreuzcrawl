@@ -8,8 +8,6 @@
 //! via `#[doc(hidden)]`-equivalent root re-exports). The previous mirrors were
 //! removed because they could silently drift from the implementations.
 
-#![allow(clippy::unwrap_used)]
-
 use std::sync::{Arc, OnceLock};
 
 use kreuzcrawl::{EscalationBudget, EwmaTracker, FixedBudget, compute_backoff_ms};

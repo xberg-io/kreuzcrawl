@@ -987,7 +987,7 @@ pub fn create_engine(config: ?[]const u8) CrawlError!CrawlEngineHandle {
     if (config_z != null and config_handle == null) return _first_error(CrawlError);
     defer if (config_handle) |h| c.kcrawl_crawl_config_free(h);
     const _result = c.kcrawl_create_engine(config_handle);
-    if (c.kcrawl_last_error_code() != 0) {
+    if (_result == null) {
         return _first_error(CrawlError);
     }
     return CrawlEngineHandle{ ._handle = _result.? };
@@ -1005,7 +1005,7 @@ pub fn scrape(engine: ?[]const u8, url: []const u8) CrawlError![]u8 {
     const url_z = try std.fmt.allocPrintSentinel(std.heap.c_allocator, "{s}", .{url}, 0);
     defer std.heap.c_allocator.free(url_z);
     const _result = c.kcrawl_scrape(engine_handle, url_z);
-    if (c.kcrawl_last_error_code() != 0) {
+    if (_result == null) {
         return _first_error(CrawlError);
     }
     if (engine_config_z) |z| std.heap.c_allocator.free(z);
@@ -1031,7 +1031,7 @@ pub fn crawl(engine: ?[]const u8, url: []const u8) CrawlError![]u8 {
     const url_z = try std.fmt.allocPrintSentinel(std.heap.c_allocator, "{s}", .{url}, 0);
     defer std.heap.c_allocator.free(url_z);
     const _result = c.kcrawl_crawl(engine_handle, url_z);
-    if (c.kcrawl_last_error_code() != 0) {
+    if (_result == null) {
         return _first_error(CrawlError);
     }
     if (engine_config_z) |z| std.heap.c_allocator.free(z);
@@ -1057,7 +1057,7 @@ pub fn map_urls(engine: ?[]const u8, url: []const u8) CrawlError![]u8 {
     const url_z = try std.fmt.allocPrintSentinel(std.heap.c_allocator, "{s}", .{url}, 0);
     defer std.heap.c_allocator.free(url_z);
     const _result = c.kcrawl_map_urls(engine_handle, url_z);
-    if (c.kcrawl_last_error_code() != 0) {
+    if (_result == null) {
         return _first_error(CrawlError);
     }
     if (engine_config_z) |z| std.heap.c_allocator.free(z);
@@ -1086,7 +1086,7 @@ pub fn interact(engine: ?[]const u8, url: []const u8, actions: []const u8) Crawl
     const actions_z = try std.fmt.allocPrintSentinel(std.heap.c_allocator, "{s}", .{actions}, 0);
     defer std.heap.c_allocator.free(actions_z);
     const _result = c.kcrawl_interact(engine_handle, url_z, actions_z);
-    if (c.kcrawl_last_error_code() != 0) {
+    if (_result == null) {
         return _first_error(CrawlError);
     }
     if (engine_config_z) |z| std.heap.c_allocator.free(z);
@@ -1113,7 +1113,7 @@ pub fn batch_scrape(engine: ?[]const u8, urls: []const u8) CrawlError![]u8 {
     const urls_z = try std.fmt.allocPrintSentinel(std.heap.c_allocator, "{s}", .{urls}, 0);
     defer std.heap.c_allocator.free(urls_z);
     const _result = c.kcrawl_batch_scrape(engine_handle, urls_z);
-    if (c.kcrawl_last_error_code() != 0) {
+    if (_result == null) {
         return _first_error(CrawlError);
     }
     if (engine_config_z) |z| std.heap.c_allocator.free(z);
@@ -1140,7 +1140,7 @@ pub fn batch_crawl(engine: ?[]const u8, urls: []const u8) CrawlError![]u8 {
     const urls_z = try std.fmt.allocPrintSentinel(std.heap.c_allocator, "{s}", .{urls}, 0);
     defer std.heap.c_allocator.free(urls_z);
     const _result = c.kcrawl_batch_crawl(engine_handle, urls_z);
-    if (c.kcrawl_last_error_code() != 0) {
+    if (_result == null) {
         return _first_error(CrawlError);
     }
     if (engine_config_z) |z| std.heap.c_allocator.free(z);

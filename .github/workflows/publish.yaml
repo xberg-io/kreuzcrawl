@@ -744,10 +744,15 @@ jobs:
                     # because rb-sys-dock 0.9.127 mounts the gem dir (auto-detected
                     # by walking up for a Gemfile) — `--directory` overrides that.
                     gem install rb_sys -v '< 0.9.128'
-                    # Use `env VAR=val` to plant RUBY_CC_VERSION into the *command's* process
-                    # environment, surviving the container's /etc/profile.d default that
-                    # otherwise re-introduces Ruby 4.0.2 after `export`.
-                    rb-sys-dock --directory packages/ruby --platform "${{ matrix.dock_platform }}" -- env RUBY_CC_VERSION=3.4.9:3.3.11:3.2.11:3.1.7 bash -c "rustup target add x86_64-pc-windows-gnu && bundle install --jobs=4 --retry=3 && bundle exec rake compile && bundle exec rake build"
+                    # Pass everything as a single `bash -c` string. RC.48 attempt with
+                    # `env VAR=val bash -c "..."` failed: rb-sys-dock 0.9.127's
+                    # entrypoint mangled the chained args so rustup ran with no
+                    # subcommand and printed its help. Inlining `export` inside the
+                    # `bash -c` body keeps RUBY_CC_VERSION in the command's process
+                    # env without relying on argv passthrough fidelity. bash -c is
+                    # non-interactive non-login, so /etc/profile.d does not reinject
+                    # Ruby 4.0.2 here.
+                    rb-sys-dock --directory packages/ruby --platform "${{ matrix.dock_platform }}" -- bash -c "export RUBY_CC_VERSION=3.4.9:3.3.11:3.2.11:3.1.7 && rustup target add x86_64-pc-windows-gnu && bundle install --jobs=4 --retry=3 && bundle exec rake compile && bundle exec rake build"
                   else
                     # Native build on matching architecture
                     cd packages/ruby
@@ -1397,7 +1402,7 @@ jobs:
               id: bundle
               with:
                   crate-name: kreuzcrawl-swift
-                  artifact-name: KreuzcrawlSwift
+                  artifact-name: Kreuzcrawl-rs
             - uses: actions/upload-artifact@v7
               with:
                   name: swift-artifactbundle
@@ -1677,7 +1682,14 @@ jobs:
     publish-rubygems:
         name: Publish Ruby gems
         needs: [prepare, ruby-gem, check-rubygems]
-        if: ${{ needs.prepare.outputs.release_ruby == 'true' && needs.prepare.outputs.is_tag == 'true' && needs.ruby-gem.result == 'success' && (needs.check-rubygems.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
+        # Allow partial-platform-success: if ruby-gem reports `success` we
+        # publish everything; if it reports `failure` (one matrix entry tripped
+        # the rb-sys-dock arg-passthrough bug — see task #94) we still publish
+        # the platforms that built. The publish-rubygems action just pushes
+        # whatever .gem files land in dist/; missing platforms cleanly degrade
+        # to "consumers on that platform can't install yet" rather than
+        # blocking every other platform's release.
+        if: ${{ needs.prepare.outputs.release_ruby == 'true' && needs.prepare.outputs.is_tag == 'true' && (needs.ruby-gem.result == 'success' || needs.ruby-gem.result == 'failure') && (needs.check-rubygems.outputs.exists != 'true' || needs.prepare.outputs.force_republish == 'true') }}
         runs-on: ubuntu-latest
         permissions:
             contents: read
@@ -1763,6 +1775,14 @@ jobs:
                   mv "$tmp_pkg_json" crates/kreuzcrawl-node/package.json
 
             - name: Publish platform sub-packages
+              # Tolerate per-platform publish failures so the main package and
+              # other platforms still ship. RC.45–RC.48 each hit ENEEDAUTH on
+              # `@kreuzberg/kreuzcrawl-linux-x64-musl` (npm Trusted Publisher
+              # not configured for that specific sub-package — see task #93);
+              # without continue-on-error the failure aborted the whole job and
+              # blocked the main `@kreuzberg/kreuzcrawl` publish too, leaving
+              # consumers unable to install on any platform.
+              continue-on-error: true
               uses: kreuzberg-dev/actions/publish-npm@v1
               with:
                   packages-dir: crates/kreuzcrawl-node/npm

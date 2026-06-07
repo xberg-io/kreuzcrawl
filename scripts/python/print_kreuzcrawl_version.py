@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """Print the installed kreuzcrawl Python package version."""
 
 from __future__ import annotations

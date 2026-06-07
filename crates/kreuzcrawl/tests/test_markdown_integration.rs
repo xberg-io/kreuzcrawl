@@ -1,4 +1,3 @@
-#![allow(clippy::unwrap_used, clippy::panic)]
 //! Integration tests for markdown output: citations, fit_content, and structure.
 
 use kreuzcrawl::{CrawlConfig, create_engine, scrape};

@@ -7,8 +7,6 @@
 //! The browser tier is not exercised here — browser tests require the `browser`
 //! feature and a live Chrome instance.
 
-#![allow(clippy::unwrap_used, clippy::panic)]
-
 use std::sync::Arc;
 use std::sync::atomic::{AtomicU32, Ordering};
 

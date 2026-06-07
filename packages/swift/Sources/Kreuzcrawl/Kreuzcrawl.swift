@@ -1382,7 +1382,7 @@ extension AuthConfig {
 /// The classification of a link.
 public enum LinkType: String, Codable, Sendable, Hashable {
     /// A link to the same domain.
-    case `internal`
+    case internal_ = "internal"
     /// A link to a different domain.
     case external
     /// A fragment-only link (e.g., `#section`).

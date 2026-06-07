@@ -1,4 +1,3 @@
-#![allow(clippy::unwrap_used, clippy::panic)]
 //! Integration tests: the multi-page crawl loop materializes discovered
 //! non-HTML documents (PDF, …) into `CrawlPageResult.downloaded_document`,
 //! while plain HTML pages leave that field `None`.

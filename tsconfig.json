@@ -28,7 +28,6 @@
 		"isolatedModules": true,
 		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true,
-		"verbatimModuleSyntax": true,
 		"noEmit": true
 	},
 	"include": ["packages/typescript/src/**/*.ts"]

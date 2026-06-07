@@ -3,6 +3,7 @@
 	"version": "0.3.0-rc.48",
 	"private": true,
 	"devDependencies": {
+		"@kreuzberg/kreuzcrawl": "workspace:*",
 		"@napi-rs/cli": "^3.7.0",
 		"typescript": "^6.0.3",
 		"vitest": "^4.1.8"

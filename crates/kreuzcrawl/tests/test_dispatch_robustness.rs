@@ -13,8 +13,6 @@
 //! change. Those gaps must be covered by unit tests inside
 //! `crates/kreuzcrawl/src/defaults/domain_state.rs` or by a future re-export.
 
-#![allow(clippy::unwrap_used, clippy::panic)]
-
 use std::sync::Arc;
 use std::sync::atomic::{AtomicU32, Ordering};
 

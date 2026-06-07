@@ -11,7 +11,12 @@ dist/
 *.tar.gz
 *.gem
 *.jar
+*.a
+*.rlib
 wheels/
+# C test_app downloads the FFI artefacts via download_ffi.sh at build time
+test_apps/c/ffi/include/
+test_apps/c/ffi/lib/
 **/bin/
 !**/src/bin/
 **/obj/
@@ -39,6 +44,7 @@ share/python-wheels/
 
 # Node.js / WASM
 node_modules/
+.yardoc/
 *.tsbuildinfo
 npm-debug.log*
 pnpm-debug.log*
@@ -62,7 +68,13 @@ zig-out/
 # Swift / SwiftPM build cache
 .build/
 .swiftpm/
-Packages/
+# `Packages/` removed: with `core.ignorecase=true` (the macOS default) it
+# case-insensitively matches the language-binding `packages/` tree and silently
+# ignores newly emitted files like `packages/dart/bin/download_libs.dart` —
+# which is alef-generated output we must commit. SwiftPM's `Packages/`
+# resolution dir is opt-in and rarely created in this repo; if it appears,
+# scope-ignore it under `packages/swift/` specifically.
+packages/swift/**/Packages/
 Package.resolved
 *.xcodeproj/
 *.xcworkspace/
@@ -201,6 +213,9 @@ vendor/
 *.test
 *.class
 bin/
+# Exempt the alef-emitted Dart entrypoint dir which is real source we must
+# track (used by `dart run kreuzcrawl:download_libs` consumers).
+!packages/dart/bin/
 obj/
 # pkg/ removed — needed for WASM npm publish (wasm-pack outputs to pkg/)
 erl_crash.dump

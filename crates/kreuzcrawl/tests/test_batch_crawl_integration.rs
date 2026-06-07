@@ -1,4 +1,3 @@
-#![allow(clippy::unwrap_used, clippy::panic)]
 //! Integration tests for batch_crawl: multiple seed URLs crawled concurrently.
 
 use kreuzcrawl::{CrawlConfig, batch_crawl, create_engine};
