@@ -7,7 +7,7 @@
     "test": "vitest run"
   },
   "devDependencies": {
-    "@kreuzberg/kreuzcrawl": "^0.3.0-rc.46",
+    "@kreuzberg/kreuzcrawl": "^0.3.0-rc.47",
     "@types/node": "^22.10.2",
     "vitest": "^4.1.5"
   }

@@ -65,9 +65,9 @@ func TestMain(m *testing.M) {
 	// read until we have seen MOCK_SERVER_URL and either MOCK_SERVERS or a non
 	// MOCK_SERVER line, then drain the rest in the background.
 	haveURL := false
-	//nolint:gocritic
 	for scanner.Scan() {
 		line := scanner.Text()
+		//nolint:gocritic
 		if strings.HasPrefix(line, "MOCK_SERVER_URL=") {
 			_ = os.Setenv("MOCK_SERVER_URL", strings.TrimPrefix(line, "MOCK_SERVER_URL="))
 			haveURL = true

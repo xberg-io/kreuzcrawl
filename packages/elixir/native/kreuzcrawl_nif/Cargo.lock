@@ -1439,7 +1439,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl"
-version = "0.3.0-rc.46"
+version = "0.3.0-rc.47"
 dependencies = [
  "ahash",
  "aho-corasick",
@@ -1476,7 +1476,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl_nif"
-version = "0.3.0-rc.46"
+version = "0.3.0-rc.47"
 dependencies = [
  "futures-util",
  "kreuzcrawl",
