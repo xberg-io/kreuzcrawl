@@ -1408,6 +1408,7 @@ jobs:
               with:
                   crate-name: kreuzcrawl-swift
                   artifact-name: Kreuzcrawl-rs
+                  package-manifest-path: Package.swift
             - uses: actions/upload-artifact@v7
               with:
                   name: swift-artifactbundle

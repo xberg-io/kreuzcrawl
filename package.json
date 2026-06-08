@@ -1,6 +1,6 @@
 {
 	"name": "kreuzcrawl-root",
-	"version": "0.3.0-rc.51",
+	"version": "0.3.0-rc.52",
 	"private": true,
 	"devDependencies": {
 		"@kreuzberg/kreuzcrawl": "workspace:*",

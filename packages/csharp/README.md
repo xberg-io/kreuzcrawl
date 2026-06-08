@@ -92,6 +92,17 @@ P/Invoke with the C FFI layer, supporting .NET 8+ with async/await and nullable 
 dotnet add package Kreuzcrawl
 ```
 
+## Agent plugin
+
+The `kreuzcrawl` plugin is available via the `kreuzberg-dev/plugins` marketplace.
+
+```text
+/plugin marketplace add kreuzberg-dev/plugins
+/plugin install kreuzcrawl@kreuzberg
+```
+
+Works with Claude Code, Codex, Cursor, Gemini CLI, Factory Droid, GitHub Copilot CLI, and opencode. See [the marketplace README](https://github.com/kreuzberg-dev/plugins) for harness-specific install instructions.
+
 ## Quick Start
 
 ```csharp title="C#"

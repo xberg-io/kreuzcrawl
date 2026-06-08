@@ -92,6 +92,17 @@ Via swift-bridge for macOS, iOS, and Linux with native Swift types and async/awa
 .package(url: "https://github.com/kreuzberg-dev/kreuzcrawl-swift", from: "0.3.0-rc.51")
 ```
 
+## Agent plugin
+
+The `kreuzcrawl` plugin is available via the `kreuzberg-dev/plugins` marketplace.
+
+```text
+/plugin marketplace add kreuzberg-dev/plugins
+/plugin install kreuzcrawl@kreuzberg
+```
+
+Works with Claude Code, Codex, Cursor, Gemini CLI, Factory Droid, GitHub Copilot CLI, and opencode. See [the marketplace README](https://github.com/kreuzberg-dev/plugins) for harness-specific install instructions.
+
 ## Quick Start
 
 ```swift title="Swift"
