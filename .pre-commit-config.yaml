@@ -16,54 +16,10 @@ repos:
     - repo: https://github.com/kreuzberg-dev/pre-commit-hooks
       rev: v2.1.9
       hooks:
-          # AI governance
-          - id: ai-rulez-generate
+          # Alef verification
+          - id: alef-verify
 
-          # File safety
-          - id: trailing-whitespace
-            exclude: \.github/copilot-instructions\.md
-          - id: end-of-file-fixer
-            exclude: \.github/copilot-instructions\.md|^docs/reference/
-          - id: check-merge-conflict
-          - id: check-added-large-files
-            exclude: uv.lock|docs/benchmarks/app/
-          - id: detect-private-key
-          - id: check-case-conflict
-          - id: check-executables-have-shebangs
-          - id: check-shebang-scripts-are-executable
-          - id: mixed-line-ending
-          - id: typos
-            args: ["--force-exclude"]
-          - id: check-json
-            exclude: tsconfig\.base\.json
-          - id: check-yaml
-            args:
-                - --allow-multiple-documents
-                - --unsafe
-          - id: check-toml
-
-          # GitHub Actions
-          - id: actionlint
-          - id: gh-actions-updater
-
-          # Shell
-          - id: shfmt
-            args: ["-w", "-i", "2"]
-          - id: shellcheck
-
-          # Markdown
-          - id: rumdl-fmt
-          - id: textlint
-            files: ^docs/.*\.md$
-            exclude: ^docs/(reference/|api-|snippets/|migration/)
-            args:
-                - --fix
-                - --config
-                - .textlintrc.json
-
-          # Rust — cargo-check dropped in v2.0.0; cargo-clippy with -D warnings supersedes it
-          - id: cargo-fmt
-            args: ["--all"]
+          # Cargo / Rust
           - id: cargo-clippy
             args:
                 - --fix
@@ -101,26 +57,50 @@ repos:
             # files are subject to the cap. Shrink this list when files are split.
             exclude: ^(crates/kreuzcrawl-browser/src/adapter\.rs|crates/kreuzcrawl-browser/src/js/runtime\.rs|crates/kreuzcrawl-browser/src/page\.rs|crates/kreuzcrawl-ffi/src/lib\.rs|crates/kreuzcrawl-node/src/lib\.rs|crates/kreuzcrawl-php/src/lib\.rs|crates/kreuzcrawl-py/src/lib\.rs|crates/kreuzcrawl-wasm/src/lib\.rs|crates/kreuzcrawl/src/engine/mod\.rs|packages/dart/rust/src/frb_generated\.rs|packages/dart/rust/src/lib\.rs|packages/elixir/native/kreuzcrawl_nif/src/lib\.rs|packages/ruby/ext/kreuzcrawl_rb/src/lib\.rs|packages/swift/rust/src/lib\.rs|tools/benchmark-harness/src/output\.rs)$
 
-          # Python
-          - id: pyproject-fmt
-            exclude: ^test_apps/python/pyproject\.toml$
+          # Linters and checks
+          - id: ai-rulez-generate
+
+          - id: check-merge-conflict
+          - id: check-added-large-files
+            exclude: uv.lock|docs/benchmarks/app/
+          - id: detect-private-key
+          - id: check-case-conflict
+          - id: check-executables-have-shebangs
+          - id: check-shebang-scripts-are-executable
+          - id: typos
+            args: ["--force-exclude"]
+          - id: check-json
+            exclude: tsconfig\.base\.json
+          - id: check-yaml
+            args:
+                - --allow-multiple-documents
+                - --unsafe
+          - id: check-toml
+
+          - id: actionlint
+          - id: gh-actions-updater
+
+          - id: shellcheck
+
+          - id: textlint
+            files: ^docs/.*\.md$
+            exclude: ^docs/(reference/|api-|snippets/|migration/)
+            args:
+                - --fix
+                - --config
+                - .textlintrc.json
+
           - id: ruff
-          - id: ruff-format
           - id: mypy
             exclude: e2e/|tests/|scripts/
           - id: pydocstyle
             files: ^packages/python/.*\.py$
             exclude: ^packages/python/(tests/|.*_native\.py$)
 
-          # JS/TS
           - id: oxlint
-          - id: oxfmt
           - id: tsc-typecheck
           - id: tsdoc-lint
 
-          # Go
-          - id: go-fmt
-            exclude: ^(e2e/|test_apps/)
           - id: golangci-lint
             exclude: ^(e2e/|test_apps/)
             env:
@@ -131,8 +111,6 @@ repos:
                 KREUZBERG_GO_MOD_DIRS: packages/go
           - id: godoc-lint
 
-          # Java
-          - id: palantir-java-format
           - id: checkstyle
             args:
                 - -c
@@ -151,11 +129,6 @@ repos:
           - id: javadoc-lint
             files: ^packages/java/src/main/.*\.java$
 
-          # Kotlin
-          - id: ktfmt
-            files: ^packages/kotlin-android/.*\.kts?$
-            args:
-                - --kotlinlang-style
           - id: detekt
             files: ^packages/kotlin-android/.*\.kts?$
             args:
@@ -164,10 +137,6 @@ repos:
             files: ^packages/kotlin-android/.*\.kts?$
           - id: kotlin-dokka
 
-          # Ruby
-          - id: rubocop
-            files: ^packages/ruby/.*\.rb$
-            exclude: ^packages/ruby/(ext/|lib/kreuzcrawl/native\.rb$)
           - id: rubocop-lint
             files: ^packages/ruby/.*\.(rb|rbs)$
             exclude: ^packages/ruby/(ext/|lib/kreuzcrawl/native\.rb$)
@@ -177,18 +146,11 @@ repos:
           - id: yard-coverage
             exclude: ^(e2e/|test_apps/|packages/ruby/(ext/|lib/kreuzcrawl/native\.rb$|Rakefile$))
 
-          # C#
-          - id: dotnet-format
-            files: ^packages/csharp/.*\.cs$
           - id: dotnet-format-check
             files: ^packages/csharp/.*\.cs$
           - id: cs-xmldoc-lint
             files: ^packages/csharp/Kreuzcrawl/.*\.cs$
 
-          # PHP
-          - id: php-cs-fixer
-            files: ^packages/php/.*\.php$
-            exclude: ^packages/php/stubs/
           - id: phpstan
             files: ^packages/php/(src|tests)/.*\.php$
             args:
@@ -199,17 +161,13 @@ repos:
           - id: phpdoc-lint
             files: ^packages/php/src/.*\.php$
 
-          # Elixir
-          - id: mix-format
-            files: ^packages/elixir/
           - id: mix-credo
             files: ^packages/elixir/
           - id: ex-doc-coverage
             files: ^packages/elixir/
 
-          # Dart
-          - id: dart-format
-            files: ^packages/dart/.*\.dart$
+          - id: swiftlint
+            files: ^packages/swift/.*\.swift$
           - id: dart-analyze
             files: ^packages/dart/.*\.dart$
             exclude: ^(test_apps/|e2e/dart/)
@@ -217,31 +175,58 @@ repos:
             files: ^packages/dart/lib/.*\.dart$
             exclude: ^packages/dart/lib/src/rust/
 
-          # Zig
-          - id: zig-fmt
-            files: ^packages/zig/.*\.zig$
           - id: zig-build-check
             files: ^packages/zig/.*\.zig$
           - id: zig-doc-lint
 
-          # Alef bindings (this repo consumes alef-generated bindings)
-          - id: alef-verify
-          - id: alef-sync-versions
-          - id: alef-docs-fresh
-          - id: alef-snippets-validate
-
-          # Preserved from prior config — not in canonical block
-          - id: clang-format
-            args:
-                - --style=file
-            files: ^crates/kreuzcrawl-ffi/tests/c/
           - id: clang-tidy
             files: ^crates/kreuzcrawl-ffi/tests/c/
           - id: cppcheck
             args:
                 - --suppress=unusedStructMember
+          - id: hadolint
+          - id: alef-docs-fresh
+          - id: alef-snippets-validate
+
+          # Formatters
+          - id: trailing-whitespace
+            exclude: \.github/copilot-instructions\.md
+          - id: end-of-file-fixer
+            exclude: \.github/copilot-instructions\.md|^docs/reference/
+          - id: mixed-line-ending
+          - id: shfmt
+            args: ["-w", "-i", "2"]
+          - id: rumdl-fmt
+          - id: cargo-fmt
+            args: ["--all"]
+          - id: pyproject-fmt
+            exclude: ^test_apps/python/pyproject\.toml$
+          - id: ruff-format
+          - id: oxfmt
+          - id: go-fmt
+            exclude: ^(e2e/|test_apps/)
+          - id: palantir-java-format
+          - id: ktfmt
+            files: ^packages/kotlin-android/.*\.kts?$
+            args:
+                - --kotlinlang-style
+          - id: rubocop
+            files: ^packages/ruby/.*\.rb$
+            exclude: ^packages/ruby/(ext/|lib/kreuzcrawl/native\.rb$)
+          - id: dotnet-format
+            files: ^packages/csharp/.*\.cs$
+          - id: php-cs-fixer
+            files: ^packages/php/.*\.php$
+            exclude: ^packages/php/stubs/
+          - id: mix-format
+            files: ^packages/elixir/
           - id: swift-format
             files: ^packages/swift/.*\.swift$
-          - id: swiftlint
-            files: ^packages/swift/.*\.swift$
-          - id: hadolint
+          - id: dart-format
+            files: ^packages/dart/.*\.dart$
+          - id: zig-fmt
+            files: ^packages/zig/.*\.zig$
+          - id: clang-format
+            args:
+                - --style=file
+            files: ^crates/kreuzcrawl-ffi/tests/c/
