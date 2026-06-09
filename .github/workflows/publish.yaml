@@ -1421,6 +1421,7 @@ jobs:
                   crate-name: kreuzcrawl-swift
                   artifact-name: Kreuzcrawl-rs
                   package-manifest-path: Package.swift
+                  package-version: ${{ needs.prepare.outputs.version }}
             - uses: actions/upload-artifact@v7
               with:
                   name: swift-artifactbundle
@@ -1682,6 +1683,14 @@ jobs:
         if: ${{ always() && needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.dry_run != 'true' && !contains(needs.*.result, 'failure') }}
         runs-on: ubuntu-latest
         steps:
+            - name: Wait for GitHub API release-replica convergence
+              # `gh release view` can briefly answer 404 right after `gh release
+              # create` returns when the API hits a stale read replica. RC.52
+              # tripped on this. v1.8.49 of `verify-release-assets@v1` will add
+              # an internal retry, but pinning to v1 keeps the action surface
+              # area for fixes elsewhere; this pre-wait covers the gap now.
+              shell: bash
+              run: sleep 60
             - uses: kreuzberg-dev/actions/verify-release-assets@v1
               with:
                   tag: ${{ needs.prepare.outputs.tag }}
@@ -2113,6 +2122,16 @@ jobs:
                   submodules: recursive
                   token: ${{ steps.app-token.outputs.token }}
                   persist-credentials: true
+
+            - name: Wait for NIF asset CDN propagation
+              # The releases/download/<tag>/<name> CDN can briefly 404 for 60–200s
+              # after `gh release upload` returns. RC.52 tripped on this — the
+              # generate-elixir-checksums action downloaded the NIFs once and
+              # exited on 404 before propagation. v1.8.49 of the action will add
+              # an internal retry; this pre-wait covers the gap on v1.8.48.
+              if: needs.prepare.outputs.dry_run != 'true'
+              shell: bash
+              run: sleep 180
 
             - name: Generate checksums from GitHub release
               if: needs.prepare.outputs.dry_run != 'true'

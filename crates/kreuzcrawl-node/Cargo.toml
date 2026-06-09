@@ -1,6 +1,6 @@
 [package]
 name = "kreuzcrawl-node"
-version = "0.3.0-rc.52"
+version = "0.3.0-rc.53"
 edition = "2024"
 license = "Elastic-2.0"
 description = "High-performance web crawling engine"
@@ -21,7 +21,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 futures-util = "0.3"
-kreuzcrawl = { version = "0.3.0-rc.52", path = "../kreuzcrawl", features = ["interact", "browser-chromiumoxide"] }
+kreuzcrawl = { version = "0.3.0-rc.53", path = "../kreuzcrawl", features = ["interact", "browser-chromiumoxide"] }
 napi = { version = "3", features = ["async", "serde-json"] }
 napi-derive = "3"
 serde = { version = "1", features = ["derive"] }

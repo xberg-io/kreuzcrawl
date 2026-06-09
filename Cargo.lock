@@ -412,7 +412,7 @@ checksum = "2af50177e190e07a26ab74f8b1efbfe2ef87da2116221318cb1c2e82baf7de06"
 
 [[package]]
 name = "benchmark-harness"
-version = "0.3.0-rc.52"
+version = "0.3.0-rc.53"
 dependencies = [
  "ahash",
  "async-trait",
@@ -2992,7 +2992,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl"
-version = "0.3.0-rc.52"
+version = "0.3.0-rc.53"
 dependencies = [
  "ahash",
  "aho-corasick",
@@ -3044,14 +3044,14 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl-bindings-common"
-version = "0.3.0-rc.52"
+version = "0.3.0-rc.53"
 dependencies = [
  "kreuzcrawl",
 ]
 
 [[package]]
 name = "kreuzcrawl-browser"
-version = "0.3.0-rc.52"
+version = "0.3.0-rc.53"
 dependencies = [
  "async-trait",
  "base64",
@@ -3079,7 +3079,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl-bypass"
-version = "0.3.0-rc.52"
+version = "0.3.0-rc.53"
 dependencies = [
  "async-trait",
  "kreuzcrawl",
@@ -3096,7 +3096,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl-cli"
-version = "0.3.0-rc.52"
+version = "0.3.0-rc.53"
 dependencies = [
  "clap",
  "kreuzcrawl",
@@ -3106,7 +3106,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl-dart"
-version = "0.3.0-rc.52"
+version = "0.3.0-rc.53"
 dependencies = [
  "flutter_rust_bridge",
  "futures-util",
@@ -3117,7 +3117,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl-ffi"
-version = "0.3.0-rc.52"
+version = "0.3.0-rc.53"
 dependencies = [
  "ahash",
  "cbindgen",
@@ -3130,7 +3130,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl-jni"
-version = "0.3.0-rc.52"
+version = "0.3.0-rc.53"
 dependencies = [
  "futures-util",
  "jni",
@@ -3141,7 +3141,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl-node"
-version = "0.3.0-rc.52"
+version = "0.3.0-rc.53"
 dependencies = [
  "futures-util",
  "kreuzcrawl",
@@ -3154,7 +3154,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl-php"
-version = "0.3.0-rc.52"
+version = "0.3.0-rc.53"
 dependencies = [
  "ext-php-rs",
  "futures-util",
@@ -3166,7 +3166,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl-py"
-version = "0.3.0-rc.52"
+version = "0.3.0-rc.53"
 dependencies = [
  "futures",
  "kreuzcrawl",
@@ -3179,7 +3179,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl-swift"
-version = "0.3.0-rc.52"
+version = "0.3.0-rc.53"
 dependencies = [
  "ahash",
  "async-trait",
@@ -3195,7 +3195,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl-wasm"
-version = "0.3.0-rc.52"
+version = "0.3.0-rc.53"
 dependencies = [
  "futures",
  "futures-util",

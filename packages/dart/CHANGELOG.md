@@ -2,6 +2,6 @@
 
 All notable changes to this package will be documented in this file.
 
-## 0.3.0-rc.52
+## 0.3.0-rc.53
 
 - Initial release.

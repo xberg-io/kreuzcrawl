@@ -1464,9 +1464,9 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl"
-version = "0.3.0-rc.48"
+version = "0.3.0-rc.52"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5acad4abe5668d437899a669384147b20bbe645b29898b413aa13f5d7a8f795a"
+checksum = "d4ece28e15cf90926d1b064579788a9d88cdc268816652bf022060b15b2debec"
 dependencies = [
  "ahash",
  "aho-corasick",
@@ -1503,7 +1503,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl-e2e-rust"
-version = "0.3.0-rc.48"
+version = "0.3.0-rc.52"
 dependencies = [
  "axum",
  "kreuzcrawl",

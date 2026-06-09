@@ -9,8 +9,8 @@ importers:
   .:
     devDependencies:
       '@kreuzberg/kreuzcrawl-wasm':
-        specifier: ^0.3.0-rc.45
-        version: 0.3.0-rc.45
+        specifier: ^0.3.0-rc.52
+        version: 0.3.0-rc.52
       rollup:
         specifier: ^4.53.3
         version: 4.61.1
@@ -32,8 +32,8 @@ packages:
   '@jridgewell/sourcemap-codec@1.5.5':
     resolution: {integrity: sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og==}
 
-  '@kreuzberg/kreuzcrawl-wasm@0.3.0-rc.45':
-    resolution: {integrity: sha512-OR2KKrlMzzCh8k7DvP1bv/Zqnt2EAslK7f/Q+s7iwUsKUze3xXNWdGoBNwB4PZbvm912P0Nol6qMkY3T2h3Fkw==}
+  '@kreuzberg/kreuzcrawl-wasm@0.3.0-rc.52':
+    resolution: {integrity: sha512-zm7kcKyuV0f+f572td+zoKxwp96zfVa0HYAC0IWPWXLxsHZelslJkVP22e3xKAQRQTrETNqPoD1k3CrhzGRTZg==}
 
   '@napi-rs/wasm-runtime@1.1.4':
     resolution: {integrity: sha512-3NQNNgA1YSlJb/kMH1ildASP9HW7/7kYnRI2szWJaofaS1hWmbGI4H+d3+22aGzXXN9IJ+n+GiFVcGipJP18ow==}
@@ -613,7 +613,7 @@ snapshots:
 
   '@jridgewell/sourcemap-codec@1.5.5': {}
 
-  '@kreuzberg/kreuzcrawl-wasm@0.3.0-rc.45': {}
+  '@kreuzberg/kreuzcrawl-wasm@0.3.0-rc.52': {}
 
   '@napi-rs/wasm-runtime@1.1.4(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)':
     dependencies:
