@@ -80,6 +80,7 @@ pub use mcp::{start_mcp_server, start_mcp_server_with_config};
 #[cfg(feature = "telemetry-init")]
 pub use telemetry::{InitError as TelemetryInitError, TelemetryConfig, TelemetryGuard, init_otlp};
 pub use telemetry::{current_traceparent, with_traceparent};
+pub use types::antibot::{AntibotError, AntibotStrategy, Decision, DefaultAntibotStrategy, DynAntibotStrategy};
 pub use types::{
     ActionResult, ArticleMetadata, AssetCategory, AttemptOutcome, AuthConfig, BrowserBackend, BrowserConfig,
     BrowserExtras, BrowserMode, BrowserWait, BudgetExhausted, BypassProvider, BypassResponse, CachedPage,

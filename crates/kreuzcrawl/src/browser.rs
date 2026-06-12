@@ -2,6 +2,7 @@
 //!
 //! This module is only compiled when the `browser` feature is enabled.
 
+use std::sync::atomic::{AtomicU64, Ordering as AtomicOrdering};
 use std::time::Duration;
 
 use chromiumoxide::Handler;
@@ -9,11 +10,17 @@ use chromiumoxide::browser::{Browser, BrowserConfig as ChromeBrowserConfig};
 use chromiumoxide::cdp::browser_protocol::emulation::SetDeviceMetricsOverrideParams;
 use chromiumoxide::cdp::browser_protocol::network::{Headers, SetCookieParams, SetExtraHttpHeadersParams};
 use tokio_stream::StreamExt;
+use tracing::Instrument as _;
 
 use crate::browser_pool::BrowserPool;
 use crate::error::CrawlError;
 use crate::http::HttpResponse;
+use crate::telemetry::attributes::{CRAWL_BROWSER_BACKEND, CRAWL_BROWSER_SESSION_ID, CRAWL_PAGES_RENDERED};
+use crate::telemetry::metrics::registry;
 use crate::types::{AuthConfig, BrowserBackend, BrowserWait, CookieInfo, CrawlConfig};
+
+/// Process-wide monotonic session counter for `crawl.browser.session_id`.
+static BROWSER_SESSION_COUNTER: AtomicU64 = AtomicU64::new(1);
 
 /// Fetch a URL using a headless Chrome browser via CDP.
 ///
@@ -45,6 +52,38 @@ pub(crate) async fn browser_fetch(
 }
 
 async fn chromiumoxide_fetch(
+    url: &str,
+    config: &CrawlConfig,
+    prior_cookies: Option<&[CookieInfo]>,
+    pool: Option<&BrowserPool>,
+) -> Result<HttpResponse, CrawlError> {
+    let session_id = BROWSER_SESSION_COUNTER.fetch_add(1, AtomicOrdering::Relaxed);
+    let session_id_str = session_id.to_string();
+
+    let span = tracing::info_span!(
+        "crawl.browser.session",
+        { CRAWL_BROWSER_BACKEND } = "chromiumoxide",
+        { CRAWL_BROWSER_SESSION_ID } = %session_id_str,
+        { CRAWL_PAGES_RENDERED } = 1_i64,
+    );
+
+    registry().browser_sessions_active.add(1, &[]);
+    // Guard: decrement the active-session counter when this scope exits.
+    // Fires even on early return or error path.
+    struct SessionGuard;
+    impl Drop for SessionGuard {
+        fn drop(&mut self) {
+            registry().browser_sessions_active.add(-1, &[]);
+        }
+    }
+    let _guard = SessionGuard;
+
+    chromiumoxide_fetch_inner(url, config, prior_cookies, pool)
+        .instrument(span)
+        .await
+}
+
+async fn chromiumoxide_fetch_inner(
     url: &str,
     config: &CrawlConfig,
     prior_cookies: Option<&[CookieInfo]>,
@@ -154,19 +193,21 @@ async fn page_fetch(
     page: &chromiumoxide::Page,
     prior_cookies: Option<&[CookieInfo]>,
 ) -> Result<HttpResponse, CrawlError> {
-    // Inject stealth patches if enabled, before any page setup or navigation.
-    if config.browser.stealth {
+    let stealth = matches!(config.browser.mode, crate::types::BrowserMode::Stealth);
+
+    // Inject stealth patches only when BrowserMode::Stealth is active.
+    if stealth {
         crate::stealth::apply_stealth_patches(page).await;
     }
 
     // Resolve user agent: caller-supplied > stealth-enabled default > implicit browser default.
     let resolved_ua = if let Some(ref ua) = config.user_agent {
         ua.clone()
-    } else if config.browser.stealth {
-        // Use a modern Chrome UA when stealth is enabled and no explicit UA is provided.
+    } else if stealth {
+        // Use a modern Chrome UA when BrowserMode::Stealth is active and no explicit UA is set.
         resolve_default_user_agent().to_string()
     } else {
-        // Fall through to chromiumoxide's default behavior
+        // Fall through to chromiumoxide's default behavior.
         "".to_string()
     };
 
@@ -177,10 +218,8 @@ async fn page_fetch(
             .map_err(|e| CrawlError::BrowserError(format!("failed to set user agent: {e}")))?;
     }
 
-    // Set viewport if stealth mode is enabled (default 1920x1080).
-    if config.browser.stealth
-        && let Err(e) = set_viewport(page, 1920, 1080).await
-    {
+    // Set viewport when BrowserMode::Stealth is active (default 1920x1080).
+    if stealth && let Err(e) = set_viewport(page, 1920, 1080).await {
         return Err(CrawlError::BrowserError(format!("failed to set viewport: {e}")));
     }
 

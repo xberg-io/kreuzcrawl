@@ -128,6 +128,8 @@ pub enum EscalationReason {
     RenderNeeded,
     /// Sustained 5xx; origin probably unreachable, escalate anyway.
     OriginUnreliable,
+    /// Antibot strategy hook returned [`crate::types::Decision::EscalateBrowser`].
+    AntibotEscalate,
 }
 
 /// Rich context passed to [`RetryPolicy::decide`] on each attempt.
@@ -561,6 +563,15 @@ pub struct BudgetExhausted;
 
 /// Bundle of pluggable dispatch components attached to [`crate::types::CrawlConfig`].
 ///
+/// The `antibot_strategy` field accepts an optional `Arc<dyn AntibotStrategy>`.
+/// Because it holds an opaque trait object it is excluded from alef-generated
+/// polyglot bindings (`#[cfg_attr(alef, alef(skip))]`). Language clients that
+/// need custom antibot logic must subclass or wrap `DefaultAntibotStrategy` at
+/// the Rust layer and expose a language-friendly surface separately.
+///
+/// When `antibot_strategy` is `None` (the default), the engine's built-in
+/// WAF-signal → escalation behaviour is preserved unchanged.
+///
 /// Move the seven Session 1 / 1.5 trait-object and config fields off
 /// `CrawlConfig` into a single `Option<DispatchProfile>` field. Callers that
 /// relied on `CrawlConfig.bypass.is_some()` auto-promoting the strategy to
@@ -596,6 +607,15 @@ pub struct DispatchProfile {
     /// gives up. Guards against buggy custom `RetryPolicy` impls that never
     /// return `Stop`. Default 10.
     pub max_total_attempts: u32,
+    /// Optional pluggable antibot hook pair.
+    ///
+    /// When `Some`, `pre_request` fires before each tower-stack fetch and
+    /// `post_response` fires between WAF classification and the retry policy.
+    /// When `None`, the engine's built-in WAF-signal → escalation logic applies.
+    ///
+    /// Excluded from alef-generated bindings — opaque trait object.
+    #[cfg_attr(alef, alef(skip))]
+    pub antibot_strategy: Option<crate::types::antibot::DynAntibotStrategy>,
 }
 
 impl DispatchProfile {
@@ -615,6 +635,7 @@ impl Default for DispatchProfile {
             domain_state: None,
             escalation_budget: None,
             max_total_attempts: 10,
+            antibot_strategy: None,
         }
     }
 }

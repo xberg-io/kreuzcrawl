@@ -6,39 +6,11 @@ mod builder;
 #[cfg(not(target_arch = "wasm32"))]
 mod crawl_loop;
 
+#[cfg(not(target_arch = "wasm32"))]
+use opentelemetry::KeyValue;
 use std::sync::Arc;
-#[cfg(not(target_arch = "wasm32"))]
-use std::sync::OnceLock;
-
-#[cfg(not(target_arch = "wasm32"))]
-use opentelemetry::metrics::Counter;
-#[cfg(not(target_arch = "wasm32"))]
-use opentelemetry::{KeyValue, global};
 
 use crate::error::CrawlError;
-
-// ---------------------------------------------------------------------------
-// OTel escalation counter — always-on outside wasm; metrics are unconditional
-// per the M10 split from commit 1.5.6, but the wasm target has no dispatch
-// loop call sites so the counter and helpers are gated to keep the wasm build
-// free of dead-code warnings.
-// ---------------------------------------------------------------------------
-
-#[cfg(not(target_arch = "wasm32"))]
-static ESCALATIONS_COUNTER: OnceLock<Counter<u64>> = OnceLock::new();
-
-#[cfg(not(target_arch = "wasm32"))]
-fn escalations_counter() -> &'static Counter<u64> {
-    ESCALATIONS_COUNTER.get_or_init(|| {
-        global::meter("kreuzcrawl")
-            .u64_counter("kreuzcrawl_escalations_total")
-            .with_description(
-                "Count of tier escalations in the dispatch loop, labelled by \
-                 from_tier, to_tier, and escalation reason",
-            )
-            .build()
-    })
-}
 
 #[cfg(not(target_arch = "wasm32"))]
 fn escalation_reason_label(reason: &crate::types::EscalationReason) -> &'static str {
@@ -48,6 +20,7 @@ fn escalation_reason_label(reason: &crate::types::EscalationReason) -> &'static 
         EscalationReason::SoftBlock => "soft_block",
         EscalationReason::RenderNeeded => "render_needed",
         EscalationReason::OriginUnreliable => "origin_unreliable",
+        EscalationReason::AntibotEscalate => "antibot_escalate",
     }
 }
 
@@ -142,9 +115,13 @@ impl CrawlEngine {
     /// has its own simpler inline path inside `scrape`.
     #[cfg(not(target_arch = "wasm32"))]
     async fn fetch_response(&self, url: &str) -> Result<(crate::tower::CrawlResponse, bool), CrawlError> {
-        // BrowserMode::Always — preserved short-circuit, skip dispatch entirely.
+        // BrowserMode::Always | BrowserMode::Stealth — short-circuit, skip dispatch entirely.
+        // Stealth behaves like Always for routing purposes; JS patches are gated at page_fetch.
         #[cfg(feature = "browser")]
-        if self.config.browser.mode == crate::types::BrowserMode::Always {
+        if matches!(
+            self.config.browser.mode,
+            crate::types::BrowserMode::Always | crate::types::BrowserMode::Stealth
+        ) {
             let pool = self.config.browser_pool.as_deref();
             #[cfg(feature = "browser-native")]
             let http_resp =
@@ -173,6 +150,8 @@ impl CrawlEngine {
             .and_then(|d| d.escalation_budget.clone())
             .unwrap_or_else(|| std::sync::Arc::new(crate::defaults::dispatch::UnlimitedBudget));
         let max_total = dispatch.map(|d| d.max_total_attempts).unwrap_or(10).max(1);
+        let antibot_strategy: Option<crate::types::antibot::DynAntibotStrategy> =
+            dispatch.and_then(|d| d.antibot_strategy.clone());
 
         // Derive the effective strategy.
         // When the effective strategy routes to the Browser tier (`BrowserOnly`)
@@ -240,6 +219,52 @@ impl CrawlEngine {
             }
             tiers_attempted.push(Self::tier_name(current_tier));
 
+            // Antibot pre-request hook: fires before the tower-stack fetch.
+            // A hook error is treated as a transient attempt failure so the retry
+            // policy can decide what to do next.
+            if let Some(strategy) = &antibot_strategy
+                && let Err(e) = strategy.pre_request(url).await
+            {
+                tracing::warn!(
+                    target: "kreuzcrawl::antibot",
+                    url,
+                    error = %e,
+                    "antibot pre_request hook failed; treating as transient error"
+                );
+                let outcome = crate::types::AttemptOutcome {
+                    attempt,
+                    url: std::sync::Arc::from(url),
+                    status: None,
+                    error: Some(CrawlError::Other(e.to_string())),
+                    waf_signal: None,
+                    body_size: 0,
+                    content_density: 0.0,
+                    bytes_transferred: None,
+                    previous_tier: current_tier,
+                };
+                match retry_policy.decide(&outcome).await {
+                    crate::types::RetryDirective::Stop => {
+                        return Err(CrawlError::Other(format!("antibot pre_request failed: {e}")));
+                    }
+                    crate::types::RetryDirective::Retry { backoff_ms } => {
+                        tokio::time::sleep(std::time::Duration::from_millis(backoff_ms)).await;
+                        attempt += 1;
+                        continue;
+                    }
+                    crate::types::RetryDirective::Escalate { reason } => {
+                        if let Some(next) = Self::next_tier(current_tier, effective_strategy)
+                            && budget.try_consume(Self::tier_cost_cents(next)).await.is_ok()
+                        {
+                            last_escalation_reason = Some(Self::escalation_reason_str(&reason));
+                            current_tier = next;
+                            attempt = 0;
+                            continue;
+                        }
+                        return Err(CrawlError::Other(format!("antibot pre_request failed: {e}")));
+                    }
+                }
+            }
+
             let tier_result = self.run_tier(current_tier, url).await;
 
             match tier_result {
@@ -257,28 +282,81 @@ impl CrawlEngine {
                     // Inline construction avoids a trait-surface change on WafClassifier
                     // and is cheap since the body was already cloned into CrawlResponse.
                     let waf_classifier = dispatch.and_then(|d| d.waf_classifier.as_ref());
-                    let waf_signal = waf_classifier.and_then(|c| {
-                        let http_resp = crate::http::HttpResponse {
-                            status: resp.status,
-                            content_type: resp.content_type.clone(),
-                            body: resp.body.clone(),
-                            body_bytes: resp.body_bytes.clone(),
-                            headers: resp.headers.clone(),
-                            final_url: String::new(),
-                            browser_extras: None,
-                        };
-                        match c.classify(&http_resp) {
-                            Ok(sig) => sig,
-                            Err(e) => {
-                                tracing::warn!(
-                                    target: "kreuzcrawl::waf",
-                                    error = %e,
-                                    "classify failed"
-                                );
-                                None
-                            }
+                    // Build HttpResponse once so both WAF classifier and antibot hook share it.
+                    let http_resp_for_hooks = crate::http::HttpResponse {
+                        status: resp.status,
+                        content_type: resp.content_type.clone(),
+                        body: resp.body.clone(),
+                        body_bytes: resp.body_bytes.clone(),
+                        headers: resp.headers.clone(),
+                        final_url: String::new(),
+                        browser_extras: None,
+                    };
+                    let waf_signal = waf_classifier.and_then(|c| match c.classify(&http_resp_for_hooks) {
+                        Ok(sig) => sig,
+                        Err(e) => {
+                            tracing::warn!(
+                                target: "kreuzcrawl::waf",
+                                error = %e,
+                                "classify failed"
+                            );
+                            None
                         }
                     });
+
+                    // Antibot post-response hook: fires after WAF classification,
+                    // before the retry policy. The hook's Decision overrides the policy
+                    // for this attempt when it returns anything other than Accept.
+                    if let Some(strategy) = &antibot_strategy {
+                        match strategy.post_response(&http_resp_for_hooks, waf_signal.as_ref()).await {
+                            crate::types::Decision::Accept => {
+                                // Fall through to retry policy below.
+                            }
+                            crate::types::Decision::Retry { backoff } => {
+                                tokio::time::sleep(backoff).await;
+                                attempt += 1;
+                                continue;
+                            }
+                            crate::types::Decision::RotateProxy => {
+                                tracing::warn!(
+                                    target: "kreuzcrawl::antibot",
+                                    url,
+                                    "RotateProxy decision received but proxy pool is not yet implemented; \
+                                     treating as Accept"
+                                );
+                                // No-op fallthrough — proxy pool is a future follow-up.
+                            }
+                            crate::types::Decision::EscalateBrowser => {
+                                let reason = crate::types::EscalationReason::AntibotEscalate;
+                                if let Some(next) = Self::next_tier(current_tier, effective_strategy)
+                                    && budget.try_consume(Self::tier_cost_cents(next)).await.is_ok()
+                                {
+                                    crate::telemetry::metrics::registry().backend_escalations_total.add(
+                                        1,
+                                        &[
+                                            KeyValue::new("from_tier", Self::tier_name(current_tier)),
+                                            KeyValue::new("to_tier", Self::tier_name(next)),
+                                            KeyValue::new("reason", escalation_reason_label(&reason)),
+                                        ],
+                                    );
+                                    last_escalation_reason = Some(Self::escalation_reason_str(&reason));
+                                    current_tier = next;
+                                    attempt = 0;
+                                    continue;
+                                }
+                                // No next tier or budget exhausted.
+                                Self::emit_dispatch_span(
+                                    url,
+                                    &tiers_attempted,
+                                    last_escalation_reason,
+                                    attempt,
+                                    policy_name,
+                                    last_content_density,
+                                );
+                                return Err(Self::escalation_reason_to_error(&reason, url));
+                            }
+                        }
+                    }
 
                     // Track last successful response for the cap-exceeded fallback path.
                     last_ok = Some((resp.clone(), browser_used));
@@ -318,7 +396,7 @@ impl CrawlEngine {
                             if let Some(next) = Self::next_tier(current_tier, effective_strategy)
                                 && budget.try_consume(Self::tier_cost_cents(next)).await.is_ok()
                             {
-                                escalations_counter().add(
+                                crate::telemetry::metrics::registry().backend_escalations_total.add(
                                     1,
                                     &[
                                         KeyValue::new("from_tier", Self::tier_name(current_tier)),
@@ -409,7 +487,7 @@ impl CrawlEngine {
                             if let Some(next) = Self::next_tier(current_tier, effective_strategy)
                                 && budget.try_consume(Self::tier_cost_cents(next)).await.is_ok()
                             {
-                                escalations_counter().add(
+                                crate::telemetry::metrics::registry().backend_escalations_total.add(
                                     1,
                                     &[
                                         KeyValue::new("from_tier", Self::tier_name(current_tier)),
@@ -558,6 +636,10 @@ impl CrawlEngine {
             EscalationReason::OriginUnreliable => {
                 CrawlError::ServerError(format!("origin_unreliable and no escalation target: {url}"))
             }
+            EscalationReason::AntibotEscalate => CrawlError::WafBlocked {
+                vendor: "antibot".to_string(),
+                message: format!("antibot strategy forced browser escalation at {url}"),
+            },
         }
     }
 
@@ -633,6 +715,7 @@ impl CrawlEngine {
             EscalationReason::SoftBlock => "soft_block",
             EscalationReason::RenderNeeded => "render_needed",
             EscalationReason::OriginUnreliable => "origin_unreliable",
+            EscalationReason::AntibotEscalate => "antibot_escalate",
         }
     }
 

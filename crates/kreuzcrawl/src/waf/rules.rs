@@ -8,11 +8,9 @@
 
 use std::collections::HashMap;
 use std::path::Path;
-use std::sync::OnceLock;
 
 use aho_corasick::{AhoCorasick, AhoCorasickBuilder, MatchKind};
-use opentelemetry::metrics::Counter;
-use opentelemetry::{KeyValue, global};
+use opentelemetry::KeyValue;
 use serde::Deserialize;
 use thiserror::Error;
 
@@ -29,21 +27,6 @@ pub(crate) const MAX_FINGERPRINTS: usize = 1_000;
 pub(crate) const MAX_PATTERN_LEN: usize = 4_096;
 /// Maximum number of signals per fingerprint.
 pub(crate) const MAX_SIGNALS_PER_FINGERPRINT: usize = 16;
-
-// ---------------------------------------------------------------------------
-// OTel counter
-// ---------------------------------------------------------------------------
-
-static WAF_MATCH_COUNTER: OnceLock<Counter<u64>> = OnceLock::new();
-
-fn waf_match_counter() -> &'static Counter<u64> {
-    WAF_MATCH_COUNTER.get_or_init(|| {
-        global::meter("kreuzcrawl")
-            .u64_counter("kreuzcrawl_waf_fingerprint_matches_total")
-            .with_description("Per-fingerprint WAF match count for rot detection")
-            .build()
-    })
-}
 
 // ---------------------------------------------------------------------------
 // TOML schema types
@@ -357,13 +340,9 @@ impl Rules {
                     fingerprint_id: fingerprint.id.clone(),
                     weight: fingerprint.weight,
                 };
-                waf_match_counter().add(
-                    1,
-                    &[
-                        KeyValue::new("fingerprint_id", signal.fingerprint_id.clone()),
-                        KeyValue::new("vendor", signal.vendor.clone()),
-                    ],
-                );
+                crate::telemetry::metrics::registry()
+                    .waf_blocks_total
+                    .add(1, &[KeyValue::new("vendor", signal.vendor.clone())]);
                 return Ok(Some(signal));
             }
         }
@@ -392,13 +371,9 @@ impl Rules {
                     fingerprint_id: fingerprint.id.clone(),
                     weight: fingerprint.weight,
                 };
-                waf_match_counter().add(
-                    1,
-                    &[
-                        KeyValue::new("fingerprint_id", signal.fingerprint_id.clone()),
-                        KeyValue::new("vendor", signal.vendor.clone()),
-                    ],
-                );
+                crate::telemetry::metrics::registry()
+                    .waf_blocks_total
+                    .add(1, &[KeyValue::new("vendor", signal.vendor.clone())]);
                 return Ok(Some(signal));
             }
         }

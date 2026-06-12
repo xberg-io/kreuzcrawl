@@ -1,15 +1,53 @@
 //! Native browser backend adapter — standalone module so it can be used both
 //! when only `browser-native` is active and when the full `browser` feature is on.
 
+use std::sync::atomic::{AtomicU64, Ordering as AtomicOrdering};
 use std::time::Duration;
 
 use kreuzcrawl_browser::adapter::{NativeBrowserExecutor, NativeCookie as NBCookie};
+use tracing::Instrument as _;
 
 use crate::error::CrawlError;
 use crate::http::{BrowserExtras, HttpResponse};
+use crate::telemetry::attributes::{CRAWL_BROWSER_BACKEND, CRAWL_BROWSER_SESSION_ID, CRAWL_PAGES_RENDERED};
+use crate::telemetry::metrics::registry;
 use crate::types::{AuthConfig, BrowserWait, CookieInfo, CrawlConfig, ResponseMeta};
 
+/// Process-wide monotonic session counter for `crawl.browser.session_id`.
+static NATIVE_SESSION_COUNTER: AtomicU64 = AtomicU64::new(1);
+
 pub(crate) async fn native_browser_fetch(
+    url: &str,
+    config: &CrawlConfig,
+    prior_cookies: Option<&[CookieInfo]>,
+    native_executor: &NativeBrowserExecutor,
+) -> Result<HttpResponse, CrawlError> {
+    let session_id = NATIVE_SESSION_COUNTER.fetch_add(1, AtomicOrdering::Relaxed);
+    let session_id_str = session_id.to_string();
+
+    let span = tracing::info_span!(
+        "crawl.browser.session",
+        { CRAWL_BROWSER_BACKEND } = "native",
+        { CRAWL_BROWSER_SESSION_ID } = %session_id_str,
+        { CRAWL_PAGES_RENDERED } = 1_i64,
+    );
+
+    registry().browser_sessions_active.add(1, &[]);
+    // Guard: decrement the active-session counter when this scope exits.
+    struct SessionGuard;
+    impl Drop for SessionGuard {
+        fn drop(&mut self) {
+            registry().browser_sessions_active.add(-1, &[]);
+        }
+    }
+    let _guard = SessionGuard;
+
+    native_browser_fetch_inner(url, config, prior_cookies, native_executor)
+        .instrument(span)
+        .await
+}
+
+async fn native_browser_fetch_inner(
     url: &str,
     config: &CrawlConfig,
     prior_cookies: Option<&[CookieInfo]>,
@@ -75,7 +113,7 @@ pub(crate) async fn native_browser_fetch(
         wait_until,
         extra_headers,
         respect_robots_txt: config.respect_robots_txt,
-        stealth: config.browser.stealth,
+        stealth: matches!(config.browser.mode, crate::types::BrowserMode::Stealth),
         proxy_url: resolved_proxy,
         prior_cookies: prior_native,
         block_url_patterns: config.browser.block_url_patterns.clone(),

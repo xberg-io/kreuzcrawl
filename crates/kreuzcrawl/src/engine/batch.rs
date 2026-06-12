@@ -6,8 +6,10 @@ use std::sync::Arc;
 use tokio::sync::Semaphore;
 use tokio::task::JoinSet;
 use tokio_stream::wrappers::ReceiverStream;
+use tracing::Instrument as _;
 
 use crate::error::CrawlError;
+use crate::telemetry::attributes::CRAWL_SEED_COUNT;
 use crate::types::*;
 
 use super::CrawlEngine;
@@ -102,6 +104,13 @@ impl CrawlEngine {
     /// Crawl multiple seed URLs, each following links to configured depth.
     /// Returns results paired with seed URLs as they complete.
     pub async fn batch_crawl(&self, urls: &[&str]) -> Vec<(String, Result<CrawlResult, CrawlError>)> {
+        let seed_count = urls.len();
+        let span = tracing::info_span!("crawl.engine.batch", { CRAWL_SEED_COUNT } = seed_count as i64,);
+
+        self.batch_crawl_inner(urls).instrument(span).await
+    }
+
+    async fn batch_crawl_inner(&self, urls: &[&str]) -> Vec<(String, Result<CrawlResult, CrawlError>)> {
         let max_concurrent = self.config.max_concurrent.unwrap_or(DEFAULT_MAX_CONCURRENT);
         let semaphore = Arc::new(Semaphore::new(max_concurrent));
         let mut join_set = JoinSet::new();

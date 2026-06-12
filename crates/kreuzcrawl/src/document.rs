@@ -5,9 +5,12 @@
 //! [`scrape`](crate::scrape) path and the multi-page crawl loop so the two
 //! cannot diverge.
 
+use opentelemetry::KeyValue;
 use sha2::{Digest, Sha256};
 use url::Url;
 
+use crate::telemetry::attributes::{CRAWL_MIME_TYPE, CRAWL_SIZE_BYTES, URL_FULL};
+use crate::telemetry::metrics::registry;
 use crate::types::{CrawlConfig, DownloadedDocument};
 
 /// Default cap on a downloaded document's size when `document_max_size` is unset.
@@ -56,6 +59,20 @@ pub(crate) fn build_downloaded_document(
         .map(|s| s.into());
 
     let size = content.len();
+
+    // crawl.document.download span (synchronous function — entered directly).
+    let _span = tracing::info_span!(
+        "crawl.document.download",
+        { URL_FULL } = url,
+        { CRAWL_MIME_TYPE } = %mime_type,
+        { CRAWL_SIZE_BYTES } = size as i64,
+    )
+    .entered();
+
+    registry()
+        .documents_discovered_total
+        .add(1, &[KeyValue::new("mime_type", mime_type.to_string())]);
+
     Some(DownloadedDocument {
         url: url.to_owned(),
         mime_type,

@@ -15,6 +15,8 @@ use url::Url;
 
 use std::collections::HashMap;
 
+use opentelemetry::KeyValue;
+
 use crate::error::CrawlError;
 use crate::helpers::{compile_regexes, fetch_robots_rules, find_ascii_case_insensitive};
 use crate::html::{
@@ -24,6 +26,8 @@ use crate::html::{
 use crate::http::{build_client, extract_cookies_from_hashmap};
 use crate::normalize::{normalize_url, normalize_url_for_dedup, resolve_redirect, strip_fragment};
 use crate::robots::{RobotsRules, is_path_allowed};
+use crate::telemetry::attributes::{CRAWL_ALLOWED, CRAWL_HOST, URL_DOMAIN};
+use crate::telemetry::metrics::registry;
 use crate::traits::*;
 use crate::types::*;
 
@@ -614,11 +618,26 @@ impl CrawlEngine {
             *urls_filtered += 1;
             return false;
         }
-        if let Some(rules) = robots_rules
-            && !is_path_allowed(path, rules)
-        {
-            *urls_filtered += 1;
-            return false;
+        if let Some(rules) = robots_rules {
+            let host = page_parsed.host_str().unwrap_or("");
+            let allowed = is_path_allowed(path, rules);
+
+            // crawl.robots.check span — synchronous (non-async method), entered directly.
+            let _span = tracing::info_span!(
+                "crawl.robots.check",
+                { URL_DOMAIN } = host,
+                { CRAWL_HOST } = host,
+                { CRAWL_ALLOWED } = allowed,
+            )
+            .entered();
+
+            if !allowed {
+                registry()
+                    .robots_blocked_total
+                    .add(1, &[KeyValue::new("host", host.to_owned())]);
+                *urls_filtered += 1;
+                return false;
+            }
         }
 
         true

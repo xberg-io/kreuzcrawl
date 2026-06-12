@@ -34,6 +34,20 @@ pub enum BrowserMode {
     Always,
     /// Never use the browser fallback.
     Never,
+    /// Always use the browser with all stealth surfaces enabled.
+    ///
+    /// Behaves like [`Always`](BrowserMode::Always) for escalation purposes
+    /// (every request is routed through the browser tier), but additionally
+    /// enables:
+    ///
+    /// - chromiumoxide JS patches (`crate::stealth::apply_stealth_patches`)
+    /// - native-backend TLS fingerprint spoofing
+    /// - stealth-aware default user-agent when no explicit UA is set
+    /// - 1920×1080 viewport override
+    ///
+    /// Use this instead of setting the now-removed `BrowserConfig.stealth`
+    /// boolean field.
+    Stealth,
 }
 
 /// Wait strategy for browser page rendering.
@@ -224,11 +238,6 @@ pub struct BrowserConfig {
     /// Extra time to wait after the wait condition is met.
     #[serde(default, with = "option_duration_ms")]
     pub extra_wait: Option<Duration>,
-    /// Enable browser-realistic TLS fingerprint via the stealth HTTP client.
-    /// Only honored by `BrowserBackend::Native` — chromiumoxide is already
-    /// full-stealth via Chrome's TLS stack.
-    #[serde(default)]
-    pub stealth: bool,
     /// Proxy for browser fetches. Overrides `CrawlConfig.proxy` when set.
     /// Native backend supports http/https only (no SOCKS5).
     #[serde(default)]
@@ -270,7 +279,6 @@ impl Default for BrowserConfig {
             wait: BrowserWait::default(),
             wait_selector: None,
             extra_wait: None,
-            stealth: false,
             proxy: None,
             block_url_patterns: Vec::new(),
             eval_script: None,

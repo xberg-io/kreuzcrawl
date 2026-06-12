@@ -7,6 +7,7 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 use std::time::Duration;
 
+use super::antibot::DynAntibotStrategy;
 use super::bypass::DynBypassProvider;
 use super::config::{AuthConfig, BrowserConfig, ContentConfig, CrawlConfig, ProxyConfig};
 use super::discovery::AssetCategory;
@@ -336,6 +337,15 @@ impl DispatchProfileBuilder {
     /// Set the maximum total fetch attempts across all tiers.
     pub fn max_total_attempts(mut self, value: u32) -> Self {
         self.inner.max_total_attempts = value;
+        self
+    }
+
+    /// Set the pluggable antibot hook pair.
+    ///
+    /// When set, `pre_request` fires before each fetch and `post_response`
+    /// fires between WAF classification and the retry policy.
+    pub fn antibot_strategy(mut self, strategy: DynAntibotStrategy) -> Self {
+        self.inner.antibot_strategy = Some(strategy);
         self
     }
 

@@ -1,5 +1,6 @@
 //! Public types used across the kreuzcrawl crate.
 
+pub mod antibot;
 mod builder;
 mod bypass;
 mod config;
@@ -10,6 +11,7 @@ mod results;
 #[cfg(not(target_arch = "wasm32"))]
 mod streaming;
 
+pub use antibot::{AntibotStrategy, Decision};
 pub use builder::{CrawlConfigBuilder, DispatchProfileBuilder};
 pub use bypass::{BypassProvider, BypassResponse, DynBypassProvider};
 pub use config::{

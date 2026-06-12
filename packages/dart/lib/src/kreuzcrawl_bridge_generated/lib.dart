@@ -531,11 +531,6 @@ class BrowserConfig {
   /// Extra time to wait after the wait condition is met.
   final PlatformInt64? extraWait;
 
-  /// Enable browser-realistic TLS fingerprint via the stealth HTTP client.
-  /// Only honored by `BrowserBackend::Native` — chromiumoxide is already
-  /// full-stealth via Chrome's TLS stack.
-  final bool stealth;
-
   /// Proxy for browser fetches. Overrides `CrawlConfig.proxy` when set.
   /// Native backend supports http/https only (no SOCKS5).
   final ProxyConfig? proxy;
@@ -573,7 +568,6 @@ class BrowserConfig {
     required this.wait,
     this.waitSelector,
     this.extraWait,
-    required this.stealth,
     this.proxy,
     required this.blockUrlPatterns,
     this.evalScript,
@@ -591,7 +585,6 @@ class BrowserConfig {
       wait.hashCode ^
       waitSelector.hashCode ^
       extraWait.hashCode ^
-      stealth.hashCode ^
       proxy.hashCode ^
       blockUrlPatterns.hashCode ^
       evalScript.hashCode ^
@@ -611,7 +604,6 @@ class BrowserConfig {
           wait == other.wait &&
           waitSelector == other.waitSelector &&
           extraWait == other.extraWait &&
-          stealth == other.stealth &&
           proxy == other.proxy &&
           blockUrlPatterns == other.blockUrlPatterns &&
           evalScript == other.evalScript &&
@@ -665,6 +657,21 @@ enum BrowserMode {
 
   /// Never use the browser fallback.
   never,
+
+  /// Always use the browser with all stealth surfaces enabled.
+  ///
+  /// Behaves like [`Always`](BrowserMode::Always) for escalation purposes
+  /// (every request is routed through the browser tier), but additionally
+  /// enables:
+  ///
+  /// - chromiumoxide JS patches (`crate::stealth::apply_stealth_patches`)
+  /// - native-backend TLS fingerprint spoofing
+  /// - stealth-aware default user-agent when no explicit UA is set
+  /// - 1920×1080 viewport override
+  ///
+  /// Use this instead of setting the now-removed `BrowserConfig.stealth`
+  /// boolean field.
+  stealth,
 }
 
 /// Wait strategy for browser page rendering.

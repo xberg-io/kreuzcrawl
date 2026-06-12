@@ -65,7 +65,7 @@ fn build_native_config(config: &CrawlConfig) -> NativeBrowserConfig {
         wait_until,
         extra_headers,
         respect_robots_txt: config.respect_robots_txt,
-        stealth: config.browser.stealth,
+        stealth: matches!(config.browser.mode, crate::types::BrowserMode::Stealth),
         proxy_url: resolved_proxy(config),
         prior_cookies: Vec::<NativeCookie>::new(),
         block_url_patterns: config.browser.block_url_patterns.clone(),

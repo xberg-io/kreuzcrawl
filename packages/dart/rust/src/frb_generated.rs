@@ -1445,7 +1445,6 @@ const _: fn() = || {
         let _: crate::BrowserWait = BrowserConfig.wait;
         let _: Option<String> = BrowserConfig.wait_selector;
         let _: Option<i64> = BrowserConfig.extra_wait;
-        let _: bool = BrowserConfig.stealth;
         let _: Option<crate::ProxyConfig> = BrowserConfig.proxy;
         let _: Vec<String> = BrowserConfig.block_url_patterns;
         let _: Option<String> = BrowserConfig.eval_script;
@@ -2109,7 +2108,6 @@ impl SseDecode for crate::BrowserConfig {
         let mut var_wait = <crate::BrowserWait>::sse_decode(deserializer);
         let mut var_waitSelector = <Option<String>>::sse_decode(deserializer);
         let mut var_extraWait = <Option<i64>>::sse_decode(deserializer);
-        let mut var_stealth = <bool>::sse_decode(deserializer);
         let mut var_proxy = <Option<crate::ProxyConfig>>::sse_decode(deserializer);
         let mut var_blockUrlPatterns = <Vec<String>>::sse_decode(deserializer);
         let mut var_evalScript = <Option<String>>::sse_decode(deserializer);
@@ -2124,7 +2122,6 @@ impl SseDecode for crate::BrowserConfig {
             wait: var_wait,
             wait_selector: var_waitSelector,
             extra_wait: var_extraWait,
-            stealth: var_stealth,
             proxy: var_proxy,
             block_url_patterns: var_blockUrlPatterns,
             eval_script: var_evalScript,
@@ -2157,6 +2154,7 @@ impl SseDecode for crate::BrowserMode {
             0 => crate::BrowserMode::Auto,
             1 => crate::BrowserMode::Always,
             2 => crate::BrowserMode::Never,
+            3 => crate::BrowserMode::Stealth,
             _ => unreachable!("Invalid variant for BrowserMode: {}", inner),
         };
     }
@@ -3856,7 +3854,6 @@ impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::BrowserConfig> {
             self.0.wait.into_into_dart().into_dart(),
             self.0.wait_selector.into_into_dart().into_dart(),
             self.0.extra_wait.into_into_dart().into_dart(),
-            self.0.stealth.into_into_dart().into_dart(),
             self.0.proxy.into_into_dart().into_dart(),
             self.0.block_url_patterns.into_into_dart().into_dart(),
             self.0.eval_script.into_into_dart().into_dart(),
@@ -3897,6 +3894,7 @@ impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::BrowserMode> {
             crate::BrowserMode::Auto => 0.into_dart(),
             crate::BrowserMode::Always => 1.into_dart(),
             crate::BrowserMode::Never => 2.into_dart(),
+            crate::BrowserMode::Stealth => 3.into_dart(),
             _ => unreachable!(),
         }
     }
@@ -4902,7 +4900,6 @@ impl SseEncode for crate::BrowserConfig {
         <crate::BrowserWait>::sse_encode(self.wait, serializer);
         <Option<String>>::sse_encode(self.wait_selector, serializer);
         <Option<i64>>::sse_encode(self.extra_wait, serializer);
-        <bool>::sse_encode(self.stealth, serializer);
         <Option<crate::ProxyConfig>>::sse_encode(self.proxy, serializer);
         <Vec<String>>::sse_encode(self.block_url_patterns, serializer);
         <Option<String>>::sse_encode(self.eval_script, serializer);
@@ -4929,6 +4926,7 @@ impl SseEncode for crate::BrowserMode {
                 crate::BrowserMode::Auto => 0,
                 crate::BrowserMode::Always => 1,
                 crate::BrowserMode::Never => 2,
+                crate::BrowserMode::Stealth => 3,
                 _ => {
                     unimplemented!("");
                 }

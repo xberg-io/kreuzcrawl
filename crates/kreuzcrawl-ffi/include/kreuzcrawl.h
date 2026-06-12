@@ -677,13 +677,6 @@ char *kcrawl_browser_config_wait_selector(const KCRAWLBrowserConfig *ptr);
 uint64_t kcrawl_browser_config_extra_wait(const KCRAWLBrowserConfig *ptr);
 
 /**
- * Get the `stealth` field from a `BrowserConfig`.
- * # Safety
- * Pointer must be a valid handle returned by this library.
- */
-int32_t kcrawl_browser_config_stealth(const KCRAWLBrowserConfig *ptr);
-
-/**
  * Get the `proxy` field from a `BrowserConfig`.
  * # Safety
  * Pointer must be a valid handle returned by this library.

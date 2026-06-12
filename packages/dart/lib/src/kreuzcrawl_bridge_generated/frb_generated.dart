@@ -2098,8 +2098,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   BrowserConfig dco_decode_browser_config(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 14)
-      throw Exception('unexpected arr length: expect 14 but see ${arr.length}');
+    if (arr.length != 13)
+      throw Exception('unexpected arr length: expect 13 but see ${arr.length}');
     return BrowserConfig(
       mode: dco_decode_browser_mode(arr[0]),
       backend: dco_decode_browser_backend(arr[1]),
@@ -2108,13 +2108,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       wait: dco_decode_browser_wait(arr[4]),
       waitSelector: dco_decode_opt_String(arr[5]),
       extraWait: dco_decode_opt_box_autoadd_i_64(arr[6]),
-      stealth: dco_decode_bool(arr[7]),
-      proxy: dco_decode_opt_box_autoadd_proxy_config(arr[8]),
-      blockUrlPatterns: dco_decode_list_String(arr[9]),
-      evalScript: dco_decode_opt_String(arr[10]),
-      robotsUserAgent: dco_decode_opt_String(arr[11]),
-      captureNetworkEvents: dco_decode_bool(arr[12]),
-      sessionAffinity: dco_decode_bool(arr[13]),
+      proxy: dco_decode_opt_box_autoadd_proxy_config(arr[7]),
+      blockUrlPatterns: dco_decode_list_String(arr[8]),
+      evalScript: dco_decode_opt_String(arr[9]),
+      robotsUserAgent: dco_decode_opt_String(arr[10]),
+      captureNetworkEvents: dco_decode_bool(arr[11]),
+      sessionAffinity: dco_decode_bool(arr[12]),
     );
   }
 
@@ -3385,7 +3384,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_wait = sse_decode_browser_wait(deserializer);
     var var_waitSelector = sse_decode_opt_String(deserializer);
     var var_extraWait = sse_decode_opt_box_autoadd_i_64(deserializer);
-    var var_stealth = sse_decode_bool(deserializer);
     var var_proxy = sse_decode_opt_box_autoadd_proxy_config(deserializer);
     var var_blockUrlPatterns = sse_decode_list_String(deserializer);
     var var_evalScript = sse_decode_opt_String(deserializer);
@@ -3400,7 +3398,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       wait: var_wait,
       waitSelector: var_waitSelector,
       extraWait: var_extraWait,
-      stealth: var_stealth,
       proxy: var_proxy,
       blockUrlPatterns: var_blockUrlPatterns,
       evalScript: var_evalScript,
@@ -5124,7 +5121,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_browser_wait(self.wait, serializer);
     sse_encode_opt_String(self.waitSelector, serializer);
     sse_encode_opt_box_autoadd_i_64(self.extraWait, serializer);
-    sse_encode_bool(self.stealth, serializer);
     sse_encode_opt_box_autoadd_proxy_config(self.proxy, serializer);
     sse_encode_list_String(self.blockUrlPatterns, serializer);
     sse_encode_opt_String(self.evalScript, serializer);
