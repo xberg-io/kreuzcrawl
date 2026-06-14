@@ -80,6 +80,7 @@ encoding_rs = { workspace = true }
 flate2 = { workspace = true }
 futures = { workspace = true }
 html-to-markdown-rs = { workspace = true }
+ipnet = { workspace = true }
 kreuzcrawl-browser = { workspace = true, optional = true }
 liter-llm = { workspace = true, optional = true }
 memchr = { workspace = true }
@@ -139,6 +140,7 @@ async-trait = { workspace = true }
 criterion = { workspace = true }
 proptest = { workspace = true }
 serde_json = { workspace = true }
+serial_test = "3"
 tempfile = { workspace = true }
 tokio = { workspace = true }
 tokio-stream = { workspace = true }

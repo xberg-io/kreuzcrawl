@@ -11,6 +11,7 @@ use tower::Service;
 
 use super::types::{CrawlRequest, CrawlResponse};
 use crate::error::{CrawlError, classify_reqwest_error};
+use crate::net::ssrf::validate_url;
 use crate::types::CrawlConfig;
 
 /// Innermost Tower service that performs the actual HTTP fetch.
@@ -37,22 +38,19 @@ fn is_retryable(e: &CrawlError) -> bool {
     )
 }
 
-/// Perform a single HTTP fetch (no retry).
-async fn do_fetch(
-    client: &reqwest::Client,
+/// Helper to apply auth and custom headers to a request builder.
+fn apply_headers(
+    mut req: reqwest::RequestBuilder,
     config: &CrawlConfig,
-    req: &CrawlRequest,
-) -> Result<CrawlResponse, CrawlError> {
-    // Build reqwest request
-    let mut http_req = client.get(&req.url);
-
+    crawl_req: &CrawlRequest,
+) -> reqwest::RequestBuilder {
     // Set user-agent (skip if request-level headers already provide one,
     // e.g. from the UaRotationLayer)
-    if !req.headers.contains_key("user-agent") {
+    if !crawl_req.headers.contains_key("user-agent") {
         if let Some(ref ua) = config.user_agent {
-            http_req = http_req.header(reqwest::header::USER_AGENT, ua.as_str());
+            req = req.header(reqwest::header::USER_AGENT, ua.as_str());
         } else {
-            http_req = http_req.header(
+            req = req.header(
                 reqwest::header::USER_AGENT,
                 concat!("kreuzcrawl/", env!("CARGO_PKG_VERSION")),
             );
@@ -63,148 +61,223 @@ async fn do_fetch(
     if let Some(ref auth) = config.auth {
         match auth {
             crate::types::AuthConfig::Basic { username, password } => {
-                http_req = http_req.basic_auth(username, Some(password));
+                req = req.basic_auth(username, Some(password));
             }
             crate::types::AuthConfig::Bearer { token } => {
-                http_req = http_req.bearer_auth(token);
+                req = req.bearer_auth(token);
             }
             crate::types::AuthConfig::Header { name, value } => {
-                http_req = http_req.header(name.as_str(), value.as_str());
+                req = req.header(name.as_str(), value.as_str());
             }
         }
     }
 
     // Config custom headers
     for (k, v) in &config.custom_headers {
-        http_req = http_req.header(k.as_str(), v.as_str());
+        req = req.header(k.as_str(), v.as_str());
     }
 
     // Request-level headers (from middleware layers)
-    for (k, v) in &req.headers {
-        http_req = http_req.header(k.as_str(), v.as_str());
+    for (k, v) in &crawl_req.headers {
+        req = req.header(k.as_str(), v.as_str());
     }
 
-    // Send
-    let resp = http_req.send().await.map_err(|e| classify_reqwest_error(&e))?;
+    req
+}
 
-    let status = resp.status().as_u16();
-    let content_type = resp
-        .headers()
-        .get_all(reqwest::header::CONTENT_TYPE)
-        .iter()
-        .next_back()
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("")
-        .to_owned();
+/// Perform a single HTTP fetch (no retry) with SSRF validation and manual redirect handling.
+async fn do_fetch(
+    client: &reqwest::Client,
+    config: &CrawlConfig,
+    req: &CrawlRequest,
+) -> Result<CrawlResponse, CrawlError> {
+    // Parse and validate the initial URL against SSRF policy
+    let initial_url = url::Url::parse(&req.url).map_err(|e| CrawlError::SsrfPolicyViolation {
+        url: req.url.clone(),
+        reason: format!("invalid URL: {e}"),
+    })?;
 
-    // Extract headers into HashMap<String, Vec<String>>
-    let mut headers: HashMap<String, Vec<String>> = HashMap::new();
-    for (name, value) in resp.headers().iter() {
-        if let Ok(v) = value.to_str() {
-            headers
-                .entry(name.as_str().to_lowercase())
-                .or_default()
-                .push(v.to_string());
+    validate_url(&initial_url, &config.ssrf)
+        .await
+        .map_err(|e| CrawlError::SsrfPolicyViolation {
+            url: req.url.clone(),
+            reason: e.to_string(),
+        })?;
+
+    // Manual redirect loop with per-hop SSRF validation
+    let mut current_url = initial_url.clone();
+    let mut redirects_followed = 0u8;
+
+    loop {
+        let http_req = apply_headers(client.get(current_url.to_string()), config, req);
+
+        // Send
+        let resp = http_req.send().await.map_err(|e| classify_reqwest_error(&e))?;
+
+        let status = resp.status().as_u16();
+        let content_type = resp
+            .headers()
+            .get_all(reqwest::header::CONTENT_TYPE)
+            .iter()
+            .next_back()
+            .and_then(|v| v.to_str().ok())
+            .unwrap_or("")
+            .to_owned();
+
+        // Extract headers into HashMap<String, Vec<String>>
+        let mut headers: HashMap<String, Vec<String>> = HashMap::new();
+        for (name, value) in resp.headers().iter() {
+            if let Ok(v) = value.to_str() {
+                headers
+                    .entry(name.as_str().to_lowercase())
+                    .or_default()
+                    .push(v.to_string());
+            }
         }
-    }
 
-    // Check error status codes
-    match status {
-        401 => return Err(CrawlError::Unauthorized("unauthorized".into())),
-        403 => {
+        // Handle redirects: parse Location header if 3xx
+        if (300..400).contains(&status) {
+            let location_header = headers.get("location").and_then(|v| v.first()).map(|s| s.as_str());
+
+            if let Some(location) = location_header {
+                // Parse the redirect target relative to the current URL
+                let next_url = match current_url.join(location) {
+                    Ok(u) => u,
+                    Err(_) => {
+                        // If relative URL join fails, return the redirect response as-is
+                        let body_bytes = resp.bytes().await.unwrap_or_default().to_vec();
+                        let body = String::from_utf8_lossy(&body_bytes).into_owned();
+                        return Ok(CrawlResponse {
+                            status,
+                            content_type,
+                            body,
+                            body_bytes,
+                            headers,
+                        });
+                    }
+                };
+
+                // Validate the redirect target against SSRF policy
+                if let Err(e) = validate_url(&next_url, &config.ssrf).await {
+                    return Err(CrawlError::SsrfPolicyViolation {
+                        url: next_url.to_string(),
+                        reason: e.to_string(),
+                    });
+                }
+
+                // Check redirect limit
+                redirects_followed += 1;
+                if redirects_followed > config.ssrf.max_redirects {
+                    return Err(CrawlError::SsrfPolicyViolation {
+                        url: next_url.to_string(),
+                        reason: "too many redirects".to_string(),
+                    });
+                }
+
+                current_url = next_url;
+                continue;
+            }
+        }
+
+        // Not a redirect or no Location header: process the response body and return
+        // Check error status codes
+        match status {
+            401 => return Err(CrawlError::Unauthorized("unauthorized".into())),
+            403 => {
+                let server = headers
+                    .get("server")
+                    .and_then(|v| v.first())
+                    .map(|s| s.to_lowercase())
+                    .unwrap_or_default();
+                let body = resp.text().await.unwrap_or_default();
+                if crate::http::is_waf_blocked(&server, &body, &headers) {
+                    let vendor = crate::http::detect_waf_vendor(&server, &body.to_lowercase());
+                    return Err(CrawlError::WafBlocked {
+                        message: format!("waf/blocked detected: {vendor}"),
+                        vendor,
+                    });
+                }
+                return Err(CrawlError::Forbidden("forbidden".into()));
+            }
+            404 => return Err(CrawlError::NotFound(format!("not_found: {}", req.url))),
+            408 => return Err(CrawlError::Timeout("timeout".into())),
+            410 => return Err(CrawlError::Gone("gone".into())),
+            429 => return Err(CrawlError::RateLimited("rate_limited".into())),
+            500 => return Err(CrawlError::ServerError("server_error".into())),
+            502 => return Err(CrawlError::BadGateway("bad_gateway".into())),
+            503 => {
+                return Err(CrawlError::ServerError("service unavailable".into()));
+            }
+            _ => {}
+        }
+
+        let body_bytes = resp.bytes().await.map_err(|e| {
+            // Walk the error source chain to detect body/data-loss errors that
+            // reqwest wraps in generic errors.
+            let chain = crate::error::error_chain_string(&e);
+            let is_body_error = chain.contains("content-length")
+                || chain.contains("truncat")
+                || chain.contains("incomplete")
+                || chain.contains("end of file")
+                || chain.contains("body error")
+                || chain.contains("body from connection")
+                || chain.contains("decoding response body")
+                || chain.contains("error decoding");
+            #[cfg(not(target_arch = "wasm32"))]
+            let is_body_error = is_body_error || e.is_body();
+            if is_body_error {
+                CrawlError::DataLoss(format!("data_loss: {e}"))
+            } else {
+                classify_reqwest_error(&e)
+            }
+        })?;
+
+        let body_vec = body_bytes.to_vec();
+
+        // Content-length validation
+        if let Some(expected) = headers
+            .get("content-length")
+            .and_then(|v| v.first())
+            .and_then(|s| s.parse::<usize>().ok())
+            && body_vec.len() < expected
+            && expected - body_vec.len() > 100
+        {
+            return Err(CrawlError::DataLoss(format!(
+                "data_loss: expected {} bytes, got {}",
+                expected,
+                body_vec.len()
+            )));
+        }
+
+        let body = String::from_utf8_lossy(&body_vec).into_owned();
+
+        // WAF challenge detection on 200 responses.
+        // Some WAFs (AWS WAF, Akamai) return 200 with a challenge page instead of 403.
+        // Check short bodies for WAF patterns to catch these false positives.
+        #[cfg(not(target_arch = "wasm32"))]
+        {
             let server = headers
                 .get("server")
                 .and_then(|v| v.first())
                 .map(|s| s.to_lowercase())
                 .unwrap_or_default();
-            let body = resp.text().await.unwrap_or_default();
-            if crate::http::is_waf_blocked(&server, &body, &headers) {
+            if status == 200 && body.len() < 5000 && crate::http::is_waf_blocked(&server, &body, &headers) {
                 let vendor = crate::http::detect_waf_vendor(&server, &body.to_lowercase());
                 return Err(CrawlError::WafBlocked {
-                    message: format!("waf/blocked detected: {vendor}"),
+                    message: format!("waf/blocked detected on 2xx (body): {vendor}"),
                     vendor,
                 });
             }
-            return Err(CrawlError::Forbidden("forbidden".into()));
         }
-        404 => return Err(CrawlError::NotFound(format!("not_found: {}", req.url))),
-        408 => return Err(CrawlError::Timeout("timeout".into())),
-        410 => return Err(CrawlError::Gone("gone".into())),
-        429 => return Err(CrawlError::RateLimited("rate_limited".into())),
-        500 => return Err(CrawlError::ServerError("server_error".into())),
-        502 => return Err(CrawlError::BadGateway("bad_gateway".into())),
-        503 => {
-            return Err(CrawlError::ServerError("service unavailable".into()));
-        }
-        _ => {}
+
+        return Ok(CrawlResponse {
+            status,
+            content_type,
+            body,
+            body_bytes: body_vec,
+            headers,
+        });
     }
-
-    let body_bytes = resp.bytes().await.map_err(|e| {
-        // Walk the error source chain to detect body/data-loss errors that
-        // reqwest wraps in generic errors.
-        let chain = crate::error::error_chain_string(&e);
-        let is_body_error = chain.contains("content-length")
-            || chain.contains("truncat")
-            || chain.contains("incomplete")
-            || chain.contains("end of file")
-            || chain.contains("body error")
-            || chain.contains("body from connection")
-            || chain.contains("decoding response body")
-            || chain.contains("error decoding");
-        #[cfg(not(target_arch = "wasm32"))]
-        let is_body_error = is_body_error || e.is_body();
-        if is_body_error {
-            CrawlError::DataLoss(format!("data_loss: {e}"))
-        } else {
-            classify_reqwest_error(&e)
-        }
-    })?;
-
-    let body_vec = body_bytes.to_vec();
-
-    // Content-length validation
-    if let Some(expected) = headers
-        .get("content-length")
-        .and_then(|v| v.first())
-        .and_then(|s| s.parse::<usize>().ok())
-        && body_vec.len() < expected
-        && expected - body_vec.len() > 100
-    {
-        return Err(CrawlError::DataLoss(format!(
-            "data_loss: expected {} bytes, got {}",
-            expected,
-            body_vec.len()
-        )));
-    }
-
-    let body = String::from_utf8_lossy(&body_vec).into_owned();
-
-    // WAF challenge detection on 200 responses.
-    // Some WAFs (AWS WAF, Akamai) return 200 with a challenge page instead of 403.
-    // Check short bodies for WAF patterns to catch these false positives.
-    #[cfg(not(target_arch = "wasm32"))]
-    {
-        let server = headers
-            .get("server")
-            .and_then(|v| v.first())
-            .map(|s| s.to_lowercase())
-            .unwrap_or_default();
-        if status == 200 && body.len() < 5000 && crate::http::is_waf_blocked(&server, &body, &headers) {
-            let vendor = crate::http::detect_waf_vendor(&server, &body.to_lowercase());
-            return Err(CrawlError::WafBlocked {
-                message: format!("waf/blocked detected on 2xx (body): {vendor}"),
-                vendor,
-            });
-        }
-    }
-
-    Ok(CrawlResponse {
-        status,
-        content_type,
-        body,
-        body_bytes: body_vec,
-        headers,
-    })
 }
 
 impl Service<CrawlRequest> for HttpFetchService {

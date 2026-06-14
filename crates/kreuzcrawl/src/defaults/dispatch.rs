@@ -105,6 +105,7 @@ impl RetryPolicy for SimpleRetryPolicy {
             | CrawlError::DataLoss(_)
             | CrawlError::BrowserError(_)
             | CrawlError::BrowserTimeout(_)
+            | CrawlError::SsrfPolicyViolation { .. }
             | CrawlError::Other(_) => RetryDirective::Stop,
         }
     }

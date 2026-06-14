@@ -41,6 +41,7 @@ nav = [
   { "Concepts" = [
     { "Architecture" = "concepts/architecture.md" },
     { "Content Extraction" = "concepts/content-extraction.md" },
+    { "SSRF Defense" = "concepts/ssrf-defense.md" },
   ] },
 
   { "Reference" = [

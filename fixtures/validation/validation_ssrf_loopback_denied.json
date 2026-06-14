@@ -1,0 +1,18 @@
+{
+	"id": "validation_ssrf_loopback_denied",
+	"description": "scrape() rejects loopback addresses by default SSRF policy",
+	"tags": ["validation", "ssrf"],
+	"assertions": [
+		{
+			"type": "error"
+		},
+		{
+			"type": "error",
+			"value": "ssrf_policy_violation"
+		}
+	],
+	"input": {
+		"url": "http://127.0.0.1:9/",
+		"config": {}
+	}
+}

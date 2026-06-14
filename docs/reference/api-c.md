@@ -449,6 +449,7 @@ Configuration for crawl, scrape, and map operations.
 | `warc_output` | `const char**` | `NULL` | Path to write WARC output. If `NULL`, WARC output is disabled. |
 | `browser_profile` | `const char**` | `NULL` | Named browser profile for persistent sessions (cookies, localStorage). |
 | `save_browser_profile` | `bool` | `false` | Whether to save changes back to the browser profile on exit. |
+| `ssrf` | `const char*` | — | SSRF policy for outbound network requests. Default: deny private networks, allow http/https only, max 5 redirects. Skipped from polyglot binding generation (`#[cfg_attr(alef, alef(skip))]`). Per-request override from language clients is unsupported in v1 — the policy is set at config-load (env + builder) from the Rust side. |
 | `dispatch` | `const char**` | `NULL` | Pluggable dispatch components: bypass provider, escalation strategy, retry policy, WAF classifier, domain state, escalation budget, and max_total_attempts. When `NULL`, the engine uses its built-in defaults (no bypass, `BrowserOnly` strategy, `SimpleRetryPolicy`, built-in WAF classifier, no domain state, unlimited budget, 10 total attempt cap). Not serializable — callers construct this at runtime and skip in TOML/JSON configs. |
 
 ### Methods
@@ -1076,6 +1077,7 @@ Errors that can occur during crawling, scraping, or mapping operations.
 | `KCRAWL_BROWSER_TIMEOUT` | The browser page load or rendering timed out. |
 | `KCRAWL_INVALID_CONFIG` | The provided configuration is invalid. |
 | `KCRAWL_UNSUPPORTED` | The requested capability is not supported by the active backend or build. |
+| `KCRAWL_SSRF_POLICY_VIOLATION` | A URL was rejected by SSRF policy (private IP, metadata, disallowed scheme, etc). |
 | `KCRAWL_OTHER` | An unclassified error occurred. |
 
 ---

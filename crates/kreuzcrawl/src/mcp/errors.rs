@@ -52,6 +52,10 @@ pub fn map_crawl_error(error: CrawlError) -> McpError {
 
         CrawlError::Unsupported(msg) => McpError::invalid_params(format!("Unsupported operation: {msg}"), None),
 
+        CrawlError::SsrfPolicyViolation { url, reason } => {
+            McpError::invalid_params(format!("SSRF policy violation for {url}: {reason}"), None)
+        }
+
         CrawlError::Other(msg) => McpError::internal_error(msg, None),
     }
 }

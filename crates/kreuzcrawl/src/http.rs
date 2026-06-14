@@ -6,6 +6,7 @@ use std::time::Duration;
 use reqwest::header::{CONTENT_TYPE, HeaderMap, USER_AGENT};
 
 use crate::error::{CrawlError, classify_reqwest_error, error_chain_string};
+use crate::net::ssrf::validate_url;
 #[cfg(not(target_arch = "wasm32"))]
 use crate::types::CookieInfo;
 use crate::types::WafClassifier;
@@ -63,204 +64,283 @@ pub struct HttpResponse {
 /// Perform a single HTTP GET request with the given configuration.
 ///
 /// Handles user-agent, authentication, custom headers, error status codes,
-/// and content-length validation.
+/// content-length validation, and SSRF policy enforcement.
+///
+/// SSRF validation is applied to the initial URL and to every redirect target
+/// (manual redirect loop to ensure policy applies to all hops).
 pub(crate) async fn http_fetch(
     url: &str,
     config: &CrawlConfig,
     extra_headers: &std::collections::HashMap<String, String>,
     client: &reqwest::Client,
 ) -> Result<HttpResponse, CrawlError> {
-    let mut req = client.get(url);
+    // Parse and validate the initial URL against SSRF policy
+    let initial_url = url::Url::parse(url).map_err(|e| CrawlError::SsrfPolicyViolation {
+        url: url.to_string(),
+        reason: format!("invalid URL: {e}"),
+    })?;
 
-    // Set user-agent
-    if let Some(ref ua) = config.user_agent {
-        req = req.header(USER_AGENT, ua.as_str());
-    } else {
-        req = req.header(USER_AGENT, concat!("kreuzcrawl/", env!("CARGO_PKG_VERSION")));
-    }
+    validate_url(&initial_url, &config.ssrf)
+        .await
+        .map_err(|e| CrawlError::SsrfPolicyViolation {
+            url: url.to_string(),
+            reason: e.to_string(),
+        })?;
 
-    // Auth
-    match config.auth {
-        Some(AuthConfig::Basic {
-            ref username,
-            ref password,
-        }) => {
-            req = req.basic_auth(username, Some(password));
+    // Manual redirect loop with per-hop SSRF validation
+    let mut current_url = initial_url.clone();
+    let mut final_url_str: String;
+    let mut redirects_followed = 0u8;
+
+    loop {
+        let mut req = client.get(current_url.to_string());
+
+        // Set user-agent
+        if let Some(ref ua) = config.user_agent {
+            req = req.header(USER_AGENT, ua.as_str());
+        } else {
+            req = req.header(USER_AGENT, concat!("kreuzcrawl/", env!("CARGO_PKG_VERSION")));
         }
-        Some(AuthConfig::Bearer { ref token }) => {
-            req = req.bearer_auth(token);
+
+        // Auth
+        match config.auth {
+            Some(AuthConfig::Basic {
+                ref username,
+                ref password,
+            }) => {
+                req = req.basic_auth(username, Some(password));
+            }
+            Some(AuthConfig::Bearer { ref token }) => {
+                req = req.bearer_auth(token);
+            }
+            Some(AuthConfig::Header { ref name, ref value }) => {
+                req = req.header(name.as_str(), value.as_str());
+            }
+            None => {}
         }
-        Some(AuthConfig::Header { ref name, ref value }) => {
-            req = req.header(name.as_str(), value.as_str());
+
+        // Custom headers
+        for (k, v) in &config.custom_headers {
+            req = req.header(k.as_str(), v.as_str());
         }
-        None => {}
-    }
 
-    // Custom headers
-    for (k, v) in &config.custom_headers {
-        req = req.header(k.as_str(), v.as_str());
-    }
+        // Apply middleware-provided headers (override config headers)
+        for (k, v) in extra_headers {
+            req = req.header(k.as_str(), v.as_str());
+        }
 
-    // Apply middleware-provided headers (override config headers)
-    for (k, v) in extra_headers {
-        req = req.header(k.as_str(), v.as_str());
-    }
+        let resp = req.send().await.map_err(|e| classify_reqwest_error(&e))?;
 
-    let resp = req.send().await.map_err(|e| classify_reqwest_error(&e))?;
+        let status = resp.status().as_u16();
+        final_url_str = resp.url().to_string();
 
-    let status = resp.status().as_u16();
-    // Capture the final URL before consuming the response. On native targets
-    // (redirect Policy::none) this equals the request URL. On wasm targets
-    // the browser follows redirects transparently, so this is the real
-    // post-redirect URL.
-    let final_url = resp.url().to_string();
+        // Get content type from the last value (wiremock appends headers)
+        let content_type = resp
+            .headers()
+            .get_all(CONTENT_TYPE)
+            .iter()
+            .next_back()
+            .and_then(|v| v.to_str().ok())
+            .unwrap_or("")
+            .to_owned();
 
-    // Get content type from the last value (wiremock appends headers)
-    let content_type = resp
-        .headers()
-        .get_all(CONTENT_TYPE)
-        .iter()
-        .next_back()
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("")
-        .to_owned();
+        let headers = resp.headers().clone();
 
-    let headers = resp.headers().clone();
+        // Handle redirects: parse Location header if 3xx
+        if (300..400).contains(&status) {
+            let location_header = headers
+                .get(reqwest::header::LOCATION)
+                .and_then(|v| v.to_str().ok())
+                .map(str::to_string);
 
-    // Check for error status codes
-    match status {
-        401 => return Err(CrawlError::Unauthorized("unauthorized".into())),
-        403 => {
-            let body = resp.text().await.unwrap_or_default();
-            let partial_response = build_partial_response(status, &body, &headers);
+            if let Some(location) = location_header {
+                // Parse the redirect target relative to the current URL
+                let next_url = match current_url.join(&location) {
+                    Ok(u) => u,
+                    Err(_) => {
+                        // If relative URL join fails, break and return the redirect response
+                        let body_bytes_vec = resp.bytes().await.unwrap_or_default().to_vec();
+                        let body = String::from_utf8_lossy(&body_bytes_vec).into_owned();
+                        let mut headers_map: std::collections::HashMap<String, Vec<String>> =
+                            std::collections::HashMap::new();
+                        for (name, value) in headers.iter() {
+                            if let Ok(v) = value.to_str() {
+                                headers_map
+                                    .entry(name.as_str().to_lowercase())
+                                    .or_default()
+                                    .push(v.to_string());
+                            }
+                        }
+                        return Ok(HttpResponse {
+                            status,
+                            content_type,
+                            body,
+                            body_bytes: body_bytes_vec,
+                            headers: headers_map,
+                            browser_extras: None,
+                            final_url: final_url_str,
+                        });
+                    }
+                };
+
+                // Validate the redirect target against SSRF policy
+                if let Err(e) = validate_url(&next_url, &config.ssrf).await {
+                    return Err(CrawlError::SsrfPolicyViolation {
+                        url: next_url.to_string(),
+                        reason: e.to_string(),
+                    });
+                }
+
+                // Check redirect limit
+                redirects_followed += 1;
+                if redirects_followed > config.ssrf.max_redirects {
+                    return Err(CrawlError::SsrfPolicyViolation {
+                        url: next_url.to_string(),
+                        reason: "too many redirects".to_string(),
+                    });
+                }
+
+                current_url = next_url;
+                continue;
+            }
+        }
+
+        // Not a redirect or no Location header: process the response body and return
+        // Check for error status codes
+        match status {
+            401 => return Err(CrawlError::Unauthorized("unauthorized".into())),
+            403 => {
+                let body = resp.text().await.unwrap_or_default();
+                let partial_response = build_partial_response(status, &body, &headers);
+                let classifier = TomlClassifier::builtin();
+                if let Ok(Some(signal)) = classifier.classify(&partial_response) {
+                    return Err(CrawlError::WafBlocked {
+                        vendor: signal.vendor.clone(),
+                        message: format!("waf/blocked detected: {}", signal.vendor),
+                    });
+                }
+                return Err(CrawlError::Forbidden("forbidden".into()));
+            }
+            404 => return Err(CrawlError::NotFound(format!("not_found: {url}"))),
+            408 => return Err(CrawlError::Timeout("timeout: request timed out".into())),
+            410 => return Err(CrawlError::Gone("gone".into())),
+            429 => return Err(CrawlError::RateLimited("rate_limited".into())),
+            500 => return Err(CrawlError::ServerError("server_error".into())),
+            502 => return Err(CrawlError::BadGateway("bad_gateway".into())),
+            503 => {
+                return Err(CrawlError::ServerError("server_error: service unavailable".into()));
+            }
+            _ => {}
+        }
+
+        // 2xx interstitial detection (header-only): modern Cloudflare /
+        // DataDome / PerimeterX serve their JS challenge with 200 OK, not 403.
+        // Without this check the challenge page body is fed downstream as if
+        // it were real content.
+        //
+        // `Rules::classify` runs a header-first short-circuit (Pass 1) over all
+        // header-only TOML fingerprints before the AC body scan, so passing a
+        // zero-length body here is sufficient to trigger any header-stamp match
+        // (`x-datadome`, `x-amzn-waf-action`, `x-px-*`, `x-sucuri-id`).  The
+        // TOML corpus is the single source of truth — no hardcoded header list.
+        if (200..300).contains(&status) {
+            let headers_only_response = build_partial_response(status, "", &headers);
+            let classifier = TomlClassifier::builtin();
+            if let Ok(Some(signal)) = classifier.classify(&headers_only_response) {
+                // We need the body to identify the vendor precisely; read it now
+                // (the body-fingerprint check below would re-read anyway).
+                let body = resp.text().await.unwrap_or_default();
+                let partial_response = build_partial_response(status, &body, &headers);
+                let vendor = classifier
+                    .classify(&partial_response)
+                    .ok()
+                    .flatten()
+                    .map(|s| s.vendor)
+                    .unwrap_or(signal.vendor);
+                return Err(CrawlError::WafBlocked {
+                    message: format!("waf/blocked detected on 2xx (header): {vendor}"),
+                    vendor,
+                });
+            }
+        }
+
+        // Check content-length mismatch (data_loss)
+        let expected_len = headers
+            .get("content-length")
+            .and_then(|v| v.to_str().ok())
+            .and_then(|s| s.parse::<usize>().ok());
+
+        let body_bytes = resp.bytes().await.map_err(|e| {
+            // Walk the error source chain to detect body/data-loss errors that
+            // reqwest wraps in generic errors.
+            let chain = error_chain_string(&e);
+            let is_body_error = chain.contains("content-length")
+                || chain.contains("truncat")
+                || chain.contains("incomplete")
+                || chain.contains("end of file")
+                || chain.contains("body error")
+                || chain.contains("body from connection")
+                || chain.contains("decoding response body")
+                || chain.contains("error decoding");
+            #[cfg(not(target_arch = "wasm32"))]
+            let is_body_error = is_body_error || e.is_body();
+            if is_body_error {
+                CrawlError::DataLoss(format!("data_loss: {e}"))
+            } else {
+                classify_reqwest_error(&e)
+            }
+        })?;
+
+        if let Some(expected) = expected_len
+            && body_bytes.len() < expected
+            && expected - body_bytes.len() > 100
+        {
+            return Err(CrawlError::DataLoss(format!(
+                "data_loss: expected {expected} bytes, got {}",
+                body_bytes.len()
+            )));
+        }
+
+        let body_bytes_vec = body_bytes.to_vec();
+        let body = String::from_utf8_lossy(&body_bytes_vec).into_owned();
+
+        // 2xx interstitial detection (body-fingerprint): if a 2xx response has
+        // a small body containing a high-confidence vendor JS fingerprint,
+        // it's almost certainly a challenge page rather than real content.
+        // Real content pages are overwhelmingly larger than CHALLENGE_BODY_LIMIT
+        // and don't contain these specific markers in a script src or inline.
+        if (200..300).contains(&status) {
+            let partial_response = build_partial_response_with_bytes(status, &body_bytes_vec, &body, &headers);
             let classifier = TomlClassifier::builtin();
             if let Ok(Some(signal)) = classifier.classify(&partial_response) {
                 return Err(CrawlError::WafBlocked {
                     vendor: signal.vendor.clone(),
-                    message: format!("waf/blocked detected: {}", signal.vendor),
+                    message: format!("waf/blocked detected on 2xx (body): {}", signal.vendor),
                 });
             }
-            return Err(CrawlError::Forbidden("forbidden".into()));
         }
-        404 => return Err(CrawlError::NotFound(format!("not_found: {url}"))),
-        408 => return Err(CrawlError::Timeout("timeout: request timed out".into())),
-        410 => return Err(CrawlError::Gone("gone".into())),
-        429 => return Err(CrawlError::RateLimited("rate_limited".into())),
-        500 => return Err(CrawlError::ServerError("server_error".into())),
-        502 => return Err(CrawlError::BadGateway("bad_gateway".into())),
-        503 => {
-            return Err(CrawlError::ServerError("server_error: service unavailable".into()));
+
+        // Extract headers into HashMap<String, Vec<String>>
+        let mut headers_map: std::collections::HashMap<String, Vec<String>> = std::collections::HashMap::new();
+        for (name, value) in headers.iter() {
+            if let Ok(v) = value.to_str() {
+                headers_map
+                    .entry(name.as_str().to_lowercase())
+                    .or_default()
+                    .push(v.to_string());
+            }
         }
-        _ => {}
+
+        return Ok(HttpResponse {
+            status,
+            content_type,
+            body,
+            body_bytes: body_bytes_vec,
+            headers: headers_map,
+            browser_extras: None,
+            final_url: final_url_str,
+        });
     }
-
-    // 2xx interstitial detection (header-only): modern Cloudflare /
-    // DataDome / PerimeterX serve their JS challenge with 200 OK, not 403.
-    // Without this check the challenge page body is fed downstream as if
-    // it were real content.
-    //
-    // `Rules::classify` runs a header-first short-circuit (Pass 1) over all
-    // header-only TOML fingerprints before the AC body scan, so passing a
-    // zero-length body here is sufficient to trigger any header-stamp match
-    // (`x-datadome`, `x-amzn-waf-action`, `x-px-*`, `x-sucuri-id`).  The
-    // TOML corpus is the single source of truth — no hardcoded header list.
-    if (200..300).contains(&status) {
-        let headers_only_response = build_partial_response(status, "", &headers);
-        let classifier = TomlClassifier::builtin();
-        if let Ok(Some(signal)) = classifier.classify(&headers_only_response) {
-            // We need the body to identify the vendor precisely; read it now
-            // (the body-fingerprint check below would re-read anyway).
-            let body = resp.text().await.unwrap_or_default();
-            let partial_response = build_partial_response(status, &body, &headers);
-            let vendor = classifier
-                .classify(&partial_response)
-                .ok()
-                .flatten()
-                .map(|s| s.vendor)
-                .unwrap_or(signal.vendor);
-            return Err(CrawlError::WafBlocked {
-                message: format!("waf/blocked detected on 2xx (header): {vendor}"),
-                vendor,
-            });
-        }
-    }
-
-    // Check content-length mismatch (data_loss)
-    let expected_len = headers
-        .get("content-length")
-        .and_then(|v| v.to_str().ok())
-        .and_then(|s| s.parse::<usize>().ok());
-
-    let body_bytes = resp.bytes().await.map_err(|e| {
-        // Walk the error source chain to detect body/data-loss errors that
-        // reqwest wraps in generic errors.
-        let chain = error_chain_string(&e);
-        let is_body_error = chain.contains("content-length")
-            || chain.contains("truncat")
-            || chain.contains("incomplete")
-            || chain.contains("end of file")
-            || chain.contains("body error")
-            || chain.contains("body from connection")
-            || chain.contains("decoding response body")
-            || chain.contains("error decoding");
-        #[cfg(not(target_arch = "wasm32"))]
-        let is_body_error = is_body_error || e.is_body();
-        if is_body_error {
-            CrawlError::DataLoss(format!("data_loss: {e}"))
-        } else {
-            classify_reqwest_error(&e)
-        }
-    })?;
-
-    if let Some(expected) = expected_len
-        && body_bytes.len() < expected
-        && expected - body_bytes.len() > 100
-    {
-        return Err(CrawlError::DataLoss(format!(
-            "data_loss: expected {expected} bytes, got {}",
-            body_bytes.len()
-        )));
-    }
-
-    let body_bytes_vec = body_bytes.to_vec();
-    let body = String::from_utf8_lossy(&body_bytes_vec).into_owned();
-
-    // 2xx interstitial detection (body-fingerprint): if a 2xx response has
-    // a small body containing a high-confidence vendor JS fingerprint,
-    // it's almost certainly a challenge page rather than real content.
-    // Real content pages are overwhelmingly larger than CHALLENGE_BODY_LIMIT
-    // and don't contain these specific markers in a script src or inline.
-    if (200..300).contains(&status) {
-        let partial_response = build_partial_response_with_bytes(status, &body_bytes_vec, &body, &headers);
-        let classifier = TomlClassifier::builtin();
-        if let Ok(Some(signal)) = classifier.classify(&partial_response) {
-            return Err(CrawlError::WafBlocked {
-                vendor: signal.vendor.clone(),
-                message: format!("waf/blocked detected on 2xx (body): {}", signal.vendor),
-            });
-        }
-    }
-
-    // Extract headers into HashMap<String, Vec<String>>
-    let mut headers_map: std::collections::HashMap<String, Vec<String>> = std::collections::HashMap::new();
-    for (name, value) in headers.iter() {
-        if let Ok(v) = value.to_str() {
-            headers_map
-                .entry(name.as_str().to_lowercase())
-                .or_default()
-                .push(v.to_string());
-        }
-    }
-
-    Ok(HttpResponse {
-        status,
-        content_type,
-        body,
-        body_bytes: body_bytes_vec,
-        headers: headers_map,
-        browser_extras: None,
-        final_url,
-    })
 }
 
 /// Build a `reqwest::Client` with the given configuration (redirect policy, timeout, cookies, proxy).
@@ -516,7 +596,9 @@ mod tests {
             .await;
 
         let url = format!("{}/page", mock.uri());
-        let config = CrawlConfig::default();
+        let mut config = CrawlConfig::default();
+        // Allow loopback for this test (MockServer runs on 127.0.0.1)
+        config.ssrf.deny_private = false;
         let client = build_client(&config).expect("client must build");
         let resp = http_fetch(&url, &config, &std::collections::HashMap::new(), &client)
             .await

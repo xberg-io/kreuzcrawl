@@ -449,6 +449,7 @@ Configuration for crawl, scrape, and map operations.
 | `warcOutput` | `string \| null` | `null` | Path to write WARC output. If `null`, WARC output is disabled. |
 | `browserProfile` | `string \| null` | `null` | Named browser profile for persistent sessions (cookies, localStorage). |
 | `saveBrowserProfile` | `boolean` | `false` | Whether to save changes back to the browser profile on exit. |
+| `ssrf` | `string` | — | SSRF policy for outbound network requests. Default: deny private networks, allow http/https only, max 5 redirects. Skipped from polyglot binding generation (`#[cfg_attr(alef, alef(skip))]`). Per-request override from language clients is unsupported in v1 — the policy is set at config-load (env + builder) from the Rust side. |
 | `dispatch` | `string \| null` | `null` | Pluggable dispatch components: bypass provider, escalation strategy, retry policy, WAF classifier, domain state, escalation budget, and max_total_attempts. When `null`, the engine uses its built-in defaults (no bypass, `BrowserOnly` strategy, `SimpleRetryPolicy`, built-in WAF classifier, no domain state, unlimited budget, 10 total attempt cap). Not serializable — callers construct this at runtime and skip in TOML/JSON configs. |
 
 ### Methods
@@ -1078,6 +1079,7 @@ Errors are thrown as plain `Error` objects with descriptive messages.
 | `BrowserTimeout` | The browser page load or rendering timed out. |
 | `InvalidConfig` | The provided configuration is invalid. |
 | `Unsupported` | The requested capability is not supported by the active backend or build. |
+| `SsrfPolicyViolation` | A URL was rejected by SSRF policy (private IP, metadata, disallowed scheme, etc). |
 | `Other` | An unclassified error occurred. |
 
 ---

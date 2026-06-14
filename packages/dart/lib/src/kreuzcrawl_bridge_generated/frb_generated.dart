@@ -2290,6 +2290,11 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       case 16:
         return CrawlError_Unsupported(field0: dco_decode_String(raw[1]));
       case 17:
+        return CrawlError_SsrfPolicyViolation(
+          url: dco_decode_String(raw[1]),
+          reason: dco_decode_String(raw[2]),
+        );
+      case 18:
         return CrawlError_Other(field0: dco_decode_String(raw[1]));
       default:
         throw Exception("unreachable");
@@ -3638,6 +3643,10 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         var var_field0 = sse_decode_String(deserializer);
         return CrawlError_Unsupported(field0: var_field0);
       case 17:
+        var var_url = sse_decode_String(deserializer);
+        var var_reason = sse_decode_String(deserializer);
+        return CrawlError_SsrfPolicyViolation(url: var_url, reason: var_reason);
+      case 18:
         var var_field0 = sse_decode_String(deserializer);
         return CrawlError_Other(field0: var_field0);
       default:
@@ -5292,8 +5301,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       case CrawlError_Unsupported(field0: final field0):
         sse_encode_i_32(16, serializer);
         sse_encode_String(field0, serializer);
-      case CrawlError_Other(field0: final field0):
+      case CrawlError_SsrfPolicyViolation(url: final url, reason: final reason):
         sse_encode_i_32(17, serializer);
+        sse_encode_String(url, serializer);
+        sse_encode_String(reason, serializer);
+      case CrawlError_Other(field0: final field0):
+        sse_encode_i_32(18, serializer);
         sse_encode_String(field0, serializer);
     }
   }

@@ -32,6 +32,7 @@ mod markdown;
 pub(crate) mod mcp;
 #[cfg(feature = "browser-native")]
 mod native_browser;
+pub mod net;
 mod normalize;
 mod pruning;
 #[cfg(feature = "ai")]
@@ -77,6 +78,7 @@ pub use interact::{
 pub use kreuzcrawl_browser::adapter::{NativeBrowserExecutor, NativeBrowserExecutorConfig};
 #[cfg(feature = "mcp")]
 pub use mcp::{start_mcp_server, start_mcp_server_with_config};
+pub use net::ssrf::{HostMatcher, SsrfError, SsrfPolicy, validate_url};
 #[cfg(feature = "telemetry-init")]
 pub use telemetry::{InitError as TelemetryInitError, TelemetryConfig, TelemetryGuard, init_otlp};
 pub use telemetry::{current_traceparent, with_traceparent};

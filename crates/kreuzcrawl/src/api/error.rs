@@ -72,6 +72,7 @@ impl From<CrawlError> for ApiError {
             CrawlError::DataLoss(_) => (StatusCode::INTERNAL_SERVER_ERROR, "DATA_LOSS"),
             CrawlError::BrowserError(_) => (StatusCode::INTERNAL_SERVER_ERROR, "BROWSER_ERROR"),
             CrawlError::Unsupported(_) => (StatusCode::NOT_IMPLEMENTED, "UNSUPPORTED"),
+            CrawlError::SsrfPolicyViolation { .. } => (StatusCode::FORBIDDEN, "SSRF_POLICY_VIOLATION"),
             CrawlError::Other(_) => (StatusCode::INTERNAL_SERVER_ERROR, "SERVER_ERROR"),
         };
 

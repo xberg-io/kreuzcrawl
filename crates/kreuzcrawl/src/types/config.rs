@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 
 use super::AssetCategory;
 use super::dispatch::DispatchProfile;
+use crate::net::SsrfPolicy;
 
 /// Metadata about an LLM extraction pass.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -395,6 +396,15 @@ pub struct CrawlConfig {
     pub browser_profile: Option<String>,
     /// Whether to save changes back to the browser profile on exit.
     pub save_browser_profile: bool,
+    /// SSRF policy for outbound network requests. Default: deny private networks,
+    /// allow http/https only, max 5 redirects.
+    ///
+    /// Skipped from polyglot binding generation (`#[cfg_attr(alef, alef(skip))]`).
+    /// Per-request override from language clients is unsupported in v1 — the
+    /// policy is set at config-load (env + builder) from the Rust side.
+    #[serde(default)]
+    #[cfg_attr(alef, alef(skip))]
+    pub ssrf: SsrfPolicy,
     /// Pluggable dispatch components: bypass provider, escalation strategy,
     /// retry policy, WAF classifier, domain state, escalation budget, and
     /// max_total_attempts.
@@ -463,6 +473,7 @@ impl Default for CrawlConfig {
             warc_output: None,
             browser_profile: None,
             save_browser_profile: false,
+            ssrf: SsrfPolicy::from_env(),
             dispatch: None,
             #[cfg(feature = "browser")]
             browser_pool: None,

@@ -89,6 +89,7 @@ High-performance Rust web crawling engine for structured data extraction. Scrape
 - **Streaming** — Real-time crawl events via async streams for progress tracking
 - **Authentication** — HTTP Basic, Bearer token, and custom header auth with persistent cookie jars
 - **Rate limiting** — Per-domain request throttling with configurable delays
+- **SSRF-safe by default** — Refuses requests to loopback, private, link-local, and cloud-metadata addresses; opt out via env var or `CrawlConfig`
 - **Asset download** — Download, deduplicate, and filter images, documents, and other linked assets
 - **MCP server** — Model Context Protocol integration for AI agents
 - **REST API** — HTTP server with OpenAPI spec

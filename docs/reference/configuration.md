@@ -123,6 +123,7 @@ Configuration for crawl, scrape, and map operations.
 | `warc_output` | `str \| None` | `None` | Path to write WARC output. If `None`, WARC output is disabled. |
 | `browser_profile` | `str \| None` | `None` | Named browser profile for persistent sessions (cookies, localStorage). |
 | `save_browser_profile` | `bool` | `False` | Whether to save changes back to the browser profile on exit. |
+| `ssrf` | `str` | — | SSRF policy for outbound network requests. Default: deny private networks, allow http/https only, max 5 redirects. Skipped from polyglot binding generation (`#[cfg_attr(alef, alef(skip))]`). Per-request override from language clients is unsupported in v1 — the policy is set at config-load (env + builder) from the Rust side. |
 | `dispatch` | `str \| None` | `None` | Pluggable dispatch components: bypass provider, escalation strategy, retry policy, WAF classifier, domain state, escalation budget, and max_total_attempts. When `None`, the engine uses its built-in defaults (no bypass, `BrowserOnly` strategy, `SimpleRetryPolicy`, built-in WAF classifier, no domain state, unlimited budget, 10 total attempt cap). Not serializable — callers construct this at runtime and skip in TOML/JSON configs. |
 
 ---

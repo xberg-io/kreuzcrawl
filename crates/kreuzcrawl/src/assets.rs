@@ -12,6 +12,7 @@ use url::Url;
 
 use crate::html::get_attr;
 use crate::html::selectors::{SEL_IMG_SRC, SEL_LINK_CSS, SEL_SCRIPT_SRC};
+use crate::http::http_fetch;
 use crate::types::{AssetCategory, CrawlConfig, DownloadedAsset};
 
 /// A reference to an asset discovered in an HTML page.
@@ -83,19 +84,15 @@ async fn download_single_asset(
     asset_ref: AssetRef,
     client: &reqwest::Client,
     max_asset_size: Option<usize>,
+    config: &CrawlConfig,
 ) -> Option<DownloadedAsset> {
-    let resp = client.get(&asset_ref.url).send().await.ok()?;
-    if !resp.status().is_success() {
-        return None;
-    }
+    // Use http_fetch to apply SSRF validation to asset URLs
+    let resp = match http_fetch(&asset_ref.url, config, &std::collections::HashMap::new(), client).await {
+        Ok(r) => r,
+        Err(_) => return None,
+    };
 
-    let mime_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .map(String::from);
-
-    let bytes = resp.bytes().await.ok()?;
+    let bytes = resp.body_bytes;
 
     if let Some(max_size) = max_asset_size
         && bytes.len() > max_size
@@ -111,7 +108,7 @@ async fn download_single_asset(
     Some(DownloadedAsset {
         url: asset_ref.url,
         content_hash: hash,
-        mime_type,
+        mime_type: Some(resp.content_type),
         size: bytes.len(),
         asset_category: asset_ref.category,
         html_tag: Some(asset_ref.html_tag),
@@ -149,14 +146,16 @@ pub(crate) async fn download_assets(
     {
         let semaphore = Arc::new(Semaphore::new(config.max_concurrent.unwrap_or(8)));
         let client = client.clone();
+        let config = config.clone();
 
         let mut handles = Vec::with_capacity(unique_refs.len());
         for asset_ref in unique_refs {
             let permit = Arc::clone(&semaphore);
             let client = client.clone();
+            let config = config.clone();
             handles.push(tokio::spawn(async move {
                 let _permit = permit.acquire().await.ok()?;
-                download_single_asset(asset_ref, &client, max_asset_size).await
+                download_single_asset(asset_ref, &client, max_asset_size, &config).await
             }));
         }
 
@@ -175,7 +174,7 @@ pub(crate) async fn download_assets(
     {
         let mut downloaded = Vec::new();
         for asset_ref in unique_refs {
-            if let Some(asset) = download_single_asset(asset_ref, client, max_asset_size).await {
+            if let Some(asset) = download_single_asset(asset_ref, client, max_asset_size, config).await {
                 downloaded.push(asset);
             }
         }

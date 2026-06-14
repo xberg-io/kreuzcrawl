@@ -1585,6 +1585,10 @@ const _: fn() = || {
         crate::CrawlError::Unsupported { field0 } => {
             let _: String = field0;
         }
+        crate::CrawlError::SsrfPolicyViolation { url, reason } => {
+            let _: String = url;
+            let _: String = reason;
+        }
         crate::CrawlError::Other { field0 } => {
             let _: String = field0;
         }
@@ -2409,6 +2413,14 @@ impl SseDecode for crate::CrawlError {
                 return crate::CrawlError::Unsupported { field0: var_field0 };
             }
             17 => {
+                let mut var_url = <String>::sse_decode(deserializer);
+                let mut var_reason = <String>::sse_decode(deserializer);
+                return crate::CrawlError::SsrfPolicyViolation {
+                    url: var_url,
+                    reason: var_reason,
+                };
+            }
+            18 => {
                 let mut var_field0 = <String>::sse_decode(deserializer);
                 return crate::CrawlError::Other { field0: var_field0 };
             }
@@ -4095,7 +4107,13 @@ impl flutter_rust_bridge::IntoDart for FrbWrapper<crate::CrawlError> {
             crate::CrawlError::Unsupported { field0 } => {
                 [16.into_dart(), field0.into_into_dart().into_dart()].into_dart()
             }
-            crate::CrawlError::Other { field0 } => [17.into_dart(), field0.into_into_dart().into_dart()].into_dart(),
+            crate::CrawlError::SsrfPolicyViolation { url, reason } => [
+                17.into_dart(),
+                url.into_into_dart().into_dart(),
+                reason.into_into_dart().into_dart(),
+            ]
+            .into_dart(),
+            crate::CrawlError::Other { field0 } => [18.into_dart(), field0.into_into_dart().into_dart()].into_dart(),
             _ => {
                 unimplemented!("");
             }
@@ -5115,8 +5133,13 @@ impl SseEncode for crate::CrawlError {
                 <i32>::sse_encode(16, serializer);
                 <String>::sse_encode(field0, serializer);
             }
-            crate::CrawlError::Other { field0 } => {
+            crate::CrawlError::SsrfPolicyViolation { url, reason } => {
                 <i32>::sse_encode(17, serializer);
+                <String>::sse_encode(url, serializer);
+                <String>::sse_encode(reason, serializer);
+            }
+            crate::CrawlError::Other { field0 } => {
+                <i32>::sse_encode(18, serializer);
                 <String>::sse_encode(field0, serializer);
             }
             _ => {

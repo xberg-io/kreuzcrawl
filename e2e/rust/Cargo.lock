@@ -1021,19 +1021,21 @@ dependencies = [
 
 [[package]]
 name = "html-to-markdown-rs"
-version = "3.5.7"
+version = "3.6.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6cbbfb183e8634cb956309c6bbd781d9ddae068d376fb9eb1451ac49cf4cbba7"
+checksum = "b061a39cfb12b2fc469a7d72c7afdb973f3d2ff15c60bad9c8741f9d3ac2e719"
 dependencies = [
  "ahash",
  "astral-tl",
  "base64",
+ "bitflags",
  "html-escape",
  "html5ever",
  "image",
  "lru",
  "memchr",
  "once_cell",
+ "phf",
  "regex",
  "serde",
  "serde_json",
@@ -1464,7 +1466,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl"
-version = "0.3.0-rc.54"
+version = "0.3.0-rc.61"
 dependencies = [
  "ahash",
  "aho-corasick",
@@ -1482,9 +1484,11 @@ dependencies = [
  "getrandom 0.3.4",
  "getrandom 0.4.2",
  "html-to-markdown-rs",
+ "ipnet",
  "memchr",
  "notify",
  "opentelemetry",
+ "opentelemetry-semantic-conventions",
  "quick-xml",
  "regex",
  "reqwest",
@@ -1496,12 +1500,13 @@ dependencies = [
  "tokio-stream",
  "toml",
  "tower",
+ "tracing",
  "url",
 ]
 
 [[package]]
 name = "kreuzcrawl-e2e-rust"
-version = "0.3.0-rc.54"
+version = "0.3.0-rc.61"
 dependencies = [
  "axum",
  "kreuzcrawl",
@@ -1711,6 +1716,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "opentelemetry-semantic-conventions"
+version = "0.32.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6ca2f98a0437b427b4b08f19f1caa3c44db885a202bc12cfea13d6c702243d68"
+
+[[package]]
 name = "option-ext"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1751,6 +1762,7 @@ version = "0.13.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c1562dc717473dbaa4c1f85a36410e03c047b2e7df7f45ee938fbef64ae7fadf"
 dependencies = [
+ "phf_macros",
  "phf_shared",
  "serde",
 ]
@@ -1773,6 +1785,19 @@ checksum = "135ace3a761e564ec88c03a77317a7c6b80bb7f7135ef2544dbe054243b89737"
 dependencies = [
  "fastrand",
  "phf_shared",
+]
+
+[[package]]
+name = "phf_macros"
+version = "0.13.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "812f032b54b1e759ccd5f8b6677695d5268c588701effba24601f6932f8269ef"
+dependencies = [
+ "phf_generator",
+ "phf_shared",
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]

@@ -736,49 +736,7 @@ fn glob_match(pattern: &str, url: &str) -> bool {
 }
 
 fn validate_fetch_url(url: &url::Url) -> Result<(), String> {
-    let scheme = url.scheme();
-    if scheme != "http" && scheme != "https" && scheme != "file" {
-        return Err(format!(
-            "Forbidden URL scheme '{}' - only http, https, and file are allowed",
-            scheme
-        ));
-    }
-
-    if scheme == "file" {
-        return Ok(());
-    }
-
-    if let Some(host) = url.host() {
-        match host {
-            url::Host::Ipv4(ip) => {
-                if ip.is_loopback()
-                    || ip.is_private()
-                    || ip.is_link_local()
-                    || ip.is_broadcast()
-                    || ip.is_documentation()
-                {
-                    return Err(format!("Access to private/internal IP address {} is not allowed", ip));
-                }
-            }
-            url::Host::Ipv6(ip) => {
-                if ip.is_loopback() || ip.is_unicast_link_local() {
-                    return Err(format!("Access to private/internal IPv6 address {} is not allowed", ip));
-                }
-            }
-            url::Host::Domain(domain) => {
-                let lower_domain = domain.to_lowercase();
-                if lower_domain == "localhost"
-                    || lower_domain.ends_with(".localhost")
-                    || lower_domain == "127.0.0.1"
-                    || lower_domain == "::1"
-                {
-                    return Err(format!("Access to localhost domain '{}' is not allowed", domain));
-                }
-            }
-        }
-    }
-
-    Ok(())
+    crate::net::ssrf::validate_url(url)
 }
 
 #[op2]

@@ -1211,6 +1211,12 @@ sealed class CrawlError with _$CrawlError {
   const factory CrawlError.unsupported({required String field0}) =
       CrawlError_Unsupported;
 
+  /// A URL was rejected by SSRF policy (private IP, metadata, disallowed scheme, etc).
+  const factory CrawlError.ssrfPolicyViolation({
+    required String url,
+    required String reason,
+  }) = CrawlError_SsrfPolicyViolation;
+
   /// An unclassified error occurred.
   const factory CrawlError.other({required String field0}) = CrawlError_Other;
 }

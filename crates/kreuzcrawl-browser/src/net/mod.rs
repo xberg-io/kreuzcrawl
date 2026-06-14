@@ -2,6 +2,7 @@ pub mod client;
 pub mod cookies;
 pub mod interceptor;
 pub mod robots;
+pub mod ssrf;
 #[cfg(feature = "stealth")]
 pub mod wreq_client;
 

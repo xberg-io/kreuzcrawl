@@ -4,6 +4,52 @@ All notable changes to kreuzcrawl are documented here.
 
 ## [Unreleased]
 
+### Security
+
+- **SSRF defense in core HTTP layer.** `scrape()`, `crawl()`, `batch_crawl()`,
+  sitemap fetch, robots.txt fetch, and asset download now refuse URLs
+  resolving to loopback (127.0.0.0/8), RFC1918 private networks
+  (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16), link-local (169.254.0.0/16),
+  cloud metadata (0.0.0.0/8), multicast (224.0.0.0/4), IPv6 ULA (fc00::/7),
+  IPv6 link-local (fe80::/10), IPv6 multicast (ff00::/8), or any
+  non-http(s) scheme. Enabled by default; opt out via
+  `KREUZCRAWL_ALLOW_PRIVATE_NETWORK=1` environment variable or
+  `CrawlConfig::allow_private_networks(true)`.
+- **DNS rebinding mitigation** in both core `http_fetch` and the Tower-stack
+  `do_fetch`: hostnames resolving to a mix of public and private IPs are
+  refused outright (all resolved IPs must individually pass the policy).
+- **Redirect-chain re-validation.** Each 30x `Location` is parsed, joined,
+  re-resolved, and re-validated against the SSRF policy before following
+  the next hop. Mirrors the browser layer's GHSA-8v6v-g4rh-jmcm mitigation.
+  Bounded at `CrawlConfig::ssrf.max_redirects` (default 5).
+- **Link-enqueue validation.** Candidate URLs discovered during crawl are
+  validated at enqueue time with bounded concurrency (16-permit semaphore).
+  Refused targets are dropped with a structured `tracing::warn!` instead of
+  silently followed.
+
+### Added
+
+- **`kreuzcrawl::net::ssrf` module** with `SsrfPolicy`, `HostMatcher`
+  (`Exact`, `Suffix`, `Cidr` variants), `SsrfError`, and the async
+  `validate_url(&Url, &SsrfPolicy)` validator.
+- **`CrawlConfig::ssrf` field** (defaults to deny private networks) and
+  `CrawlConfigBuilder` methods `allow_private_networks(bool)` and
+  `ssrf_allowlist_host(HostMatcher)` for policy customization.
+- **`CrawlError::SsrfPolicyViolation { url, reason }`** — classified as
+  permanent (no retry) in the default retry policy and domain state to
+  avoid wasted work on blocked endpoints.
+
+### Changed
+
+- **Asset downloads** in `assets::download_single_asset` now route through
+  `http_fetch` (previously bypassed via raw `reqwest::get()`), ensuring
+  all file fetches are subject to the SSRF policy.
+- **Browser-layer SSRF validation** (`kreuzcrawl-browser`) realigned to the
+  shared policy constants. `file://` scheme and the `localhost`-string
+  short-circuit remain as browser-specific extras (defence-in-depth against
+  DNS rebinding through the browser process resolver). Separate mirror
+  module due to dependency-cycle constraint.
+
 ## [0.3.0-rc.61] - 2026-06-14
 
 ### Changed

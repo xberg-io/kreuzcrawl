@@ -274,7 +274,8 @@ fn classify_outcome(outcome: &AttemptOutcome) -> ObservedOutcome {
             | crate::error::CrawlError::Gone(_)
             | crate::error::CrawlError::DataLoss(_)
             | crate::error::CrawlError::BrowserError(_)
-            | crate::error::CrawlError::BrowserTimeout(_),
+            | crate::error::CrawlError::BrowserTimeout(_)
+            | crate::error::CrawlError::SsrfPolicyViolation { .. },
         ) => ObservedOutcome::Permanent,
         // Transient: 5xx, timeouts, rate-limiting, generic.
         Some(

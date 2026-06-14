@@ -10,6 +10,7 @@ use url::Url;
 
 use crate::net::cookies::CookieJar;
 use crate::net::interceptor::{InterceptAction, RequestInterceptor};
+use crate::net::ssrf;
 
 #[derive(Debug, Clone)]
 pub struct Response {
@@ -62,59 +63,7 @@ pub type RequestCallback = Arc<dyn Fn(&RequestInfo) + Send + Sync>;
 pub type ResponseCallback = Arc<dyn Fn(&RequestInfo, &Response) + Send + Sync>;
 
 fn validate_url(url: &Url) -> Result<(), NetError> {
-    let allow_private_network = std::env::var_os("KREUZCRAWL_ALLOW_PRIVATE_NETWORK").is_some();
-    let scheme = url.scheme();
-    if scheme != "http" && scheme != "https" && scheme != "file" {
-        return Err(NetError::Network(format!(
-            "Forbidden URL scheme '{}' - only http, https, and file are allowed",
-            scheme
-        )));
-    }
-
-    if scheme == "file" || allow_private_network {
-        return Ok(());
-    }
-
-    if let Some(host) = url.host() {
-        match host {
-            url::Host::Ipv4(ip) => {
-                if ip.is_loopback()
-                    || ip.is_private()
-                    || ip.is_link_local()
-                    || ip.is_broadcast()
-                    || ip.is_documentation()
-                {
-                    return Err(NetError::Network(format!(
-                        "Access to private/internal IP address {} is not allowed",
-                        ip
-                    )));
-                }
-            }
-            url::Host::Ipv6(ip) => {
-                if ip.is_loopback() || ip.is_unicast_link_local() {
-                    return Err(NetError::Network(format!(
-                        "Access to private/internal IPv6 address {} is not allowed",
-                        ip
-                    )));
-                }
-            }
-            url::Host::Domain(domain) => {
-                let lower_domain = domain.to_lowercase();
-                if lower_domain == "localhost"
-                    || lower_domain.ends_with(".localhost")
-                    || lower_domain == "127.0.0.1"
-                    || lower_domain == "::1"
-                {
-                    return Err(NetError::Network(format!(
-                        "Access to localhost domain '{}' is not allowed",
-                        domain
-                    )));
-                }
-            }
-        }
-    }
-
-    Ok(())
+    ssrf::validate_url(url).map_err(NetError::Network)
 }
 
 async fn fetch_file_url(url: &Url) -> Result<Response, NetError> {

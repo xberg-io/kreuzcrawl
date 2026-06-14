@@ -111,9 +111,31 @@ pub enum CrawlError {
     /// The requested capability is not supported by the active backend or build.
     #[error("unsupported: {0}")]
     Unsupported(String),
+    /// A URL was rejected by SSRF policy (private IP, metadata, disallowed scheme, etc).
+    #[error("ssrf_policy_violation: {url} - {reason}")]
+    SsrfPolicyViolation {
+        /// The URL that was refused by the policy.
+        url: String,
+        /// Reason for rejection (e.g., "loopback", "private_network", "disallowed_scheme: ftp").
+        reason: String,
+    },
     /// An unclassified error occurred.
     #[error("other: {0}")]
     Other(String),
+}
+
+impl From<crate::net::ssrf::SsrfError> for CrawlError {
+    fn from(err: crate::net::ssrf::SsrfError) -> Self {
+        // `SsrfError` is already formatted by its Display impl,
+        // so we extract the reason from it. For simplicity,
+        // we use a generic "unknown" URL since the conversion doesn't
+        // have the original URL. Call sites should catch and re-wrap
+        // with the actual URL.
+        CrawlError::SsrfPolicyViolation {
+            url: "unknown".to_string(),
+            reason: err.to_string(),
+        }
+    }
 }
 
 /// Collect the full error source chain into a single lowercase string for keyword matching.

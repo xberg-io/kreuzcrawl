@@ -1434,6 +1434,7 @@ dependencies = [
  "getrandom 0.3.4",
  "getrandom 0.4.2",
  "html-to-markdown-rs",
+ "ipnet",
  "memchr",
  "notify",
  "opentelemetry",

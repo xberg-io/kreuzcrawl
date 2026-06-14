@@ -24,6 +24,7 @@ use crate::html::{
     is_html_content, is_pdf_content, is_pdf_url,
 };
 use crate::http::{build_client, extract_cookies_from_hashmap};
+use crate::net::ssrf::validate_url;
 use crate::normalize::{normalize_url, normalize_url_for_dedup, resolve_redirect, strip_fragment};
 use crate::robots::{RobotsRules, is_path_allowed};
 use crate::telemetry::attributes::{
@@ -905,6 +906,9 @@ impl CrawlEngine {
     ///   * parent_doc_depth == 0 (HTML page discovering document URLs — original behaviour),
     ///   * OR `follow_document_urls` is true AND the child doc_depth does not exceed
     ///     `document_url_depth` (if set).
+    ///
+    /// SSRF validation is applied at enqueue time with bounded concurrency (16 concurrent
+    /// DNS lookups). URLs that fail validation are logged as warnings and not enqueued.
     #[allow(clippy::too_many_arguments)]
     async fn discover_and_enqueue_links(
         &self,
@@ -917,6 +921,9 @@ impl CrawlEngine {
         working_set: &mut Vec<FrontierEntry>,
         urls_discovered: &mut usize,
     ) -> Result<(), CrawlError> {
+        // Collect candidates that pass all pre-SSRF filters
+        let mut candidates = Vec::new();
+
         for link in links {
             let is_doc_link = link.link_type == LinkType::Document;
 
@@ -953,46 +960,83 @@ impl CrawlEngine {
 
             let dedup_key = normalize_url_for_dedup(&link_url);
             if !self.frontier.is_seen(&dedup_key).await? {
-                self.frontier.mark_seen(&dedup_key).await?;
-                let child_depth = depth + 1;
-                // Document links increment the doc counter; internal links reset it to 0.
-                let child_doc_depth: u32 = if is_doc_link { parent_doc_depth + 1 } else { 0 };
-                let priority = self.strategy.score_url(&link_url, child_depth);
+                candidates.push((link_url, is_doc_link, depth));
+            }
+        }
 
-                // crawl.page.discover — one span per successfully enqueued link.
-                //
-                // Volume note: this fires for every distinct URL that passes dedup and
-                // all path/domain/depth filters above.  High-fanout sites may produce
-                // hundreds of spans per page; operators should sample or filter by
-                // crawl.link_type when storage cost matters.
-                //
-                // EnteredSpan is !Send so it must be dropped before any `.await`.  We emit
-                // it as a synchronous "enqueue" event and close it before the emitter call.
-                {
-                    let link_host = Url::parse(&link_url)
-                        .ok()
-                        .and_then(|u| u.host_str().map(str::to_owned))
-                        .unwrap_or_default();
-                    let _discover_span = tracing::info_span!(
-                        "crawl.page.discover",
-                        { URL_FULL } = %link_url,
-                        { URL_DOMAIN } = %link_host,
-                        { CRAWL_PARENT_URL } = %_page_url,
-                        { CRAWL_DEPTH } = child_depth as i64,
-                        { CRAWL_LINK_TYPE } = if is_doc_link { "document" } else { "internal" },
-                    )
-                    .entered();
-                    // _discover_span dropped here — before on_discovered(..).await.
+        // SSRF validation with bounded concurrency (16 concurrent DNS lookups)
+        const SSRF_VALIDATION_CONCURRENCY: usize = 16;
+        let semaphore = Arc::new(Semaphore::new(SSRF_VALIDATION_CONCURRENCY));
+        let mut join_set = JoinSet::new();
+
+        for (link_url, is_doc_link, child_depth) in candidates {
+            let dedup_key = normalize_url_for_dedup(&link_url);
+            let permit = Arc::clone(&semaphore);
+            let ssrf_policy = self.config.ssrf.clone();
+
+            join_set.spawn(async move {
+                let _permit = permit.acquire().await.ok();
+                // Validate URL against SSRF policy
+                let url_obj = match url::Url::parse(&link_url) {
+                    Ok(u) => u,
+                    Err(_) => return Err((link_url.clone(), "invalid URL format".to_string())),
+                };
+
+                match validate_url(&url_obj, &ssrf_policy).await {
+                    Ok(_) => Ok((link_url, dedup_key, is_doc_link, child_depth)),
+                    Err(e) => Err((link_url, e.to_string())),
                 }
+            });
+        }
 
-                working_set.push(FrontierEntry {
-                    url: link_url.clone(),
-                    depth: child_depth,
-                    doc_depth: child_doc_depth,
-                    priority,
-                });
-                *urls_discovered += 1;
-                self.event_emitter.on_discovered(&link_url, child_depth).await;
+        // Consume results and enqueue valid URLs
+        while let Some(result) = join_set.join_next().await {
+            match result {
+                Ok(Ok((link_url, dedup_key, is_doc_link, child_depth))) => {
+                    // Mark as seen and enqueue
+                    self.frontier.mark_seen(&dedup_key).await?;
+
+                    let child_doc_depth: u32 = if is_doc_link { parent_doc_depth + 1 } else { 0 };
+                    let priority = self.strategy.score_url(&link_url, child_depth);
+
+                    // crawl.page.discover — one span per successfully enqueued link.
+                    {
+                        let link_host = Url::parse(&link_url)
+                            .ok()
+                            .and_then(|u| u.host_str().map(str::to_owned))
+                            .unwrap_or_default();
+                        let _discover_span = tracing::info_span!(
+                            "crawl.page.discover",
+                            { URL_FULL } = %link_url,
+                            { URL_DOMAIN } = %link_host,
+                            { CRAWL_PARENT_URL } = %_page_url,
+                            { CRAWL_DEPTH } = child_depth as i64,
+                            { CRAWL_LINK_TYPE } = if is_doc_link { "document" } else { "internal" },
+                        )
+                        .entered();
+                    }
+
+                    working_set.push(FrontierEntry {
+                        url: link_url.clone(),
+                        depth: child_depth,
+                        doc_depth: child_doc_depth,
+                        priority,
+                    });
+                    *urls_discovered += 1;
+                    self.event_emitter.on_discovered(&link_url, child_depth).await;
+                }
+                Ok(Err((link_url, reason))) => {
+                    // SSRF policy violation — log as warning and skip
+                    tracing::warn!(
+                        url = %link_url,
+                        reason = %reason,
+                        "link rejected by SSRF policy at enqueue time"
+                    );
+                }
+                Err(e) => {
+                    // Task join error
+                    tracing::error!("error validating link during enqueue: {}", e);
+                }
             }
         }
 

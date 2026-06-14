@@ -14,6 +14,7 @@ use super::discovery::AssetCategory;
 use super::dispatch::{
     DispatchProfile, DynDomainStatePort, DynEscalationBudget, DynRetryPolicy, DynWafClassifier, EscalationStrategy,
 };
+use crate::net::HostMatcher;
 
 /// Fluent builder for [`CrawlConfig`].
 ///
@@ -258,6 +259,21 @@ impl CrawlConfigBuilder {
     /// Set whether to save changes back to the browser profile on exit.
     pub fn save_browser_profile(mut self, value: bool) -> Self {
         self.inner.save_browser_profile = value;
+        self
+    }
+
+    /// Configure whether to allow private network IP ranges in SSRF policy.
+    ///
+    /// When `true`, private IPs (loopback, 10/8, 192.168/16, etc.) are allowed.
+    /// When `false` (default), they are denied unless explicitly allowlisted.
+    pub fn allow_private_networks(mut self, allow: bool) -> Self {
+        self.inner.ssrf.deny_private = !allow;
+        self
+    }
+
+    /// Add a hostname or IP range to the SSRF policy allowlist.
+    pub fn ssrf_allowlist_host(mut self, matcher: HostMatcher) -> Self {
+        self.inner.ssrf.allowlist.push(matcher);
         self
     }
 

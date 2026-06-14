@@ -1,15 +1,25 @@
 {
-  "name": "@kreuzberg/kreuzcrawl-darwin-arm64",
-  "version": "0.3.0-rc.61",
-  "license": "Elastic-2.0",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/kreuzberg-dev/kreuzcrawl.git"
-  },
-  "main": "kreuzcrawl-node.darwin-arm64.node",
-  "files": ["kreuzcrawl-node.darwin-arm64.node"],
-  "os": ["darwin"],
-  "cpu": ["arm64"],
-  "engines": { "node": ">= 18" },
-  "publishConfig": { "access": "public" }
+	"name": "@kreuzberg/kreuzcrawl-darwin-arm64",
+	"version": "0.3.0-rc.61",
+	"license": "Elastic-2.0",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/kreuzberg-dev/kreuzcrawl.git"
+	},
+	"files": [
+		"kreuzcrawl-node.darwin-arm64.node"
+	],
+	"os": [
+		"darwin"
+	],
+	"cpu": [
+		"arm64"
+	],
+	"main": "kreuzcrawl-node.darwin-arm64.node",
+	"publishConfig": {
+		"access": "public"
+	},
+	"engines": {
+		"node": ">= 18"
+	}
 }
