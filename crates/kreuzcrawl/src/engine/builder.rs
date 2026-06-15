@@ -42,6 +42,7 @@ pub struct CrawlEngineBuilder {
     content_filter: Option<Arc<dyn ContentFilter>>,
     cache: Option<Arc<dyn CrawlCache>>,
     event_sink: Option<Arc<dyn EventSink>>,
+    page_budget: Option<Arc<dyn crate::budget::PageBudget>>,
     #[cfg(feature = "browser")]
     browser_pool: Option<Arc<crate::browser_pool::BrowserPool>>,
     #[cfg(all(not(target_arch = "wasm32"), feature = "browser-native"))]
@@ -61,6 +62,7 @@ impl CrawlEngineBuilder {
             content_filter: None,
             cache: None,
             event_sink: None,
+            page_budget: None,
             #[cfg(feature = "browser")]
             browser_pool: None,
             #[cfg(all(not(target_arch = "wasm32"), feature = "browser-native"))]
@@ -141,6 +143,21 @@ impl CrawlEngineBuilder {
     #[cfg_attr(alef, alef(skip))]
     pub fn event_sink(mut self, event_sink: impl EventSink + 'static) -> Self {
         self.event_sink = Some(Arc::new(event_sink));
+        self
+    }
+
+    /// Set the page budget hook for controlling crawl extent.
+    ///
+    /// The page budget is consulted before each page fetch. Returning
+    /// `Err(BudgetError::Exhausted)` halts the crawl gracefully.
+    ///
+    /// Defaults to [`DefaultPageBudget`] if not set.
+    ///
+    /// [`DefaultPageBudget`]: crate::budget::DefaultPageBudget
+    #[allow(dead_code)]
+    #[cfg_attr(alef, alef(skip))]
+    pub fn page_budget(mut self, page_budget: impl crate::budget::PageBudget + 'static) -> Self {
+        self.page_budget = Some(Arc::new(page_budget));
         self
     }
 
@@ -225,6 +242,7 @@ impl CrawlEngineBuilder {
             cache: self.cache.unwrap_or_else(|| Arc::new(defaults::NoopCache)),
             #[cfg(not(target_arch = "wasm32"))]
             event_sink: self.event_sink,
+            page_budget: self.page_budget.unwrap_or_else(|| Arc::new(crate::budget::DefaultPageBudget)),
             #[cfg(not(target_arch = "wasm32"))]
             ua_rotation,
             #[cfg(all(not(target_arch = "wasm32"), feature = "browser-native"))]

@@ -73,6 +73,9 @@ pub struct CrawlEngine {
     /// (e.g., NATS, dashboards, analytics).
     #[cfg(not(target_arch = "wasm32"))]
     pub(crate) event_sink: Option<Arc<dyn EventSink>>,
+    /// Optional page budget hook for enforcing per-crawl page allowances.
+    #[allow(dead_code)]
+    pub(crate) page_budget: Arc<dyn crate::budget::PageBudget>,
     /// Shared UA rotation layer — preserves rotation counter across service builds.
     #[cfg(not(target_arch = "wasm32"))]
     ua_rotation: crate::tower::UaRotationLayer,
@@ -1094,6 +1097,21 @@ impl CrawlEngine {
                 {
                     urls_filtered += 1;
                     continue;
+                }
+            }
+
+            // Check page budget before fetching.
+            match self.page_budget.check().await {
+                Ok(()) => {
+                    // Budget permits; continue to page fetch.
+                }
+                Err(crate::budget::BudgetError::Exhausted) => {
+                    tracing::info!(target: "kreuzcrawl.budget", "page budget exhausted");
+                    break;
+                }
+                Err(crate::budget::BudgetError::Backend(msg)) => {
+                    tracing::error!(target: "kreuzcrawl.budget", error = %msg, "budget backend error; treating as exhausted");
+                    break;
                 }
             }
 
