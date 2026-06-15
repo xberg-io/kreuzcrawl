@@ -998,14 +998,16 @@ impl CrawlEngine {
                 }
             }
 
+            let child_depth = depth + 1;
             let dedup_key = normalize_url_for_dedup(&link_url);
             // Mark seen at candidate push time, not after SSRF validation, so the next
-            // iteration of this loop (and later discover_links calls running concurrently)
-            // skip URLs that dedup to the same key. Without this, fragment/query variants
-            // of the same target all pass !is_seen() in one batch and get enqueued.
+            // iteration of this loop (and later discover_and_enqueue_links calls running
+            // concurrently) skip URLs that dedup to the same key. Without this,
+            // fragment/query variants of the same target all pass !is_seen() in one
+            // batch and get enqueued.
             if !self.frontier.is_seen(&dedup_key).await? {
                 self.frontier.mark_seen(&dedup_key).await?;
-                candidates.push((link_url, is_doc_link, depth));
+                candidates.push((link_url, is_doc_link, child_depth));
             }
         }
 

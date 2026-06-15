@@ -4,6 +4,16 @@ All notable changes to kreuzcrawl are documented here.
 
 ## [Unreleased]
 
+## [0.3.0-rc.70] - 2026-06-16
+
+### Fixed
+
+- **Child crawl depth not incremented (rc.62 regression).** Sibling fix to rc.69's within-batch dedup race — both regressions originated in commit 277ef16f6 (`feat(security): SSRF defense in core HTTP layer`). When `discover_and_enqueue_links` was refactored into the two-phase candidate/SSRF-validate pipeline, the line `let child_depth = depth + 1;` was dropped. Child entries inherited the parent's depth verbatim, so every URL ran at `entry.depth = 0` regardless of how deep into the tree it lived. Two downstream consequences both surfaced in rc.69 CI E2E run 27569666762 across all 15 language suites (`tests/test_crawl.py:65: assert 5 == 3`, etc.): (1) `max_depth` guard `depth < max_depth` is never reached — `crawl_concurrent_depth` fixture with `max_depth=1` returned 5 pages (root + 2 children + 2 grandchildren) instead of 3 (root + 2 children); (2) the `include_paths` filter in `should_fetch_url` is gated on `entry.depth > 0` (the seed URL is always included regardless of pattern), so with all entries at depth 0 the filter never applied — `crawl_include_path_pattern` fixture with `include_paths=["/blog/.*"]` returned 3 pages (root + `/blog/post1` + `/about`) instead of 2. Fix: restore `let child_depth = depth + 1;` in the candidate loop of `discover_and_enqueue_links` and push `child_depth` (not the parent's `depth`) into `candidates`. Phase 2's consumer already destructures the tuple as `child_depth` and writes it to `FrontierEntry.depth`, so the consumer path is unchanged. Verified end-to-end: `cargo test -p kreuzcrawl --tests --no-fail-fast` with `KREUZCRAWL_ALLOW_PRIVATE_NETWORK=true` passes 192 unit + all integration tests with zero failures. Together with rc.69's within-batch dedup fix, this completes the cleanup of the 277ef16f6 regression cluster that masked itself across rc.62 → rc.68 by overlapping with the SSRF env-var rollout signal noise.
+
+### Changed
+
+- **Regenerate against alef 0.25.15** (pin unchanged from rc.68/rc.69). Pure binding regen for the depth-fix Rust source change.
+
 ## [0.3.0-rc.69] - 2026-06-15
 
 ### Fixed

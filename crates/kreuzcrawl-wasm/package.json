@@ -1,6 +1,6 @@
 {
   "name": "@kreuzberg/kreuzcrawl-wasm",
-  "version": "0.3.0-rc.69",
+  "version": "0.3.0-rc.70",
   "private": false,
   "description": "High-performance web crawling engine",
   "license": "Elastic-2.0",
