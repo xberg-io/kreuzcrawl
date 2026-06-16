@@ -191,7 +191,7 @@ jobs:
               run: |
                   mkdir -p target/release e2e/rust/target/release
                   mkdir -p e2e/c/ffi/include e2e/c/ffi/lib
-                  mkdir -p crates/kreuzcrawl-ffi/include
+                  mkdir -p crates/kreuzcrawl-ffi/include packages/go/include
                   # actions/upload-artifact@v7 preserves directory structure for multi-path
                   # uploads, so files land under ffi-artifacts/target/release/ etc.
                   # Fall back to flat layout for safety.
@@ -206,11 +206,30 @@ jobs:
                   for src in ffi-artifacts/crates/kreuzcrawl-ffi/include/kreuzcrawl.h ffi-artifacts/kreuzcrawl.h; do
                     [ -e "$src" ] && cp "$src" crates/kreuzcrawl-ffi/include/ || true
                     [ -e "$src" ] && cp "$src" e2e/c/ffi/include/ || true
+                    # packages/go/binding.go declares `#cgo CFLAGS: -I${SRCDIR}/include`
+                    # ($SRCDIR = packages/go/), so the cgo include search path needs the
+                    # header at packages/go/include/kreuzcrawl.h. The Go E2E build fails
+                    # at compile time with "fatal error: internal/ffi/kreuzcrawl.h: No
+                    # such file or directory" without this copy.
+                    [ -e "$src" ] && cp "$src" packages/go/include/ || true
                   done
                   # The Makefile's `$(FFI_DIR)/include/kreuzcrawl.h: download_ffi.sh` rule
                   # re-downloads if the header is older than the script. Touch the staged
                   # header so make treats it as up-to-date and skips the (404-prone) download.
                   [ -e e2e/c/ffi/include/kreuzcrawl.h ] && touch e2e/c/ffi/include/kreuzcrawl.h || true
+                  # e2e/c/Makefile's `all: download_ffi` rule is .PHONY, so
+                  # `bash download_ffi.sh` runs unconditionally even after the header is
+                  # staged. The script itself has an internal skip: when
+                  # `e2e/c/ffi/.alef-ffi-version` contains the expected
+                  # `${FFI_PKG_NAME}-v${VERSION}-${TRIPLE}` string, it exits 0 immediately
+                  # without touching the network. Write that marker now so the script
+                  # short-circuits before hitting the v0.3.0-rc.<n> release URL — the
+                  # publish workflow is dispatched manually after tag push, so the
+                  # release asset is 404 until publish finishes.
+                  if [ -e e2e/c/ffi/include/kreuzcrawl.h ]; then
+                    VERSION=$(awk -F'"' '/^version = "/ { print $2; exit }' Cargo.toml)
+                    echo "kreuzcrawl-ffi-v${VERSION}-aarch64-unknown-linux-gnu" > e2e/c/ffi/.alef-ffi-version
+                  fi
                   for src in ffi-artifacts/target/release/kreuzcrawl ffi-artifacts/kreuzcrawl; do
                     [ -e "$src" ] && cp "$src" target/release/ || true
                   done
@@ -366,3 +385,11 @@ jobs:
                   LD_LIBRARY_PATH: ${{ env.LD_LIBRARY_PATH }}
                   DYLD_LIBRARY_PATH: ${{ env.DYLD_LIBRARY_PATH || '' }}
                   KREUZCRAWL_BUILD: "1"
+                  # Suite-wide SSRF override so fixtures pointed at the mock-server's
+                  # loopback URL are accepted. Per-language harnesses also set this
+                  # (python conftest.py, e2e/rust/.cargo/config.toml [env], etc.) but
+                  # the dotnet, dart, and rust runners don't inherit cargo's [env] /
+                  # the workspace harness layer, so the variable must be exported at
+                  # the workflow step level for them. Mirrors the same setting in the
+                  # test_apps:smoke task chain.
+                  KREUZCRAWL_ALLOW_PRIVATE_NETWORK: "true"

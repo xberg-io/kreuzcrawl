@@ -286,8 +286,16 @@ tasks:
         env:
             PATH: "{{.CARGO_PATH_PREFIX}}{{.PATH}}"
             RUST_TEST_THREADS: "1"
+        # cwd must be e2e/rust/ so cargo's config discovery picks up
+        # e2e/rust/.cargo/config.toml — that file's [env] block sets
+        # KREUZCRAWL_ALLOW_PRIVATE_NETWORK=true, which the SSRF defense
+        # needs to honor loopback URLs in the suite. Cargo searches for
+        # .cargo/config.toml from cwd upward, NOT from the manifest path,
+        # so invoking `cargo test --manifest-path e2e/rust/Cargo.toml` from
+        # the workspace root silently skips the e2e config.
+        dir: e2e/rust
         cmds:
-            - cargo test --manifest-path e2e/rust/Cargo.toml --release
+            - cargo test --release
 
     e2e:verify:
         desc: Regenerate and validate Rust E2E suite (generate + format + lint + test)
