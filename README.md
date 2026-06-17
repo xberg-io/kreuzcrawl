@@ -96,6 +96,34 @@ High-performance Rust web crawling engine for structured data extraction. Scrape
 
 **[Documentation](https://docs.kreuzcrawl.kreuzberg.dev)** | **[API Reference](https://docs.kreuzcrawl.kreuzberg.dev/reference/api-rust/)**
 
+## Substrate vs operational
+
+kreuzcrawl ships the **substrate**: everything a developer needs to crawl a site end-to-end with no external service. Productization concerns (managed proxy pools, tuned WAF fingerprints, authenticated-session injection, scheduling/retry orchestration, billing) live in [kreuzberg-cloud](https://github.com/kreuzberg-dev/kreuzberg-cloud), the reference operational implementation.
+
+### In the substrate
+
+HTML→Markdown engine, headless-Chrome fallback, [`kreuzcrawl::robots`](crates/kreuzcrawl/src/robots.rs) and [`kreuzcrawl::sitemap`](crates/kreuzcrawl/src/sitemap.rs) parsers (public — usable standalone), per-domain throttling, SSRF policy, baseline WAF classifier (`TomlClassifier`), crawl event stream, URL canonicalization, citations.
+
+### Extension points (inject your own impls)
+
+| Trait | Baseline (kreuzcrawl) | Reference cloud impl |
+|---|---|---|
+| `traits::Frontier` | `defaults::InMemoryFrontier` | NATS-backed frontier in `kreuzberg-cloud/crates/crawl-traits/src/frontier.rs` |
+| `traits::RateLimiter` | `defaults::PerDomainThrottle` | `AdaptiveRateLimiter` (cloud) |
+| `traits::CrawlStore` | `defaults::NoopStore` | `CloudCrawlStore` (cloud) |
+| `traits::EventEmitter` | `defaults::NoopEmitter` | `NatsEventEmitter` (cloud) |
+| `traits::ContentFilter` | `defaults::NoopFilter` | `LlmContentFilter` (cloud) |
+| `traits::CrawlCache` | `defaults::NoopCache` | `CloudCrawlCache` (cloud) |
+| `WafClassifier` | `TomlClassifier` (loads rules from disk) | Tuned-fingerprint database (cloud) |
+| `BypassProvider` | Built-in baseline | Managed bypass cluster (cloud) |
+| `AntibotStrategy` | `DefaultAntibotStrategy` | Custom strategies (cloud) |
+
+Inject any impl via `CrawlEngineBuilder::with_<trait>(Arc::new(MyImpl))`.
+
+### Out of the box (cloud-only)
+
+Managed paid IP rotation pool, premium per-site scraper presets (LinkedIn, Amazon, eBay, GitHub, …), authenticated-crawl session injection, visual-diff change detection, scheduled crawls + per-customer budgets, cost analytics.
+
 ## Installation
 
 | Language                                                                                    | Package                                                                                    | Install                                                                           |

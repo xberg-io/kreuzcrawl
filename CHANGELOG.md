@@ -4,6 +4,14 @@ All notable changes to kreuzcrawl are documented here.
 
 ## [Unreleased]
 
+### Added
+
+- **Public substrate parsers.** `kreuzcrawl::robots` and `kreuzcrawl::sitemap` are now `pub mod`. `parse_robots_txt`, `is_path_allowed`, `RobotsRules` (and its fields), `parse_sitemap_xml`, `parse_sitemap_index`, `is_sitemap_index` are public — usable from out-of-crate code without spinning the engine. Async fetch helpers remain crate-internal (they rely on engine HTTP/config). Substrate-only integration test at `crates/kreuzcrawl/tests/substrate_only_crawl.rs` locks in the acceptance criterion: a developer can crawl a small site with only kreuzcrawl, no `kreuzberg-cloud` or `crawl-traits` deps.
+
+### Changed
+
+- **README: substrate-vs-operational section.** Documents the boundary between kreuzcrawl (substrate: parsers, fetchers, classifiers, baseline trait impls) and `kreuzberg-cloud` (productization: paid IP rotation, tuned WAF fingerprints, authenticated sessions, premium scrapers, scheduling). Lists the existing trait extension points (`Frontier`, `RateLimiter`, `CrawlStore`, `EventEmitter`, `ContentFilter`, `CrawlCache`, `WafClassifier`, `BypassProvider`, `AntibotStrategy`) with their kreuzcrawl baselines and cloud reference impls.
+
 ## [0.3.0-rc.75] - 2026-06-17
 
 ### Fixed
