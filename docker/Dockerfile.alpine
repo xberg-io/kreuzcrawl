@@ -33,8 +33,10 @@ COPY crates/kreuzcrawl-cli/ crates/kreuzcrawl-cli/
 COPY crates/kreuzcrawl-bindings-common/ crates/kreuzcrawl-bindings-common/
 COPY crates/kreuzcrawl-browser/ crates/kreuzcrawl-browser/
 
-# Keep only the crates we need
-RUN sed -i 's|members = \[.*\]|members = ["crates/kreuzcrawl", "crates/kreuzcrawl-cli", "crates/kreuzcrawl-bindings-common"]|' Cargo.toml
+# Rewrite workspace members to match copied crates only (must match the COPY directives above).
+# perl (installed above) is used instead of sed so the multiline `members = [ ... ]` array is
+# matched as a whole (-0777 slurp + /s); python3 is not present in this builder stage.
+RUN perl -0777 -i -pe 's/members = \[.*?\]/members = ["crates\/kreuzcrawl", "crates\/kreuzcrawl-cli", "crates\/kreuzcrawl-bindings-common", "crates\/kreuzcrawl-browser"]/s' Cargo.toml
 
 # Build release binary with selected features
 RUN . "$HOME/.cargo/env" && \
