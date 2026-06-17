@@ -1148,7 +1148,6 @@ void* __swift_bridge__$__alef_phantom_vec_response_meta(void);
 void* __swift_bridge__$__alef_phantom_vec_page_metadata(void);
 void* __swift_bridge__$__alef_phantom_vec_citation_result(void);
 void* __swift_bridge__$__alef_phantom_vec_citation_reference(void);
-void* __swift_bridge__$__alef_phantom_vec_crawl_engine_handle(void);
 void* __swift_bridge__$__alef_phantom_vec_batch_scrape_result(void);
 void* __swift_bridge__$__alef_phantom_vec_batch_crawl_result(void);
 void* __swift_bridge__$__alef_phantom_vec_batch_scrape_results(void);

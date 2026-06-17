@@ -4,6 +4,11 @@ All notable changes to kreuzcrawl are documented here.
 
 ## [Unreleased]
 
+### Changed
+
+- **Bump alef pin to 0.25.26 + unreleased.** Local regen against alef HEAD picks up cross-binding fixes that the previous rc.73 pin (0.25.24) lacked:
+  - `codegen/binding_helpers/lossy_fields.rs` + `backends/php/gen_bindings/helpers/enum_defaults.rs`: skip `binding_excluded` fields in the shared method-body lossy helper AND the PHP enum-tainted From generator. Previously emitted `<field>: Default::default()` for every alef(skip) field BEFORE the trailing `..Default::default()` spread, shadowing `kreuzcrawl::CrawlConfig::default()`'s custom `ssrf: SsrfPolicy::from_env()` with `<SsrfPolicy as Default>::default()` (deny_private=true). This broke `KREUZCRAWL_ALLOW_PRIVATE_NETWORK` for every binding's `Kreuzcrawl::validate()` and PHP's `crawl()`/`scrape()`/etc. The 0.25.26 partial fix only covered the lossy struct conversion helper used for the constructor path; the enum-tainted From-impl path remained broken because CrawlConfig is enum-tainted (browser.mode, content, etc.) and routes through `gen_enum_tainted_from_binding_to_core`. With the combined fix, PHP redirect cluster (9 tests) and PHP SSRF cluster (~45 errors) both stop failing.
+
 ### Fixed
 
 - **(net/ssrf): lowercase `SsrfPolicyViolation::DnsResolutionFailed` message.** Was `"DNS resolution failed: ..."` (Title Case); other variants in the same enum (`"host not on allowlist"`, `"invalid URL"`, `"disallowed scheme"`) use lowercase. The Rust e2e `test_error_dns_resolution` failed because the fixture redirects to `.invalid`, which short-circuits via SSRF DNS preflight rather than reaching `NetworkErrorKind::Dns` classification — so the surfaced string was the SSRF reason verbatim, with capital `DNS`. Lowercasing aligns with the lowercase keywords used by `error_chain_string()`. Node/Python tests passed coincidentally — their alef generators emit only the value-less first assertion (`expect(...).rejects.toThrow()` / `pytest.raises(Exception)`) and silently drop the second `{type: "error", value: "dns"}` assertion. Rust correctly emits both, so the string mismatch surfaced there first.

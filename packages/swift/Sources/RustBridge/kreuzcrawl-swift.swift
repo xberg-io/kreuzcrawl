@@ -256,9 +256,6 @@ public func __alef_phantom_vec_citation_result() -> RustVec<CitationResult> {
 public func __alef_phantom_vec_citation_reference() -> RustVec<CitationReference> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_citation_reference())
 }
-public func __alef_phantom_vec_crawl_engine_handle() -> RustVec<CrawlEngineHandle> {
-    RustVec(ptr: __swift_bridge__$__alef_phantom_vec_crawl_engine_handle())
-}
 public func __alef_phantom_vec_batch_scrape_result() -> RustVec<BatchScrapeResult> {
     RustVec(ptr: __swift_bridge__$__alef_phantom_vec_batch_scrape_result())
 }
