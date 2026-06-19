@@ -95,7 +95,10 @@ tasks:
             - silent: true
               cmd: |-
                 set -e
-                MOD_DIR=$(go list -m -f '{{`{{.Dir}}`}}' github.com/kreuzberg-dev/kreuzcrawl/packages/go)
+                # `go list -m -f {{.Dir}} <mod>` returns an empty Dir for a published
+                # module unless the version is pinned explicitly; resolve it from go.mod.
+                FFI_VERSION=$(grep -E '^[[:space:]]*github.com/kreuzberg-dev/kreuzcrawl/packages/go[[:space:]]' go.mod | awk '{print $NF}')
+                MOD_DIR=$(go list -m -f '{{`{{.Dir}}`}}' "github.com/kreuzberg-dev/kreuzcrawl/packages/go@$FFI_VERSION")
                 echo "FFI mod dir: $MOD_DIR"
                 if [ -z "$MOD_DIR" ]; then echo "could not resolve go module dir" >&2; exit 1; fi
                 chmod -R u+w "$MOD_DIR" 2>/dev/null || true
@@ -175,6 +178,9 @@ tasks:
                       *) printf '' ;;
                     esac
         cmds:
+            # The in-tree dylib must match the published package's flutter_rust_bridge
+            # content hash; rebuild it from current source before running the test.
+            - task: dart:build:release
             - dart pub get
             - dart test test/scrape_test.dart
 
