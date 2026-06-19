@@ -2465,7 +2465,12 @@ jobs:
 
     publish-homebrew-formula:
         name: Update Homebrew formula source
-        needs: [prepare, check-homebrew, upload-cli-release]
+        # publish-swift-checksums force-moves the release tag onto the Swift-checksum
+        # commit, which changes the `archive/${tag}.tar.gz` source archive. The formula
+        # source sha256 must be computed against the FINAL tag, so this job depends on
+        # swift-checksums for ordering only (its result is not required — `always()`
+        # lets a skipped/failed Swift job through; the tag is settled either way).
+        needs: [prepare, check-homebrew, upload-cli-release, publish-swift-checksums]
         if: |
             always() &&
             needs.prepare.outputs.release_homebrew == 'true' &&
