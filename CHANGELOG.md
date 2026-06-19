@@ -4,6 +4,24 @@ All notable changes to kreuzcrawl are documented here.
 
 ## [Unreleased]
 
+## [0.3.0-rc.80] - 2026-06-19
+
+### Changed
+
+- **Bump alef pin 0.25.43 → 0.25.47** and regenerate all bindings.
+
+### Fixed
+
+- **Java (Panama FFM) crashed on the first request.** The `register_route` downcall descriptor omitted the C context parameter and the upcall adapter mis-read the request pointer; both are corrected, so route registration and request marshalling work end-to-end. (alef 0.25.47)
+- **PHP ignored function-path serde defaults.** `CrawlConfig` from JSON now honors field defaults such as `SsrfPolicy::from_env()` when `ssrf` is omitted, matching the core and the other bindings instead of falling back to deny. (alef 0.25.47)
+- **Kotlin e2e:** compare nullable `Boolean?` assertions explicitly so safe-call field paths compile. (alef 0.25.47)
+- **Dart:** cfg-gate generated Rust-bridge items that reference feature-gated core types, and fix slice/`&Path`/`&BTreeMap`/`serde_json::Value` parameter handling so the Flutter Rust bridge crate compiles. (alef 0.25.46–0.25.47)
+- **JNI:** marshal `Option<&[u8]>` and `&BTreeMap` parameters to the core's declared types. (alef 0.25.44)
+- **SSRF:** allow private networks on the `wasm32` target and respect `KREUZCRAWL_ALLOW_PRIVATE_NETWORK` on native.
+- **Elixir Hex publish** is gated on a complete NIF upload so a flaky NIF leg cannot ship an immutable package with an incomplete checksum file.
+- **Swift `Package.swift`** receives the real artifactbundle SHA256 in the release tag instead of a placeholder, unblocking SwiftPM consumers.
+- **Test-app harness:** resolve the published Go module directory, rebuild the Dart native to the published content hash, and set the SSRF private-network override at process level for C#/Elixir.
+
 ## [0.3.0-rc.79] - 2026-06-18
 
 ### Changed

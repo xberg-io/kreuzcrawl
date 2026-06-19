@@ -2,7 +2,7 @@
 title: "Ruby API Reference"
 ---
 
-## Ruby API Reference <span class="version-badge">v0.3.0-rc.79</span>
+## Ruby API Reference <span class="version-badge">v0.3.0-rc.80</span>
 
 ### Functions
 
@@ -985,8 +985,15 @@ result = SsrfPolicy.default()
 
 Create a policy from environment variables.
 
-Reads `KREUZCRAWL_ALLOW_PRIVATE_NETWORK` — if set to "1" or "true" (case-insensitive),
-sets `deny_private = false`. Otherwise, defaults to `deny_private = true`.
+On native platforms, reads `KREUZCRAWL_ALLOW_PRIVATE_NETWORK` — if set to "1" or "true"
+(case-insensitive), sets `deny_private = false`. Otherwise, defaults to `deny_private = true`.
+
+On wasm32 targets (browser/Node.js), environment variables are not accessible to the
+compiled module. Defaults to `deny_private = false` because:
+
+- Outbound requests in a browser go through the fetch API, which enforces its own network policies.
+- Rust-side SSRF checking is unenforceable and redundant in a wasm32 context.
+- For testing and localhost access, the host's network sandbox is the enforcing boundary.
 
 **Signature:**
 

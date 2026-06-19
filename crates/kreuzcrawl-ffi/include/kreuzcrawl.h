@@ -3223,8 +3223,14 @@ KCRAWLSsrfPolicy *kcrawl_ssrf_policy_default(void);
 /**
  * Create a policy from environment variables.
  *
- * Reads `KREUZCRAWL_ALLOW_PRIVATE_NETWORK` â if set to "1" or "true" (case-insensitive),
- * sets `deny_private = false`. Otherwise, defaults to `deny_private = true`.
+ * On native platforms, reads `KREUZCRAWL_ALLOW_PRIVATE_NETWORK` â if set to "1" or "true"
+ * (case-insensitive), sets `deny_private = false`. Otherwise, defaults to `deny_private = true`.
+ *
+ * On wasm32 targets (browser/Node.js), environment variables are not accessible to the
+ * compiled module. Defaults to `deny_private = false` because:
+ * - Outbound requests in a browser go through the fetch API, which enforces its own network policies.
+ * - Rust-side SSRF checking is unenforceable and redundant in a wasm32 context.
+ * - For testing and localhost access, the host's network sandbox is the enforcing boundary.
  * \note SAFETY: Caller must ensure all pointer arguments are valid or null. Returned pointers must be
  * freed with the appropriate free function.
  */

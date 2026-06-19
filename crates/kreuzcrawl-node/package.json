@@ -1,6 +1,6 @@
 {
 	"name": "@kreuzberg/kreuzcrawl",
-	"version": "0.3.0-rc.79",
+	"version": "0.3.0-rc.80",
 	"description": "High-performance web crawling engine",
 	"license": "Elastic-2.0",
 	"repository": {
@@ -33,14 +33,14 @@
 		"@napi-rs/cli": "^3.6.2"
 	},
 	"optionalDependencies": {
-		"@kreuzberg/kreuzcrawl-darwin-arm64": "0.3.0-rc.79",
-		"@kreuzberg/kreuzcrawl-darwin-x64": "0.3.0-rc.79",
-		"@kreuzberg/kreuzcrawl-linux-arm64-gnu": "0.3.0-rc.79",
-		"@kreuzberg/kreuzcrawl-linux-arm64-musl": "0.3.0-rc.79",
-		"@kreuzberg/kreuzcrawl-linux-x64-gnu": "0.3.0-rc.79",
-		"@kreuzberg/kreuzcrawl-linux-x64-musl": "0.3.0-rc.79",
-		"@kreuzberg/kreuzcrawl-win32-arm64-msvc": "0.3.0-rc.79",
-		"@kreuzberg/kreuzcrawl-win32-x64-msvc": "0.3.0-rc.79"
+		"@kreuzberg/kreuzcrawl-darwin-arm64": "0.3.0-rc.80",
+		"@kreuzberg/kreuzcrawl-darwin-x64": "0.3.0-rc.80",
+		"@kreuzberg/kreuzcrawl-linux-arm64-gnu": "0.3.0-rc.80",
+		"@kreuzberg/kreuzcrawl-linux-arm64-musl": "0.3.0-rc.80",
+		"@kreuzberg/kreuzcrawl-linux-x64-gnu": "0.3.0-rc.80",
+		"@kreuzberg/kreuzcrawl-linux-x64-musl": "0.3.0-rc.80",
+		"@kreuzberg/kreuzcrawl-win32-arm64-msvc": "0.3.0-rc.80",
+		"@kreuzberg/kreuzcrawl-win32-x64-msvc": "0.3.0-rc.80"
 	},
 	"napi": {
 		"binaryName": "kreuzcrawl-node",

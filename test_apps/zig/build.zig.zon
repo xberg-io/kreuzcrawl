@@ -5,8 +5,8 @@
     .minimum_zig_version = "0.16.0",
     .dependencies = .{
         .kreuzcrawl = .{
-            .url = "https://github.com/kreuzberg-dev/kreuzcrawl/releases/download/v0.3.0-rc.79/kreuzcrawl-zig-v0.3.0-rc.79.tar.gz",
-            .hash = "kreuzcrawl-0.3.0-rc.79-STALE_PLACEHOLDER_TO_BE_RESOLVED_BY_ZIG_FETCH",
+            .url = "https://github.com/kreuzberg-dev/kreuzcrawl/releases/download/v0.3.0-rc.80/kreuzcrawl-zig-v0.3.0-rc.80.tar.gz",
+            .hash = "kreuzcrawl-0.3.0-rc.80-STALE_PLACEHOLDER_TO_BE_RESOLVED_BY_ZIG_FETCH",
         },
     },
     .paths = .{

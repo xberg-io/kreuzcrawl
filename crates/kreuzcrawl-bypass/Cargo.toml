@@ -10,7 +10,7 @@ description = "Configurable HTTP-based BypassProvider implementations for kreuzc
 
 [dependencies]
 async-trait = { workspace = true }
-kreuzcrawl = { path = "../kreuzcrawl", version = "0.3.0-rc.79" }
+kreuzcrawl = { path = "../kreuzcrawl", version = "0.3.0-rc.80" }
 reqwest = { workspace = true }
 saphyr = "0.0.6"
 serde_json = { workspace = true }

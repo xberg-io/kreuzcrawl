@@ -90,7 +90,7 @@ NIFs for native BEAM integration with OTP-compatible error tuples and ResourceAr
 
 ```bash
 def deps do
-  [{:kreuzcrawl, "~> 0.3.0-rc.79"}]
+  [{:kreuzcrawl, "~> 0.3.0-rc.80"}]
 end
 
 ```
