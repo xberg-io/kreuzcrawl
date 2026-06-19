@@ -115,6 +115,11 @@ tasks:
     smoke:elixir:
         desc: Run Elixir test_app smoke test
         dir: test_apps/elixir
+        # System.put_env in the BEAM does not propagate to the Rust NIF's libc
+        # environ, so SsrfPolicy::from_env never sees the override. Set it at the
+        # process level before the runtime starts (mirrors .task/languages/elixir.yml).
+        env:
+            KREUZCRAWL_ALLOW_PRIVATE_NETWORK: "true"
         cmds:
             - mix deps.get
             - mix test test/scrape_test.exs
@@ -122,6 +127,11 @@ tasks:
     smoke:php:
         desc: Run PHP test_app smoke test
         dir: test_apps/php
+        # putenv() in the test bootstrap does not reliably reach the ext-php-rs
+        # native code's libc environ, so set it at the process level before PHP
+        # starts (mirrors the e2e harness fix).
+        env:
+            KREUZCRAWL_ALLOW_PRIVATE_NETWORK: "true"
         cmds:
             - bash install.sh
             - composer install
@@ -130,6 +140,11 @@ tasks:
     smoke:csharp:
         desc: Run C# test_app smoke test
         dir: test_apps/csharp
+        # Environment.SetEnvironmentVariable in .NET does not propagate to the
+        # native binding's libc environ, so SsrfPolicy::from_env never sees the
+        # override. Set it at the process level (mirrors .task/languages/csharp.yml).
+        env:
+            KREUZCRAWL_ALLOW_PRIVATE_NETWORK: "true"
         cmds:
             - dotnet restore
             - dotnet test --filter FullyQualifiedName~ScrapeTests
@@ -304,6 +319,9 @@ tasks:
     comprehensive:csharp:
         desc: Run C# test_app comprehensive tests
         dir: test_apps/csharp
+        # See smoke:csharp — .NET cannot set the native libc environ at runtime.
+        env:
+            KREUZCRAWL_ALLOW_PRIVATE_NETWORK: "true"
         cmds:
             - dotnet restore
             - dotnet test
@@ -311,6 +329,9 @@ tasks:
     comprehensive:php:
         desc: Run PHP test_app comprehensive tests
         dir: test_apps/php
+        # See smoke:php — set the SSRF override at the process level before PHP starts.
+        env:
+            KREUZCRAWL_ALLOW_PRIVATE_NETWORK: "true"
         cmds:
             - bash install.sh
             - composer install
@@ -319,6 +340,9 @@ tasks:
     comprehensive:elixir:
         desc: Run Elixir test_app comprehensive tests
         dir: test_apps/elixir
+        # See smoke:elixir — BEAM System.put_env does not reach the NIF libc environ.
+        env:
+            KREUZCRAWL_ALLOW_PRIVATE_NETWORK: "true"
         cmds:
             - mix deps.get
             - mix test
