@@ -1625,6 +1625,66 @@ jobs:
                   assets: "*.zip"
                   token: ${{ steps.app-token.outputs.token }}
 
+    # SwiftPM consumers pin the git TAG and read Package.swift at that tag, so the
+    # tag's `.binaryTarget(checksum:)` must hold the real artifactbundle SHA256 — not
+    # the `__ALEF_SWIFT_CHECKSUM__` placeholder. The artifactbundle only exists after
+    # build+upload, so compute the checksum here, commit it, and MOVE the release tag
+    # onto that commit. The release is still a draft (release-finalize promotes it only
+    # after this job, via needs), so no consumer ever sees the placeholder tag.
+    publish-swift-checksums:
+        name: Inject Swift artifactbundle checksum into the release tag
+        needs: [prepare, upload-swift-release]
+        if: ${{ !cancelled() && needs.upload-swift-release.result == 'success' && needs.prepare.outputs.release_swift == 'true' && needs.prepare.outputs.is_tag == 'true' && needs.prepare.outputs.dry_run != 'true' }}
+        runs-on: macos-latest
+        steps:
+            - uses: actions/create-github-app-token@v2
+              id: app-token
+              with:
+                  app-id: ${{ secrets.BOT_APP_ID }}
+                  private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
+                  owner: kreuzberg-dev
+
+            - uses: actions/checkout@v6
+              with:
+                  ref: ${{ needs.prepare.outputs.checkout_ref }}
+                  fetch-depth: 0
+                  token: ${{ steps.app-token.outputs.token }}
+                  persist-credentials: true
+
+            - name: Compute artifactbundle checksum and rewrite Package.swift
+              env:
+                  GH_TOKEN: ${{ steps.app-token.outputs.token }}
+                  TAG: ${{ needs.prepare.outputs.tag }}
+              run: |
+                  set -euo pipefail
+                  gh release download "$TAG" --repo "$GITHUB_REPOSITORY" -p "Kreuzcrawl-rs.artifactbundle.zip" -D dist-swift
+                  CHECKSUM=$(swift package compute-checksum dist-swift/Kreuzcrawl-rs.artifactbundle.zip)
+                  echo "Computed Swift checksum: $CHECKSUM"
+                  if ! grep -q "__ALEF_SWIFT_CHECKSUM__" Package.swift; then
+                    echo "Package.swift has no placeholder — nothing to inject"
+                    exit 0
+                  fi
+                  sed -i '' "s/__ALEF_SWIFT_CHECKSUM__/$CHECKSUM/g" Package.swift
+
+            - name: Commit and move the release tag onto the checksummed Package.swift
+              env:
+                  TAG: ${{ needs.prepare.outputs.tag }}
+              run: |
+                  set -euo pipefail
+                  if git diff --quiet -- Package.swift; then
+                    echo "Package.swift unchanged — skipping retag"
+                    exit 0
+                  fi
+                  git config user.name "kreuzberg-dev-publisher[bot]"
+                  git config user.email "291994444+kreuzberg-dev-publisher[bot]@users.noreply.github.com"
+                  git add Package.swift
+                  git commit -m "chore: inject Swift artifactbundle checksum for ${TAG}"
+                  # Recreate the annotated release tag on this commit. Pushing the tag also
+                  # pushes the new commit object, so main is left untouched (Package.swift
+                  # is regenerated with the placeholder on the next release anyway).
+                  git tag -f -a "$TAG" -m "$TAG" HEAD
+                  git push origin "refs/tags/${TAG}" --force
+
     upload-elixir-release:
         name: Upload Elixir NIF archives to GitHub Release
         needs: [prepare, elixir-natives, elixir-natives-musl]
@@ -2617,6 +2677,7 @@ jobs:
             - upload-elixir-release
             - upload-php-pie-release
             - upload-swift-release
+            - publish-swift-checksums
         if: |
             always() &&
             !cancelled() &&
