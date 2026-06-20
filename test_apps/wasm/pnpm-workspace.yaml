@@ -4,4 +4,4 @@ allowBuilds:
   esbuild: true
   tree-sitter: true
 minimumReleaseAgeExclude:
-  - '@kreuzberg/kreuzcrawl-wasm@0.3.0-rc.81'
+  - '@kreuzberg/kreuzcrawl-wasm@0.3.0-rc.82'
