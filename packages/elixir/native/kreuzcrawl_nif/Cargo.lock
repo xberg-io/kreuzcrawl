@@ -1416,7 +1416,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl"
-version = "0.3.0-rc.82"
+version = "0.3.0-rc.83"
 dependencies = [
  "ahash",
  "aho-corasick",
@@ -1456,7 +1456,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl_nif"
-version = "0.3.0-rc.82"
+version = "0.3.0-rc.83"
 dependencies = [
  "alloc-no-stdlib",
  "alloc-stdlib",

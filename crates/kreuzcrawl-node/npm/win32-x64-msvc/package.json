@@ -1,15 +1,25 @@
 {
-  "name": "@kreuzberg/kreuzcrawl-win32-x64-msvc",
-  "version": "0.3.0-rc.82",
-  "license": "Elastic-2.0",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/kreuzberg-dev/kreuzcrawl.git"
-  },
-  "main": "kreuzcrawl-node.win32-x64-msvc.node",
-  "files": ["kreuzcrawl-node.win32-x64-msvc.node"],
-  "os": ["win32"],
-  "cpu": ["x64"],
-  "engines": { "node": ">= 18" },
-  "publishConfig": { "access": "public" }
+	"name": "@kreuzberg/kreuzcrawl-win32-x64-msvc",
+	"version": "0.3.0-rc.83",
+	"license": "Elastic-2.0",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/kreuzberg-dev/kreuzcrawl.git"
+	},
+	"files": [
+		"kreuzcrawl-node.win32-x64-msvc.node"
+	],
+	"os": [
+		"win32"
+	],
+	"cpu": [
+		"x64"
+	],
+	"main": "kreuzcrawl-node.win32-x64-msvc.node",
+	"publishConfig": {
+		"access": "public"
+	},
+	"engines": {
+		"node": ">= 18"
+	}
 }

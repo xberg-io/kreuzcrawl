@@ -17,7 +17,7 @@ exclude = [
 resolver = "2"
 
 [workspace.package]
-version = "0.3.0-rc.82"
+version = "0.3.0-rc.83"
 edition = "2024"
 authors = ["Na'aman Hirschfeld <naaman@kreuzberg.dev>"]
 license = "Elastic-2.0"
@@ -65,8 +65,8 @@ html-to-markdown-rs = { version = "3.6", features = ["full"] }
 html5ever = "0.39"
 ipnet = "2"
 itertools = "0.14"
-kreuzcrawl-browser = { path = "crates/kreuzcrawl-browser", version = "0.3.0-rc.82" }
-kreuzcrawl-bypass = { path = "crates/kreuzcrawl-bypass", version = "0.3.0-rc.82" }
+kreuzcrawl-browser = { path = "crates/kreuzcrawl-browser", version = "0.3.0-rc.83" }
+kreuzcrawl-bypass = { path = "crates/kreuzcrawl-bypass", version = "0.3.0-rc.83" }
 libc = "0.2"
 liter-llm = { version = "1.5", features = ["native-http"] }
 markup5ever = "0.39"

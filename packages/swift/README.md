@@ -89,7 +89,7 @@ Via swift-bridge for macOS, iOS, and Linux with native Swift types and async/awa
 ## Installation
 
 ```bash
-.package(url: "https://github.com/kreuzberg-dev/kreuzcrawl", exact: "0.3.0-rc.82")
+.package(url: "https://github.com/kreuzberg-dev/kreuzcrawl", exact: "0.3.0-rc.83")
 ```
 
 ## Agent plugin
