@@ -316,6 +316,19 @@ Rust Core Engine (async, concurrent, SIMD-optimized)
     └── Browser Rendering (optional headless Chrome/Firefox)
 ```
 
+## AI Coding Assistants
+
+Install the Kreuzcrawl plugin from the [`kreuzberg-dev/plugins`](https://github.com/kreuzberg-dev/plugins) marketplace:
+
+```text
+/plugin marketplace add kreuzberg-dev/plugins
+/plugin install kreuzcrawl@kreuzberg
+```
+
+Works with Claude Code, Codex, Cursor, Gemini CLI, Factory Droid, GitHub Copilot CLI, and opencode. See [the marketplace README](https://github.com/kreuzberg-dev/plugins) for harness-specific install instructions.
+
+The plugin ships the Kreuzcrawl agent skills — site crawling, HTML→Markdown scraping, and headless-Chrome fallback — and wires up the `kreuzcrawl` MCP server (`kreuzcrawl mcp`) so assistants can drive the crawler directly. It shells out to the `kreuzcrawl` CLI; install it from the [Installation](#installation) table (for example, `brew install kreuzberg-dev/tap/kreuzcrawl`).
+
 ## Contributing
 
 Contributions are welcome! See our [Contributing Guide](https://github.com/kreuzberg-dev/kreuzcrawl/blob/main/CONTRIBUTING.md).
