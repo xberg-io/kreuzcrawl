@@ -8,6 +8,7 @@ Kreuzcrawl is built around a trait-based crawl engine and a Tower middleware sta
 
 - [Installation](https://docs.kreuzcrawl.kreuzberg.dev/getting-started/installation/): Install Kreuzcrawl for Rust, Python, TypeScript, Go, Java, Kotlin, C#, Ruby, PHP, Elixir, Dart, Swift, Zig, WebAssembly, or via CLI / Docker
 - [Quick Start](https://docs.kreuzcrawl.kreuzberg.dev/getting-started/quickstart/): Scrape a single page, crawl a site, and map URLs in under five minutes
+- AI Coding Assistants: Install the plugin with `/plugin marketplace add kreuzberg-dev/plugins` then `/plugin install kreuzcrawl@kreuzberg` — ships agent skills plus an MCP server, works with Claude Code, Codex, Cursor, Gemini, Copilot, and opencode
 
 ## Guides
 
