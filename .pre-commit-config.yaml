@@ -14,7 +14,7 @@ repos:
             stages:
                 - commit-msg
     - repo: https://github.com/kreuzberg-dev/pre-commit-hooks
-      rev: v2.2.0
+      rev: v2.3.0
       hooks:
           # Alef verification
           - id: alef-verify
@@ -59,6 +59,7 @@ repos:
 
           # Linters and checks
           - id: ai-rulez-generate
+          - id: ai-rulez-validate
 
           - id: check-merge-conflict
           - id: check-added-large-files
@@ -83,6 +84,8 @@ repos:
           - id: shellcheck
             exclude: ^packages/kotlin-android/gradlew$
 
+          - id: markdownlint-rumdl-strict
+            exclude: ^(docs/reference/.*|packages/.*/README\.md|crates/.*/README\.md|readme_templates/.*|README\.md|CHANGELOG\.md)$
           - id: textlint
             files: ^docs/.*\.md$
             exclude: ^docs/(reference/|api-|snippets/|migration/)
@@ -169,8 +172,18 @@ repos:
           - id: ex-doc-coverage
             files: ^packages/elixir/
 
+          - id: roxygen2-check
+            files: ^packages/r/R/.*\.R$
+          - id: air-format
+            files: ^packages/r/.*\.[Rr]$
+          - id: air-check
+            files: ^packages/r/.*\.[Rr]$
+          - id: lintr
+            files: ^packages/r/.*\.[Rr]$
+
           - id: swiftlint
             files: ^packages/swift/.*\.swift$
+          - id: swift-doc-coverage
           - id: dart-analyze
             files: ^packages/dart/.*\.dart$
             exclude: ^(test_apps/|e2e/dart/)
@@ -208,10 +221,7 @@ repos:
           - id: oxfmt
           - id: go-fmt
             exclude: ^(e2e/|test_apps/)
-          # Java formatting is owned by alef's eclipse/spotless scaffold
-          # (packages/java/pom.xml + spotless:check via the java-verify hook).
-          # No palantir-java-format hook — it would fight the scaffold's 4-space
-          # eclipse style across the whole binding surface.
+          - id: palantir-java-format
           - id: ktfmt
             files: ^packages/kotlin-android/.*\.kts?$
             args:
