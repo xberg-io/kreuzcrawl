@@ -69,15 +69,35 @@ pub struct BatchScrapeParams {
     pub concurrency: Option<usize>,
 }
 
-/// Request parameters for taking a screenshot of a URL.
+/// Request parameters for batch crawling multiple seed URLs.
 #[derive(Debug, Clone, serde::Deserialize, serde::Serialize, schemars::JsonSchema)]
 #[serde(deny_unknown_fields)]
-pub struct ScreenshotParams {
-    /// URL to capture
-    pub url: String,
-    /// Whether to capture the full page or just the viewport
+pub struct BatchCrawlParams {
+    /// List of seed URLs to crawl
+    pub urls: Vec<String>,
+    /// Maximum link depth from each seed URL
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub full_page: Option<bool>,
+    pub max_depth: Option<usize>,
+    /// Maximum number of pages to crawl per seed
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub max_pages: Option<usize>,
+    /// Output format: "markdown" (default) or "json"
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub format: Option<String>,
+    /// Whether to restrict crawling to the same domain
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub stay_on_domain: Option<bool>,
+    /// Maximum number of concurrent requests
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub concurrency: Option<usize>,
+}
+
+/// Request parameters for converting markdown links into numbered citations.
+#[derive(Debug, Clone, serde::Deserialize, serde::Serialize, schemars::JsonSchema)]
+#[serde(deny_unknown_fields)]
+pub struct GenerateCitationsParams {
+    /// Markdown text whose inline links are converted to numbered citations
+    pub markdown: String,
 }
 
 /// Request parameters for downloading a document from a URL.
@@ -99,32 +119,6 @@ pub struct InteractParams {
     pub url: String,
     /// Sequence of browser actions to execute (click, type, scroll, etc.)
     pub actions: Vec<serde_json::Value>,
-}
-
-/// Request parameters for AI-driven research.
-#[derive(Debug, Clone, serde::Deserialize, serde::Serialize, schemars::JsonSchema)]
-#[serde(deny_unknown_fields)]
-pub struct ResearchParams {
-    /// Research query or question
-    pub query: String,
-    /// Maximum crawl depth per seed URL
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub max_depth: Option<usize>,
-    /// Maximum total pages to visit
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub max_pages: Option<usize>,
-    /// Optional seed URLs to start research from
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub seed_urls: Option<Vec<String>>,
-}
-
-/// Request parameters for checking crawl job status.
-#[derive(Debug, Clone, serde::Deserialize, serde::Serialize, schemars::JsonSchema)]
-#[serde(deny_unknown_fields)]
-pub struct CrawlStatusParams {
-    /// Optional job ID to check status for
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub job_id: Option<String>,
 }
 
 /// Empty parameters for tools that take no arguments.
@@ -192,12 +186,20 @@ mod tests {
     }
 
     #[test]
-    fn test_research_params_defaults() {
-        let json = r#"{"query": "rust async patterns"}"#;
-        let params: ResearchParams = serde_json::from_str(json).unwrap();
+    fn test_batch_crawl_params_defaults() {
+        let json = r#"{"urls": ["https://a.com", "https://b.com"]}"#;
+        let params: BatchCrawlParams = serde_json::from_str(json).unwrap();
 
-        assert_eq!(params.query, "rust async patterns");
+        assert_eq!(params.urls.len(), 2);
         assert_eq!(params.max_depth, None);
-        assert_eq!(params.seed_urls, None);
+        assert_eq!(params.concurrency, None);
+    }
+
+    #[test]
+    fn test_generate_citations_params() {
+        let json = r#"{"markdown": "See [example](https://example.com)."}"#;
+        let params: GenerateCitationsParams = serde_json::from_str(json).unwrap();
+
+        assert_eq!(params.markdown, "See [example](https://example.com).");
     }
 }

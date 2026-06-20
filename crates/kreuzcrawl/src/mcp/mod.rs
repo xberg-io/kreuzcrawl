@@ -9,15 +9,11 @@
 //! - **crawl**: Crawl a website following links up to a configured depth
 //! - **map**: Discover all pages on a website via links and sitemaps
 //! - **batch_scrape**: Scrape multiple URLs concurrently
+//! - **batch_crawl**: Crawl multiple seed URLs concurrently
 //! - **download**: Download a document from a URL
 //! - **interact**: Execute browser actions on a page
+//! - **generate_citations**: Convert markdown links into numbered citations
 //! - **get_version**: Get the current kreuzcrawl library version
-//!
-//! # Planned Tools (stubs registered, not yet implemented)
-//!
-//! - **screenshot**: Capture a screenshot of a URL (requires browser feature)
-//! - **research**: AI-driven research across multiple pages (requires ai feature)
-//! - **crawl_status**: Check the status of a crawl job (requires job registry)
 //!
 //! # Example
 //!

@@ -267,6 +267,77 @@ impl KreuzcrawlMcp {
         Ok(CallToolResult::success(vec![Content::text(response)]))
     }
 
+    /// Crawl multiple seed URLs concurrently.
+    ///
+    /// Efficiently crawls multiple websites in parallel and returns combined results.
+    #[tool(
+        description = "Crawl multiple seed URLs concurrently. Returns crawl results for all seeds.",
+        annotations(title = "Batch Crawl", read_only_hint = true)
+    )]
+    async fn batch_crawl(
+        &self,
+        Parameters(params): Parameters<super::params::BatchCrawlParams>,
+    ) -> Result<CallToolResult, rmcp::ErrorData> {
+        use super::format::{format_crawl_as_json, format_crawl_as_markdown};
+
+        if params.urls.is_empty() {
+            return Err(rmcp::ErrorData::invalid_params("urls array must not be empty", None));
+        }
+        for url in &params.urls {
+            validate_url(url)?;
+        }
+        if let Some(depth) = params.max_depth
+            && depth > 100
+        {
+            return Err(rmcp::ErrorData::invalid_params("max_depth must be <= 100", None));
+        }
+        if let Some(pages) = params.max_pages
+            && (pages == 0 || pages > 100_000)
+        {
+            return Err(rmcp::ErrorData::invalid_params("max_pages must be 1..=100000", None));
+        }
+
+        let mut config = self.config.clone();
+        if let Some(depth) = params.max_depth {
+            config.max_depth = Some(depth);
+        }
+        if let Some(pages) = params.max_pages {
+            config.max_pages = Some(pages);
+        }
+        if let Some(stay) = params.stay_on_domain {
+            config.stay_on_domain = stay;
+        }
+        if let Some(concurrency) = params.concurrency {
+            config.max_concurrent = Some(concurrency);
+        }
+
+        let engine = self.build_engine(config)?;
+        let url_refs: Vec<&str> = params.urls.iter().map(|s| s.as_str()).collect();
+        let results = engine.batch_crawl(&url_refs).await;
+
+        let is_json = parse_format(&params.format) == "json";
+
+        let mut response = String::new();
+        for (url, result) in &results {
+            match result {
+                Ok(crawl_result) => {
+                    if is_json {
+                        response.push_str(&format_crawl_as_json(crawl_result));
+                    } else {
+                        response.push_str(&format!("## {url}\n\n"));
+                        response.push_str(&format_crawl_as_markdown(crawl_result));
+                    }
+                    response.push_str("\n\n---\n\n");
+                }
+                Err(e) => {
+                    response.push_str(&format!("## {url}\n\n**Error:** {e}\n\n---\n\n"));
+                }
+            }
+        }
+
+        Ok(CallToolResult::success(vec![Content::text(response)]))
+    }
+
     /// Download a document from a URL.
     ///
     /// Downloads the raw document bytes and returns metadata about the downloaded file
@@ -316,22 +387,6 @@ impl KreuzcrawlMcp {
         Ok(CallToolResult::success(vec![Content::text(response)]))
     }
 
-    /// Capture a screenshot of a URL (requires browser feature).
-    #[tool(
-        description = "Capture a screenshot of a URL (requires browser feature).",
-        annotations(title = "Screenshot", read_only_hint = true)
-    )]
-    async fn screenshot(
-        &self,
-        Parameters(params): Parameters<super::params::ScreenshotParams>,
-    ) -> Result<CallToolResult, rmcp::ErrorData> {
-        validate_url(&params.url)?;
-
-        Ok(CallToolResult::success(vec![Content::text(
-            "Screenshot tool is not yet implemented. It requires the 'browser' feature.",
-        )]))
-    }
-
     /// Execute browser actions on a page.
     #[tool(
         description = "Execute browser actions on a page. Actions may mutate page or application state.",
@@ -360,32 +415,23 @@ impl KreuzcrawlMcp {
         Ok(CallToolResult::success(vec![Content::text(response)]))
     }
 
-    /// AI-driven research across multiple pages (requires ai feature).
+    /// Convert markdown links into numbered citations.
+    ///
+    /// Rewrites inline `[text](url)` links to `text[N]` markers and appends a
+    /// numbered reference list. Useful for producing LLM-friendly citations from
+    /// scraped markdown.
     #[tool(
-        description = "AI-driven research across multiple pages (requires ai feature).",
-        annotations(title = "Research", read_only_hint = true)
+        description = "Convert markdown links into numbered citations with an appended reference list.",
+        annotations(title = "Generate Citations", read_only_hint = true, idempotent_hint = true)
     )]
-    async fn research(
+    fn generate_citations(
         &self,
-        Parameters(_params): Parameters<super::params::ResearchParams>,
+        Parameters(params): Parameters<super::params::GenerateCitationsParams>,
     ) -> Result<CallToolResult, rmcp::ErrorData> {
-        Ok(CallToolResult::success(vec![Content::text(
-            "Research tool is not yet implemented. It requires the 'ai' feature.",
-        )]))
-    }
-
-    /// Check the status of a crawl job.
-    #[tool(
-        description = "Check the status of a crawl job.",
-        annotations(title = "Crawl Status", read_only_hint = true)
-    )]
-    async fn crawl_status(
-        &self,
-        Parameters(_params): Parameters<super::params::CrawlStatusParams>,
-    ) -> Result<CallToolResult, rmcp::ErrorData> {
-        Ok(CallToolResult::success(vec![Content::text(
-            "Crawl status tool is not yet implemented. No job registry exists in the current MCP context.",
-        )]))
+        let result = crate::citations::generate_citations(&params.markdown);
+        let response = serde_json::to_string_pretty(&result)
+            .map_err(|e| rmcp::ErrorData::internal_error(format!("Failed to serialize citations: {e}"), None))?;
+        Ok(CallToolResult::success(vec![Content::text(response)]))
     }
 
     /// Get the current kreuzcrawl version.
@@ -425,9 +471,9 @@ impl ServerHandler for KreuzcrawlMcp {
             .with_server_info(server_info)
             .with_instructions(
                 "Scrape, crawl, and map websites. Use 'scrape' for single pages, 'crawl' for \
-                 following links across a site, 'map' for discovering all URLs, and 'batch_scrape' \
-                 for processing multiple URLs concurrently. Use format: 'json' for structured output \
-                 or 'markdown' (default) for human-readable content.",
+                 following links across a site, 'map' for discovering all URLs, and 'batch_scrape'/\
+                 'batch_crawl' for processing multiple URLs concurrently. Use format: 'json' for \
+                 structured output or 'markdown' (default) for human-readable content.",
             )
     }
 }
