@@ -30,24 +30,22 @@ def _alef_e2e_item_texts(item: object) -> tuple[str, ...]:
 
 
 @pytest.mark.asyncio
-
 async def test_download_basic_pdf() -> None:
     """Download a basic PDF document with download_documents enabled."""
     engine_config = CrawlConfig(download_documents=True, respect_robots_txt=False)
     engine = create_engine(engine_config)
-    url = os.environ['MOCK_SERVER_URL'] + '/fixtures/download_basic_pdf'
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/download_basic_pdf"
 
     result = await scrape(engine, url)
     assert result.downloaded_document.mime_type.strip() == "application/pdf"  # noqa: S101
 
 
 @pytest.mark.asyncio
-
 async def test_download_filename_extraction() -> None:
     """Extract filename from Content-Disposition header."""
     engine_config = CrawlConfig(download_documents=True, respect_robots_txt=False)
     engine = create_engine(engine_config)
-    url = os.environ['MOCK_SERVER_URL'] + '/fixtures/download_filename_extraction'
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/download_filename_extraction"
 
     result = await scrape(engine, url)
     assert result.downloaded_document.mime_type.strip() == "application/pdf"  # noqa: S101
@@ -55,7 +53,6 @@ async def test_download_filename_extraction() -> None:
 
 
 @pytest.mark.asyncio
-
 async def test_download_mime_filter() -> None:
     """Only download documents matching specified MIME types (PDF only, not DOCX)."""
     engine_config = CrawlConfig(
@@ -64,31 +61,29 @@ async def test_download_mime_filter() -> None:
         respect_robots_txt=False,
     )
     engine = create_engine(engine_config)
-    url = os.environ['MOCK_SERVER_URL'] + '/fixtures/download_mime_filter'
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/download_mime_filter"
 
     result = await scrape(engine, url)
     assert result.downloaded_document.mime_type.strip() == "application/pdf"  # noqa: S101
 
 
 @pytest.mark.asyncio
-
 async def test_download_no_document() -> None:
     """HTML pages are not downloaded as documents even when download_documents is enabled."""
     engine_config = CrawlConfig(download_documents=True, respect_robots_txt=False)
     engine = create_engine(engine_config)
-    url = os.environ['MOCK_SERVER_URL'] + '/fixtures/download_no_document'
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/download_no_document"
 
     result = await scrape(engine, url)
     assert result.status_code == 200  # noqa: S101
 
 
 @pytest.mark.asyncio
-
 async def test_download_size_limit() -> None:
     """Reject documents exceeding the configured size limit."""
     engine_config = CrawlConfig(document_max_size=100, download_documents=True, respect_robots_txt=False)
     engine = create_engine(engine_config)
-    url = os.environ['MOCK_SERVER_URL'] + '/fixtures/download_size_limit'
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/download_size_limit"
 
     result = await scrape(engine, url)
     assert result.status_code == 200  # noqa: S101

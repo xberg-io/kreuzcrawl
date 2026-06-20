@@ -30,11 +30,10 @@ def _alef_e2e_item_texts(item: object) -> tuple[str, ...]:
 
 
 @pytest.mark.asyncio
-
 async def test_engine_batch_basic() -> None:
     """CrawlEngine with defaults batch scrapes like the free function."""
     engine = create_engine(None)
-    url = os.environ['MOCK_SERVER_URL'] + '/fixtures/engine_batch_basic'
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/engine_batch_basic"
 
     _ = await scrape(engine, url)
     # skipped: field 'batch.completed_count' not available on result type
@@ -42,12 +41,14 @@ async def test_engine_batch_basic() -> None:
 
 
 @pytest.mark.asyncio
-
 async def test_engine_crawl_basic() -> None:
     """CrawlEngine with defaults crawls multiple pages like the free function."""
     engine_config = CrawlConfig(max_depth=1)
     engine = create_engine(engine_config)
-    url = os.environ.get('MOCK_SERVER_ENGINE_CRAWL_BASIC') or os.environ['MOCK_SERVER_URL'] + '/fixtures/engine_crawl_basic'
+    url = (
+        os.environ.get("MOCK_SERVER_ENGINE_CRAWL_BASIC")
+        or os.environ["MOCK_SERVER_URL"] + "/fixtures/engine_crawl_basic"
+    )
 
     _ = await crawl(engine, url)
     # skipped: field 'crawl.pages_crawled' not available on result type
@@ -55,22 +56,23 @@ async def test_engine_crawl_basic() -> None:
 
 
 @pytest.mark.asyncio
-
 async def test_engine_map_basic() -> None:
     """CrawlEngine with defaults discovers URLs like the free function."""
     engine = create_engine(None)
-    url = os.environ.get('MOCK_SERVER_ENGINE_MAP_BASIC') or os.environ['MOCK_SERVER_URL'] + '/fixtures/engine_map_basic'
+    url = os.environ.get("MOCK_SERVER_ENGINE_MAP_BASIC") or os.environ["MOCK_SERVER_URL"] + "/fixtures/engine_map_basic"
 
     _ = await map_urls(engine, url)
     # skipped: field 'map.min_urls' not available on result type
 
 
 @pytest.mark.asyncio
-
 async def test_engine_scrape_basic() -> None:
     """CrawlEngine with defaults scrapes a page identically to the free function."""
     engine = create_engine(None)
-    url = os.environ.get('MOCK_SERVER_ENGINE_SCRAPE_BASIC') or os.environ['MOCK_SERVER_URL'] + '/fixtures/engine_scrape_basic'
+    url = (
+        os.environ.get("MOCK_SERVER_ENGINE_SCRAPE_BASIC")
+        or os.environ["MOCK_SERVER_URL"] + "/fixtures/engine_scrape_basic"
+    )
 
     result = await scrape(engine, url)
     assert result.status_code == 200  # noqa: S101
@@ -83,12 +85,14 @@ async def test_engine_scrape_basic() -> None:
 
 
 @pytest.mark.asyncio
-
 async def test_engine_stream_basic() -> None:
     """CrawlEngine with defaults streams events like the free function."""
     engine_config = CrawlConfig(max_depth=1)
     engine = create_engine(engine_config)
-    url = os.environ.get('MOCK_SERVER_ENGINE_STREAM_BASIC') or os.environ['MOCK_SERVER_URL'] + '/fixtures/engine_stream_basic'
+    url = (
+        os.environ.get("MOCK_SERVER_ENGINE_STREAM_BASIC")
+        or os.environ["MOCK_SERVER_URL"] + "/fixtures/engine_stream_basic"
+    )
 
     result = crawl_stream(engine, url)
     chunks = []

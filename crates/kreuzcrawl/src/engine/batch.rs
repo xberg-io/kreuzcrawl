@@ -43,8 +43,15 @@ impl CrawlEngine {
         tokio::spawn(async move {
             match engine.crawl_with_sender(&url, Some(tx.clone())).await {
                 Ok(result) => {
+                    // In streaming mode, pages are not accumulated in the result.
+                    // Use normalized_urls.len() as the count (one per page processed).
+                    let pages_count = if result.pages.is_empty() {
+                        result.normalized_urls.len()
+                    } else {
+                        result.pages.len()
+                    };
                     let complete_event = CrawlEvent::Complete {
-                        pages_crawled: result.pages.len(),
+                        pages_crawled: pages_count,
                     };
                     let _ = tx.send(complete_event.clone()).await;
                     if let Some(ref sink) = engine.event_sink {

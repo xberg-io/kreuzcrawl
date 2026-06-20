@@ -83,6 +83,8 @@ class SsrfPolicyViolationError(CrawlError):
 
 class OtherError(CrawlError):
     """An unclassified error occurred."""
+
+
 class SsrfError(Exception):
     """SSRF validation error."""
 

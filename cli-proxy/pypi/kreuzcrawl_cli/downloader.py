@@ -77,7 +77,7 @@ def _http_get(url: str, accept: str | None = None) -> bytes:
         headers["Accept"] = accept
     request = Request(url, headers=headers)
     try:
-        with _opener.open(request, timeout=60) as response:  # noqa: S310 (https enforced)
+        with _opener.open(request, timeout=60) as response:
             if response.status != 200:
                 raise RuntimeError(f"HTTP {response.status} for {url}")
             return response.read()
@@ -115,15 +115,11 @@ def _resolve_release() -> tuple[str, dict, dict | None]:
         and ((a.get("name") or "").lower().endswith(".tar.gz") or (a.get("name") or "").lower().endswith(".zip"))
     ]
     if not archives:
-        raise RuntimeError(
-            f'no release asset matching target triple "{triple}" in {REPO} release {tag}'
-        )
+        raise RuntimeError(f'no release asset matching target triple "{triple}" in {REPO} release {tag}')
     archives.sort(key=lambda a: _asset_score(a.get("name") or ""), reverse=True)
     archive = archives[0]
 
-    checksums = next(
-        (a for a in assets if "SHA256SUMS" in (a.get("name") or "").upper()), None
-    )
+    checksums = next((a for a in assets if "SHA256SUMS" in (a.get("name") or "").upper()), None)
     return tag, archive, checksums
 
 
@@ -153,14 +149,11 @@ def _verify_or_warn(archive_path: Path, asset_name: str, checksums: dict | None)
     expected = _expected_digest(sums_text, asset_name)
     if not expected:
         raise RuntimeError(
-            f"no checksum entry for {asset_name} in {checksums['name']} — "
-            "refusing to install unverified binary"
+            f"no checksum entry for {asset_name} in {checksums['name']} — refusing to install unverified binary"
         )
     digest = hashlib.sha256(archive_path.read_bytes()).hexdigest().lower()
     if digest != expected:
-        raise RuntimeError(
-            f"checksum mismatch for {asset_name} (expected {expected}, got {digest})"
-        )
+        raise RuntimeError(f"checksum mismatch for {asset_name} (expected {expected}, got {digest})")
     print(f"Checksum verified for {asset_name}.", file=sys.stderr)
 
 
@@ -255,9 +248,7 @@ def ensure_binary() -> str:
         _safe_extract(archive_path, archive["name"], extract_dir)
         found = _find_binary(extract_dir, _binary_name())
         if not found:
-            raise RuntimeError(
-                f"binary {_binary_name()} not found after extracting {archive['name']}"
-            )
+            raise RuntimeError(f"binary {_binary_name()} not found after extracting {archive['name']}")
         shutil.move(str(found), str(binary_path))
 
     if platform.system().lower() != "windows":

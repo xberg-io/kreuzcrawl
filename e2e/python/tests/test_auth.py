@@ -7,7 +7,7 @@
 
 import os
 import pytest  # noqa: F401
-from kreuzcrawl import scrape, create_engine, CrawlConfig, AuthConfig
+from kreuzcrawl import scrape, create_engine, CrawlConfig
 
 
 def _alef_e2e_text(value: object) -> str:
@@ -30,7 +30,6 @@ def _alef_e2e_item_texts(item: object) -> tuple[str, ...]:
 
 
 @pytest.mark.asyncio
-
 async def test_auth_basic_http() -> None:
     """Sends HTTP Basic authentication header."""
     engine_config = CrawlConfig(
@@ -38,7 +37,7 @@ async def test_auth_basic_http() -> None:
         respect_robots_txt=False,
     )
     engine = create_engine(engine_config)
-    url = os.environ['MOCK_SERVER_URL'] + '/fixtures/auth_basic_http'
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/auth_basic_http"
 
     result = await scrape(engine, url)
     assert result.auth_header_sent is True  # noqa: S101
@@ -46,7 +45,6 @@ async def test_auth_basic_http() -> None:
 
 
 @pytest.mark.asyncio
-
 async def test_auth_bearer_token() -> None:
     """Sends Bearer token in Authorization header."""
     engine_config = CrawlConfig(
@@ -54,7 +52,7 @@ async def test_auth_bearer_token() -> None:
         respect_robots_txt=False,
     )
     engine = create_engine(engine_config)
-    url = os.environ['MOCK_SERVER_URL'] + '/fixtures/auth_bearer_token'
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/auth_bearer_token"
 
     result = await scrape(engine, url)
     assert result.auth_header_sent is True  # noqa: S101
@@ -62,7 +60,6 @@ async def test_auth_bearer_token() -> None:
 
 
 @pytest.mark.asyncio
-
 async def test_auth_custom_header() -> None:
     """Sends authentication via custom header (X-API-Key)."""
     engine_config = CrawlConfig(
@@ -70,7 +67,7 @@ async def test_auth_custom_header() -> None:
         respect_robots_txt=False,
     )
     engine = create_engine(engine_config)
-    url = os.environ['MOCK_SERVER_URL'] + '/fixtures/auth_custom_header'
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/auth_custom_header"
 
     result = await scrape(engine, url)
     assert result.auth_header_sent is True  # noqa: S101

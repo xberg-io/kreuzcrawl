@@ -2,7 +2,8 @@
 // alef:hash:a9f527fe9e864e8aebf50f2da46f1aa3d4a30f14fc2fc7f2b7629db2239d93fc
 // To regenerate: alef generate
 // To verify freshness: alef verify --exit-code
-import { spawn, ChildProcess } from "child_process";
+import type { ChildProcess } from "child_process";
+import { spawn } from "child_process";
 import { resolve } from "path";
 
 let serverProcess: ChildProcess | undefined;

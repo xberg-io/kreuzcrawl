@@ -267,10 +267,12 @@ struct CrawlState {
     pages_failed: usize,
     urls_discovered: usize,
     urls_filtered: usize,
+    pages_count: usize, // Separate count for streaming mode (when pages are not accumulated)
+    is_streaming: bool, // True if we're in streaming mode (tx is Some)
 }
 
 impl CrawlState {
-    fn new(capacity: usize) -> Self {
+    fn new(capacity: usize, is_streaming: bool) -> Self {
         Self {
             pages: Vec::with_capacity(capacity),
             normalized_urls: Vec::with_capacity(capacity),
@@ -281,13 +283,22 @@ impl CrawlState {
             pages_failed: 0,
             urls_discovered: 0,
             urls_filtered: 0,
+            pages_count: 0,
+            is_streaming,
         }
     }
 
     fn into_result(self, final_url: String) -> CrawlResult {
-        let stayed_on_domain = self.pages.iter().all(|p| p.stayed_on_domain);
+        // In streaming mode, pages are not accumulated — use empty vec.
+        // In non-streaming mode, pages are accumulated and used as-is.
+        let (pages_to_return, stayed_on_domain) = if self.is_streaming {
+            (Vec::new(), true)
+        } else {
+            let stayed = self.pages.iter().all(|p| p.stayed_on_domain);
+            (self.pages, stayed)
+        };
         CrawlResult::new(
-            self.pages,
+            pages_to_return,
             final_url,
             self.redirect_count,
             self.was_skipped,
@@ -368,7 +379,8 @@ impl CrawlEngine {
         }
 
         let capacity = max_pages.min(1024);
-        let mut state = CrawlState::new(capacity);
+        let is_streaming = tx.is_some();
+        let mut state = CrawlState::new(capacity, is_streaming);
         let start_time = Instant::now();
 
         // ── Phase 1: resolve initial redirects ──────────────────────────
@@ -449,8 +461,13 @@ impl CrawlEngine {
         }
 
         // Build final stats and notify store/emitter
+        let pages_processed = if state.is_streaming {
+            state.pages_count
+        } else {
+            state.pages.len()
+        };
         let stats = CrawlStats {
-            pages_crawled: state.pages.len(),
+            pages_crawled: pages_processed,
             pages_failed: state.pages_failed,
             urls_discovered: state.urls_discovered,
             urls_filtered: state.urls_filtered,
@@ -459,7 +476,7 @@ impl CrawlEngine {
         let _ = self.store.on_complete(&stats).await;
         self.event_emitter
             .on_complete(&CompleteEvent {
-                pages_crawled: state.pages.len(),
+                pages_crawled: pages_processed,
             })
             .await;
 
@@ -525,12 +542,17 @@ impl CrawlEngine {
         while !cancelled && (!working_set.is_empty() || !join_set.is_empty()) {
             // 1. Fill JoinSet from working_set, up to max_concurrent
             while join_set.len() < max_concurrent && !working_set.is_empty() {
-                if state.pages.len() + join_set.len() >= max_pages {
+                let pages_processed = if state.is_streaming {
+                    state.pages_count
+                } else {
+                    state.pages.len()
+                };
+                if pages_processed + join_set.len() >= max_pages {
                     break;
                 }
 
                 let stats = CrawlStats {
-                    pages_crawled: state.pages.len(),
+                    pages_crawled: pages_processed,
                     pages_failed: state.pages_failed,
                     urls_discovered: state.urls_discovered,
                     urls_filtered: state.urls_filtered,
@@ -681,8 +703,13 @@ impl CrawlEngine {
             }
 
             // 3. Check stopping condition
+            let pages_processed = if state.is_streaming {
+                state.pages_count
+            } else {
+                state.pages.len()
+            };
             let stats = CrawlStats {
-                pages_crawled: state.pages.len(),
+                pages_crawled: pages_processed,
                 pages_failed: state.pages_failed,
                 urls_discovered: state.urls_discovered,
                 urls_filtered: state.urls_filtered,
@@ -908,25 +935,38 @@ impl CrawlEngine {
             })
             .await;
 
-        // Send page event through the channel if streaming
-        let page_event = CrawlEvent::Page {
-            result: Box::new(page.clone()),
-        };
-        if let Some(sender) = tx
-            && sender.send(page_event.clone()).await.is_err()
-        {
-            // Receiver dropped; signal cancellation
-            return Ok(true);
-        }
-        if let Some(ref sink) = self.event_sink {
-            sink.emit(page_event).await;
-        }
-
-        state.pages.push(page);
-
-        if state.pages.len() >= max_pages {
-            join_set.abort_all();
-            return Ok(true);
+        // In streaming mode (tx is Some), move the page into the event and avoid accumulation.
+        // In non-streaming mode, clone the page for compatibility with event_sink, then accumulate.
+        if let Some(sender) = tx {
+            // Streaming path: move page into the event (zero-copy), no accumulation.
+            // If both tx and event_sink are present, we must clone for the sink; otherwise, zero clones.
+            let page_event = CrawlEvent::Page { result: Box::new(page) };
+            if sender.send(page_event.clone()).await.is_err() {
+                // Receiver dropped; signal cancellation
+                return Ok(true);
+            }
+            if let Some(ref sink) = self.event_sink {
+                sink.emit(page_event).await;
+            }
+            // Increment streaming page count instead of accumulating
+            state.pages_count += 1;
+            if state.pages_count >= max_pages {
+                join_set.abort_all();
+                return Ok(true);
+            }
+        } else {
+            // Non-streaming path: clone for event_sink (if present), then accumulate for full result.
+            let page_event = CrawlEvent::Page {
+                result: Box::new(page.clone()),
+            };
+            if let Some(ref sink) = self.event_sink {
+                sink.emit(page_event).await;
+            }
+            state.pages.push(page);
+            if state.pages.len() >= max_pages {
+                join_set.abort_all();
+                return Ok(true);
+            }
         }
 
         Ok(false)

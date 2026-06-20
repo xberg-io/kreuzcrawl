@@ -30,13 +30,12 @@ def _alef_e2e_item_texts(item: object) -> tuple[str, ...]:
 
 
 @pytest.mark.asyncio
-
 async def test_batch_crawl_stream_events() -> None:
     """Batch crawl stream produces expected Page and Complete events."""
     engine_config = CrawlConfig(max_concurrent=2)
     engine = create_engine(engine_config)
-    urls_base = os.environ['MOCK_SERVER_URL'] + '/fixtures/batch_crawl_stream_events'
-    urls = [p if p.startswith('http') else f'{urls_base}{p}' for p in ["/page1", "/page2", "/page3"]]
+    urls_base = os.environ["MOCK_SERVER_URL"] + "/fixtures/batch_crawl_stream_events"
+    urls = [p if p.startswith("http") else f"{urls_base}{p}" for p in ["/page1", "/page2", "/page3"]]
 
     result = batch_crawl_stream(engine, urls)
     chunks = []
@@ -48,13 +47,12 @@ async def test_batch_crawl_stream_events() -> None:
 
 
 @pytest.mark.asyncio
-
 async def test_batch_crawl_stream_partial_failure() -> None:
     """Batch crawl stream emits both Page and Error events for mixed success/failure URLs."""
     engine_config = CrawlConfig(max_concurrent=1)
     engine = create_engine(engine_config)
-    urls_base = os.environ['MOCK_SERVER_URL'] + '/fixtures/batch_crawl_stream_partial_failure'
-    urls = [p if p.startswith('http') else f'{urls_base}{p}' for p in ["/success1", "/fail", "/success2"]]
+    urls_base = os.environ["MOCK_SERVER_URL"] + "/fixtures/batch_crawl_stream_partial_failure"
+    urls = [p if p.startswith("http") else f"{urls_base}{p}" for p in ["/success1", "/fail", "/success2"]]
 
     result = batch_crawl_stream(engine, urls)
     chunks = []
@@ -66,12 +64,14 @@ async def test_batch_crawl_stream_partial_failure() -> None:
 
 
 @pytest.mark.asyncio
-
 async def test_crawl_stream_events() -> None:
     """Crawl stream produces page and complete events."""
     engine_config = CrawlConfig(max_depth=1, respect_robots_txt=False)
     engine = create_engine(engine_config)
-    url = os.environ.get('MOCK_SERVER_CRAWL_STREAM_EVENTS') or os.environ['MOCK_SERVER_URL'] + '/fixtures/crawl_stream_events'
+    url = (
+        os.environ.get("MOCK_SERVER_CRAWL_STREAM_EVENTS")
+        or os.environ["MOCK_SERVER_URL"] + "/fixtures/crawl_stream_events"
+    )
 
     result = crawl_stream(engine, url)
     chunks = []
@@ -83,12 +83,14 @@ async def test_crawl_stream_events() -> None:
 
 
 @pytest.mark.asyncio
-
 async def test_stream_depth_crawl() -> None:
     """Stream produces events for multi-depth crawl with link following."""
     engine_config = CrawlConfig(max_concurrent=1, max_depth=2)
     engine = create_engine(engine_config)
-    url = os.environ.get('MOCK_SERVER_STREAM_DEPTH_CRAWL') or os.environ['MOCK_SERVER_URL'] + '/fixtures/stream_depth_crawl'
+    url = (
+        os.environ.get("MOCK_SERVER_STREAM_DEPTH_CRAWL")
+        or os.environ["MOCK_SERVER_URL"] + "/fixtures/stream_depth_crawl"
+    )
 
     result = crawl_stream(engine, url)
     chunks = []
@@ -100,12 +102,14 @@ async def test_stream_depth_crawl() -> None:
 
 
 @pytest.mark.asyncio
-
 async def test_stream_error_event_mid_crawl() -> None:
     """Stream emits error event when a page fails mid-crawl, but other pages succeed."""
     engine_config = CrawlConfig(max_concurrent=1, max_depth=1, respect_robots_txt=False)
     engine = create_engine(engine_config)
-    url = os.environ.get('MOCK_SERVER_STREAM_ERROR_EVENT_MID_CRAWL') or os.environ['MOCK_SERVER_URL'] + '/fixtures/stream_error_event_mid_crawl'
+    url = (
+        os.environ.get("MOCK_SERVER_STREAM_ERROR_EVENT_MID_CRAWL")
+        or os.environ["MOCK_SERVER_URL"] + "/fixtures/stream_error_event_mid_crawl"
+    )
 
     result = crawl_stream(engine, url)
     chunks = []
@@ -117,12 +121,14 @@ async def test_stream_error_event_mid_crawl() -> None:
 
 
 @pytest.mark.asyncio
-
 async def test_stream_event_ordering() -> None:
     """Stream ensures complete event arrives after all page events."""
     engine_config = CrawlConfig(max_concurrent=1, max_depth=1, respect_robots_txt=False)
     engine = create_engine(engine_config)
-    url = os.environ.get('MOCK_SERVER_STREAM_EVENT_ORDERING') or os.environ['MOCK_SERVER_URL'] + '/fixtures/stream_event_ordering'
+    url = (
+        os.environ.get("MOCK_SERVER_STREAM_EVENT_ORDERING")
+        or os.environ["MOCK_SERVER_URL"] + "/fixtures/stream_event_ordering"
+    )
 
     result = crawl_stream(engine, url)
     chunks = []
@@ -134,12 +140,14 @@ async def test_stream_event_ordering() -> None:
 
 
 @pytest.mark.asyncio
-
 async def test_stream_large_crawl() -> None:
     """Stream handles crawl of 5+ pages with multiple events."""
     engine_config = CrawlConfig(max_depth=1, respect_robots_txt=False)
     engine = create_engine(engine_config)
-    url = os.environ.get('MOCK_SERVER_STREAM_LARGE_CRAWL') or os.environ['MOCK_SERVER_URL'] + '/fixtures/stream_large_crawl'
+    url = (
+        os.environ.get("MOCK_SERVER_STREAM_LARGE_CRAWL")
+        or os.environ["MOCK_SERVER_URL"] + "/fixtures/stream_large_crawl"
+    )
 
     result = crawl_stream(engine, url)
     chunks = []
@@ -151,12 +159,14 @@ async def test_stream_large_crawl() -> None:
 
 
 @pytest.mark.asyncio
-
 async def test_stream_with_error_event() -> None:
     """Stream emits page and complete events even when some pages fail."""
     engine_config = CrawlConfig(max_concurrent=1, max_depth=1)
     engine = create_engine(engine_config)
-    url = os.environ.get('MOCK_SERVER_STREAM_WITH_ERROR_EVENT') or os.environ['MOCK_SERVER_URL'] + '/fixtures/stream_with_error_event'
+    url = (
+        os.environ.get("MOCK_SERVER_STREAM_WITH_ERROR_EVENT")
+        or os.environ["MOCK_SERVER_URL"] + "/fixtures/stream_with_error_event"
+    )
 
     result = crawl_stream(engine, url)
     chunks = []

@@ -30,7 +30,6 @@ def _alef_e2e_item_texts(item: object) -> tuple[str, ...]:
 
 
 @pytest.mark.asyncio
-
 async def test_proxy_authenticated() -> None:
     """Proxy with username and password credentials authenticates successfully."""
     engine_config = CrawlConfig(
@@ -38,19 +37,18 @@ async def test_proxy_authenticated() -> None:
         respect_robots_txt=False,
     )
     engine = create_engine(engine_config)
-    url = os.environ['MOCK_SERVER_URL'] + '/fixtures/proxy_authenticated'
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/proxy_authenticated"
 
     result = await crawl(engine, url)
     assert len(result.pages) == 0  # noqa: S101
 
 
 @pytest.mark.asyncio
-
 async def test_proxy_basic_success() -> None:
     """Configure proxy URL and successfully crawl through it."""
     engine_config = CrawlConfig(proxy=ProxyConfig(url="http://127.0.0.1:8888"), respect_robots_txt=False)
     engine = create_engine(engine_config)
-    url = os.environ['MOCK_SERVER_URL'] + '/fixtures/proxy_basic_success'
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/proxy_basic_success"
 
     result = await crawl(engine, url)
     assert len(result.pages) == 0  # noqa: S101
