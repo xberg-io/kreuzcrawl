@@ -1,0 +1,26 @@
+{
+  "name": "kreuzcrawl-cli",
+  "version": "0.1.0",
+  "description": "CLI proxy for kreuzcrawl \u2014 downloads and runs the native kreuzcrawl binary from GitHub releases.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Na'aman Hirschfeld",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kreuzberg-dev/kreuzcrawl.git",
+    "directory": "cli-proxy/npm"
+  },
+  "bin": {
+    "kreuzcrawl": "./bin/kreuzcrawl.js"
+  },
+  "scripts": {
+    "postinstall": "node install.js"
+  },
+  "files": [
+    "bin/",
+    "install.js"
+  ],
+  "engines": {
+    "node": ">=18"
+  }
+}
