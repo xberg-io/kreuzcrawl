@@ -12,7 +12,7 @@ All notable changes to kreuzcrawl are documented here.
 
 ### Build
 
-- Regenerated all bindings against **alef 0.25.58** (pin bumped from 0.25.55).
+- Regenerated all bindings against **alef 0.25.59** (pin bumped from 0.25.55). Notable codegen changes: the Swift `RustBridgeC.h` is now the full concatenated swift-bridge C header instead of a placeholder, and the JNI `NativeLib` throws a descriptive `ExceptionInInitializerError` naming the missing native symbol instead of a bare `orElseThrow`.
 - Supersedes rc.84, whose Homebrew bottle-merge and release-finalize steps were stranded by a transient crates.io fetch flake in the `x86_64_linux` bottle build (leaving the tap formula's `bottle do` block pinned to the rc.83 root URL).
 
 ## [0.3.0-rc.84] - 2026-06-20
