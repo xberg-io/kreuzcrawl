@@ -42,11 +42,16 @@ const REQUEST_TIMEOUT: Duration = Duration::from_secs(300);
 ///
 /// * `engine` - A shared [`CrawlEngine`] that powers scrape, crawl, and map operations.
 pub fn create_router(engine: Arc<CrawlEngine>) -> Router {
+    // Capture the crawl config before the engine is moved into the API state so
+    // the MCP transport can build sessions backed by the same configuration.
+    #[cfg(feature = "mcp")]
+    let mcp_config = engine.config.clone();
+
     let state = Arc::new(ApiState::new(engine));
 
     let cors_layer = CorsLayer::new().allow_origin(Any).allow_methods(Any).allow_headers(Any);
 
-    Router::new()
+    let router = Router::new()
         // Firecrawl v1 endpoints
         .route("/v1/scrape", post(handlers::scrape_handler))
         .route("/v1/crawl", post(handlers::crawl_handler))
@@ -72,7 +77,15 @@ pub fn create_router(engine: Arc<CrawlEngine>) -> Router {
         .layer(CompressionLayer::new())
         .layer(CatchPanicLayer::new())
         .layer(TraceLayer::new_for_http())
-        .with_state(state)
+        .with_state(state);
+
+    // Mount the Streamable HTTP MCP transport at `/mcp`. It is nested outside the
+    // REST middleware stack on purpose: the request-timeout and compression layers
+    // would otherwise break long-lived MCP SSE sessions.
+    #[cfg(feature = "mcp")]
+    let router = router.nest_service("/mcp", crate::mcp::streamable_http_service(mcp_config));
+
+    router
 }
 
 /// Handler that returns the OpenAPI JSON schema.

@@ -82,7 +82,7 @@ pub use interact::{
 #[cfg(feature = "browser-native")]
 pub use kreuzcrawl_browser::adapter::{NativeBrowserExecutor, NativeBrowserExecutorConfig};
 #[cfg(feature = "mcp")]
-pub use mcp::{start_mcp_server, start_mcp_server_with_config};
+pub use mcp::{KreuzcrawlHttpMcpService, start_mcp_server, start_mcp_server_with_config, streamable_http_service};
 pub use net::ssrf::{HostMatcher, SsrfError, SsrfPolicy, validate_url};
 pub use proxy::{ProxyProvider, StaticProxyProvider};
 #[cfg(not(target_arch = "wasm32"))]

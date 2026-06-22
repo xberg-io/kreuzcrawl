@@ -804,6 +804,8 @@ async fn main() {
         #[cfg(feature = "api")]
         Commands::Serve { host, port } => {
             eprintln!("Starting REST API server on {host}:{port}");
+            #[cfg(feature = "mcp")]
+            eprintln!("MCP Streamable HTTP transport available at http://{host}:{port}/mcp");
             if let Err(e) = kreuzcrawl::serve_api(&host, port, CrawlConfig::default()).await {
                 eprintln!("Server error: {e}");
                 std::process::exit(1);

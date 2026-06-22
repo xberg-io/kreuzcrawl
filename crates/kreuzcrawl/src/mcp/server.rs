@@ -6,7 +6,7 @@ use rmcp::{
     ServerHandler, ServiceExt,
     handler::server::{router::tool::ToolRouter, wrapper::Parameters},
     model::*,
-    tool, tool_router,
+    tool, tool_handler, tool_router,
     transport::stdio,
 };
 
@@ -94,7 +94,7 @@ impl KreuzcrawlMcp {
     /// for human-readable content.
     #[tool(
         description = "Scrape a single URL and extract content as markdown or JSON. Returns page content, metadata, links, and images.",
-        annotations(title = "Scrape URL", read_only_hint = true, idempotent_hint = true)
+        annotations(title = "Scrape URL", read_only_hint = true, idempotent_hint = true, open_world_hint = true)
     )]
     async fn scrape(
         &self,
@@ -134,7 +134,7 @@ impl KreuzcrawlMcp {
     /// discovered pages. Use `stay_on_domain: true` to restrict to the same domain.
     #[tool(
         description = "Crawl a website following links. Returns content for all discovered pages up to max_depth/max_pages.",
-        annotations(title = "Crawl Website", read_only_hint = true)
+        annotations(title = "Crawl Website", read_only_hint = true, open_world_hint = true)
     )]
     async fn crawl(
         &self,
@@ -185,7 +185,7 @@ impl KreuzcrawlMcp {
     /// change frequency, priority). Use `search` to filter URLs by substring.
     #[tool(
         description = "Discover all pages on a website via links and sitemaps. Returns a list of discovered URLs.",
-        annotations(title = "Map Website", read_only_hint = true, idempotent_hint = true)
+        annotations(title = "Map Website", read_only_hint = true, idempotent_hint = true, open_world_hint = true)
     )]
     async fn map(
         &self,
@@ -219,7 +219,7 @@ impl KreuzcrawlMcp {
     /// Efficiently processes multiple URLs in parallel and returns combined results.
     #[tool(
         description = "Scrape multiple URLs concurrently. Returns results for all URLs.",
-        annotations(title = "Batch Scrape", read_only_hint = true)
+        annotations(title = "Batch Scrape", read_only_hint = true, open_world_hint = true)
     )]
     async fn batch_scrape(
         &self,
@@ -272,7 +272,7 @@ impl KreuzcrawlMcp {
     /// Efficiently crawls multiple websites in parallel and returns combined results.
     #[tool(
         description = "Crawl multiple seed URLs concurrently. Returns crawl results for all seeds.",
-        annotations(title = "Batch Crawl", read_only_hint = true)
+        annotations(title = "Batch Crawl", read_only_hint = true, open_world_hint = true)
     )]
     async fn batch_crawl(
         &self,
@@ -344,7 +344,7 @@ impl KreuzcrawlMcp {
     /// including its MIME type, size, and content hash.
     #[tool(
         description = "Download a document from a URL. Returns metadata about the downloaded file.",
-        annotations(title = "Download Document", read_only_hint = true)
+        annotations(title = "Download Document", read_only_hint = true, open_world_hint = true)
     )]
     async fn download(
         &self,
@@ -390,7 +390,7 @@ impl KreuzcrawlMcp {
     /// Execute browser actions on a page.
     #[tool(
         description = "Execute browser actions on a page. Actions may mutate page or application state.",
-        annotations(title = "Interact", read_only_hint = false)
+        annotations(title = "Interact", read_only_hint = false, destructive_hint = true, open_world_hint = true)
     )]
     async fn interact(
         &self,
@@ -422,7 +422,7 @@ impl KreuzcrawlMcp {
     /// scraped markdown.
     #[tool(
         description = "Convert markdown links into numbered citations with an appended reference list.",
-        annotations(title = "Generate Citations", read_only_hint = true, idempotent_hint = true)
+        annotations(title = "Generate Citations", read_only_hint = true, idempotent_hint = true, open_world_hint = false)
     )]
     fn generate_citations(
         &self,
@@ -437,7 +437,7 @@ impl KreuzcrawlMcp {
     /// Get the current kreuzcrawl version.
     #[tool(
         description = "Get the current kreuzcrawl library version.",
-        annotations(title = "Get Version", read_only_hint = true, idempotent_hint = true)
+        annotations(title = "Get Version", read_only_hint = true, idempotent_hint = true, open_world_hint = false)
     )]
     fn get_version(
         &self,
@@ -454,6 +454,7 @@ impl KreuzcrawlMcp {
     }
 }
 
+#[tool_handler]
 impl ServerHandler for KreuzcrawlMcp {
     fn get_info(&self) -> ServerInfo {
         let mut capabilities = ServerCapabilities::default();
@@ -516,4 +517,72 @@ pub async fn start_mcp_server_with_config(config: CrawlConfig) -> Result<(), Box
     let service = KreuzcrawlMcp::with_config(config).serve(stdio()).await?;
     service.waiting().await?;
     Ok(())
+}
+
+/// Concrete type of the Streamable HTTP MCP service produced by
+/// [`streamable_http_service`].
+pub type KreuzcrawlHttpMcpService = rmcp::transport::streamable_http_server::StreamableHttpService<
+    KreuzcrawlMcp,
+    rmcp::transport::streamable_http_server::session::local::LocalSessionManager,
+>;
+
+/// Build a Streamable HTTP MCP service that can be mounted onto an axum/tower
+/// router (for example at `/mcp`).
+///
+/// The returned value is a [`tower::Service`](rmcp::transport::streamable_http_server::StreamableHttpService)
+/// and exposes the same nine tools as the stdio server. Each HTTP session gets a
+/// fresh [`KreuzcrawlMcp`] backed by `config`, with sessions tracked in-memory
+/// via rmcp's `LocalSessionManager`.
+pub fn streamable_http_service(config: CrawlConfig) -> KreuzcrawlHttpMcpService {
+    use rmcp::transport::streamable_http_server::{
+        StreamableHttpServerConfig, StreamableHttpService, session::local::LocalSessionManager,
+    };
+
+    StreamableHttpService::new(
+        move || Ok::<_, std::io::Error>(KreuzcrawlMcp::with_config(config.clone())),
+        std::sync::Arc::new(LocalSessionManager::default()),
+        StreamableHttpServerConfig::default(),
+    )
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::collections::HashMap;
+
+    /// Every tool must advertise rmcp annotation hints so MCP clients can reason
+    /// about safety: `open_world_hint` for web-touching tools, `destructive_hint`
+    /// for the one tool that mutates remote state.
+    #[test]
+    fn all_tools_declare_expected_annotation_hints() {
+        let tools = KreuzcrawlMcp::new().tool_router.list_all();
+        let by_name: HashMap<&str, &Tool> = tools.iter().map(|t| (t.name.as_ref(), t)).collect();
+
+        // Expected (read_only_hint, destructive_hint, open_world_hint) per tool.
+        let expected: &[(&str, Option<bool>, Option<bool>, Option<bool>)] = &[
+            ("scrape", Some(true), None, Some(true)),
+            ("crawl", Some(true), None, Some(true)),
+            ("map", Some(true), None, Some(true)),
+            ("batch_scrape", Some(true), None, Some(true)),
+            ("batch_crawl", Some(true), None, Some(true)),
+            ("download", Some(true), None, Some(true)),
+            ("interact", Some(false), Some(true), Some(true)),
+            ("generate_citations", Some(true), None, Some(false)),
+            ("get_version", Some(true), None, Some(false)),
+        ];
+
+        assert_eq!(tools.len(), expected.len(), "tool count drifted from annotation expectations");
+
+        for (name, read_only, destructive, open_world) in expected {
+            let tool = by_name.get(name).unwrap_or_else(|| panic!("tool `{name}` missing from router"));
+            let ann = tool
+                .annotations
+                .as_ref()
+                .unwrap_or_else(|| panic!("tool `{name}` has no annotations"));
+            assert_eq!(ann.read_only_hint, *read_only, "read_only_hint mismatch for `{name}`");
+            assert_eq!(ann.destructive_hint, *destructive, "destructive_hint mismatch for `{name}`");
+            assert_eq!(ann.open_world_hint, *open_world, "open_world_hint mismatch for `{name}`");
+            assert!(ann.title.is_some(), "tool `{name}` is missing a title annotation");
+        }
+    }
 }
