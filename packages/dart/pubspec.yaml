@@ -1,6 +1,6 @@
 name: kreuzcrawl
 description: High-performance web crawling engine
-version: 0.3.0-rc.85
+version: 0.3.0-rc.86
 repository: https://github.com/kreuzberg-dev/kreuzcrawl
 environment:
   sdk: '>=3.11.0 <4.0.0'

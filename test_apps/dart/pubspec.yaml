@@ -6,7 +6,7 @@ environment:
   sdk: ">=3.11.0 <4.0.0"
 
 dependencies:
-  kreuzcrawl: ^0.3.0-rc.85
+  kreuzcrawl: ^0.3.0-rc.86
   ffi: ^2.2.0
 
 dev_dependencies:

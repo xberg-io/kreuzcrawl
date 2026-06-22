@@ -31,7 +31,7 @@
         <dependency>
             <groupId>dev.kreuzberg.kreuzcrawl</groupId>
             <artifactId>kreuzcrawl</artifactId>
-            <version>0.3.0-rc.85</version>
+            <version>0.3.0-rc.86</version>
         </dependency>
 
         <dependency>

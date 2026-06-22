@@ -1466,7 +1466,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl"
-version = "0.3.0-rc.83"
+version = "0.3.0-rc.86"
 dependencies = [
  "ahash",
  "aho-corasick",
@@ -1506,7 +1506,7 @@ dependencies = [
 
 [[package]]
 name = "kreuzcrawl-e2e-rust"
-version = "0.3.0-rc.83"
+version = "0.3.0-rc.86"
 dependencies = [
  "axum",
  "kreuzcrawl",

@@ -17,7 +17,7 @@ exclude = [
 resolver = "2"
 
 [workspace.package]
-version = "0.3.0-rc.85"
+version = "0.3.0-rc.86"
 edition = "2024"
 authors = ["Na'aman Hirschfeld <naaman@kreuzberg.dev>"]
 license = "Elastic-2.0"

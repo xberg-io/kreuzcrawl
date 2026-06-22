@@ -4,6 +4,12 @@ All notable changes to kreuzcrawl are documented here.
 
 ## [Unreleased]
 
+## [0.3.0-rc.86] - 2026-06-22
+
+### Build
+
+- Regenerated all bindings against **alef 0.25.60** (pin bumped from 0.25.59). Notable codegen fixes: the generated Rust e2e/test-app `common.rs` now resolves the mock-server binary via `env!("CARGO_BIN_EXE_mock-server")` instead of a hardcoded `target/release/mock-server` path (so `cargo test` debug builds spawn it correctly), and the Kotlin Android `MockServerListener` now parses the `MOCK_SERVERS` env map on the preset path so per-fixture `mockServer.<id>` lookups resolve under the registry-mode test runner.
+
 ## [0.3.0-rc.85] - 2026-06-21
 
 ### Fixed
