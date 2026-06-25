@@ -2,7 +2,7 @@
   "name": "@kreuzberg/crawlberg",
   "version": "0.3.0",
   "description": "High-performance web crawling engine",
-  "license": "Elastic-2.0",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/xberg-io/crawlberg.git"

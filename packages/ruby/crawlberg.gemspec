@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.description   = "High-performance web crawling engine"
   spec.homepage      = "https://github.com/xberg-io/crawlberg"
 
-  spec.license       = "Elastic-2.0"
+  spec.license       = "MIT"
 
   spec.required_ruby_version = [">= 3.2.0", "< 4.0"]
   spec.metadata["keywords"] = %w[crawl scrape spider web].join(",")

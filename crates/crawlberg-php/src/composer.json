@@ -1,7 +1,7 @@
 {
   "name": "xberg-io/crawlberg",
   "description": "High-performance web crawling engine",
-  "license": "Elastic-2.0",
+  "license": "MIT",
   "type": "php-ext",
   "require": {
     "php": ">=8.2"

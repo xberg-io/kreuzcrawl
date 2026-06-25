@@ -6,7 +6,7 @@
 name = "crawlberg-wasm"
 version = "0.3.0"
 edition = "2024"
-license = "Elastic-2.0"
+license = "MIT"
 description = "High-performance web crawling engine"
 repository = "https://github.com/xberg-io/crawlberg"
 keywords = ["crawl", "scrape", "web", "spider"]

@@ -2,7 +2,7 @@
 name = "crawlberg-dart"
 version = "0.3.0"
 edition = "2024"
-license = "Elastic-2.0"
+license = "MIT"
 
 [package.metadata.cargo-machete]
 # Umbrella + sibling crates are pulled in so flutter_rust_bridge can resolve

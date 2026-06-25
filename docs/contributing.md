@@ -121,4 +121,4 @@ CI runs the full binding test suite on each PR. You don't need Ruby, Java, PHP, 
 
 ## License
 
-Crawlberg is under the [Elastic License 2.0](../LICENSE). Contributing means your changes are covered by it.
+Crawlberg is under the [MIT License](../LICENSE). Contributing means your changes are covered by it.

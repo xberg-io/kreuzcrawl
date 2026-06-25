@@ -12,6 +12,6 @@ authors:
   - name: "Kreuzberg, Inc."
 repository-code: "https://github.com/xberg-io/crawlberg"
 url: "https://xberg.io"
-license: Elastic-2.0
+license: MIT
 version: 0.3.0
 date-released: 2026-05-17

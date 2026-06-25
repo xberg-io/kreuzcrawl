@@ -3,7 +3,7 @@
 name = "crawlberg-swift"
 version = "0.3.0"
 edition = "2024"
-license = "Elastic-2.0"
+license = "MIT"
 
 # `ahash`, `async-trait`, `libc`, `serde`, `serde_json`, and `tokio` are all
 # conditionally referenced by alef-emitted code: `ahash` only when the

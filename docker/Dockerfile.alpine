@@ -55,7 +55,7 @@ FROM alpine:3.21
 
 LABEL org.opencontainers.image.source="https://github.com/xberg-io/crawlberg"
 LABEL org.opencontainers.image.description="Crawlberg — high-performance web crawler CLI"
-LABEL org.opencontainers.image.licenses="Elastic-2.0"
+LABEL org.opencontainers.image.licenses="MIT"
 LABEL io.modelcontextprotocol.server.name="io.github.xberg-io/crawlberg"
 
 # Minimal runtime dependencies

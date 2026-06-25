@@ -27,4 +27,4 @@ Add to your `build.zig.zon`:
 
 ## License
 
-Elastic-2.0
+MIT

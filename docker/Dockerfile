@@ -43,7 +43,7 @@ FROM debian:bookworm-slim
 
 LABEL org.opencontainers.image.source="https://github.com/xberg-io/crawlberg"
 LABEL org.opencontainers.image.description="Crawlberg — high-performance web crawler with browser automation, API server, and MCP"
-LABEL org.opencontainers.image.licenses="Elastic-2.0"
+LABEL org.opencontainers.image.licenses="MIT"
 
 WORKDIR /app
 

@@ -20,7 +20,7 @@ use utoipa::OpenApi;
             url = "https://xberg.io"
         ),
         license(
-            name = "Elastic-2.0"
+            name = "MIT"
         )
     ),
     servers(

@@ -26,4 +26,4 @@ C bridge sources.
 
 ## License
 
-Elastic-2.0
+MIT

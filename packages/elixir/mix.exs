@@ -29,7 +29,7 @@ defmodule Crawlberg.MixProject do
 
   defp package do
     [
-      licenses: ["Elastic-2.0"],
+      licenses: ["MIT"],
       links: %{"GitHub" => "https://github.com/xberg-io/crawlberg"},
       files:
         ~w(lib .formatter.exs mix.exs README* checksum-*.exs native/crawlberg_nif/Cargo.toml native/crawlberg_nif/Cargo.lock native/crawlberg_nif/src)

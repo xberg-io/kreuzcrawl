@@ -292,7 +292,7 @@ Contributions are welcome! See our [Contributing Guide](https://github.com/xberg
 
 ## License
 
-[Elastic License 2.0](https://github.com/xberg-io/crawlberg/blob/main/LICENSE)
+[MIT License](https://github.com/xberg-io/crawlberg/blob/main/LICENSE)
 
 ## Links
 

@@ -31,4 +31,4 @@ dart test
 
 ## License
 
-Elastic-2.0
+MIT

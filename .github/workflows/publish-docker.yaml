@@ -199,7 +199,7 @@ jobs:
                   labels: |
                       org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
                       org.opencontainers.image.description=Crawlberg web crawling engine — Alpine CLI
-                      org.opencontainers.image.licenses=Elastic-2.0
+                      org.opencontainers.image.licenses=MIT
                   outputs: type=image,name=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }},push-by-digest=true,name-canonical=true,push=true
                   cache-from: type=gha,scope=publish-docker-${{ matrix.arch }}
                   cache-to: type=gha,mode=max,scope=publish-docker-${{ matrix.arch }}

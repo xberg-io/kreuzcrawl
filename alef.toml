@@ -85,7 +85,7 @@ title = "crawlberg"
 abstract = "Web crawling and scraping with HTML→Markdown and headless-Chrome fallback."
 repository-code = "https://github.com/xberg-io/crawlberg"
 url = "https://xberg.io"
-license = "Elastic-2.0"
+license = "MIT"
 date-released = "2026-05-17"
 
 [[workspace.citation.authors]]
@@ -1596,7 +1596,7 @@ version = "0.3.0"
 
 [crates.scaffold]
 description = "High-performance web crawling engine"
-license = "Elastic-2.0"
+license = "MIT"
 repository = "https://github.com/xberg-io/crawlberg"
 authors = ["Kreuzberg Team"]
 keywords = ["crawl", "scrape", "web", "spider"]

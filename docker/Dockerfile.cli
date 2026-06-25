@@ -31,7 +31,7 @@ FROM debian:bookworm-slim
 
 LABEL org.opencontainers.image.source="https://github.com/xberg-io/crawlberg"
 LABEL org.opencontainers.image.description="Crawlberg CLI — lightweight web crawler"
-LABEL org.opencontainers.image.licenses="Elastic-2.0"
+LABEL org.opencontainers.image.licenses="MIT"
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends ca-certificates && \
