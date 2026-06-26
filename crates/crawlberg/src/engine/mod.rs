@@ -1183,10 +1183,10 @@ impl CrawlEngine {
                         }
                         // Document-depth gate: child doc_depth = parent + 1.
                         let child_doc_depth = entry.doc_depth + 1;
-                        if let Some(max_doc_depth) = self.config.document_url_depth {
-                            if child_doc_depth > max_doc_depth {
-                                continue;
-                            }
+                        if let Some(max_doc_depth) = self.config.document_url_depth
+                            && child_doc_depth > max_doc_depth
+                        {
+                            continue;
                         }
                     }
 
