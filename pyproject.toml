@@ -21,6 +21,10 @@ target-version = "py310"
 line-length = 120
 lint.select = [ "ALL" ]
 lint.ignore = [ "ANN", "COM812", "D", "ISC001" ]
+# cli-proxy ships operational install/launch scripts (same category as scripts/**):
+# diagnostic prints to stderr, raised RuntimeErrors with contextual messages, and a
+# urllib redirect handler whose argument count is fixed by the stdlib API.
+lint.per-file-ignores."cli-proxy/**/*.py" = [ "EM102", "PLR0913", "PLR2004", "S310", "T201", "TRY003" ]
 lint.per-file-ignores."e2e/**/*.py" = [ "B017", "PLR2004", "PT011", "S" ]
 lint.per-file-ignores."packages/python/crawlberg/*.py" = [ "E501", "I001" ]
 lint.per-file-ignores."scripts/**/*.py" = [
