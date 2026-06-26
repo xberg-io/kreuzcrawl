@@ -10,15 +10,35 @@ from typing import Any, AsyncIterator, TypeVar, cast, overload
 import crawlberg._crawlberg as _rust
 
 from ._crawlberg import CrawlEngineHandle, CrawlEvent, PageAction
-from .options import BatchCrawlResults, BatchCrawlStreamRequest, BatchScrapeResults, BrowserConfig, CitationResult, ContentConfig, CrawlConfig, CrawlResult, CrawlStreamRequest, InteractionResult, MapResult, ProxyConfig, ScrapeResult, SsrfPolicy
+from .options import (
+    BatchCrawlResults,
+    BatchCrawlStreamRequest,
+    BatchScrapeResults,
+    BrowserConfig,
+    CitationResult,
+    ContentConfig,
+    CrawlConfig,
+    CrawlResult,
+    CrawlStreamRequest,
+    InteractionResult,
+    MapResult,
+    ProxyConfig,
+    ScrapeResult,
+    SsrfPolicy,
+)
 
 _E = TypeVar("_E")
+
 
 def _pascal_to_snake(value: str) -> str:
     """Convert PascalCase/camelCase to snake_case (AtxClosed -> atx_closed)."""
     out_chars: list[str] = []
     for index, ch in enumerate(value):
-        if ch.isupper() and index > 0 and (value[index - 1].islower() or (index + 1 < len(value) and value[index + 1].islower())):
+        if (
+            ch.isupper()
+            and index > 0
+            and (value[index - 1].islower() or (index + 1 < len(value) and value[index + 1].islower()))
+        ):
             out_chars.append("_")
         out_chars.append(ch.lower())
     return "".join(out_chars)
@@ -64,7 +84,7 @@ def _to_rust_content_config(value: ContentConfig | dict[str, Any] | str | None) 
         value = ContentConfig(**value)
     if value is None:
         return None
-    value = cast(ContentConfig, value)
+    value = cast("ContentConfig", value)
     return _rust.ContentConfig(
         output_format=value.output_format,
         preprocessing_preset=value.preprocessing_preset,
@@ -95,7 +115,7 @@ def _to_rust_proxy_config(value: ProxyConfig | dict[str, Any] | str | None) -> _
         value = ProxyConfig(**value)
     if value is None:
         return None
-    value = cast(ProxyConfig, value)
+    value = cast("ProxyConfig", value)
     return _rust.ProxyConfig(
         url=value.url,
         username=value.username,
@@ -125,7 +145,7 @@ def _to_rust_browser_config(value: BrowserConfig | dict[str, Any] | str | None) 
         value = BrowserConfig(**value)
     if value is None:
         return None
-    value = cast(BrowserConfig, value)
+    value = cast("BrowserConfig", value)
     return _rust.BrowserConfig(
         mode=_coerce_enum(_rust.BrowserMode, value.mode),
         backend=_coerce_enum(_rust.BrowserBackend, value.backend),
@@ -157,7 +177,7 @@ def _to_rust_ssrf_policy(value: SsrfPolicy | dict[str, Any] | str | None) -> _ru
         value = SsrfPolicy(**value)
     if value is None:
         return None
-    value = cast(SsrfPolicy, value)
+    value = cast("SsrfPolicy", value)
     return _rust.SsrfPolicy(
         deny_private=value.deny_private,
         max_redirects=value.max_redirects,
@@ -188,7 +208,7 @@ def _to_rust_crawl_config(value: CrawlConfig | dict[str, Any] | str | None) -> _
         value = CrawlConfig(**value)
     if value is None:
         return None
-    value = cast(CrawlConfig, value)
+    value = cast("CrawlConfig", value)
     return _rust.CrawlConfig(
         max_depth=value.max_depth,
         max_pages=value.max_pages,
@@ -207,7 +227,9 @@ def _to_rust_crawl_config(value: CrawlConfig | dict[str, Any] | str | None) -> _
         retry_count=value.retry_count,
         retry_codes=value.retry_codes,
         cookies_enabled=value.cookies_enabled,
-        auth=(value.auth if isinstance(value.auth, _rust.AuthConfig) else _rust.AuthConfig(value.auth)) if value.auth is not None else None,
+        auth=(value.auth if isinstance(value.auth, _rust.AuthConfig) else _rust.AuthConfig(value.auth))
+        if value.auth is not None
+        else None,
         max_body_size=value.max_body_size,
         remove_tags=value.remove_tags,
         content=_to_rust_content_config(value.content),
@@ -264,7 +286,9 @@ async def interact(
     actions: list[PageAction],
 ) -> _rust.InteractionResult:
     """Execute browser actions on a single page."""
-    _rust_actions = [(_rust.PageAction(__item) if not isinstance(__item, _rust.PageAction) else __item) for __item in actions]
+    _rust_actions = [
+        (_rust.PageAction(__item) if not isinstance(__item, _rust.PageAction) else __item) for __item in actions
+    ]
 
     return await _rust.interact(engine=engine, url=url, actions=_rust_actions)
 

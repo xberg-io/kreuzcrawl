@@ -5,188 +5,229 @@
 
 package dev.kreuzberg.crawlberg.e2e;
 
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import dev.kreuzberg.crawlberg.Crawlberg;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import dev.kreuzberg.crawlberg.CrawlConfig;
-import java.util.Optional;
-import dev.kreuzberg.crawlberg.JsonUtil;
+import dev.kreuzberg.crawlberg.Crawlberg;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 /** E2e tests for category: robots. */
 public class RobotsTest {
-    private static final ObjectMapper MAPPER = new ObjectMapper().registerModule(new Jdk8Module()).setPropertyNamingStrategy(com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE);
-    @BeforeAll
-    static void initEnv() {        if (System.getProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK") == null) {
-            System.setProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK", "true");
-        }    }
+  private static final ObjectMapper MAPPER = new ObjectMapper()
+      .registerModule(new Jdk8Module())
+      .setPropertyNamingStrategy(
+          com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE);
 
-    @Test
-    void testRobotsAllowAll() throws Exception {
-        // Permissive robots.txt allows all paths
-        var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":true}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.robots_allow_all", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/robots_allow_all");
-        var result = Crawlberg.scrape(engine, url);
-assertEquals(true, result.isAllowed());
-
+  @BeforeAll
+  static void initEnv() {
+    if (System.getProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK") == null) {
+      System.setProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK", "true");
     }
+  }
 
+  @Test
+  void testRobotsAllowAll() throws Exception {
+    // Permissive robots.txt allows all paths
+    var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":true}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.robots_allow_all",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/robots_allow_all");
+    var result = Crawlberg.scrape(engine, url);
+    assertEquals(true, result.isAllowed());
+  }
 
-    @Test
-    void testRobotsAllowOverride() throws Exception {
-        // Allow directive overrides Disallow for specific paths
-        var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":true}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.robots_allow_override", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/robots_allow_override");
-        var result = Crawlberg.scrape(engine, url);
-assertEquals(true, result.isAllowed());
+  @Test
+  void testRobotsAllowOverride() throws Exception {
+    // Allow directive overrides Disallow for specific paths
+    var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":true}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.robots_allow_override",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/robots_allow_override");
+    var result = Crawlberg.scrape(engine, url);
+    assertEquals(true, result.isAllowed());
+  }
 
-    }
+  @Test
+  void testRobotsCommentsHandling() throws Exception {
+    // Correctly parses robots.txt with inline and line comments
+    var engineConfig = MAPPER.readValue(
+        "{\"respect_robots_txt\":true,\"user_agent\":\"crawlberg\"}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.robots_comments_handling",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/robots_comments_handling");
+    var result = Crawlberg.scrape(engine, url);
+    assertEquals(true, result.isAllowed());
+  }
 
+  @Test
+  void testRobotsCrawlDelay() throws Exception {
+    // Respects crawl-delay directive from robots.txt
+    var engineConfig = MAPPER.readValue(
+        "{\"respect_robots_txt\":true,\"user_agent\":\"crawlberg\"}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.robots_crawl_delay",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/robots_crawl_delay");
+    var result = Crawlberg.scrape(engine, url);
+    assertEquals(
+        2,
+        java.util.Optional.ofNullable(result.crawlDelay())
+            .map(Number::longValue)
+            .orElse(0L));
+  }
 
-    @Test
-    void testRobotsCommentsHandling() throws Exception {
-        // Correctly parses robots.txt with inline and line comments
-        var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":true,\"user_agent\":\"crawlberg\"}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.robots_comments_handling", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/robots_comments_handling");
-        var result = Crawlberg.scrape(engine, url);
-assertEquals(true, result.isAllowed());
+  @Test
+  void testRobotsDisallowPath() throws Exception {
+    // Robots.txt disallows specific paths
+    var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":true}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.robots_disallow_path",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/robots_disallow_path");
+    var result = Crawlberg.scrape(engine, url);
+    assertEquals(false, result.isAllowed());
+  }
 
-    }
+  @Test
+  void testRobotsMetaNofollow() throws Exception {
+    // Detects nofollow meta robots tag and skips link extraction
+    var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":true}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.robots_meta_nofollow",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/robots_meta_nofollow");
+    var result = Crawlberg.scrape(engine, url);
+    assertEquals(true, result.nofollowDetected());
+  }
 
+  @Test
+  void testRobotsMetaNoindex() throws Exception {
+    // Detects noindex meta robots tag in HTML page
+    var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":true}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.robots_meta_noindex",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/robots_meta_noindex");
+    var result = Crawlberg.scrape(engine, url);
+    assertEquals(true, result.noindexDetected());
+  }
 
-    @Test
-    void testRobotsCrawlDelay() throws Exception {
-        // Respects crawl-delay directive from robots.txt
-        var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":true,\"user_agent\":\"crawlberg\"}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.robots_crawl_delay", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/robots_crawl_delay");
-        var result = Crawlberg.scrape(engine, url);
-assertEquals(2, java.util.Optional.ofNullable(result.crawlDelay()).map(Number::longValue).orElse(0L));
+  @Test
+  void testRobotsMissing404() throws Exception {
+    // Missing robots.txt (404) allows all crawling
+    var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":true}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.robots_missing_404",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/robots_missing_404");
+    var result = Crawlberg.scrape(engine, url);
+    assertEquals(true, result.isAllowed());
+  }
 
-    }
+  @Test
+  void testRobotsMultipleUserAgents() throws Exception {
+    // Picks the most specific user-agent block from robots.txt
+    var engineConfig = MAPPER.readValue(
+        "{\"respect_robots_txt\":true,\"user_agent\":\"SpecificBot\"}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.robots_multiple_user_agents",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/robots_multiple_user_agents");
+    var result = Crawlberg.scrape(engine, url);
+    assertEquals(true, result.isAllowed());
+  }
 
+  @Test
+  void testRobotsRequestRate() throws Exception {
+    // Parses request-rate directive from robots.txt
+    var engineConfig = MAPPER.readValue(
+        "{\"respect_robots_txt\":true,\"user_agent\":\"crawlberg\"}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.robots_request_rate",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/robots_request_rate");
+    var result = Crawlberg.scrape(engine, url);
+    assertEquals(
+        5,
+        java.util.Optional.ofNullable(result.crawlDelay())
+            .map(Number::longValue)
+            .orElse(0L));
+    assertEquals(true, result.isAllowed());
+  }
 
-    @Test
-    void testRobotsDisallowPath() throws Exception {
-        // Robots.txt disallows specific paths
-        var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":true}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.robots_disallow_path", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/robots_disallow_path");
-        var result = Crawlberg.scrape(engine, url);
-assertEquals(false, result.isAllowed());
+  @Test
+  void testRobotsSitemapDirective() throws Exception {
+    // Discovers sitemap URL from Sitemap directive in robots.txt
+    var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":true}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.robots_sitemap_directive",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/robots_sitemap_directive");
+    var result = Crawlberg.scrape(engine, url);
+    assertEquals(true, result.isAllowed());
+  }
 
-    }
+  @Test
+  void testRobotsUserAgentSpecific() throws Exception {
+    // Matches user-agent specific rules in robots.txt
+    var engineConfig = MAPPER.readValue(
+        "{\"respect_robots_txt\":true,\"user_agent\":\"CrawlbergBot\"}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.robots_user_agent_specific",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/robots_user_agent_specific");
+    var result = Crawlberg.scrape(engine, url);
+    assertEquals(false, result.isAllowed());
+  }
 
+  @Test
+  void testRobotsWildcardPaths() throws Exception {
+    // Handles wildcard Disallow patterns in robots.txt
+    var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":true}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.robots_wildcard_paths",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/robots_wildcard_paths");
+    var result = Crawlberg.scrape(engine, url);
+    assertEquals(false, result.isAllowed());
+  }
 
-    @Test
-    void testRobotsMetaNofollow() throws Exception {
-        // Detects nofollow meta robots tag and skips link extraction
-        var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":true}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.robots_meta_nofollow", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/robots_meta_nofollow");
-        var result = Crawlberg.scrape(engine, url);
-assertEquals(true, result.nofollowDetected());
-
-    }
-
-
-    @Test
-    void testRobotsMetaNoindex() throws Exception {
-        // Detects noindex meta robots tag in HTML page
-        var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":true}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.robots_meta_noindex", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/robots_meta_noindex");
-        var result = Crawlberg.scrape(engine, url);
-assertEquals(true, result.noindexDetected());
-
-    }
-
-
-    @Test
-    void testRobotsMissing404() throws Exception {
-        // Missing robots.txt (404) allows all crawling
-        var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":true}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.robots_missing_404", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/robots_missing_404");
-        var result = Crawlberg.scrape(engine, url);
-assertEquals(true, result.isAllowed());
-
-    }
-
-
-    @Test
-    void testRobotsMultipleUserAgents() throws Exception {
-        // Picks the most specific user-agent block from robots.txt
-        var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":true,\"user_agent\":\"SpecificBot\"}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.robots_multiple_user_agents", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/robots_multiple_user_agents");
-        var result = Crawlberg.scrape(engine, url);
-assertEquals(true, result.isAllowed());
-
-    }
-
-
-    @Test
-    void testRobotsRequestRate() throws Exception {
-        // Parses request-rate directive from robots.txt
-        var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":true,\"user_agent\":\"crawlberg\"}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.robots_request_rate", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/robots_request_rate");
-        var result = Crawlberg.scrape(engine, url);
-assertEquals(5, java.util.Optional.ofNullable(result.crawlDelay()).map(Number::longValue).orElse(0L));assertEquals(true, result.isAllowed());
-
-    }
-
-
-    @Test
-    void testRobotsSitemapDirective() throws Exception {
-        // Discovers sitemap URL from Sitemap directive in robots.txt
-        var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":true}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.robots_sitemap_directive", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/robots_sitemap_directive");
-        var result = Crawlberg.scrape(engine, url);
-assertEquals(true, result.isAllowed());
-
-    }
-
-
-    @Test
-    void testRobotsUserAgentSpecific() throws Exception {
-        // Matches user-agent specific rules in robots.txt
-        var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":true,\"user_agent\":\"CrawlbergBot\"}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.robots_user_agent_specific", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/robots_user_agent_specific");
-        var result = Crawlberg.scrape(engine, url);
-assertEquals(false, result.isAllowed());
-
-    }
-
-
-    @Test
-    void testRobotsWildcardPaths() throws Exception {
-        // Handles wildcard Disallow patterns in robots.txt
-        var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":true}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.robots_wildcard_paths", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/robots_wildcard_paths");
-        var result = Crawlberg.scrape(engine, url);
-assertEquals(false, result.isAllowed());
-
-    }
-
-
-    @Test
-    void testRobotsXRobotsTag() throws Exception {
-        // Respects X-Robots-Tag HTTP header directives
-        var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":true}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.robots_x_robots_tag", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/robots_x_robots_tag");
-        var result = Crawlberg.scrape(engine, url);
-assertEquals("noindex, nofollow", java.util.Optional.ofNullable(result.xRobotsTag()).map(java.util.Objects::toString).orElse("").trim());assertEquals(true, result.noindexDetected());assertEquals(true, result.nofollowDetected());
-
-    }
-
+  @Test
+  void testRobotsXRobotsTag() throws Exception {
+    // Respects X-Robots-Tag HTTP header directives
+    var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":true}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.robots_x_robots_tag",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/robots_x_robots_tag");
+    var result = Crawlberg.scrape(engine, url);
+    assertEquals(
+        "noindex, nofollow",
+        java.util.Optional.ofNullable(result.xRobotsTag())
+            .map(java.util.Objects::toString)
+            .orElse("")
+            .trim());
+    assertEquals(true, result.noindexDetected());
+    assertEquals(true, result.nofollowDetected());
+  }
 }

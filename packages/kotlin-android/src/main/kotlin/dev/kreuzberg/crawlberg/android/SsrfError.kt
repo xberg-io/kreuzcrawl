@@ -30,9 +30,14 @@ package dev.kreuzberg.crawlberg.android
 /** SSRF validation error. */
 sealed class SsrfError(message: String) : Exception(message) {
     data class DeniedByPolicy(val reason: String) : SsrfError("denied by SSRF policy: {reason}")
+
     object NotOnAllowlist : SsrfError("host not on allowlist")
+
     data class DnsResolutionFailed(val field0: String) : SsrfError("dns resolution failed: $field0")
+
     data class InvalidUrl(val field0: String) : SsrfError("invalid URL: $field0")
+
     data class DisallowedScheme(val field0: String) : SsrfError("disallowed scheme: $field0")
+
     object TooManyRedirects : SsrfError("too many redirects")
 }

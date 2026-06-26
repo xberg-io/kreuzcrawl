@@ -4,8 +4,8 @@
 // To verify freshness: alef verify --exit-code
 package dev.kreuzberg.crawlberg;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
@@ -20,72 +20,71 @@ public record ActionResult(
     @JsonProperty("action_type") String actionType,
     @JsonProperty("success") boolean success,
     @Nullable @JsonProperty("data") Object data,
-    @Nullable @JsonProperty("error") String error
-) {
-    /** Creates a new Builder for constructing instances of this record. */
-    public static Builder builder() {
-        return new Builder();
+    @Nullable @JsonProperty("error") String error) {
+  /** Creates a new Builder for constructing instances of this record. */
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  // CPD-OFF
+  /** Jackson builder for ActionResult deserialization. */
+  @com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
+  @JsonPOJOBuilder(withPrefix = "with", buildMethodName = "build")
+  public static final class Builder {
+
+    @JsonProperty("action_index")
+    private long actionIndex;
+
+    @JsonProperty("action_type")
+    private String actionType;
+
+    private boolean success;
+
+    @Nullable
+    private Object data;
+
+    @Nullable
+    private String error;
+
+    /** Sets the actionIndex field. */
+    @JsonProperty("action_index")
+    public Builder withActionIndex(final long value) {
+      this.actionIndex = value;
+      return this;
     }
 
-    // CPD-OFF
-    /** Jackson builder for ActionResult deserialization. */
-    @com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
-    @JsonPOJOBuilder(withPrefix = "with", buildMethodName = "build")
-    public static final class Builder {
-
-        @JsonProperty("action_index")
-        private long actionIndex;
-        @JsonProperty("action_type")
-        private String actionType;
-        private boolean success;
-        @Nullable private Object data;
-        @Nullable private String error;
-
-        /** Sets the actionIndex field. */
-        @JsonProperty("action_index")
-        public Builder withActionIndex(final long value) {
-            this.actionIndex = value;
-            return this;
-        }
-
-        /** Sets the actionType field. */
-        @JsonProperty("action_type")
-        public Builder withActionType(final String value) {
-            this.actionType = value;
-            return this;
-        }
-
-        /** Sets the success field. */
-        @JsonProperty("success")
-        public Builder withSuccess(final boolean value) {
-            this.success = value;
-            return this;
-        }
-
-        /** Sets the data field. */
-        @JsonProperty("data")
-        public Builder withData(final @Nullable Object value) {
-            this.data = value;
-            return this;
-        }
-
-        /** Sets the error field. */
-        @JsonProperty("error")
-        public Builder withError(final @Nullable String value) {
-            this.error = value;
-            return this;
-        }
-
-        /** Constructs a ActionResult instance from the builder's current state. */
-        public ActionResult build() {
-            return new ActionResult(
-                actionIndex,
-                actionType,
-                success,
-                data,
-                error
-            );
-        }
+    /** Sets the actionType field. */
+    @JsonProperty("action_type")
+    public Builder withActionType(final String value) {
+      this.actionType = value;
+      return this;
     }
-    // CPD-ON
+
+    /** Sets the success field. */
+    @JsonProperty("success")
+    public Builder withSuccess(final boolean value) {
+      this.success = value;
+      return this;
+    }
+
+    /** Sets the data field. */
+    @JsonProperty("data")
+    public Builder withData(final @Nullable Object value) {
+      this.data = value;
+      return this;
+    }
+
+    /** Sets the error field. */
+    @JsonProperty("error")
+    public Builder withError(final @Nullable String value) {
+      this.error = value;
+      return this;
+    }
+
+    /** Constructs a ActionResult instance from the builder's current state. */
+    public ActionResult build() {
+      return new ActionResult(actionIndex, actionType, success, data, error);
+    }
+  }
+  // CPD-ON
 }

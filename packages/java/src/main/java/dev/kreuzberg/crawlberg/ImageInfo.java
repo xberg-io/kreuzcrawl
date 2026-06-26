@@ -4,8 +4,8 @@
 // To verify freshness: alef verify --exit-code
 package dev.kreuzberg.crawlberg;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
@@ -20,70 +20,70 @@ public record ImageInfo(
     @Nullable @JsonProperty("alt") String alt,
     @Nullable @JsonProperty("width") Integer width,
     @Nullable @JsonProperty("height") Integer height,
-    @JsonProperty("source") ImageSource source
-) {
-    /** Creates a new Builder for constructing instances of this record. */
-    public static Builder builder() {
-        return new Builder();
+    @JsonProperty("source") ImageSource source) {
+  /** Creates a new Builder for constructing instances of this record. */
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  // CPD-OFF
+  /** Jackson builder for ImageInfo deserialization. */
+  @com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
+  @JsonPOJOBuilder(withPrefix = "with", buildMethodName = "build")
+  public static final class Builder {
+
+    private String url;
+
+    @Nullable
+    private String alt;
+
+    @Nullable
+    private Integer width;
+
+    @Nullable
+    private Integer height;
+
+    private ImageSource source;
+
+    /** Sets the url field. */
+    @JsonProperty("url")
+    public Builder withUrl(final String value) {
+      this.url = value;
+      return this;
     }
 
-    // CPD-OFF
-    /** Jackson builder for ImageInfo deserialization. */
-    @com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
-    @JsonPOJOBuilder(withPrefix = "with", buildMethodName = "build")
-    public static final class Builder {
-
-        private String url;
-        @Nullable private String alt;
-        @Nullable private Integer width;
-        @Nullable private Integer height;
-        private ImageSource source;
-
-        /** Sets the url field. */
-        @JsonProperty("url")
-        public Builder withUrl(final String value) {
-            this.url = value;
-            return this;
-        }
-
-        /** Sets the alt field. */
-        @JsonProperty("alt")
-        public Builder withAlt(final @Nullable String value) {
-            this.alt = value;
-            return this;
-        }
-
-        /** Sets the width field. */
-        @JsonProperty("width")
-        public Builder withWidth(final @Nullable int value) {
-            this.width = value;
-            return this;
-        }
-
-        /** Sets the height field. */
-        @JsonProperty("height")
-        public Builder withHeight(final @Nullable int value) {
-            this.height = value;
-            return this;
-        }
-
-        /** Sets the source field. */
-        @JsonProperty("source")
-        public Builder withSource(final ImageSource value) {
-            this.source = value;
-            return this;
-        }
-
-        /** Constructs a ImageInfo instance from the builder's current state. */
-        public ImageInfo build() {
-            return new ImageInfo(
-                url,
-                alt,
-                width,
-                height,
-                source
-            );
-        }
+    /** Sets the alt field. */
+    @JsonProperty("alt")
+    public Builder withAlt(final @Nullable String value) {
+      this.alt = value;
+      return this;
     }
-    // CPD-ON
+
+    /** Sets the width field. */
+    @JsonProperty("width")
+    public Builder withWidth(final @Nullable int value) {
+      this.width = value;
+      return this;
+    }
+
+    /** Sets the height field. */
+    @JsonProperty("height")
+    public Builder withHeight(final @Nullable int value) {
+      this.height = value;
+      return this;
+    }
+
+    /** Sets the source field. */
+    @JsonProperty("source")
+    public Builder withSource(final ImageSource value) {
+      this.source = value;
+      return this;
+    }
+
+    /** Constructs a ImageInfo instance from the builder's current state. */
+    public ImageInfo build() {
+      return new ImageInfo(url, alt, width, height, source);
+    }
+  }
+  // CPD-ON
 }

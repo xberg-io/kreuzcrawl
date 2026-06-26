@@ -30,11 +30,11 @@ package dev.kreuzberg.crawlberg.android
 /**
  * Request to begin a single-URL streaming crawl.
  *
- * Wraps a single seed URL for delivery through the streaming-adapter binding
- * surface. Required as a struct because alef's streaming adapter requires a
- * named request type — primitives are not supported.
+ * Wraps a single seed URL for delivery through the streaming-adapter binding surface. Required as a
+ * struct because alef's streaming adapter requires a named request type — primitives are not
+ * supported.
  */
 data class CrawlStreamRequest(
     /** The seed URL to crawl. */
-    val url: String = "",
+    val url: String = ""
 )

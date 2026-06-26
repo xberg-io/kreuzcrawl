@@ -4,11 +4,11 @@
 // To verify freshness: alef verify --exit-code
 package dev.kreuzberg.crawlberg;
 
-import java.util.List;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import java.util.List;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -21,72 +21,73 @@ public record ArticleMetadata(
     @Nullable @JsonProperty("modified_time") String modifiedTime,
     @Nullable @JsonProperty("author") String author,
     @Nullable @JsonProperty("section") String section,
-    @JsonProperty("tags") List<String> tags
-) {
-    /** Creates a new Builder for constructing instances of this record. */
-    public static Builder builder() {
-        return new Builder();
+    @JsonProperty("tags") List<String> tags) {
+  /** Creates a new Builder for constructing instances of this record. */
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  // CPD-OFF
+  /** Jackson builder for ArticleMetadata deserialization. */
+  @com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
+  @JsonPOJOBuilder(withPrefix = "with", buildMethodName = "build")
+  public static final class Builder {
+
+    @JsonProperty("published_time")
+    @Nullable
+    private String publishedTime;
+
+    @JsonProperty("modified_time")
+    @Nullable
+    private String modifiedTime;
+
+    @Nullable
+    private String author;
+
+    @Nullable
+    private String section;
+
+    private List<String> tags = List.of();
+
+    /** Sets the publishedTime field. */
+    @JsonProperty("published_time")
+    public Builder withPublishedTime(final @Nullable String value) {
+      this.publishedTime = value;
+      return this;
     }
 
-    // CPD-OFF
-    /** Jackson builder for ArticleMetadata deserialization. */
-    @com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
-    @JsonPOJOBuilder(withPrefix = "with", buildMethodName = "build")
-    public static final class Builder {
-
-        @JsonProperty("published_time")
-        @Nullable private String publishedTime;
-        @JsonProperty("modified_time")
-        @Nullable private String modifiedTime;
-        @Nullable private String author;
-        @Nullable private String section;
-        private List<String> tags = List.of();
-
-        /** Sets the publishedTime field. */
-        @JsonProperty("published_time")
-        public Builder withPublishedTime(final @Nullable String value) {
-            this.publishedTime = value;
-            return this;
-        }
-
-        /** Sets the modifiedTime field. */
-        @JsonProperty("modified_time")
-        public Builder withModifiedTime(final @Nullable String value) {
-            this.modifiedTime = value;
-            return this;
-        }
-
-        /** Sets the author field. */
-        @JsonProperty("author")
-        public Builder withAuthor(final @Nullable String value) {
-            this.author = value;
-            return this;
-        }
-
-        /** Sets the section field. */
-        @JsonProperty("section")
-        public Builder withSection(final @Nullable String value) {
-            this.section = value;
-            return this;
-        }
-
-        /** Sets the tags field. */
-        @JsonProperty("tags")
-        public Builder withTags(final List<String> value) {
-            this.tags = value;
-            return this;
-        }
-
-        /** Constructs a ArticleMetadata instance from the builder's current state. */
-        public ArticleMetadata build() {
-            return new ArticleMetadata(
-                publishedTime,
-                modifiedTime,
-                author,
-                section,
-                tags
-            );
-        }
+    /** Sets the modifiedTime field. */
+    @JsonProperty("modified_time")
+    public Builder withModifiedTime(final @Nullable String value) {
+      this.modifiedTime = value;
+      return this;
     }
-    // CPD-ON
+
+    /** Sets the author field. */
+    @JsonProperty("author")
+    public Builder withAuthor(final @Nullable String value) {
+      this.author = value;
+      return this;
+    }
+
+    /** Sets the section field. */
+    @JsonProperty("section")
+    public Builder withSection(final @Nullable String value) {
+      this.section = value;
+      return this;
+    }
+
+    /** Sets the tags field. */
+    @JsonProperty("tags")
+    public Builder withTags(final List<String> value) {
+      this.tags = value;
+      return this;
+    }
+
+    /** Constructs a ArticleMetadata instance from the builder's current state. */
+    public ArticleMetadata build() {
+      return new ArticleMetadata(publishedTime, modifiedTime, author, section, tags);
+    }
+  }
+  // CPD-ON
 }

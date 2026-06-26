@@ -4,8 +4,8 @@
 // To verify freshness: alef verify --exit-code
 package dev.kreuzberg.crawlberg;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
@@ -18,49 +18,53 @@ import org.jspecify.annotations.Nullable;
 @JsonDeserialize(builder = SsrfPolicy.Builder.class)
 public record SsrfPolicy(
     @Nullable @JsonProperty("deny_private") Boolean denyPrivate,
-    @Nullable @JsonProperty("max_redirects") Byte maxRedirects
-) {
-    /** Creates a new Builder for constructing instances of this record. */
-    public static Builder builder() {
-        return new Builder();
+    @Nullable @JsonProperty("max_redirects") Byte maxRedirects) {
+  /** Creates a new Builder for constructing instances of this record. */
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  public SsrfPolicy {
+    if (denyPrivate == null) {
+      denyPrivate = true;
     }
-    public SsrfPolicy{
-        if (denyPrivate == null) { denyPrivate = true; }
-        if (maxRedirects == null) { maxRedirects = 5; }
+    if (maxRedirects == null) {
+      maxRedirects = 5;
+    }
+  }
+
+  // CPD-OFF
+  /** Jackson builder for SsrfPolicy deserialization. */
+  @com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
+  @JsonPOJOBuilder(withPrefix = "with", buildMethodName = "build")
+  public static final class Builder {
+
+    @JsonProperty("deny_private")
+    @Nullable
+    private Boolean denyPrivate;
+
+    @JsonProperty("max_redirects")
+    @Nullable
+    private Byte maxRedirects;
+
+    /** Sets the denyPrivate field. */
+    @JsonProperty("deny_private")
+    public Builder withDenyPrivate(final @Nullable Boolean value) {
+      this.denyPrivate = value;
+      return this;
     }
 
-    // CPD-OFF
-    /** Jackson builder for SsrfPolicy deserialization. */
-    @com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
-    @JsonPOJOBuilder(withPrefix = "with", buildMethodName = "build")
-    public static final class Builder {
-
-        @JsonProperty("deny_private")
-        @Nullable private Boolean denyPrivate;
-        @JsonProperty("max_redirects")
-        @Nullable private Byte maxRedirects;
-
-        /** Sets the denyPrivate field. */
-        @JsonProperty("deny_private")
-        public Builder withDenyPrivate(final @Nullable Boolean value) {
-            this.denyPrivate = value;
-            return this;
-        }
-
-        /** Sets the maxRedirects field. */
-        @JsonProperty("max_redirects")
-        public Builder withMaxRedirects(final @Nullable Byte value) {
-            this.maxRedirects = value;
-            return this;
-        }
-
-        /** Constructs a SsrfPolicy instance from the builder's current state. */
-        public SsrfPolicy build() {
-            return new SsrfPolicy(
-                denyPrivate,
-                maxRedirects
-            );
-        }
+    /** Sets the maxRedirects field. */
+    @JsonProperty("max_redirects")
+    public Builder withMaxRedirects(final @Nullable Byte value) {
+      this.maxRedirects = value;
+      return this;
     }
-    // CPD-ON
+
+    /** Constructs a SsrfPolicy instance from the builder's current state. */
+    public SsrfPolicy build() {
+      return new SsrfPolicy(denyPrivate, maxRedirects);
+    }
+  }
+  // CPD-ON
 }

@@ -5,67 +5,77 @@
 
 package dev.kreuzberg.crawlberg.e2e;
 
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import dev.kreuzberg.crawlberg.Crawlberg;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import dev.kreuzberg.crawlberg.CrawlConfig;
-import java.util.Optional;
-import dev.kreuzberg.crawlberg.JsonUtil;
+import dev.kreuzberg.crawlberg.Crawlberg;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 /** E2e tests for category: cache. */
 public class CacheTest {
-    private static final ObjectMapper MAPPER = new ObjectMapper().registerModule(new Jdk8Module()).setPropertyNamingStrategy(com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE);
-    @BeforeAll
-    static void initEnv() {        if (System.getProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK") == null) {
-            System.setProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK", "true");
-        }    }
+  private static final ObjectMapper MAPPER = new ObjectMapper()
+      .registerModule(new Jdk8Module())
+      .setPropertyNamingStrategy(
+          com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE);
 
-    @Test
-    void testCacheBasic() throws Exception {
-        // Crawling with disk cache enabled succeeds without errors
-        var engine = Crawlberg.createEngine(null);
-        String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/cache_basic";
-        var result = Crawlberg.scrape(engine, url);
-assertEquals(200, result.statusCode());
-
+  @BeforeAll
+  static void initEnv() {
+    if (System.getProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK") == null) {
+      System.setProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK", "true");
     }
+  }
 
+  @Test
+  void testCacheBasic() throws Exception {
+    // Crawling with disk cache enabled succeeds without errors
+    var engine = Crawlberg.createEngine(null);
+    String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+        + "/fixtures/cache_basic";
+    var result = Crawlberg.scrape(engine, url);
+    assertEquals(200, result.statusCode());
+  }
 
-    @Test
-    void testCacheEtagConditional() throws Exception {
-        // Etag header enables conditional requests for cached content
-        var engineConfig = MAPPER.readValue("{\"max_depth\":1}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.cache_etag_conditional", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/cache_etag_conditional");
-        var result = Crawlberg.crawl(engine, url);
-assertTrue(result.pages().size() >= 1, "expected >= 1");assertEquals(200, result.pages().get(0).statusCode());
+  @Test
+  void testCacheEtagConditional() throws Exception {
+    // Etag header enables conditional requests for cached content
+    var engineConfig = MAPPER.readValue("{\"max_depth\":1}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.cache_etag_conditional",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/cache_etag_conditional");
+    var result = Crawlberg.crawl(engine, url);
+    assertTrue(result.pages().size() >= 1, "expected >= 1");
+    assertEquals(200, result.pages().get(0).statusCode());
+  }
 
-    }
+  @Test
+  void testCacheLastModified() throws Exception {
+    // Last-Modified header enables conditional requests via If-Modified-Since
+    var engineConfig = MAPPER.readValue("{\"max_depth\":1}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.cache_last_modified",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/cache_last_modified");
+    var result = Crawlberg.crawl(engine, url);
+    assertTrue(result.pages().size() >= 1, "expected >= 1");
+  }
 
-
-    @Test
-    void testCacheLastModified() throws Exception {
-        // Last-Modified header enables conditional requests via If-Modified-Since
-        var engineConfig = MAPPER.readValue("{\"max_depth\":1}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.cache_last_modified", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/cache_last_modified");
-        var result = Crawlberg.crawl(engine, url);
-assertTrue(result.pages().size() >= 1, "expected >= 1");
-
-    }
-
-
-    @Test
-    void testCacheMissFreshFetch() throws Exception {
-        // Uncached URLs are fetched fresh without conditional headers
-        var engineConfig = MAPPER.readValue("{\"max_depth\":1}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.cache_miss_fresh_fetch", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/cache_miss_fresh_fetch");
-        var result = Crawlberg.crawl(engine, url);
-assertEquals(3, result.pages().size());assertEquals(200, result.pages().get(0).statusCode());
-
-    }
-
+  @Test
+  void testCacheMissFreshFetch() throws Exception {
+    // Uncached URLs are fetched fresh without conditional headers
+    var engineConfig = MAPPER.readValue("{\"max_depth\":1}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.cache_miss_fresh_fetch",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/cache_miss_fresh_fetch");
+    var result = Crawlberg.crawl(engine, url);
+    assertEquals(3, result.pages().size());
+    assertEquals(200, result.pages().get(0).statusCode());
+  }
 }

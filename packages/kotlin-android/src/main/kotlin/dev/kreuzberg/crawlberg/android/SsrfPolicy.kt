@@ -34,16 +34,15 @@ data class SsrfPolicy(
     /**
      * Allowed hostnames and IP ranges. Empty means deny all unless `deny_private` is false.
      *
-     * Phase 1: skipped from language bindings — `HostMatcher`'s untagged-enum
-     * FFI form is not yet decided. Expose in a follow-up once the tagged-enum
-     * representation is finalized.
+     * Phase 1: skipped from language bindings — `HostMatcher`'s untagged-enum FFI form is not yet
+     * decided. Expose in a follow-up once the tagged-enum representation is finalized.
      */
     val allowlist: List<String>? = null,
     /** Maximum number of HTTP redirects to follow during validation. */
     val maxRedirects: Byte = 5,
     /**
-     * Allowed URI schemes. Default: `["http", "https"]`. Not serialized (set at runtime).
-     * Skipped from language bindings — `HashSet<&'static str>` is FFI-hostile.
+     * Allowed URI schemes. Default: `["http", "https"]`. Not serialized (set at runtime). Skipped
+     * from language bindings — `HashSet<&'static str>` is FFI-hostile.
      */
     val schemeAllowlist: List<String>? = null,
 )

@@ -1,7 +1,7 @@
 use std::hint::black_box;
 
-use criterion::{Criterion, criterion_group, criterion_main};
 use crawlberg::generate_citations;
+use criterion::{Criterion, criterion_group, criterion_main};
 
 // The bench calls generate_citations directly on markdown input.
 // generate_citations operates on markdown strings; we pass anchor text

@@ -38,17 +38,15 @@ enum class BrowserMode {
     /**
      * Always use the browser with all stealth surfaces enabled.
      *
-     * Behaves like `Always` for escalation purposes
-     * (every request is routed through the browser tier), but additionally
-     * enables:
+     * Behaves like `Always` for escalation purposes (every request is routed through the browser
+     * tier), but additionally enables:
      *
      * - browser JavaScript stealth patches
      * - native-backend TLS fingerprint spoofing
      * - stealth-aware default user-agent when no explicit UA is set
      * - 1920×1080 viewport override
      *
-     * Use this instead of setting the now-removed `BrowserConfig.stealth`
-     * boolean field.
+     * Use this instead of setting the now-removed `BrowserConfig.stealth` boolean field.
      */
     @com.fasterxml.jackson.annotation.JsonProperty("stealth") STEALTH;
 

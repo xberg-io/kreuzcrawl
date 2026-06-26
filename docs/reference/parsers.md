@@ -2,17 +2,17 @@
 title: "Parsers"
 ---
 
-# Parsers
+## Parsers
 
 Crawlberg exposes substrate-level parsers for robots.txt and sitemap.xml that are usable without constructing the crawl engine. These are **Rust-only** surfaces and are not exposed in language bindings.
 
 Import from `crawlberg::robots` and `crawlberg::sitemap` to use them with your own HTTP fetcher and pipeline.
 
-## Robots.txt Parsing
+### Robots.txt Parsing
 
 Parse robots.txt rules for a user-agent and check path compliance.
 
-### `parse_robots_txt(body: &str, user_agent: &str) -> RobotsRules`
+#### `parse_robots_txt(body: &str, user_agent: &str) -> RobotsRules`
 
 Extract rules for a specific user-agent from a robots.txt file body.
 
@@ -34,7 +34,7 @@ assert!(is_path_allowed("/public", &rules));
 assert_eq!(rules.crawl_delay, Some(2));
 ```
 
-### `is_path_allowed(path: &str, rules: &RobotsRules) -> bool`
+#### `is_path_allowed(path: &str, rules: &RobotsRules) -> bool`
 
 Determine whether a URL path is allowed by the robots.txt rules.
 
@@ -48,11 +48,11 @@ assert!(is_path_allowed("/admin/public/file.html", &rules));  // allow wins
 assert!(!is_path_allowed("/admin/secret", &rules));            // disallow wins
 ```
 
-## Sitemap Parsing
+### Sitemap Parsing
 
 Parse sitemap.xml and sitemap index documents without the crawl engine.
 
-### `parse_sitemap_xml(body: &str) -> Vec<SitemapUrl>`
+#### `parse_sitemap_xml(body: &str) -> Vec<SitemapUrl>`
 
 Extract all URL entries from a sitemap XML document.
 
@@ -82,7 +82,7 @@ assert_eq!(urls[0].url, "https://example.com/a");
 assert_eq!(urls[0].lastmod, Some("2025-01-01".to_string()));
 ```
 
-### `parse_sitemap_index(body: &str) -> Vec<String>`
+#### `parse_sitemap_index(body: &str) -> Vec<String>`
 
 Extract child sitemap URLs from a sitemap index document.
 
@@ -102,7 +102,7 @@ let child_urls = parse_sitemap_index(body);
 assert_eq!(child_urls.len(), 2);
 ```
 
-### `is_sitemap_index(body: &str) -> bool`
+#### `is_sitemap_index(body: &str) -> bool`
 
 Quickly check whether a document body looks like a sitemap index.
 

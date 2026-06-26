@@ -4,8 +4,8 @@
 // To verify freshness: alef verify --exit-code
 package dev.kreuzberg.crawlberg;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
@@ -19,62 +19,60 @@ public record FaviconInfo(
     @JsonProperty("url") String url,
     @JsonProperty("rel") String rel,
     @Nullable @JsonProperty("sizes") String sizes,
-    @Nullable @JsonProperty("mime_type") String mimeType
-) {
-    /** Creates a new Builder for constructing instances of this record. */
-    public static Builder builder() {
-        return new Builder();
+    @Nullable @JsonProperty("mime_type") String mimeType) {
+  /** Creates a new Builder for constructing instances of this record. */
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  // CPD-OFF
+  /** Jackson builder for FaviconInfo deserialization. */
+  @com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
+  @JsonPOJOBuilder(withPrefix = "with", buildMethodName = "build")
+  public static final class Builder {
+
+    private String url;
+    private String rel;
+
+    @Nullable
+    private String sizes;
+
+    @JsonProperty("mime_type")
+    @Nullable
+    private String mimeType;
+
+    /** Sets the url field. */
+    @JsonProperty("url")
+    public Builder withUrl(final String value) {
+      this.url = value;
+      return this;
     }
 
-    // CPD-OFF
-    /** Jackson builder for FaviconInfo deserialization. */
-    @com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
-    @JsonPOJOBuilder(withPrefix = "with", buildMethodName = "build")
-    public static final class Builder {
-
-        private String url;
-        private String rel;
-        @Nullable private String sizes;
-        @JsonProperty("mime_type")
-        @Nullable private String mimeType;
-
-        /** Sets the url field. */
-        @JsonProperty("url")
-        public Builder withUrl(final String value) {
-            this.url = value;
-            return this;
-        }
-
-        /** Sets the rel field. */
-        @JsonProperty("rel")
-        public Builder withRel(final String value) {
-            this.rel = value;
-            return this;
-        }
-
-        /** Sets the sizes field. */
-        @JsonProperty("sizes")
-        public Builder withSizes(final @Nullable String value) {
-            this.sizes = value;
-            return this;
-        }
-
-        /** Sets the mimeType field. */
-        @JsonProperty("mime_type")
-        public Builder withMimeType(final @Nullable String value) {
-            this.mimeType = value;
-            return this;
-        }
-
-        /** Constructs a FaviconInfo instance from the builder's current state. */
-        public FaviconInfo build() {
-            return new FaviconInfo(
-                url,
-                rel,
-                sizes,
-                mimeType
-            );
-        }
+    /** Sets the rel field. */
+    @JsonProperty("rel")
+    public Builder withRel(final String value) {
+      this.rel = value;
+      return this;
     }
-    // CPD-ON
+
+    /** Sets the sizes field. */
+    @JsonProperty("sizes")
+    public Builder withSizes(final @Nullable String value) {
+      this.sizes = value;
+      return this;
+    }
+
+    /** Sets the mimeType field. */
+    @JsonProperty("mime_type")
+    public Builder withMimeType(final @Nullable String value) {
+      this.mimeType = value;
+      return this;
+    }
+
+    /** Constructs a FaviconInfo instance from the builder's current state. */
+    public FaviconInfo build() {
+      return new FaviconInfo(url, rel, sizes, mimeType);
+    }
+  }
+  // CPD-ON
 }

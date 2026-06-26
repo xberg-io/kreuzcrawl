@@ -27,7 +27,7 @@ if [ -z "${MOCK_SERVER_URL:-}" ]; then
     cargo build --release --manifest-path "$MOCK_SERVER_MANIFEST" --bin mock-server >&2
   fi
   rm -f mock_server.stdout
-  : > mock_server.stdout
+  : >mock_server.stdout
   "$MOCK_SERVER_BIN" "$FIXTURES_DIR" >mock_server.stdout 2>&1 &
   __MOCK_PID=$!
   trap '[ -n "${__MOCK_PID:-}" ] && kill "$__MOCK_PID" 2>/dev/null || true' EXIT

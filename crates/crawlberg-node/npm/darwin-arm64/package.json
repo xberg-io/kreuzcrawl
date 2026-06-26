@@ -1,15 +1,25 @@
 {
-  "name": "@kreuzberg/crawlberg-darwin-arm64",
-  "version": "0.3.0",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/xberg-io/crawlberg.git"
-  },
-  "main": "crawlberg-node.darwin-arm64.node",
-  "files": ["crawlberg-node.darwin-arm64.node"],
-  "os": ["darwin"],
-  "cpu": ["arm64"],
-  "engines": { "node": ">= 18" },
-  "publishConfig": { "access": "public" }
+	"name": "@kreuzberg/crawlberg-darwin-arm64",
+	"version": "0.3.0",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/xberg-io/crawlberg.git"
+	},
+	"files": [
+		"crawlberg-node.darwin-arm64.node"
+	],
+	"os": [
+		"darwin"
+	],
+	"cpu": [
+		"arm64"
+	],
+	"main": "crawlberg-node.darwin-arm64.node",
+	"publishConfig": {
+		"access": "public"
+	},
+	"engines": {
+		"node": ">= 18"
+	}
 }

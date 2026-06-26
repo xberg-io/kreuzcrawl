@@ -30,28 +30,46 @@ package dev.kreuzberg.crawlberg.android
 /** Errors that can occur during crawling, scraping, or mapping operations. */
 sealed class CrawlError(message: String) : Exception(message) {
     data class NotFound(val field0: String) : CrawlError("not_found: $field0")
+
     data class Unauthorized(val field0: String) : CrawlError("unauthorized: $field0")
+
     data class Forbidden(val field0: String) : CrawlError("forbidden: $field0")
+
     data class WafBlocked(
         val vendor: String,
         override val message: String,
     ) : CrawlError("forbidden: waf/blocked: {message}")
+
     data class Timeout(val field0: String) : CrawlError("timeout: $field0")
+
     data class RateLimited(val field0: String) : CrawlError("rate_limited: $field0")
+
     data class ServerError(val field0: String) : CrawlError("server_error: $field0")
+
     data class BadGateway(val field0: String) : CrawlError("bad_gateway: $field0")
+
     data class Gone(val field0: String) : CrawlError("gone: $field0")
+
     data class Connection(val field0: String) : CrawlError("connection: $field0")
+
     data class Dns(val field0: String) : CrawlError("dns: $field0")
+
     data class Ssl(val field0: String) : CrawlError("ssl: $field0")
+
     data class DataLoss(val field0: String) : CrawlError("data_loss: $field0")
+
     data class BrowserError(val field0: String) : CrawlError("browser: $field0")
+
     data class BrowserTimeout(val field0: String) : CrawlError("browser_timeout: $field0")
+
     data class InvalidConfig(val field0: String) : CrawlError("invalid_config: $field0")
+
     data class Unsupported(val field0: String) : CrawlError("unsupported: $field0")
+
     data class SsrfPolicyViolation(
         val url: String,
         val reason: String,
     ) : CrawlError("ssrf_policy_violation: {url} - {reason}")
+
     data class Other(val field0: String) : CrawlError("other: $field0")
 }

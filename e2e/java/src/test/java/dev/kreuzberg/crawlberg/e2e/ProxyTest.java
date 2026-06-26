@@ -5,44 +5,52 @@
 
 package dev.kreuzberg.crawlberg.e2e;
 
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import dev.kreuzberg.crawlberg.Crawlberg;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import dev.kreuzberg.crawlberg.CrawlConfig;
-import java.util.Optional;
-import dev.kreuzberg.crawlberg.JsonUtil;
+import dev.kreuzberg.crawlberg.Crawlberg;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 /** E2e tests for category: proxy. */
 public class ProxyTest {
-    private static final ObjectMapper MAPPER = new ObjectMapper().registerModule(new Jdk8Module()).setPropertyNamingStrategy(com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE);
-    @BeforeAll
-    static void initEnv() {        if (System.getProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK") == null) {
-            System.setProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK", "true");
-        }    }
+  private static final ObjectMapper MAPPER = new ObjectMapper()
+      .registerModule(new Jdk8Module())
+      .setPropertyNamingStrategy(
+          com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE);
 
-    @Test
-    void testProxyAuthenticated() throws Exception {
-        // Proxy with username and password credentials authenticates successfully
-        var engineConfig = MAPPER.readValue("{\"proxy\":{\"password\":\"proxypass\",\"url\":\"http://127.0.0.1:8889\",\"username\":\"proxyuser\"},\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/proxy_authenticated";
-        var result = Crawlberg.crawl(engine, url);
-assertEquals(0, result.pages().size());
-
+  @BeforeAll
+  static void initEnv() {
+    if (System.getProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK") == null) {
+      System.setProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK", "true");
     }
+  }
 
+  @Test
+  void testProxyAuthenticated() throws Exception {
+    // Proxy with username and password credentials authenticates successfully
+    var engineConfig = MAPPER.readValue(
+        "{\"proxy\":{\"password\":\"proxypass\",\"url\":\"http://127.0.0.1:8889\",\"username\":\"proxyuser\"},\"respect_robots_txt\":false}",
+        CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+        + "/fixtures/proxy_authenticated";
+    var result = Crawlberg.crawl(engine, url);
+    assertEquals(0, result.pages().size());
+  }
 
-    @Test
-    void testProxyBasicSuccess() throws Exception {
-        // Configure proxy URL and successfully crawl through it
-        var engineConfig = MAPPER.readValue("{\"proxy\":{\"url\":\"http://127.0.0.1:8888\"},\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/proxy_basic_success";
-        var result = Crawlberg.crawl(engine, url);
-assertEquals(0, result.pages().size());
-
-    }
-
+  @Test
+  void testProxyBasicSuccess() throws Exception {
+    // Configure proxy URL and successfully crawl through it
+    var engineConfig = MAPPER.readValue(
+        "{\"proxy\":{\"url\":\"http://127.0.0.1:8888\"},\"respect_robots_txt\":false}",
+        CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+        + "/fixtures/proxy_basic_success";
+    var result = Crawlberg.crawl(engine, url);
+    assertEquals(0, result.pages().size());
+  }
 }

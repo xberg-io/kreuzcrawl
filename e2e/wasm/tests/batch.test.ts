@@ -4,10 +4,20 @@
 // To verify freshness: alef verify --exit-code
 
 import { describe, expect, it } from "vitest";
-import { scrape, batchCrawl, batchScrape, createEngine, WasmCrawlConfig, WasmAuthConfig, WasmBrowserConfig, WasmContentConfig, WasmProxyConfig, WasmSsrfPolicy } from "@kreuzberg/crawlberg-wasm";
+import {
+	scrape,
+	batchCrawl,
+	batchScrape,
+	createEngine,
+	WasmCrawlConfig,
+	WasmAuthConfig,
+	WasmBrowserConfig,
+	WasmContentConfig,
+	WasmProxyConfig,
+	WasmSsrfPolicy,
+} from "@kreuzberg/crawlberg-wasm";
 
 process.env.CRAWLBERG_ALLOW_PRIVATE_NETWORK ??= "true";
-
 
 async function _alefE2eDecompressAndParseJson(response: Response): Promise<unknown> {
 	const contentEncoding = response.headers.get("content-encoding");
@@ -35,7 +45,16 @@ function _alefE2eItemTexts(item: unknown): string[] {
 	}
 	const record = item as Record<string, unknown>;
 	const itemsText = Array.isArray(record.items) ? record.items.map(_alefE2eText).join(" ") : "";
-	return [_alefE2eText(item), _alefE2eText(record.kind), _alefE2eText(record.name), _alefE2eText(record.source), _alefE2eText(record.alias), _alefE2eText(record.text), _alefE2eText(record.signature), itemsText];
+	return [
+		_alefE2eText(item),
+		_alefE2eText(record.kind),
+		_alefE2eText(record.name),
+		_alefE2eText(record.source),
+		_alefE2eText(record.alias),
+		_alefE2eText(record.text),
+		_alefE2eText(record.signature),
+		itemsText,
+	];
 }
 
 function _alefE2eFormatMetadataDisplay(fm: unknown): string {
@@ -56,21 +75,20 @@ function _alefE2eFormatMetadataDisplay(fm: unknown): string {
 	return "";
 }
 
-
 describe("batch", () => {
-
 	it("batch_crawl_basic: Batch crawl of 2 seed URLs with links to discover", async () => {
 		const engineConfig = WasmCrawlConfig.default();
 		engineConfig.maxDepth = 1;
 		engineConfig.respectRobotsTxt = false;
 		engineConfig.ssrf.denyPrivate = false;
 		const engine = createEngine(engineConfig);
-		const urlsBase = process.env.MOCK_SERVER_BATCH_CRAWL_BASIC ?? `${process.env.MOCK_SERVER_URL}/fixtures/batch_crawl_basic`;
-		const urls = ["/seed1", "/seed2"].map((p) => p.startsWith("http") ? p : urlsBase + p);
+		const urlsBase =
+			process.env.MOCK_SERVER_BATCH_CRAWL_BASIC ?? `${process.env.MOCK_SERVER_URL}/fixtures/batch_crawl_basic`;
+		const urls = ["/seed1", "/seed2"].map((p) => (p.startsWith("http") ? p : urlsBase + p));
 		const result = await batchCrawl(engine, urls);
-    expect(Number(result.completedCount)).toBe(2);
-    expect(Number(result.failedCount)).toBe(0);
-    expect(Number(result.totalCount)).toBe(2);
+		expect(Number(result.completedCount)).toBe(2);
+		expect(Number(result.failedCount)).toBe(0);
+		expect(Number(result.totalCount)).toBe(2);
 	}, 30000);
 	it("batch_crawl_partial_failure: Batch crawl where one seed URL returns 404 error", async () => {
 		const engineConfig = WasmCrawlConfig.default();
@@ -78,12 +96,14 @@ describe("batch", () => {
 		engineConfig.respectRobotsTxt = false;
 		engineConfig.ssrf.denyPrivate = false;
 		const engine = createEngine(engineConfig);
-		const urlsBase = process.env.MOCK_SERVER_BATCH_CRAWL_PARTIAL_FAILURE ?? `${process.env.MOCK_SERVER_URL}/fixtures/batch_crawl_partial_failure`;
-		const urls = ["/good_seed", "/bad_seed"].map((p) => p.startsWith("http") ? p : urlsBase + p);
+		const urlsBase =
+			process.env.MOCK_SERVER_BATCH_CRAWL_PARTIAL_FAILURE ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/batch_crawl_partial_failure`;
+		const urls = ["/good_seed", "/bad_seed"].map((p) => (p.startsWith("http") ? p : urlsBase + p));
 		const result = await batchCrawl(engine, urls);
-    expect(Number(result.completedCount)).toBe(1);
-    expect(Number(result.failedCount)).toBe(1);
-    expect(Number(result.totalCount)).toBe(2);
+		expect(Number(result.completedCount)).toBe(1);
+		expect(Number(result.failedCount)).toBe(1);
+		expect(Number(result.totalCount)).toBe(2);
 	}, 30000);
 	it("batch_crawl_with_config: Batch crawl with max_depth=1 config verifying pages are discovered", async () => {
 		const engineConfig = WasmCrawlConfig.default();
@@ -91,64 +111,79 @@ describe("batch", () => {
 		engineConfig.respectRobotsTxt = false;
 		engineConfig.ssrf.denyPrivate = false;
 		const engine = createEngine(engineConfig);
-		const urlsBase = process.env.MOCK_SERVER_BATCH_CRAWL_WITH_CONFIG ?? `${process.env.MOCK_SERVER_URL}/fixtures/batch_crawl_with_config`;
-		const urls = ["/seed1", "/seed2"].map((p) => p.startsWith("http") ? p : urlsBase + p);
+		const urlsBase =
+			process.env.MOCK_SERVER_BATCH_CRAWL_WITH_CONFIG ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/batch_crawl_with_config`;
+		const urls = ["/seed1", "/seed2"].map((p) => (p.startsWith("http") ? p : urlsBase + p));
 		const result = await batchCrawl(engine, urls);
-    expect(Number(result.completedCount)).toBe(2);
-    expect(Number(result.failedCount)).toBe(0);
+		expect(Number(result.completedCount)).toBe(2);
+		expect(Number(result.failedCount)).toBe(0);
 	}, 30000);
 	it("batch_scrape_empty_urls_error: Batch scrape with empty batch_urls array returns error", async () => {
 		await expect(async () => {
 			const engineConfig = WasmCrawlConfig.default();
 			engineConfig.ssrf.denyPrivate = false;
 			const engine = createEngine(engineConfig);
-			const urlsBase = process.env.MOCK_SERVER_BATCH_SCRAPE_EMPTY_URLS_ERROR ?? `${process.env.MOCK_SERVER_URL}/fixtures/batch_scrape_empty_urls_error`;
-			const urls = [].map((p) => p.startsWith("http") ? p : urlsBase + p);
+			const urlsBase =
+				process.env.MOCK_SERVER_BATCH_SCRAPE_EMPTY_URLS_ERROR ??
+				`${process.env.MOCK_SERVER_URL}/fixtures/batch_scrape_empty_urls_error`;
+			const urls = [].map((p) => (p.startsWith("http") ? p : urlsBase + p));
 			await batchScrape(engine, urls);
 		}).rejects.toThrow();
 	}, 30000);
 	it("batch_scrape_with_config: Batch scrape with aggressive preprocessing configuration", async () => {
 		const engineConfig = WasmCrawlConfig.default();
-		engineConfig.content = (() => { const _u0 = WasmContentConfig.default(); _u0.preprocessingPreset = "aggressive"; return _u0; })();
+		engineConfig.content = (() => {
+			const _u0 = WasmContentConfig.default();
+			_u0.preprocessingPreset = "aggressive";
+			return _u0;
+		})();
 		engineConfig.ssrf.denyPrivate = false;
 		const engine = createEngine(engineConfig);
-		const urlsBase = process.env.MOCK_SERVER_BATCH_SCRAPE_WITH_CONFIG ?? `${process.env.MOCK_SERVER_URL}/fixtures/batch_scrape_with_config`;
-		const urls = ["/article1", "/article2"].map((p) => p.startsWith("http") ? p : urlsBase + p);
+		const urlsBase =
+			process.env.MOCK_SERVER_BATCH_SCRAPE_WITH_CONFIG ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/batch_scrape_with_config`;
+		const urls = ["/article1", "/article2"].map((p) => (p.startsWith("http") ? p : urlsBase + p));
 		const result = await batchScrape(engine, urls);
-    expect(Number(result.completedCount)).toBe(2);
-    expect(Number(result.failedCount)).toBe(0);
-    expect(Number(result.totalCount)).toBe(2);
+		expect(Number(result.completedCount)).toBe(2);
+		expect(Number(result.failedCount)).toBe(0);
+		expect(Number(result.totalCount)).toBe(2);
 	}, 30000);
 	it("scrape_batch_basic: Batch scrape of multiple URLs all succeeding", async () => {
 		const engineConfig = WasmCrawlConfig.default();
 		engineConfig.ssrf.denyPrivate = false;
 		const engine = createEngine(engineConfig);
-		const urlsBase = process.env.MOCK_SERVER_SCRAPE_BATCH_BASIC ?? `${process.env.MOCK_SERVER_URL}/fixtures/scrape_batch_basic`;
-		const urls = ["/page1", "/page2", "/page3"].map((p) => p.startsWith("http") ? p : urlsBase + p);
+		const urlsBase =
+			process.env.MOCK_SERVER_SCRAPE_BATCH_BASIC ?? `${process.env.MOCK_SERVER_URL}/fixtures/scrape_batch_basic`;
+		const urls = ["/page1", "/page2", "/page3"].map((p) => (p.startsWith("http") ? p : urlsBase + p));
 		const result = await batchScrape(engine, urls);
-    expect(Number(result.completedCount)).toBe(3);
-    expect(Number(result.failedCount)).toBe(0);
-    expect(Number(result.totalCount)).toBe(3);
+		expect(Number(result.completedCount)).toBe(3);
+		expect(Number(result.failedCount)).toBe(0);
+		expect(Number(result.totalCount)).toBe(3);
 	}, 30000);
 	it("scrape_batch_partial_failure: Batch scrape with one URL failing returns partial results", async () => {
 		const engineConfig = WasmCrawlConfig.default();
 		engineConfig.ssrf.denyPrivate = false;
 		const engine = createEngine(engineConfig);
-		const urlsBase = process.env.MOCK_SERVER_SCRAPE_BATCH_PARTIAL_FAILURE ?? `${process.env.MOCK_SERVER_URL}/fixtures/scrape_batch_partial_failure`;
-		const urls = ["/good1", "/bad", "/good2"].map((p) => p.startsWith("http") ? p : urlsBase + p);
+		const urlsBase =
+			process.env.MOCK_SERVER_SCRAPE_BATCH_PARTIAL_FAILURE ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/scrape_batch_partial_failure`;
+		const urls = ["/good1", "/bad", "/good2"].map((p) => (p.startsWith("http") ? p : urlsBase + p));
 		const result = await batchScrape(engine, urls);
-    expect(Number(result.completedCount)).toBe(2);
-    expect(Number(result.failedCount)).toBe(1);
-    expect(Number(result.totalCount)).toBe(3);
+		expect(Number(result.completedCount)).toBe(2);
+		expect(Number(result.failedCount)).toBe(1);
+		expect(Number(result.totalCount)).toBe(3);
 	}, 30000);
 	it("scrape_batch_progress: Batch scrape of 2 URLs completes with 2 results", async () => {
 		const engineConfig = WasmCrawlConfig.default();
 		engineConfig.ssrf.denyPrivate = false;
 		const engine = createEngine(engineConfig);
-		const urlsBase = process.env.MOCK_SERVER_SCRAPE_BATCH_PROGRESS ?? `${process.env.MOCK_SERVER_URL}/fixtures/scrape_batch_progress`;
-		const urls = ["/target", "/other"].map((p) => p.startsWith("http") ? p : urlsBase + p);
+		const urlsBase =
+			process.env.MOCK_SERVER_SCRAPE_BATCH_PROGRESS ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/scrape_batch_progress`;
+		const urls = ["/target", "/other"].map((p) => (p.startsWith("http") ? p : urlsBase + p));
 		const result = await batchScrape(engine, urls);
-    expect(Number(result.totalCount)).toBe(2);
-    expect(Number(result.completedCount)).toBe(2);
+		expect(Number(result.totalCount)).toBe(2);
+		expect(Number(result.completedCount)).toBe(2);
 	}, 30000);
 });

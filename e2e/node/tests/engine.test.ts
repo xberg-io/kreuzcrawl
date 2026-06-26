@@ -8,7 +8,6 @@ import { scrape, crawl, mapUrls, crawlStream, createEngine } from "@kreuzberg/cr
 
 process.env.CRAWLBERG_ALLOW_PRIVATE_NETWORK ??= "true";
 
-
 async function _alefE2eDecompressAndParseJson(response: Response): Promise<unknown> {
 	const contentEncoding = response.headers.get("content-encoding");
 	let buffer = await response.arrayBuffer();
@@ -35,7 +34,16 @@ function _alefE2eItemTexts(item: unknown): string[] {
 	}
 	const record = item as Record<string, unknown>;
 	const itemsText = Array.isArray(record.items) ? record.items.map(_alefE2eText).join(" ") : "";
-	return [_alefE2eText(item), _alefE2eText(record.kind), _alefE2eText(record.name), _alefE2eText(record.source), _alefE2eText(record.alias), _alefE2eText(record.text), _alefE2eText(record.signature), itemsText];
+	return [
+		_alefE2eText(item),
+		_alefE2eText(record.kind),
+		_alefE2eText(record.name),
+		_alefE2eText(record.source),
+		_alefE2eText(record.alias),
+		_alefE2eText(record.text),
+		_alefE2eText(record.signature),
+		itemsText,
+	];
 }
 
 function _alefE2eFormatMetadataDisplay(fm: unknown): string {
@@ -56,48 +64,54 @@ function _alefE2eFormatMetadataDisplay(fm: unknown): string {
 	return "";
 }
 
-
 describe("engine", () => {
-
 	it("engine_batch_basic: CrawlEngine with defaults batch scrapes like the free function", async () => {
 		const engine = createEngine(null);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/engine_batch_basic`;
 		await scrape(engine, url);
-    // skipped: field 'batch.completed_count' not available on result type
-    // skipped: field 'batch.total_count' not available on result type
+		// skipped: field 'batch.completed_count' not available on result type
+		// skipped: field 'batch.total_count' not available on result type
 	}, 30000);
 	it("engine_crawl_basic: CrawlEngine with defaults crawls multiple pages like the free function", async () => {
 		const engineConfig = { maxDepth: 1 };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_ENGINE_CRAWL_BASIC ?? `${process.env.MOCK_SERVER_URL}/fixtures/engine_crawl_basic`;
+		const url =
+			process.env.MOCK_SERVER_ENGINE_CRAWL_BASIC ?? `${process.env.MOCK_SERVER_URL}/fixtures/engine_crawl_basic`;
 		await crawl(engine, url);
-    // skipped: field 'crawl.pages_crawled' not available on result type
-    // skipped: field 'crawl.min_pages' not available on result type
+		// skipped: field 'crawl.pages_crawled' not available on result type
+		// skipped: field 'crawl.min_pages' not available on result type
 	}, 30000);
 	it("engine_map_basic: CrawlEngine with defaults discovers URLs like the free function", async () => {
 		const engine = createEngine(null);
-		const url = process.env.MOCK_SERVER_ENGINE_MAP_BASIC ?? `${process.env.MOCK_SERVER_URL}/fixtures/engine_map_basic`;
+		const url =
+			process.env.MOCK_SERVER_ENGINE_MAP_BASIC ?? `${process.env.MOCK_SERVER_URL}/fixtures/engine_map_basic`;
 		await mapUrls(engine, url);
-    // skipped: field 'map.min_urls' not available on result type
+		// skipped: field 'map.min_urls' not available on result type
 	}, 30000);
 	it("engine_scrape_basic: CrawlEngine with defaults scrapes a page identically to the free function", async () => {
 		const engine = createEngine(null);
-		const url = process.env.MOCK_SERVER_ENGINE_SCRAPE_BASIC ?? `${process.env.MOCK_SERVER_URL}/fixtures/engine_scrape_basic`;
+		const url =
+			process.env.MOCK_SERVER_ENGINE_SCRAPE_BASIC ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/engine_scrape_basic`;
 		const result = await scrape(engine, url);
-    expect(result.statusCode).toBe(200);
-    expect(result.contentType.trim()).toBe("text/html");
-    expect((result.metadata.title ?? "").trim()).toBe("Engine Test");
-    expect(result.metadata.description ?? "").toContain("Testing the engine");
-    expect(result.links.length).toBeGreaterThanOrEqual(1);
-    expect(result.metadata.headings.length).toBeGreaterThanOrEqual(1);
+		expect(result.statusCode).toBe(200);
+		expect(result.contentType.trim()).toBe("text/html");
+		expect((result.metadata.title ?? "").trim()).toBe("Engine Test");
+		expect(result.metadata.description ?? "").toContain("Testing the engine");
+		expect(result.links.length).toBeGreaterThanOrEqual(1);
+		expect(result.metadata.headings.length).toBeGreaterThanOrEqual(1);
 	}, 30000);
 	it("engine_stream_basic: CrawlEngine with defaults streams events like the free function", async () => {
 		const engineConfig = { maxDepth: 1 };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_ENGINE_STREAM_BASIC ?? `${process.env.MOCK_SERVER_URL}/fixtures/engine_stream_basic`;
+		const url =
+			process.env.MOCK_SERVER_ENGINE_STREAM_BASIC ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/engine_stream_basic`;
 		const stream = await crawlStream(engine, url);
 		const chunks: any[] = [];
-    for await (const _chunk of stream) { chunks.push(_chunk); }
-    expect(chunks.length).toBeGreaterThanOrEqual(3);
+		for await (const _chunk of stream) {
+			chunks.push(_chunk);
+		}
+		expect(chunks.length).toBeGreaterThanOrEqual(3);
 	}, 30000);
 });

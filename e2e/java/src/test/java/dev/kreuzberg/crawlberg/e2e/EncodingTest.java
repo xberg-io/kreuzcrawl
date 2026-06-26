@@ -5,61 +5,64 @@
 
 package dev.kreuzberg.crawlberg.e2e;
 
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+
 import dev.kreuzberg.crawlberg.Crawlberg;
-import dev.kreuzberg.crawlberg.CrawlConfig;
-import java.util.Optional;
-import dev.kreuzberg.crawlberg.JsonUtil;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 /** E2e tests for category: encoding. */
 public class EncodingTest {
-    @BeforeAll
-    static void initEnv() {        if (System.getProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK") == null) {
-            System.setProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK", "true");
-        }    }
-
-    @Test
-    void testEncodingDoubleEncoded() throws Exception {
-        // Handles double-encoded URL characters (%25C3%25B6)
-        var engine = Crawlberg.createEngine(null);
-        String url = System.getProperty("mockServer.encoding_double_encoded", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/encoding_double_encoded");
-        var result = Crawlberg.scrape(engine, url);
-assertFalse(result.html().isEmpty(), "expected non-empty value");assertTrue(result.links().size() >= 1, "expected >= 1");
-
+  @BeforeAll
+  static void initEnv() {
+    if (System.getProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK") == null) {
+      System.setProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK", "true");
     }
+  }
 
+  @Test
+  void testEncodingDoubleEncoded() throws Exception {
+    // Handles double-encoded URL characters (%25C3%25B6)
+    var engine = Crawlberg.createEngine(null);
+    String url = System.getProperty(
+        "mockServer.encoding_double_encoded",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/encoding_double_encoded");
+    var result = Crawlberg.scrape(engine, url);
+    assertFalse(result.html().isEmpty(), "expected non-empty value");
+    assertTrue(result.links().size() >= 1, "expected >= 1");
+  }
 
-    @Test
-    void testEncodingMixedCharsetPage() throws Exception {
-        // Handles charset mismatch between HTTP header and HTML meta tag
-        var engine = Crawlberg.createEngine(null);
-        String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/encoding_mixed_charset_page";
-        var result = Crawlberg.scrape(engine, url);
-assertFalse(result.html().isEmpty(), "expected non-empty value");
+  @Test
+  void testEncodingMixedCharsetPage() throws Exception {
+    // Handles charset mismatch between HTTP header and HTML meta tag
+    var engine = Crawlberg.createEngine(null);
+    String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+        + "/fixtures/encoding_mixed_charset_page";
+    var result = Crawlberg.scrape(engine, url);
+    assertFalse(result.html().isEmpty(), "expected non-empty value");
+  }
 
-    }
+  @Test
+  void testEncodingPercentEncodedPath() throws Exception {
+    // Handles percent-encoded spaces and characters in URL paths
+    var engine = Crawlberg.createEngine(null);
+    String url = System.getProperty(
+        "mockServer.encoding_percent_encoded_path",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/encoding_percent_encoded_path");
+    var result = Crawlberg.scrape(engine, url);
+    assertFalse(result.html().isEmpty(), "expected non-empty value");
+    assertTrue(result.links().size() >= 2, "expected >= 2");
+  }
 
-
-    @Test
-    void testEncodingPercentEncodedPath() throws Exception {
-        // Handles percent-encoded spaces and characters in URL paths
-        var engine = Crawlberg.createEngine(null);
-        String url = System.getProperty("mockServer.encoding_percent_encoded_path", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/encoding_percent_encoded_path");
-        var result = Crawlberg.scrape(engine, url);
-assertFalse(result.html().isEmpty(), "expected non-empty value");assertTrue(result.links().size() >= 2, "expected >= 2");
-
-    }
-
-
-    @Test
-    void testEncodingUnicodeUrl() throws Exception {
-        // Handles Unicode characters in URLs (Hebrew, Japanese, Cyrillic)
-        var engine = Crawlberg.createEngine(null);
-        String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/encoding_unicode_url";
-        var result = Crawlberg.scrape(engine, url);
-assertFalse(result.html().isEmpty(), "expected non-empty value");
-
-    }
-
+  @Test
+  void testEncodingUnicodeUrl() throws Exception {
+    // Handles Unicode characters in URLs (Hebrew, Japanese, Cyrillic)
+    var engine = Crawlberg.createEngine(null);
+    String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+        + "/fixtures/encoding_unicode_url";
+    var result = Crawlberg.scrape(engine, url);
+    assertFalse(result.html().isEmpty(), "expected non-empty value");
+  }
 }

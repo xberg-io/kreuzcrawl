@@ -4,8 +4,8 @@
 // To verify freshness: alef verify --exit-code
 package dev.kreuzberg.crawlberg;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
@@ -21,83 +21,82 @@ public record DownloadedAsset(
     @Nullable @JsonProperty("mime_type") String mimeType,
     @JsonProperty("size") long size,
     @JsonProperty("asset_category") AssetCategory assetCategory,
-    @Nullable @JsonProperty("html_tag") String htmlTag
-) {
-    /** Creates a new Builder for constructing instances of this record. */
-    public static Builder builder() {
-        return new Builder();
+    @Nullable @JsonProperty("html_tag") String htmlTag) {
+  /** Creates a new Builder for constructing instances of this record. */
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  // CPD-OFF
+  /** Jackson builder for DownloadedAsset deserialization. */
+  @com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
+  @JsonPOJOBuilder(withPrefix = "with", buildMethodName = "build")
+  public static final class Builder {
+
+    private String url;
+
+    @JsonProperty("content_hash")
+    private String contentHash;
+
+    @JsonProperty("mime_type")
+    @Nullable
+    private String mimeType;
+
+    private long size;
+
+    @JsonProperty("asset_category")
+    private AssetCategory assetCategory;
+
+    @JsonProperty("html_tag")
+    @Nullable
+    private String htmlTag;
+
+    /** Sets the url field. */
+    @JsonProperty("url")
+    public Builder withUrl(final String value) {
+      this.url = value;
+      return this;
     }
 
-    // CPD-OFF
-    /** Jackson builder for DownloadedAsset deserialization. */
-    @com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
-    @JsonPOJOBuilder(withPrefix = "with", buildMethodName = "build")
-    public static final class Builder {
-
-        private String url;
-        @JsonProperty("content_hash")
-        private String contentHash;
-        @JsonProperty("mime_type")
-        @Nullable private String mimeType;
-        private long size;
-        @JsonProperty("asset_category")
-        private AssetCategory assetCategory;
-        @JsonProperty("html_tag")
-        @Nullable private String htmlTag;
-
-        /** Sets the url field. */
-        @JsonProperty("url")
-        public Builder withUrl(final String value) {
-            this.url = value;
-            return this;
-        }
-
-        /** Sets the contentHash field. */
-        @JsonProperty("content_hash")
-        public Builder withContentHash(final String value) {
-            this.contentHash = value;
-            return this;
-        }
-
-        /** Sets the mimeType field. */
-        @JsonProperty("mime_type")
-        public Builder withMimeType(final @Nullable String value) {
-            this.mimeType = value;
-            return this;
-        }
-
-        /** Sets the size field. */
-        @JsonProperty("size")
-        public Builder withSize(final long value) {
-            this.size = value;
-            return this;
-        }
-
-        /** Sets the assetCategory field. */
-        @JsonProperty("asset_category")
-        public Builder withAssetCategory(final AssetCategory value) {
-            this.assetCategory = value;
-            return this;
-        }
-
-        /** Sets the htmlTag field. */
-        @JsonProperty("html_tag")
-        public Builder withHtmlTag(final @Nullable String value) {
-            this.htmlTag = value;
-            return this;
-        }
-
-        /** Constructs a DownloadedAsset instance from the builder's current state. */
-        public DownloadedAsset build() {
-            return new DownloadedAsset(
-                url,
-                contentHash,
-                mimeType,
-                size,
-                assetCategory,
-                htmlTag
-            );
-        }
+    /** Sets the contentHash field. */
+    @JsonProperty("content_hash")
+    public Builder withContentHash(final String value) {
+      this.contentHash = value;
+      return this;
     }
-    // CPD-ON
+
+    /** Sets the mimeType field. */
+    @JsonProperty("mime_type")
+    public Builder withMimeType(final @Nullable String value) {
+      this.mimeType = value;
+      return this;
+    }
+
+    /** Sets the size field. */
+    @JsonProperty("size")
+    public Builder withSize(final long value) {
+      this.size = value;
+      return this;
+    }
+
+    /** Sets the assetCategory field. */
+    @JsonProperty("asset_category")
+    public Builder withAssetCategory(final AssetCategory value) {
+      this.assetCategory = value;
+      return this;
+    }
+
+    /** Sets the htmlTag field. */
+    @JsonProperty("html_tag")
+    public Builder withHtmlTag(final @Nullable String value) {
+      this.htmlTag = value;
+      return this;
+    }
+
+    /** Constructs a DownloadedAsset instance from the builder's current state. */
+    public DownloadedAsset build() {
+      return new DownloadedAsset(url, contentHash, mimeType, size, assetCategory, htmlTag);
+    }
+  }
+  // CPD-ON
 }

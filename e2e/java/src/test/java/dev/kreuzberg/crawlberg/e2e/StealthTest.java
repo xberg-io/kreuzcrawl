@@ -5,56 +5,71 @@
 
 package dev.kreuzberg.crawlberg.e2e;
 
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import dev.kreuzberg.crawlberg.Crawlberg;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import dev.kreuzberg.crawlberg.CrawlConfig;
-import java.util.Optional;
-import dev.kreuzberg.crawlberg.JsonUtil;
+import dev.kreuzberg.crawlberg.Crawlberg;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 /** E2e tests for category: stealth. */
 public class StealthTest {
-    private static final ObjectMapper MAPPER = new ObjectMapper().registerModule(new Jdk8Module()).setPropertyNamingStrategy(com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE);
-    @BeforeAll
-    static void initEnv() {        if (System.getProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK") == null) {
-            System.setProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK", "true");
-        }    }
+  private static final ObjectMapper MAPPER = new ObjectMapper()
+      .registerModule(new Jdk8Module())
+      .setPropertyNamingStrategy(
+          com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE);
 
-    @Test
-    void testStealthUaRotationConfig() throws Exception {
-        // User-agent rotation config is accepted and crawl succeeds
-        var engineConfig = MAPPER.readValue("{\"user_agents\":[\"Mozilla/5.0 (Windows NT 10.0)\",\"Chrome/120.0.0.0\"]}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/stealth_ua_rotation_config";
-        var result = Crawlberg.scrape(engine, url);
-assertEquals(200, result.statusCode());
-
+  @BeforeAll
+  static void initEnv() {
+    if (System.getProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK") == null) {
+      System.setProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK", "true");
     }
+  }
 
+  @Test
+  void testStealthUaRotationConfig() throws Exception {
+    // User-agent rotation config is accepted and crawl succeeds
+    var engineConfig = MAPPER.readValue(
+        "{\"user_agents\":[\"Mozilla/5.0 (Windows NT 10.0)\",\"Chrome/120.0.0.0\"]}",
+        CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+        + "/fixtures/stealth_ua_rotation_config";
+    var result = Crawlberg.scrape(engine, url);
+    assertEquals(200, result.statusCode());
+  }
 
-    @Test
-    void testStealthUaRotationRoundRobin() throws Exception {
-        // User-agent rotation cycles through multiple agents across multiple requests
-        var engineConfig = MAPPER.readValue("{\"max_depth\":1,\"max_pages\":3,\"user_agents\":[\"Mozilla/5.0 (Windows NT 10.0; Win64; x64) TestAgent-1\",\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15) TestAgent-2\"]}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.stealth_ua_rotation_round_robin", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/stealth_ua_rotation_round_robin");
-        var result = Crawlberg.crawl(engine, url);
-assertTrue(result.pages().size() >= 2, "expected >= 2");
+  @Test
+  void testStealthUaRotationRoundRobin() throws Exception {
+    // User-agent rotation cycles through multiple agents across multiple requests
+    var engineConfig = MAPPER.readValue(
+        "{\"max_depth\":1,\"max_pages\":3,\"user_agents\":[\"Mozilla/5.0 (Windows NT 10.0; Win64;"
+            + " x64) TestAgent-1\",\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15)"
+            + " TestAgent-2\"]}",
+        CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.stealth_ua_rotation_round_robin",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/stealth_ua_rotation_round_robin");
+    var result = Crawlberg.crawl(engine, url);
+    assertTrue(result.pages().size() >= 2, "expected >= 2");
+  }
 
-    }
-
-
-    @Test
-    void testStealthUaRotationSingleDomain() throws Exception {
-        // Custom user-agent string is applied for single domain crawl
-        var engineConfig = MAPPER.readValue("{\"max_depth\":0,\"stay_on_domain\":true,\"user_agents\":[\"Mozilla/5.0 TestBot/1.0 (+http://example.com/bot)\"]}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/stealth_ua_rotation_single_domain";
-        var result = Crawlberg.crawl(engine, url);
-assertEquals(200, result.pages().get(0).statusCode());assertEquals(1, result.pages().size());
-
-    }
-
+  @Test
+  void testStealthUaRotationSingleDomain() throws Exception {
+    // Custom user-agent string is applied for single domain crawl
+    var engineConfig = MAPPER.readValue(
+        "{\"max_depth\":0,\"stay_on_domain\":true,\"user_agents\":[\"Mozilla/5.0 TestBot/1.0"
+            + " (+http://example.com/bot)\"]}",
+        CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+        + "/fixtures/stealth_ua_rotation_single_domain";
+    var result = Crawlberg.crawl(engine, url);
+    assertEquals(200, result.pages().get(0).statusCode());
+    assertEquals(1, result.pages().size());
+  }
 }

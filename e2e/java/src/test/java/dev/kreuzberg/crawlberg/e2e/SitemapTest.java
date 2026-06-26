@@ -5,113 +5,115 @@
 
 package dev.kreuzberg.crawlberg.e2e;
 
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import dev.kreuzberg.crawlberg.Crawlberg;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import dev.kreuzberg.crawlberg.CrawlConfig;
-import java.util.Optional;
-import dev.kreuzberg.crawlberg.JsonUtil;
+import dev.kreuzberg.crawlberg.Crawlberg;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 /** E2e tests for category: sitemap. */
 public class SitemapTest {
-    private static final ObjectMapper MAPPER = new ObjectMapper().registerModule(new Jdk8Module()).setPropertyNamingStrategy(com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE);
-    @BeforeAll
-    static void initEnv() {        if (System.getProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK") == null) {
-            System.setProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK", "true");
-        }    }
+  private static final ObjectMapper MAPPER = new ObjectMapper()
+      .registerModule(new Jdk8Module())
+      .setPropertyNamingStrategy(
+          com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE);
 
-    @Test
-    void testSitemapBasic() throws Exception {
-        // Parses a standard urlset sitemap
-        var engine = Crawlberg.createEngine(null);
-        String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/sitemap_basic";
-        var result = Crawlberg.mapUrls(engine, url);
-assertEquals(4, result.urls().size());
-
+  @BeforeAll
+  static void initEnv() {
+    if (System.getProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK") == null) {
+      System.setProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK", "true");
     }
+  }
 
+  @Test
+  void testSitemapBasic() throws Exception {
+    // Parses a standard urlset sitemap
+    var engine = Crawlberg.createEngine(null);
+    String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+        + "/fixtures/sitemap_basic";
+    var result = Crawlberg.mapUrls(engine, url);
+    assertEquals(4, result.urls().size());
+  }
 
-    @Test
-    void testSitemapCompressedGzip() throws Exception {
-        // Parses a gzip-compressed sitemap file
-        var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/sitemap_compressed_gzip";
-        var result = Crawlberg.mapUrls(engine, url);
-assertEquals(3, result.urls().size());
+  @Test
+  void testSitemapCompressedGzip() throws Exception {
+    // Parses a gzip-compressed sitemap file
+    var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+        + "/fixtures/sitemap_compressed_gzip";
+    var result = Crawlberg.mapUrls(engine, url);
+    assertEquals(3, result.urls().size());
+  }
 
-    }
+  @Test
+  void testSitemapEmpty() throws Exception {
+    // Handles empty sitemap gracefully
+    var engine = Crawlberg.createEngine(null);
+    String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+        + "/fixtures/sitemap_empty";
+    var result = Crawlberg.mapUrls(engine, url);
+    assertEquals(0, result.urls().size());
+  }
 
+  @Test
+  void testSitemapFromRobotsTxt() throws Exception {
+    // Discovers sitemap via robots.txt Sitemap directive
+    var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":true}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.sitemap_from_robots_txt",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/sitemap_from_robots_txt");
+    var result = Crawlberg.mapUrls(engine, url);
+    assertEquals(4, result.urls().size());
+  }
 
-    @Test
-    void testSitemapEmpty() throws Exception {
-        // Handles empty sitemap gracefully
-        var engine = Crawlberg.createEngine(null);
-        String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/sitemap_empty";
-        var result = Crawlberg.mapUrls(engine, url);
-assertEquals(0, result.urls().size());
+  @Test
+  void testSitemapIndex() throws Exception {
+    // Follows sitemap index to discover child sitemaps
+    var engine = Crawlberg.createEngine(null);
+    String url = System.getProperty(
+        "mockServer.sitemap_index",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/sitemap_index");
+    var result = Crawlberg.mapUrls(engine, url);
+    assertEquals(3, result.urls().size());
+  }
 
-    }
+  @Test
+  void testSitemapLastmodFilter() throws Exception {
+    // Filters sitemap URLs by lastmod date
+    var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+        + "/fixtures/sitemap_lastmod_filter";
+    var result = Crawlberg.mapUrls(engine, url);
+    assertEquals(4, result.urls().size());
+  }
 
+  @Test
+  void testSitemapOnlyMode() throws Exception {
+    // Uses sitemap URLs exclusively without following page links
+    var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+        + "/fixtures/sitemap_only_mode";
+    var result = Crawlberg.mapUrls(engine, url);
+    assertEquals(4, result.urls().size());
+  }
 
-    @Test
-    void testSitemapFromRobotsTxt() throws Exception {
-        // Discovers sitemap via robots.txt Sitemap directive
-        var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":true}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.sitemap_from_robots_txt", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/sitemap_from_robots_txt");
-        var result = Crawlberg.mapUrls(engine, url);
-assertEquals(4, result.urls().size());
-
-    }
-
-
-    @Test
-    void testSitemapIndex() throws Exception {
-        // Follows sitemap index to discover child sitemaps
-        var engine = Crawlberg.createEngine(null);
-        String url = System.getProperty("mockServer.sitemap_index", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/sitemap_index");
-        var result = Crawlberg.mapUrls(engine, url);
-assertEquals(3, result.urls().size());
-
-    }
-
-
-    @Test
-    void testSitemapLastmodFilter() throws Exception {
-        // Filters sitemap URLs by lastmod date
-        var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/sitemap_lastmod_filter";
-        var result = Crawlberg.mapUrls(engine, url);
-assertEquals(4, result.urls().size());
-
-    }
-
-
-    @Test
-    void testSitemapOnlyMode() throws Exception {
-        // Uses sitemap URLs exclusively without following page links
-        var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/sitemap_only_mode";
-        var result = Crawlberg.mapUrls(engine, url);
-assertEquals(4, result.urls().size());
-
-    }
-
-
-    @Test
-    void testSitemapXhtmlLinks() throws Exception {
-        // Parses sitemap with XHTML namespace alternate links
-        var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/sitemap_xhtml_links";
-        var result = Crawlberg.mapUrls(engine, url);
-assertEquals(2, result.urls().size());
-
-    }
-
+  @Test
+  void testSitemapXhtmlLinks() throws Exception {
+    // Parses sitemap with XHTML namespace alternate links
+    var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+        + "/fixtures/sitemap_xhtml_links";
+    var result = Crawlberg.mapUrls(engine, url);
+    assertEquals(2, result.urls().size());
+  }
 }

@@ -21,8 +21,8 @@ final class Crawlberg
      * @return CitationResult
      */
     public static function generateCitations(
-string $markdown): CitationResult
-    {
+        string $markdown,
+    ): CitationResult {
         return \Crawlberg\CrawlbergApi::generateCitations($markdown); // delegate to native extension class
     }
     /**
@@ -36,8 +36,8 @@ string $markdown): CitationResult
      * @throws \Crawlberg\CrawlbergException
      */
     public static function createEngine(
-?CrawlConfig $config = null): CrawlEngineHandle
-    {
+        ?CrawlConfig $config = null,
+    ): CrawlEngineHandle {
         return \Crawlberg\CrawlbergApi::createEngine($config); // delegate to native extension class
     }
     /**
@@ -49,8 +49,9 @@ string $markdown): CitationResult
      * @throws \Crawlberg\CrawlbergException
      */
     public static function scrape(
-CrawlEngineHandle $engine, string $url): ScrapeResult
-    {
+        CrawlEngineHandle $engine,
+        string $url,
+    ): ScrapeResult {
         return \Crawlberg\CrawlbergApi::scrape($engine, $url); // delegate to native extension class
     }
     /**
@@ -62,8 +63,9 @@ CrawlEngineHandle $engine, string $url): ScrapeResult
      * @throws \Crawlberg\CrawlbergException
      */
     public static function crawl(
-CrawlEngineHandle $engine, string $url): CrawlResult
-    {
+        CrawlEngineHandle $engine,
+        string $url,
+    ): CrawlResult {
         return \Crawlberg\CrawlbergApi::crawl($engine, $url); // delegate to native extension class
     }
     /**
@@ -75,8 +77,9 @@ CrawlEngineHandle $engine, string $url): CrawlResult
      * @throws \Crawlberg\CrawlbergException
      */
     public static function mapUrls(
-CrawlEngineHandle $engine, string $url): MapResult
-    {
+        CrawlEngineHandle $engine,
+        string $url,
+    ): MapResult {
         return \Crawlberg\CrawlbergApi::mapUrls($engine, $url); // delegate to native extension class
     }
     /**
@@ -89,8 +92,10 @@ CrawlEngineHandle $engine, string $url): MapResult
      * @throws \Crawlberg\CrawlbergException
      */
     public static function interact(
-CrawlEngineHandle $engine, string $url, array $actions): InteractionResult
-    {
+        CrawlEngineHandle $engine,
+        string $url,
+        array $actions,
+    ): InteractionResult {
         return \Crawlberg\CrawlbergApi::interact($engine, $url, $actions); // delegate to native extension class
     }
     /**
@@ -102,8 +107,9 @@ CrawlEngineHandle $engine, string $url, array $actions): InteractionResult
      * @throws \Crawlberg\CrawlbergException
      */
     public static function batchScrape(
-CrawlEngineHandle $engine, array $urls): BatchScrapeResults
-    {
+        CrawlEngineHandle $engine,
+        array $urls,
+    ): BatchScrapeResults {
         return \Crawlberg\CrawlbergApi::batchScrape($engine, $urls); // delegate to native extension class
     }
     /**
@@ -115,8 +121,9 @@ CrawlEngineHandle $engine, array $urls): BatchScrapeResults
      * @throws \Crawlberg\CrawlbergException
      */
     public static function batchCrawl(
-CrawlEngineHandle $engine, array $urls): BatchCrawlResults
-    {
+        CrawlEngineHandle $engine,
+        array $urls,
+    ): BatchCrawlResults {
         return \Crawlberg\CrawlbergApi::batchCrawl($engine, $urls); // delegate to native extension class
     }
 }

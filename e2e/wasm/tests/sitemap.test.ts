@@ -4,10 +4,19 @@
 // To verify freshness: alef verify --exit-code
 
 import { describe, expect, it } from "vitest";
-import { scrape, mapUrls, createEngine, WasmCrawlConfig, WasmAuthConfig, WasmBrowserConfig, WasmContentConfig, WasmProxyConfig, WasmSsrfPolicy } from "@kreuzberg/crawlberg-wasm";
+import {
+	scrape,
+	mapUrls,
+	createEngine,
+	WasmCrawlConfig,
+	WasmAuthConfig,
+	WasmBrowserConfig,
+	WasmContentConfig,
+	WasmProxyConfig,
+	WasmSsrfPolicy,
+} from "@kreuzberg/crawlberg-wasm";
 
 process.env.CRAWLBERG_ALLOW_PRIVATE_NETWORK ??= "true";
-
 
 async function _alefE2eDecompressAndParseJson(response: Response): Promise<unknown> {
 	const contentEncoding = response.headers.get("content-encoding");
@@ -35,7 +44,16 @@ function _alefE2eItemTexts(item: unknown): string[] {
 	}
 	const record = item as Record<string, unknown>;
 	const itemsText = Array.isArray(record.items) ? record.items.map(_alefE2eText).join(" ") : "";
-	return [_alefE2eText(item), _alefE2eText(record.kind), _alefE2eText(record.name), _alefE2eText(record.source), _alefE2eText(record.alias), _alefE2eText(record.text), _alefE2eText(record.signature), itemsText];
+	return [
+		_alefE2eText(item),
+		_alefE2eText(record.kind),
+		_alefE2eText(record.name),
+		_alefE2eText(record.source),
+		_alefE2eText(record.alias),
+		_alefE2eText(record.text),
+		_alefE2eText(record.signature),
+		itemsText,
+	];
 }
 
 function _alefE2eFormatMetadataDisplay(fm: unknown): string {
@@ -56,16 +74,14 @@ function _alefE2eFormatMetadataDisplay(fm: unknown): string {
 	return "";
 }
 
-
 describe("sitemap", () => {
-
 	it("sitemap_basic: Parses a standard urlset sitemap", async () => {
 		const engineConfig = WasmCrawlConfig.default();
 		engineConfig.ssrf.denyPrivate = false;
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/sitemap_basic`;
 		const result = await mapUrls(engine, url);
-    expect(Number(result.urls.length)).toBe(4);
+		expect(Number(result.urls.length)).toBe(4);
 	}, 30000);
 	it("sitemap_compressed_gzip: Parses a gzip-compressed sitemap file", async () => {
 		const engineConfig = WasmCrawlConfig.default();
@@ -74,7 +90,7 @@ describe("sitemap", () => {
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/sitemap_compressed_gzip`;
 		const result = await mapUrls(engine, url);
-    expect(Number(result.urls.length)).toBe(3);
+		expect(Number(result.urls.length)).toBe(3);
 	}, 30000);
 	it("sitemap_empty: Handles empty sitemap gracefully", async () => {
 		const engineConfig = WasmCrawlConfig.default();
@@ -82,16 +98,18 @@ describe("sitemap", () => {
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/sitemap_empty`;
 		const result = await mapUrls(engine, url);
-    expect(Number(result.urls.length)).toBe(0);
+		expect(Number(result.urls.length)).toBe(0);
 	}, 30000);
 	it("sitemap_from_robots_txt: Discovers sitemap via robots.txt Sitemap directive", async () => {
 		const engineConfig = WasmCrawlConfig.default();
 		engineConfig.respectRobotsTxt = true;
 		engineConfig.ssrf.denyPrivate = false;
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_SITEMAP_FROM_ROBOTS_TXT ?? `${process.env.MOCK_SERVER_URL}/fixtures/sitemap_from_robots_txt`;
+		const url =
+			process.env.MOCK_SERVER_SITEMAP_FROM_ROBOTS_TXT ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/sitemap_from_robots_txt`;
 		const result = await mapUrls(engine, url);
-    expect(Number(result.urls.length)).toBe(4);
+		expect(Number(result.urls.length)).toBe(4);
 	}, 30000);
 	it("sitemap_index: Follows sitemap index to discover child sitemaps", async () => {
 		const engineConfig = WasmCrawlConfig.default();
@@ -99,7 +117,7 @@ describe("sitemap", () => {
 		const engine = createEngine(engineConfig);
 		const url = process.env.MOCK_SERVER_SITEMAP_INDEX ?? `${process.env.MOCK_SERVER_URL}/fixtures/sitemap_index`;
 		const result = await mapUrls(engine, url);
-    expect(Number(result.urls.length)).toBe(3);
+		expect(Number(result.urls.length)).toBe(3);
 	}, 30000);
 	it("sitemap_lastmod_filter: Filters sitemap URLs by lastmod date", async () => {
 		const engineConfig = WasmCrawlConfig.default();
@@ -108,7 +126,7 @@ describe("sitemap", () => {
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/sitemap_lastmod_filter`;
 		const result = await mapUrls(engine, url);
-    expect(Number(result.urls.length)).toBe(4);
+		expect(Number(result.urls.length)).toBe(4);
 	}, 30000);
 	it("sitemap_only_mode: Uses sitemap URLs exclusively without following page links", async () => {
 		const engineConfig = WasmCrawlConfig.default();
@@ -117,7 +135,7 @@ describe("sitemap", () => {
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/sitemap_only_mode`;
 		const result = await mapUrls(engine, url);
-    expect(Number(result.urls.length)).toBe(4);
+		expect(Number(result.urls.length)).toBe(4);
 	}, 30000);
 	it("sitemap_xhtml_links: Parses sitemap with XHTML namespace alternate links", async () => {
 		const engineConfig = WasmCrawlConfig.default();
@@ -126,6 +144,6 @@ describe("sitemap", () => {
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/sitemap_xhtml_links`;
 		const result = await mapUrls(engine, url);
-    expect(Number(result.urls.length)).toBe(2);
+		expect(Number(result.urls.length)).toBe(2);
 	}, 30000);
 });

@@ -4,10 +4,18 @@
 // To verify freshness: alef verify --exit-code
 
 import { describe, expect, it } from "vitest";
-import { scrape, createEngine, WasmCrawlConfig, WasmAuthConfig, WasmBrowserConfig, WasmContentConfig, WasmProxyConfig, WasmSsrfPolicy } from "@kreuzberg/crawlberg-wasm";
+import {
+	scrape,
+	createEngine,
+	WasmCrawlConfig,
+	WasmAuthConfig,
+	WasmBrowserConfig,
+	WasmContentConfig,
+	WasmProxyConfig,
+	WasmSsrfPolicy,
+} from "@kreuzberg/crawlberg-wasm";
 
 process.env.CRAWLBERG_ALLOW_PRIVATE_NETWORK ??= "true";
-
 
 async function _alefE2eDecompressAndParseJson(response: Response): Promise<unknown> {
 	const contentEncoding = response.headers.get("content-encoding");
@@ -35,7 +43,16 @@ function _alefE2eItemTexts(item: unknown): string[] {
 	}
 	const record = item as Record<string, unknown>;
 	const itemsText = Array.isArray(record.items) ? record.items.map(_alefE2eText).join(" ") : "";
-	return [_alefE2eText(item), _alefE2eText(record.kind), _alefE2eText(record.name), _alefE2eText(record.source), _alefE2eText(record.alias), _alefE2eText(record.text), _alefE2eText(record.signature), itemsText];
+	return [
+		_alefE2eText(item),
+		_alefE2eText(record.kind),
+		_alefE2eText(record.name),
+		_alefE2eText(record.source),
+		_alefE2eText(record.alias),
+		_alefE2eText(record.text),
+		_alefE2eText(record.signature),
+		itemsText,
+	];
 }
 
 function _alefE2eFormatMetadataDisplay(fm: unknown): string {
@@ -56,27 +73,26 @@ function _alefE2eFormatMetadataDisplay(fm: unknown): string {
 	return "";
 }
 
-
 describe("scrape", () => {
-
 	it("scrape_asset_dedup: Same asset linked twice results in one download with one unique hash", async () => {
 		const engineConfig = WasmCrawlConfig.default();
 		engineConfig.downloadAssets = true;
 		engineConfig.ssrf.denyPrivate = false;
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_SCRAPE_ASSET_DEDUP ?? `${process.env.MOCK_SERVER_URL}/fixtures/scrape_asset_dedup`;
+		const url =
+			process.env.MOCK_SERVER_SCRAPE_ASSET_DEDUP ?? `${process.env.MOCK_SERVER_URL}/fixtures/scrape_asset_dedup`;
 		const result = await scrape(engine, url);
-    expect(Number(result.statusCode)).toBe(200);
-    expect(Number(result.assets.length)).toBe(2);
-    {
-        const _v = result.assets[0].contentHash;
-        if (typeof _v === "string" || Array.isArray(_v)) {
-            expect(_v.length).toBeGreaterThan(0);
-        } else {
-            expect(_v).toBeDefined();
-            expect(_v).not.toBeNull();
-        }
-    }
+		expect(Number(result.statusCode)).toBe(200);
+		expect(Number(result.assets.length)).toBe(2);
+		{
+			const _v = result.assets[0].contentHash;
+			if (typeof _v === "string" || Array.isArray(_v)) {
+				expect(_v.length).toBeGreaterThan(0);
+			} else {
+				expect(_v).toBeDefined();
+				expect(_v).not.toBeNull();
+			}
+		}
 	}, 30000);
 	it("scrape_asset_max_size: Skips assets exceeding max_asset_size limit", async () => {
 		const engineConfig = WasmCrawlConfig.default();
@@ -84,10 +100,12 @@ describe("scrape", () => {
 		engineConfig.maxAssetSize = 150;
 		engineConfig.ssrf.denyPrivate = false;
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_SCRAPE_ASSET_MAX_SIZE ?? `${process.env.MOCK_SERVER_URL}/fixtures/scrape_asset_max_size`;
+		const url =
+			process.env.MOCK_SERVER_SCRAPE_ASSET_MAX_SIZE ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/scrape_asset_max_size`;
 		const result = await scrape(engine, url);
-    expect(Number(result.statusCode)).toBe(200);
-    expect(Number(result.assets.length)).toBe(2);
+		expect(Number(result.statusCode)).toBe(200);
+		expect(Number(result.assets.length)).toBe(2);
 	}, 30000);
 	it("scrape_asset_type_filter: Only downloads image assets when asset_types filter is set", async () => {
 		const engineConfig = WasmCrawlConfig.default();
@@ -95,11 +113,13 @@ describe("scrape", () => {
 		engineConfig.downloadAssets = true;
 		engineConfig.ssrf.denyPrivate = false;
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_SCRAPE_ASSET_TYPE_FILTER ?? `${process.env.MOCK_SERVER_URL}/fixtures/scrape_asset_type_filter`;
+		const url =
+			process.env.MOCK_SERVER_SCRAPE_ASSET_TYPE_FILTER ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/scrape_asset_type_filter`;
 		const result = await scrape(engine, url);
-    expect(Number(result.statusCode)).toBe(200);
-    expect(Number(result.assets.length)).toBe(1);
-    expect(result.assets[0].assetCategory).toContain("image");
+		expect(Number(result.statusCode)).toBe(200);
+		expect(Number(result.assets.length)).toBe(1);
+		expect(result.assets[0].assetCategory).toContain("image");
 	}, 30000);
 	it("scrape_basic_html_page: Scrapes a simple HTML page and extracts title, description, and links", async () => {
 		const engineConfig = WasmCrawlConfig.default();
@@ -109,32 +129,32 @@ describe("scrape", () => {
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/scrape_basic_html_page`;
 		const result = await scrape(engine, url);
-    expect(Number(result.statusCode)).toBe(200);
-    expect(result.contentType.trim()).toBe("text/html");
-    {
-        const _v = result.html;
-        if (typeof _v === "string" || Array.isArray(_v)) {
-            expect(_v.length).toBeGreaterThan(0);
-        } else {
-            expect(_v).toBeDefined();
-            expect(_v).not.toBeNull();
-        }
-    }
-    expect((result.metadata.title ?? "").trim()).toBe("Example Domain");
-    expect(result.metadata.description ?? "").toContain("illustrative examples");
-    {
-        const _v = result.metadata.canonicalUrl;
-        if (typeof _v === "string" || Array.isArray(_v)) {
-            expect(_v.length).toBeGreaterThan(0);
-        } else {
-            expect(_v).toBeDefined();
-            expect(_v).not.toBeNull();
-        }
-    }
-    expect(Number(result.links.length)).toBeGreaterThan(0);
-    expect(result.links[0].linkType).toContain("external");
-    expect(Number(result.images.length)).toBe(0);
-    expect((result.metadata.ogTitle ?? "").length).toBe(0);
+		expect(Number(result.statusCode)).toBe(200);
+		expect(result.contentType.trim()).toBe("text/html");
+		{
+			const _v = result.html;
+			if (typeof _v === "string" || Array.isArray(_v)) {
+				expect(_v.length).toBeGreaterThan(0);
+			} else {
+				expect(_v).toBeDefined();
+				expect(_v).not.toBeNull();
+			}
+		}
+		expect((result.metadata.title ?? "").trim()).toBe("Example Domain");
+		expect(result.metadata.description ?? "").toContain("illustrative examples");
+		{
+			const _v = result.metadata.canonicalUrl;
+			if (typeof _v === "string" || Array.isArray(_v)) {
+				expect(_v.length).toBeGreaterThan(0);
+			} else {
+				expect(_v).toBeDefined();
+				expect(_v).not.toBeNull();
+			}
+		}
+		expect(Number(result.links.length)).toBeGreaterThan(0);
+		expect(result.links[0].linkType).toContain("external");
+		expect(Number(result.images.length)).toBe(0);
+		expect((result.metadata.ogTitle ?? "").length).toBe(0);
 	}, 30000);
 	it("scrape_complex_links: Classifies links by type: internal, external, anchor, document, image", async () => {
 		const engineConfig = WasmCrawlConfig.default();
@@ -142,27 +162,29 @@ describe("scrape", () => {
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/scrape_complex_links`;
 		const result = await scrape(engine, url);
-    expect(Number(result.statusCode)).toBe(200);
-    expect(Number(result.links.length)).toBeGreaterThan(9);
-    {
-        const _v = result.links[0].url;
-        if (typeof _v === "string" || Array.isArray(_v)) {
-            expect(_v.length).toBeGreaterThan(0);
-        } else {
-            expect(_v).toBeDefined();
-            expect(_v).not.toBeNull();
-        }
-    }
+		expect(Number(result.statusCode)).toBe(200);
+		expect(Number(result.links.length)).toBeGreaterThan(9);
+		{
+			const _v = result.links[0].url;
+			if (typeof _v === "string" || Array.isArray(_v)) {
+				expect(_v.length).toBeGreaterThan(0);
+			} else {
+				expect(_v).toBeDefined();
+				expect(_v).not.toBeNull();
+			}
+		}
 	}, 30000);
 	it("scrape_download_assets: Downloads CSS, JS, and image assets from page", async () => {
 		const engineConfig = WasmCrawlConfig.default();
 		engineConfig.downloadAssets = true;
 		engineConfig.ssrf.denyPrivate = false;
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_SCRAPE_DOWNLOAD_ASSETS ?? `${process.env.MOCK_SERVER_URL}/fixtures/scrape_download_assets`;
+		const url =
+			process.env.MOCK_SERVER_SCRAPE_DOWNLOAD_ASSETS ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/scrape_download_assets`;
 		const result = await scrape(engine, url);
-    expect(Number(result.statusCode)).toBe(200);
-    expect(Number(result.assets.length)).toBeGreaterThan(2);
+		expect(Number(result.statusCode)).toBe(200);
+		expect(Number(result.assets.length)).toBeGreaterThan(2);
 	}, 30000);
 	it("scrape_dublin_core: Extracts Dublin Core metadata from a page", async () => {
 		const engineConfig = WasmCrawlConfig.default();
@@ -170,18 +192,18 @@ describe("scrape", () => {
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/scrape_dublin_core`;
 		const result = await scrape(engine, url);
-    expect(Number(result.statusCode)).toBe(200);
-    {
-        const _v = result.metadata.dcTitle;
-        if (typeof _v === "string" || Array.isArray(_v)) {
-            expect(_v.length).toBeGreaterThan(0);
-        } else {
-            expect(_v).toBeDefined();
-            expect(_v).not.toBeNull();
-        }
-    }
-    expect((result.metadata.dcTitle ?? "").trim()).toBe("Effects of Climate Change on Marine Biodiversity");
-    expect((result.metadata.dcCreator ?? "").trim()).toBe("Dr. Jane Smith");
+		expect(Number(result.statusCode)).toBe(200);
+		{
+			const _v = result.metadata.dcTitle;
+			if (typeof _v === "string" || Array.isArray(_v)) {
+				expect(_v.length).toBeGreaterThan(0);
+			} else {
+				expect(_v).toBeDefined();
+				expect(_v).not.toBeNull();
+			}
+		}
+		expect((result.metadata.dcTitle ?? "").trim()).toBe("Effects of Climate Change on Marine Biodiversity");
+		expect((result.metadata.dcCreator ?? "").trim()).toBe("Dr. Jane Smith");
 	}, 30000);
 	it("scrape_empty_page: Handles an empty HTML document without errors", async () => {
 		const engineConfig = WasmCrawlConfig.default();
@@ -189,9 +211,9 @@ describe("scrape", () => {
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/scrape_empty_page`;
 		const result = await scrape(engine, url);
-    expect(Number(result.statusCode)).toBe(200);
-    expect(Number(result.links.length)).toBeGreaterThan(-1);
-    expect(Number(result.images.length)).toBe(0);
+		expect(Number(result.statusCode)).toBe(200);
+		expect(Number(result.links.length)).toBeGreaterThan(-1);
+		expect(Number(result.images.length)).toBe(0);
 	}, 30000);
 	it("scrape_feed_discovery: Discovers RSS, Atom, and JSON feed links", async () => {
 		const engineConfig = WasmCrawlConfig.default();
@@ -199,8 +221,8 @@ describe("scrape", () => {
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/scrape_feed_discovery`;
 		const result = await scrape(engine, url);
-    expect(Number(result.statusCode)).toBe(200);
-    expect(Number(result.feeds.length)).toBeGreaterThanOrEqual(3);
+		expect(Number(result.statusCode)).toBe(200);
+		expect(Number(result.feeds.length)).toBeGreaterThanOrEqual(3);
 	}, 30000);
 	it("scrape_image_sources: Extracts images from img, picture, og:image, twitter:image", async () => {
 		const engineConfig = WasmCrawlConfig.default();
@@ -208,9 +230,9 @@ describe("scrape", () => {
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/scrape_image_sources`;
 		const result = await scrape(engine, url);
-    expect(Number(result.statusCode)).toBe(200);
-    expect(Number(result.images.length)).toBeGreaterThan(4);
-    expect((result.metadata.ogImage ?? "").trim()).toBe("https://example.com/images/og-hero.jpg");
+		expect(Number(result.statusCode)).toBe(200);
+		expect(Number(result.images.length)).toBeGreaterThan(4);
+		expect((result.metadata.ogImage ?? "").trim()).toBe("https://example.com/images/og-hero.jpg");
 	}, 30000);
 	it("scrape_js_heavy_spa: Handles SPA page with JavaScript-only content (no server-rendered HTML)", async () => {
 		const engineConfig = WasmCrawlConfig.default();
@@ -218,15 +240,15 @@ describe("scrape", () => {
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/scrape_js_heavy_spa`;
 		const result = await scrape(engine, url);
-    {
-        const _v = result.html;
-        if (typeof _v === "string" || Array.isArray(_v)) {
-            expect(_v.length).toBeGreaterThan(0);
-        } else {
-            expect(_v).toBeDefined();
-            expect(_v).not.toBeNull();
-        }
-    }
+		{
+			const _v = result.html;
+			if (typeof _v === "string" || Array.isArray(_v)) {
+				expect(_v.length).toBeGreaterThan(0);
+			} else {
+				expect(_v).toBeDefined();
+				expect(_v).not.toBeNull();
+			}
+		}
 	}, 30000);
 	it("scrape_json_ld: Extracts JSON-LD structured data from a page", async () => {
 		const engineConfig = WasmCrawlConfig.default();
@@ -234,18 +256,18 @@ describe("scrape", () => {
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/scrape_json_ld`;
 		const result = await scrape(engine, url);
-    expect(Number(result.statusCode)).toBe(200);
-    {
-        const _v = result.jsonLd;
-        if (typeof _v === "string" || Array.isArray(_v)) {
-            expect(_v.length).toBeGreaterThan(0);
-        } else {
-            expect(_v).toBeDefined();
-            expect(_v).not.toBeNull();
-        }
-    }
-    expect(result.jsonLd[0].schemaType.trim()).toBe("Recipe");
-    expect((result.jsonLd[0].name ?? "").trim()).toBe("Best Chocolate Cake");
+		expect(Number(result.statusCode)).toBe(200);
+		{
+			const _v = result.jsonLd;
+			if (typeof _v === "string" || Array.isArray(_v)) {
+				expect(_v.length).toBeGreaterThan(0);
+			} else {
+				expect(_v).toBeDefined();
+				expect(_v).not.toBeNull();
+			}
+		}
+		expect(result.jsonLd[0].schemaType.trim()).toBe("Recipe");
+		expect((result.jsonLd[0].name ?? "").trim()).toBe("Best Chocolate Cake");
 	}, 30000);
 	it("scrape_malformed_html: Gracefully handles broken HTML without crashing", async () => {
 		const engineConfig = WasmCrawlConfig.default();
@@ -253,17 +275,17 @@ describe("scrape", () => {
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/scrape_malformed_html`;
 		const result = await scrape(engine, url);
-    expect(Number(result.statusCode)).toBe(200);
-    {
-        const _v = result.html;
-        if (typeof _v === "string" || Array.isArray(_v)) {
-            expect(_v.length).toBeGreaterThan(0);
-        } else {
-            expect(_v).toBeDefined();
-            expect(_v).not.toBeNull();
-        }
-    }
-    expect(result.metadata.description ?? "").toContain("broken HTML");
+		expect(Number(result.statusCode)).toBe(200);
+		{
+			const _v = result.html;
+			if (typeof _v === "string" || Array.isArray(_v)) {
+				expect(_v.length).toBeGreaterThan(0);
+			} else {
+				expect(_v).toBeDefined();
+				expect(_v).not.toBeNull();
+			}
+		}
+		expect(result.metadata.description ?? "").toContain("broken HTML");
 	}, 30000);
 	it("scrape_og_metadata: Extracts full Open Graph metadata from a page", async () => {
 		const engineConfig = WasmCrawlConfig.default();
@@ -271,29 +293,29 @@ describe("scrape", () => {
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/scrape_og_metadata`;
 		const result = await scrape(engine, url);
-    expect(Number(result.statusCode)).toBe(200);
-    {
-        const _v = result.metadata.ogTitle;
-        if (typeof _v === "string" || Array.isArray(_v)) {
-            expect(_v.length).toBeGreaterThan(0);
-        } else {
-            expect(_v).toBeDefined();
-            expect(_v).not.toBeNull();
-        }
-    }
-    expect((result.metadata.ogTitle ?? "").trim()).toBe("Article Title");
-    expect((result.metadata.ogType ?? "").trim()).toBe("article");
-    expect((result.metadata.ogImage ?? "").trim()).toBe("https://example.com/images/article-hero.jpg");
-    {
-        const _v = result.metadata.ogDescription;
-        if (typeof _v === "string" || Array.isArray(_v)) {
-            expect(_v.length).toBeGreaterThan(0);
-        } else {
-            expect(_v).toBeDefined();
-            expect(_v).not.toBeNull();
-        }
-    }
-    expect((result.metadata.title ?? "").trim()).toBe("Article Title - Example Blog");
+		expect(Number(result.statusCode)).toBe(200);
+		{
+			const _v = result.metadata.ogTitle;
+			if (typeof _v === "string" || Array.isArray(_v)) {
+				expect(_v.length).toBeGreaterThan(0);
+			} else {
+				expect(_v).toBeDefined();
+				expect(_v).not.toBeNull();
+			}
+		}
+		expect((result.metadata.ogTitle ?? "").trim()).toBe("Article Title");
+		expect((result.metadata.ogType ?? "").trim()).toBe("article");
+		expect((result.metadata.ogImage ?? "").trim()).toBe("https://example.com/images/article-hero.jpg");
+		{
+			const _v = result.metadata.ogDescription;
+			if (typeof _v === "string" || Array.isArray(_v)) {
+				expect(_v.length).toBeGreaterThan(0);
+			} else {
+				expect(_v).toBeDefined();
+				expect(_v).not.toBeNull();
+			}
+		}
+		expect((result.metadata.title ?? "").trim()).toBe("Article Title - Example Blog");
 	}, 30000);
 	it("scrape_twitter_card: Extracts Twitter Card metadata from a page", async () => {
 		const engineConfig = WasmCrawlConfig.default();
@@ -301,17 +323,17 @@ describe("scrape", () => {
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/scrape_twitter_card`;
 		const result = await scrape(engine, url);
-    expect(Number(result.statusCode)).toBe(200);
-    {
-        const _v = result.metadata.twitterCard;
-        if (typeof _v === "string" || Array.isArray(_v)) {
-            expect(_v.length).toBeGreaterThan(0);
-        } else {
-            expect(_v).toBeDefined();
-            expect(_v).not.toBeNull();
-        }
-    }
-    expect((result.metadata.twitterCard ?? "").trim()).toBe("summary_large_image");
-    expect((result.metadata.twitterTitle ?? "").trim()).toBe("New Product Launch");
+		expect(Number(result.statusCode)).toBe(200);
+		{
+			const _v = result.metadata.twitterCard;
+			if (typeof _v === "string" || Array.isArray(_v)) {
+				expect(_v.length).toBeGreaterThan(0);
+			} else {
+				expect(_v).toBeDefined();
+				expect(_v).not.toBeNull();
+			}
+		}
+		expect((result.metadata.twitterCard ?? "").trim()).toBe("summary_large_image");
+		expect((result.metadata.twitterTitle ?? "").trim()).toBe("New Product Launch");
 	}, 30000);
 });

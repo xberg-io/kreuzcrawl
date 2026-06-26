@@ -5,87 +5,116 @@
 
 package dev.kreuzberg.crawlberg.e2e;
 
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import dev.kreuzberg.crawlberg.Crawlberg;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import dev.kreuzberg.crawlberg.CrawlConfig;
-import java.util.Optional;
-import dev.kreuzberg.crawlberg.JsonUtil;
-import dev.kreuzberg.crawlberg.BatchCrawlStreamRequest;
 import dev.kreuzberg.crawlberg.CrawlEvent;
 import dev.kreuzberg.crawlberg.CrawlStreamRequest;
+import dev.kreuzberg.crawlberg.Crawlberg;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 /** E2e tests for category: engine. */
 public class EngineTest {
-    private static final ObjectMapper MAPPER = new ObjectMapper().registerModule(new Jdk8Module()).setPropertyNamingStrategy(com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE);
-    @BeforeAll
-    static void initEnv() {        if (System.getProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK") == null) {
-            System.setProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK", "true");
-        }    }
+  private static final ObjectMapper MAPPER = new ObjectMapper()
+      .registerModule(new Jdk8Module())
+      .setPropertyNamingStrategy(
+          com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE);
 
-    @Test
-    void testEngineBatchBasic() throws Exception {
-        // CrawlEngine with defaults batch scrapes like the free function
-        var engine = Crawlberg.createEngine(null);
-        String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/engine_batch_basic";
-        var result = Crawlberg.scrape(engine, url);
-        // skipped: field 'batch.completed_count' not available on result type        // skipped: field 'batch.total_count' not available on result type
-
+  @BeforeAll
+  static void initEnv() {
+    if (System.getProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK") == null) {
+      System.setProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK", "true");
     }
+  }
 
+  @Test
+  void testEngineBatchBasic() throws Exception {
+    // CrawlEngine with defaults batch scrapes like the free function
+    var engine = Crawlberg.createEngine(null);
+    String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+        + "/fixtures/engine_batch_basic";
+    var result = Crawlberg.scrape(engine, url);
+    // skipped: field 'batch.completed_count' not available on result type        // skipped: field
+    // 'batch.total_count' not available on result type
 
-    @Test
-    void testEngineCrawlBasic() throws Exception {
-        // CrawlEngine with defaults crawls multiple pages like the free function
-        var engineConfig = MAPPER.readValue("{\"max_depth\":1}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.engine_crawl_basic", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/engine_crawl_basic");
-        var result = Crawlberg.crawl(engine, url);
-        // skipped: field 'crawl.pages_crawled' not available on result type        // skipped: field 'crawl.min_pages' not available on result type
+  }
 
+  @Test
+  void testEngineCrawlBasic() throws Exception {
+    // CrawlEngine with defaults crawls multiple pages like the free function
+    var engineConfig = MAPPER.readValue("{\"max_depth\":1}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.engine_crawl_basic",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/engine_crawl_basic");
+    var result = Crawlberg.crawl(engine, url);
+    // skipped: field 'crawl.pages_crawled' not available on result type        // skipped: field
+    // 'crawl.min_pages' not available on result type
+
+  }
+
+  @Test
+  void testEngineMapBasic() throws Exception {
+    // CrawlEngine with defaults discovers URLs like the free function
+    var engine = Crawlberg.createEngine(null);
+    String url = System.getProperty(
+        "mockServer.engine_map_basic",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/engine_map_basic");
+    var result = Crawlberg.mapUrls(engine, url);
+    // skipped: field 'map.min_urls' not available on result type
+
+  }
+
+  @Test
+  void testEngineScrapeBasic() throws Exception {
+    // CrawlEngine with defaults scrapes a page identically to the free function
+    var engine = Crawlberg.createEngine(null);
+    String url = System.getProperty(
+        "mockServer.engine_scrape_basic",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/engine_scrape_basic");
+    var result = Crawlberg.scrape(engine, url);
+    assertEquals(200, result.statusCode());
+    assertEquals("text/html", result.contentType().trim());
+    assertEquals(
+        "Engine Test",
+        java.util.Optional.ofNullable(result.metadata().title())
+            .map(java.util.Objects::toString)
+            .orElse("")
+            .trim());
+    assertTrue(
+        java.util.Optional.ofNullable(result.metadata().description())
+            .map(java.util.Objects::toString)
+            .orElse("")
+            .contains("Testing the engine"),
+        "expected to contain: " + "Testing the engine");
+    assertTrue(result.links().size() >= 1, "expected >= 1");
+    assertTrue(result.metadata().headings().size() >= 1, "expected >= 1");
+  }
+
+  @Test
+  void testEngineStreamBasic() throws Exception {
+    // CrawlEngine with defaults streams events like the free function
+    var engineConfig = MAPPER.readValue("{\"max_depth\":1}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.engine_stream_basic",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/engine_stream_basic");
+    var urlReq = new CrawlStreamRequest(url);
+    var result = engine.crawlStream(urlReq);
+    var chunks = new java.util.ArrayList<CrawlEvent>();
+    var _it = result.iterator();
+    while (_it.hasNext()) {
+      chunks.add(_it.next());
     }
-
-
-    @Test
-    void testEngineMapBasic() throws Exception {
-        // CrawlEngine with defaults discovers URLs like the free function
-        var engine = Crawlberg.createEngine(null);
-        String url = System.getProperty("mockServer.engine_map_basic", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/engine_map_basic");
-        var result = Crawlberg.mapUrls(engine, url);
-        // skipped: field 'map.min_urls' not available on result type
-
-    }
-
-
-    @Test
-    void testEngineScrapeBasic() throws Exception {
-        // CrawlEngine with defaults scrapes a page identically to the free function
-        var engine = Crawlberg.createEngine(null);
-        String url = System.getProperty("mockServer.engine_scrape_basic", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/engine_scrape_basic");
-        var result = Crawlberg.scrape(engine, url);
-assertEquals(200, result.statusCode());assertEquals("text/html", result.contentType().trim());assertEquals("Engine Test", java.util.Optional.ofNullable(result.metadata().title()).map(java.util.Objects::toString).orElse("").trim());assertTrue(java.util.Optional.ofNullable(result.metadata().description()).map(java.util.Objects::toString).orElse("").contains("Testing the engine"), "expected to contain: " + "Testing the engine");assertTrue(result.links().size() >= 1, "expected >= 1");assertTrue(result.metadata().headings().size() >= 1, "expected >= 1");
-
-    }
-
-
-    @Test
-    void testEngineStreamBasic() throws Exception {
-        // CrawlEngine with defaults streams events like the free function
-        var engineConfig = MAPPER.readValue("{\"max_depth\":1}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.engine_stream_basic", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/engine_stream_basic");
-        var urlReq = new CrawlStreamRequest(url);
-        var result = engine.crawlStream(urlReq);
-        var chunks = new java.util.ArrayList<CrawlEvent>();
-        var _it = result.iterator();
-        while (_it.hasNext()) { chunks.add(_it.next()); }
-        assertTrue(chunks.stream().anyMatch(e -> e instanceof CrawlEvent.Page), "expected true");
-        assertTrue(chunks.stream().anyMatch(e -> e instanceof CrawlEvent.Complete), "expected true");
-        assertTrue(chunks.size() >= 3, "expected >= 3");
-
-
-    }
-
+    assertTrue(chunks.stream().anyMatch(e -> e instanceof CrawlEvent.Page), "expected true");
+    assertTrue(chunks.stream().anyMatch(e -> e instanceof CrawlEvent.Complete), "expected true");
+    assertTrue(chunks.size() >= 3, "expected >= 3");
+  }
 }

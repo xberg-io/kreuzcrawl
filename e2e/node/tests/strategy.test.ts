@@ -8,7 +8,6 @@ import { scrape, crawl, createEngine } from "@kreuzberg/crawlberg";
 
 process.env.CRAWLBERG_ALLOW_PRIVATE_NETWORK ??= "true";
 
-
 async function _alefE2eDecompressAndParseJson(response: Response): Promise<unknown> {
 	const contentEncoding = response.headers.get("content-encoding");
 	let buffer = await response.arrayBuffer();
@@ -35,7 +34,16 @@ function _alefE2eItemTexts(item: unknown): string[] {
 	}
 	const record = item as Record<string, unknown>;
 	const itemsText = Array.isArray(record.items) ? record.items.map(_alefE2eText).join(" ") : "";
-	return [_alefE2eText(item), _alefE2eText(record.kind), _alefE2eText(record.name), _alefE2eText(record.source), _alefE2eText(record.alias), _alefE2eText(record.text), _alefE2eText(record.signature), itemsText];
+	return [
+		_alefE2eText(item),
+		_alefE2eText(record.kind),
+		_alefE2eText(record.name),
+		_alefE2eText(record.source),
+		_alefE2eText(record.alias),
+		_alefE2eText(record.text),
+		_alefE2eText(record.signature),
+		itemsText,
+	];
 }
 
 function _alefE2eFormatMetadataDisplay(fm: unknown): string {
@@ -56,45 +64,53 @@ function _alefE2eFormatMetadataDisplay(fm: unknown): string {
 	return "";
 }
 
-
 describe("strategy", () => {
-
 	it("strategy_adaptive_saturation: Adaptive strategy stops early when encountering saturation (duplicate content)", async () => {
 		const engineConfig = { maxConcurrent: 1, maxDepth: 2, respectRobotsTxt: false };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_STRATEGY_ADAPTIVE_SATURATION ?? `${process.env.MOCK_SERVER_URL}/fixtures/strategy_adaptive_saturation`;
+		const url =
+			process.env.MOCK_SERVER_STRATEGY_ADAPTIVE_SATURATION ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/strategy_adaptive_saturation`;
 		await crawl(engine, url);
-    // skipped: field 'crawl.pages_crawled' not available on result type
+		// skipped: field 'crawl.pages_crawled' not available on result type
 	}, 30000);
 	it("strategy_adaptive_window: Adaptive strategy crawls more pages when content is diverse", async () => {
 		const engineConfig = { maxConcurrent: 1, maxDepth: 1, respectRobotsTxt: false };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_STRATEGY_ADAPTIVE_WINDOW ?? `${process.env.MOCK_SERVER_URL}/fixtures/strategy_adaptive_window`;
+		const url =
+			process.env.MOCK_SERVER_STRATEGY_ADAPTIVE_WINDOW ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/strategy_adaptive_window`;
 		await crawl(engine, url);
-    // skipped: field 'crawl.pages_crawled' not available on result type
+		// skipped: field 'crawl.pages_crawled' not available on result type
 	}, 30000);
 	it("strategy_best_first_seed: BestFirst strategy always processes the seed URL first", async () => {
 		const engineConfig = { maxConcurrent: 1, maxDepth: 1 };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_STRATEGY_BEST_FIRST_SEED ?? `${process.env.MOCK_SERVER_URL}/fixtures/strategy_best_first_seed`;
+		const url =
+			process.env.MOCK_SERVER_STRATEGY_BEST_FIRST_SEED ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/strategy_best_first_seed`;
 		await crawl(engine, url);
-    // skipped: field 'crawl.pages_crawled' not available on result type
-    // skipped: field 'strategy.first_page_url_contains' not available on result type
+		// skipped: field 'crawl.pages_crawled' not available on result type
+		// skipped: field 'strategy.first_page_url_contains' not available on result type
 	}, 30000);
 	it("strategy_bfs_default_order: BFS strategy visits pages in breadth-first order", async () => {
 		const engineConfig = { maxConcurrent: 1, maxDepth: 2 };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_STRATEGY_BFS_DEFAULT_ORDER ?? `${process.env.MOCK_SERVER_URL}/fixtures/strategy_bfs_default_order`;
+		const url =
+			process.env.MOCK_SERVER_STRATEGY_BFS_DEFAULT_ORDER ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/strategy_bfs_default_order`;
 		await crawl(engine, url);
-    // skipped: field 'crawl.pages_crawled' not available on result type
-    // skipped: field 'strategy.crawl_order' not available on result type
+		// skipped: field 'crawl.pages_crawled' not available on result type
+		// skipped: field 'strategy.crawl_order' not available on result type
 	}, 30000);
 	it("strategy_dfs_depth_first: DFS strategy visits pages in depth-first order", async () => {
 		const engineConfig = { maxConcurrent: 1, maxDepth: 2 };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_STRATEGY_DFS_DEPTH_FIRST ?? `${process.env.MOCK_SERVER_URL}/fixtures/strategy_dfs_depth_first`;
+		const url =
+			process.env.MOCK_SERVER_STRATEGY_DFS_DEPTH_FIRST ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/strategy_dfs_depth_first`;
 		await crawl(engine, url);
-    // skipped: field 'crawl.pages_crawled' not available on result type
-    // skipped: field 'strategy.crawl_order' not available on result type
+		// skipped: field 'crawl.pages_crawled' not available on result type
+		// skipped: field 'strategy.crawl_order' not available on result type
 	}, 30000);
 });

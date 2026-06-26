@@ -4,10 +4,18 @@
 // To verify freshness: alef verify --exit-code
 
 import { describe, expect, it } from "vitest";
-import { scrape, createEngine, WasmCrawlConfig, WasmAuthConfig, WasmBrowserConfig, WasmContentConfig, WasmProxyConfig, WasmSsrfPolicy } from "@kreuzberg/crawlberg-wasm";
+import {
+	scrape,
+	createEngine,
+	WasmCrawlConfig,
+	WasmAuthConfig,
+	WasmBrowserConfig,
+	WasmContentConfig,
+	WasmProxyConfig,
+	WasmSsrfPolicy,
+} from "@kreuzberg/crawlberg-wasm";
 
 process.env.CRAWLBERG_ALLOW_PRIVATE_NETWORK ??= "true";
-
 
 async function _alefE2eDecompressAndParseJson(response: Response): Promise<unknown> {
 	const contentEncoding = response.headers.get("content-encoding");
@@ -35,7 +43,16 @@ function _alefE2eItemTexts(item: unknown): string[] {
 	}
 	const record = item as Record<string, unknown>;
 	const itemsText = Array.isArray(record.items) ? record.items.map(_alefE2eText).join(" ") : "";
-	return [_alefE2eText(item), _alefE2eText(record.kind), _alefE2eText(record.name), _alefE2eText(record.source), _alefE2eText(record.alias), _alefE2eText(record.text), _alefE2eText(record.signature), itemsText];
+	return [
+		_alefE2eText(item),
+		_alefE2eText(record.kind),
+		_alefE2eText(record.name),
+		_alefE2eText(record.source),
+		_alefE2eText(record.alias),
+		_alefE2eText(record.text),
+		_alefE2eText(record.signature),
+		itemsText,
+	];
 }
 
 function _alefE2eFormatMetadataDisplay(fm: unknown): string {
@@ -56,9 +73,7 @@ function _alefE2eFormatMetadataDisplay(fm: unknown): string {
 	return "";
 }
 
-
 describe("error", () => {
-
 	it("error_401_unauthorized: Handles 401 Unauthorized response correctly", async () => {
 		await expect(async () => {
 			const engineConfig = WasmCrawlConfig.default();
@@ -71,7 +86,11 @@ describe("error", () => {
 	it("error_403_forbidden: Handles 403 Forbidden response correctly", async () => {
 		await expect(async () => {
 			const engineConfig = WasmCrawlConfig.default();
-			engineConfig.browser = (() => { const _u0 = WasmBrowserConfig.default(); _u0.mode = "never"; return _u0; })();
+			engineConfig.browser = (() => {
+				const _u0 = WasmBrowserConfig.default();
+				_u0.mode = "never";
+				return _u0;
+			})();
 			engineConfig.ssrf.denyPrivate = false;
 			const engine = createEngine(engineConfig);
 			const url = `${process.env.MOCK_SERVER_URL}/fixtures/error_403_forbidden`;
@@ -165,7 +184,7 @@ describe("error", () => {
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/error_empty_response`;
 		const result = await scrape(engine, url);
-    expect((result.html ?? "").length).toBe(0);
+		expect((result.html ?? "").length).toBe(0);
 	}, 30000);
 	it("error_partial_response: Handles incomplete or truncated HTTP response", async () => {
 		await expect(async () => {
@@ -234,7 +253,11 @@ describe("error", () => {
 	it("error_waf_akamai: Akamai WAF detection returns WafBlocked error", async () => {
 		await expect(async () => {
 			const engineConfig = WasmCrawlConfig.default();
-			engineConfig.browser = (() => { const _u0 = WasmBrowserConfig.default(); _u0.mode = "never"; return _u0; })();
+			engineConfig.browser = (() => {
+				const _u0 = WasmBrowserConfig.default();
+				_u0.mode = "never";
+				return _u0;
+			})();
 			engineConfig.ssrf.denyPrivate = false;
 			const engine = createEngine(engineConfig);
 			const url = `${process.env.MOCK_SERVER_URL}/fixtures/error_waf_akamai`;
@@ -244,7 +267,11 @@ describe("error", () => {
 	it("error_waf_blocked: WAF challenge/block detection returns WafBlocked error", async () => {
 		await expect(async () => {
 			const engineConfig = WasmCrawlConfig.default();
-			engineConfig.browser = (() => { const _u0 = WasmBrowserConfig.default(); _u0.mode = "never"; return _u0; })();
+			engineConfig.browser = (() => {
+				const _u0 = WasmBrowserConfig.default();
+				_u0.mode = "never";
+				return _u0;
+			})();
 			engineConfig.ssrf.denyPrivate = false;
 			const engine = createEngine(engineConfig);
 			const url = `${process.env.MOCK_SERVER_URL}/fixtures/error_waf_blocked`;
@@ -254,7 +281,11 @@ describe("error", () => {
 	it("error_waf_false_403: Detects WAF/bot protection false 403 (Cloudflare challenge page)", async () => {
 		await expect(async () => {
 			const engineConfig = WasmCrawlConfig.default();
-			engineConfig.browser = (() => { const _u0 = WasmBrowserConfig.default(); _u0.mode = "never"; return _u0; })();
+			engineConfig.browser = (() => {
+				const _u0 = WasmBrowserConfig.default();
+				_u0.mode = "never";
+				return _u0;
+			})();
 			engineConfig.ssrf.denyPrivate = false;
 			const engine = createEngine(engineConfig);
 			const url = `${process.env.MOCK_SERVER_URL}/fixtures/error_waf_false_403`;
@@ -264,7 +295,11 @@ describe("error", () => {
 	it("error_waf_imperva: Imperva/Incapsula WAF detection", async () => {
 		await expect(async () => {
 			const engineConfig = WasmCrawlConfig.default();
-			engineConfig.browser = (() => { const _u0 = WasmBrowserConfig.default(); _u0.mode = "never"; return _u0; })();
+			engineConfig.browser = (() => {
+				const _u0 = WasmBrowserConfig.default();
+				_u0.mode = "never";
+				return _u0;
+			})();
 			engineConfig.ssrf.denyPrivate = false;
 			const engine = createEngine(engineConfig);
 			const url = `${process.env.MOCK_SERVER_URL}/fixtures/error_waf_imperva`;

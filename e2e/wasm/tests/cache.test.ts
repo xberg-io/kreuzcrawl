@@ -4,10 +4,19 @@
 // To verify freshness: alef verify --exit-code
 
 import { describe, expect, it } from "vitest";
-import { scrape, crawl, createEngine, WasmCrawlConfig, WasmAuthConfig, WasmBrowserConfig, WasmContentConfig, WasmProxyConfig, WasmSsrfPolicy } from "@kreuzberg/crawlberg-wasm";
+import {
+	scrape,
+	crawl,
+	createEngine,
+	WasmCrawlConfig,
+	WasmAuthConfig,
+	WasmBrowserConfig,
+	WasmContentConfig,
+	WasmProxyConfig,
+	WasmSsrfPolicy,
+} from "@kreuzberg/crawlberg-wasm";
 
 process.env.CRAWLBERG_ALLOW_PRIVATE_NETWORK ??= "true";
-
 
 async function _alefE2eDecompressAndParseJson(response: Response): Promise<unknown> {
 	const contentEncoding = response.headers.get("content-encoding");
@@ -35,7 +44,16 @@ function _alefE2eItemTexts(item: unknown): string[] {
 	}
 	const record = item as Record<string, unknown>;
 	const itemsText = Array.isArray(record.items) ? record.items.map(_alefE2eText).join(" ") : "";
-	return [_alefE2eText(item), _alefE2eText(record.kind), _alefE2eText(record.name), _alefE2eText(record.source), _alefE2eText(record.alias), _alefE2eText(record.text), _alefE2eText(record.signature), itemsText];
+	return [
+		_alefE2eText(item),
+		_alefE2eText(record.kind),
+		_alefE2eText(record.name),
+		_alefE2eText(record.source),
+		_alefE2eText(record.alias),
+		_alefE2eText(record.text),
+		_alefE2eText(record.signature),
+		itemsText,
+	];
 }
 
 function _alefE2eFormatMetadataDisplay(fm: unknown): string {
@@ -56,44 +74,48 @@ function _alefE2eFormatMetadataDisplay(fm: unknown): string {
 	return "";
 }
 
-
 describe("cache", () => {
-
 	it("cache_basic: Crawling with disk cache enabled succeeds without errors", async () => {
 		const engineConfig = WasmCrawlConfig.default();
 		engineConfig.ssrf.denyPrivate = false;
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/cache_basic`;
 		const result = await scrape(engine, url);
-    expect(Number(result.statusCode)).toBe(200);
+		expect(Number(result.statusCode)).toBe(200);
 	}, 30000);
 	it("cache_etag_conditional: Etag header enables conditional requests for cached content", async () => {
 		const engineConfig = WasmCrawlConfig.default();
 		engineConfig.maxDepth = 1;
 		engineConfig.ssrf.denyPrivate = false;
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_CACHE_ETAG_CONDITIONAL ?? `${process.env.MOCK_SERVER_URL}/fixtures/cache_etag_conditional`;
+		const url =
+			process.env.MOCK_SERVER_CACHE_ETAG_CONDITIONAL ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/cache_etag_conditional`;
 		const result = await crawl(engine, url);
-    expect(Number(result.pages.length)).toBeGreaterThanOrEqual(1);
-    expect(Number(result.pages[0].statusCode)).toBe(200);
+		expect(Number(result.pages.length)).toBeGreaterThanOrEqual(1);
+		expect(Number(result.pages[0].statusCode)).toBe(200);
 	}, 30000);
 	it("cache_last_modified: Last-Modified header enables conditional requests via If-Modified-Since", async () => {
 		const engineConfig = WasmCrawlConfig.default();
 		engineConfig.maxDepth = 1;
 		engineConfig.ssrf.denyPrivate = false;
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_CACHE_LAST_MODIFIED ?? `${process.env.MOCK_SERVER_URL}/fixtures/cache_last_modified`;
+		const url =
+			process.env.MOCK_SERVER_CACHE_LAST_MODIFIED ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/cache_last_modified`;
 		const result = await crawl(engine, url);
-    expect(Number(result.pages.length)).toBeGreaterThanOrEqual(1);
+		expect(Number(result.pages.length)).toBeGreaterThanOrEqual(1);
 	}, 30000);
 	it("cache_miss_fresh_fetch: Uncached URLs are fetched fresh without conditional headers", async () => {
 		const engineConfig = WasmCrawlConfig.default();
 		engineConfig.maxDepth = 1;
 		engineConfig.ssrf.denyPrivate = false;
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_CACHE_MISS_FRESH_FETCH ?? `${process.env.MOCK_SERVER_URL}/fixtures/cache_miss_fresh_fetch`;
+		const url =
+			process.env.MOCK_SERVER_CACHE_MISS_FRESH_FETCH ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/cache_miss_fresh_fetch`;
 		const result = await crawl(engine, url);
-    expect(Number(result.pages.length)).toBe(3);
-    expect(Number(result.pages[0].statusCode)).toBe(200);
+		expect(Number(result.pages.length)).toBe(3);
+		expect(Number(result.pages[0].statusCode)).toBe(200);
 	}, 30000);
 });

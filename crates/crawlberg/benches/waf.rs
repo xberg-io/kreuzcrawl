@@ -1,6 +1,6 @@
-use criterion::{Criterion, criterion_group, criterion_main};
 use crawlberg::http::HttpResponse;
 use crawlberg::{TomlClassifier, WafClassifier};
+use criterion::{Criterion, criterion_group, criterion_main};
 use std::collections::HashMap;
 use std::hint::black_box;
 

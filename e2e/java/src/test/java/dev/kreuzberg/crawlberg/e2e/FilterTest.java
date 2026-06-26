@@ -5,104 +5,126 @@
 
 package dev.kreuzberg.crawlberg.e2e;
 
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import dev.kreuzberg.crawlberg.Crawlberg;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import dev.kreuzberg.crawlberg.CrawlConfig;
-import java.util.Optional;
-import dev.kreuzberg.crawlberg.JsonUtil;
+import dev.kreuzberg.crawlberg.Crawlberg;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 /** E2e tests for category: filter. */
 public class FilterTest {
-    private static final ObjectMapper MAPPER = new ObjectMapper().registerModule(new Jdk8Module()).setPropertyNamingStrategy(com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE);
-    @BeforeAll
-    static void initEnv() {        if (System.getProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK") == null) {
-            System.setProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK", "true");
-        }    }
+  private static final ObjectMapper MAPPER = new ObjectMapper()
+      .registerModule(new Jdk8Module())
+      .setPropertyNamingStrategy(
+          com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE);
 
-    @Test
-    void testFilterBm25CrawlIntegration() throws Exception {
-        // BM25 filter works during multi-page crawl, keeping relevant pages
-        var engineConfig = MAPPER.readValue("{\"max_concurrent\":1,\"max_depth\":1}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.filter_bm25_crawl_integration", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/filter_bm25_crawl_integration");
-        var result = Crawlberg.crawl(engine, url);
-        // skipped: field 'filter.remaining_contain_keyword' not available on result type
-
+  @BeforeAll
+  static void initEnv() {
+    if (System.getProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK") == null) {
+      System.setProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK", "true");
     }
+  }
 
+  @Test
+  void testFilterBm25CrawlIntegration() throws Exception {
+    // BM25 filter works during multi-page crawl, keeping relevant pages
+    var engineConfig =
+        MAPPER.readValue("{\"max_concurrent\":1,\"max_depth\":1}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.filter_bm25_crawl_integration",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/filter_bm25_crawl_integration");
+    var result = Crawlberg.crawl(engine, url);
+    // skipped: field 'filter.remaining_contain_keyword' not available on result type
 
-    @Test
-    void testFilterBm25EmptyQuery() throws Exception {
-        // BM25 filter with empty query passes all pages through
-        var engineConfig = MAPPER.readValue("{\"max_depth\":1}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.filter_bm25_empty_query", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/filter_bm25_empty_query");
-        var result = Crawlberg.crawl(engine, url);
-        // skipped: field 'crawl.pages_crawled' not available on result type
+  }
 
-    }
+  @Test
+  void testFilterBm25EmptyQuery() throws Exception {
+    // BM25 filter with empty query passes all pages through
+    var engineConfig = MAPPER.readValue("{\"max_depth\":1}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.filter_bm25_empty_query",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/filter_bm25_empty_query");
+    var result = Crawlberg.crawl(engine, url);
+    // skipped: field 'crawl.pages_crawled' not available on result type
 
+  }
 
-    @Test
-    void testFilterBm25HighThreshold() throws Exception {
-        // BM25 filter with very high threshold filters out all pages
-        var engineConfig = MAPPER.readValue("{\"max_depth\":1}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.filter_bm25_high_threshold", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/filter_bm25_high_threshold");
-        var result = Crawlberg.scrape(engine, url);
-        // skipped: field 'filter.pages_after_filter' not available on result type
+  @Test
+  void testFilterBm25HighThreshold() throws Exception {
+    // BM25 filter with very high threshold filters out all pages
+    var engineConfig = MAPPER.readValue("{\"max_depth\":1}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.filter_bm25_high_threshold",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/filter_bm25_high_threshold");
+    var result = Crawlberg.scrape(engine, url);
+    // skipped: field 'filter.pages_after_filter' not available on result type
 
-    }
+  }
 
+  @Test
+  void testFilterBm25RelevantPages() throws Exception {
+    // BM25 filter keeps only pages relevant to the query
+    var engineConfig = MAPPER.readValue("{\"max_depth\":1}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.filter_bm25_relevant_pages",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/filter_bm25_relevant_pages");
+    var result = Crawlberg.scrape(engine, url);
+    // skipped: field 'filter.remaining_contain_keyword' not available on result type
 
-    @Test
-    void testFilterBm25RelevantPages() throws Exception {
-        // BM25 filter keeps only pages relevant to the query
-        var engineConfig = MAPPER.readValue("{\"max_depth\":1}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.filter_bm25_relevant_pages", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/filter_bm25_relevant_pages");
-        var result = Crawlberg.scrape(engine, url);
-        // skipped: field 'filter.remaining_contain_keyword' not available on result type
+  }
 
-    }
+  @Test
+  void testFilterBm25ThresholdZero() throws Exception {
+    // BM25 filter with zero threshold passes all pages
+    var engineConfig = MAPPER.readValue("{\"max_depth\":1}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.filter_bm25_threshold_zero",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/filter_bm25_threshold_zero");
+    var result = Crawlberg.crawl(engine, url);
+    // skipped: field 'crawl.pages_crawled' not available on result type
 
+  }
 
-    @Test
-    void testFilterBm25ThresholdZero() throws Exception {
-        // BM25 filter with zero threshold passes all pages
-        var engineConfig = MAPPER.readValue("{\"max_depth\":1}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.filter_bm25_threshold_zero", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/filter_bm25_threshold_zero");
-        var result = Crawlberg.crawl(engine, url);
-        // skipped: field 'crawl.pages_crawled' not available on result type
+  @Test
+  void testFilterNoopCrawlAllKept() throws Exception {
+    // NoopFilter keeps all pages during a multi-page crawl
+    var engineConfig =
+        MAPPER.readValue("{\"max_concurrent\":1,\"max_depth\":1}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.filter_noop_crawl_all_kept",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/filter_noop_crawl_all_kept");
+    var result = Crawlberg.crawl(engine, url);
+    // skipped: field 'filter.pages_after_filter' not available on result type
 
-    }
+  }
 
+  @Test
+  void testFilterNoopPassesAll() throws Exception {
+    // No content filter passes all crawled pages through
+    var engineConfig = MAPPER.readValue("{\"max_depth\":1}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.filter_noop_passes_all",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/filter_noop_passes_all");
+    var result = Crawlberg.crawl(engine, url);
+    // skipped: field 'crawl.pages_crawled' not available on result type
 
-    @Test
-    void testFilterNoopCrawlAllKept() throws Exception {
-        // NoopFilter keeps all pages during a multi-page crawl
-        var engineConfig = MAPPER.readValue("{\"max_concurrent\":1,\"max_depth\":1}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.filter_noop_crawl_all_kept", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/filter_noop_crawl_all_kept");
-        var result = Crawlberg.crawl(engine, url);
-        // skipped: field 'filter.pages_after_filter' not available on result type
-
-    }
-
-
-    @Test
-    void testFilterNoopPassesAll() throws Exception {
-        // No content filter passes all crawled pages through
-        var engineConfig = MAPPER.readValue("{\"max_depth\":1}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.filter_noop_passes_all", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/filter_noop_passes_all");
-        var result = Crawlberg.crawl(engine, url);
-        // skipped: field 'crawl.pages_crawled' not available on result type
-
-    }
-
+  }
 }

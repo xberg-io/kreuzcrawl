@@ -66,6 +66,8 @@ pub use browser_pool::{BrowserPool, BrowserPoolConfig};
 pub use browser_session_pool::{BrowserSessionPool, SessionKey};
 pub use budget::{BudgetError, DefaultPageBudget, PageBudget};
 pub use citations::{CitationReference, CitationResult, generate_citations};
+#[cfg(feature = "browser-native")]
+pub use crawlberg_browser::adapter::{NativeBrowserExecutor, NativeBrowserExecutorConfig};
 #[doc(hidden)]
 pub use defaults::compute_backoff_ms;
 pub use defaults::{
@@ -79,8 +81,6 @@ pub use interact::{
     MAX_ACTIONS, MAX_SCRIPT_LEN, MAX_SCROLL_AMOUNT, MAX_SELECTOR_LEN, MAX_SINGLE_WAIT_MS, MAX_TEXT_LEN,
     MAX_TOTAL_WAIT_SECS, PageAction, ScrollDirection, validate_actions,
 };
-#[cfg(feature = "browser-native")]
-pub use crawlberg_browser::adapter::{NativeBrowserExecutor, NativeBrowserExecutorConfig};
 #[cfg(feature = "mcp")]
 pub use mcp::{CrawlbergHttpMcpService, start_mcp_server, start_mcp_server_with_config, streamable_http_service};
 pub use net::ssrf::{HostMatcher, SsrfError, SsrfPolicy, validate_url};

@@ -18,29 +18,27 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = false)
 @JsonSubTypes({
-    @JsonSubTypes.Type(value = CrawlEvent.Page.class, name = "page"),
-    @JsonSubTypes.Type(value = CrawlEvent.Error.class, name = "error"),
-    @JsonSubTypes.Type(value = CrawlEvent.Complete.class, name = "complete")
+  @JsonSubTypes.Type(value = CrawlEvent.Page.class, name = "page"),
+  @JsonSubTypes.Type(value = CrawlEvent.Error.class, name = "error"),
+  @JsonSubTypes.Type(value = CrawlEvent.Complete.class, name = "complete")
 })
 @com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
 public sealed interface CrawlEvent {
 
-    /**
-     * A single page has been crawled.
-     */
-    record Page(@JsonProperty("result") CrawlPageResult result) implements CrawlEvent { }
+  /**
+   * A single page has been crawled.
+   */
+  record Page(@JsonProperty("result") CrawlPageResult result) implements CrawlEvent {}
 
-    /**
-     * An error occurred while crawling a URL.
-     */
-    record Error(
-        @JsonProperty("url") String url,
-        @JsonProperty("error") String error
-    ) implements CrawlEvent {
-    }
+  /**
+   * An error occurred while crawling a URL.
+   */
+  record Error(
+      @JsonProperty("url") String url,
+      @JsonProperty("error") String error) implements CrawlEvent {}
 
-    /**
-     * The crawl has completed.
-     */
-    record Complete(@JsonProperty("pages_crawled") long pagesCrawled) implements CrawlEvent { }
+  /**
+   * The crawl has completed.
+   */
+  record Complete(@JsonProperty("pages_crawled") long pagesCrawled) implements CrawlEvent {}
 }

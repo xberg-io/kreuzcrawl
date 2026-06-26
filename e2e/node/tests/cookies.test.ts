@@ -8,7 +8,6 @@ import { scrape, crawl, createEngine } from "@kreuzberg/crawlberg";
 
 process.env.CRAWLBERG_ALLOW_PRIVATE_NETWORK ??= "true";
 
-
 async function _alefE2eDecompressAndParseJson(response: Response): Promise<unknown> {
 	const contentEncoding = response.headers.get("content-encoding");
 	let buffer = await response.arrayBuffer();
@@ -35,7 +34,16 @@ function _alefE2eItemTexts(item: unknown): string[] {
 	}
 	const record = item as Record<string, unknown>;
 	const itemsText = Array.isArray(record.items) ? record.items.map(_alefE2eText).join(" ") : "";
-	return [_alefE2eText(item), _alefE2eText(record.kind), _alefE2eText(record.name), _alefE2eText(record.source), _alefE2eText(record.alias), _alefE2eText(record.text), _alefE2eText(record.signature), itemsText];
+	return [
+		_alefE2eText(item),
+		_alefE2eText(record.kind),
+		_alefE2eText(record.name),
+		_alefE2eText(record.source),
+		_alefE2eText(record.alias),
+		_alefE2eText(record.text),
+		_alefE2eText(record.signature),
+		itemsText,
+	];
 }
 
 function _alefE2eFormatMetadataDisplay(fm: unknown): string {
@@ -56,29 +64,38 @@ function _alefE2eFormatMetadataDisplay(fm: unknown): string {
 	return "";
 }
 
-
 describe("cookies", () => {
-
 	it("cookies_per_domain: Isolates cookies per domain during crawl", async () => {
 		const engineConfig = { cookiesEnabled: true, maxDepth: 1, respectRobotsTxt: false };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_COOKIES_PER_DOMAIN ?? `${process.env.MOCK_SERVER_URL}/fixtures/cookies_per_domain`;
+		const url =
+			process.env.MOCK_SERVER_COOKIES_PER_DOMAIN ?? `${process.env.MOCK_SERVER_URL}/fixtures/cookies_per_domain`;
 		const result = await crawl(engine, url);
-    expect(result.cookies.length).toBe(1);
-    expect(result.cookies.some((item) => _alefE2eItemTexts(item).some((text) => text.includes("domain_cookie")))).toBe(true);
+		expect(result.cookies.length).toBe(1);
+		expect(
+			result.cookies.some((item) => _alefE2eItemTexts(item).some((text) => text.includes("domain_cookie"))),
+		).toBe(true);
 	}, 30000);
 	it("cookies_persistence: Maintains cookies across multiple crawl requests", async () => {
 		const engineConfig = { cookiesEnabled: true, maxDepth: 1, respectRobotsTxt: false };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_COOKIES_PERSISTENCE ?? `${process.env.MOCK_SERVER_URL}/fixtures/cookies_persistence`;
+		const url =
+			process.env.MOCK_SERVER_COOKIES_PERSISTENCE ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/cookies_persistence`;
 		const result = await crawl(engine, url);
-    expect(result.cookies.some((item) => _alefE2eItemTexts(item).some((text) => text.includes("session")))).toBe(true);
+		expect(result.cookies.some((item) => _alefE2eItemTexts(item).some((text) => text.includes("session")))).toBe(
+			true,
+		);
 	}, 30000);
 	it("cookies_set_cookie_response: Respects Set-Cookie header from server responses", async () => {
 		const engineConfig = { cookiesEnabled: true, maxDepth: 1, respectRobotsTxt: false };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_COOKIES_SET_COOKIE_RESPONSE ?? `${process.env.MOCK_SERVER_URL}/fixtures/cookies_set_cookie_response`;
+		const url =
+			process.env.MOCK_SERVER_COOKIES_SET_COOKIE_RESPONSE ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/cookies_set_cookie_response`;
 		const result = await crawl(engine, url);
-    expect(result.cookies.some((item) => _alefE2eItemTexts(item).some((text) => text.includes("tracking")))).toBe(true);
+		expect(result.cookies.some((item) => _alefE2eItemTexts(item).some((text) => text.includes("tracking")))).toBe(
+			true,
+		);
 	}, 30000);
 });

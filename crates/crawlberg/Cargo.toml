@@ -74,6 +74,7 @@ base64 = { workspace = true, optional = true }
 blake3 = { workspace = true }
 chromiumoxide = { workspace = true, optional = true }
 chrono = { workspace = true }
+crawlberg-browser = { workspace = true, optional = true }
 dashmap = { workspace = true }
 dirs = { workspace = true, optional = true }
 encoding_rs = { workspace = true }
@@ -81,7 +82,6 @@ flate2 = { workspace = true }
 futures = { workspace = true }
 html-to-markdown-rs = { workspace = true }
 ipnet = { workspace = true }
-crawlberg-browser = { workspace = true, optional = true }
 liter-llm = { workspace = true, optional = true }
 memchr = { workspace = true }
 minijinja = { workspace = true, optional = true }

@@ -5,116 +5,124 @@
 
 package dev.kreuzberg.crawlberg.e2e;
 
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+
 import dev.kreuzberg.crawlberg.Crawlberg;
-import dev.kreuzberg.crawlberg.CrawlConfig;
-import java.util.Optional;
-import dev.kreuzberg.crawlberg.JsonUtil;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 /** E2e tests for category: links. */
 public class LinksTest {
-    @BeforeAll
-    static void initEnv() {        if (System.getProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK") == null) {
-            System.setProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK", "true");
-        }    }
-
-    @Test
-    void testLinksAnchorFragment() throws Exception {
-        // Identifies fragment-only links as anchor type
-        var engine = Crawlberg.createEngine(null);
-        String url = System.getProperty("mockServer.links_anchor_fragment", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/links_anchor_fragment");
-        var result = Crawlberg.scrape(engine, url);
-assertTrue(result.links().get(0).linkType().getValue().contains("anchor"), "expected to contain: " + "anchor");
-
+  @BeforeAll
+  static void initEnv() {
+    if (System.getProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK") == null) {
+      System.setProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK", "true");
     }
+  }
 
+  @Test
+  void testLinksAnchorFragment() throws Exception {
+    // Identifies fragment-only links as anchor type
+    var engine = Crawlberg.createEngine(null);
+    String url = System.getProperty(
+        "mockServer.links_anchor_fragment",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/links_anchor_fragment");
+    var result = Crawlberg.scrape(engine, url);
+    assertTrue(
+        result.links().get(0).linkType().getValue().contains("anchor"),
+        "expected to contain: " + "anchor");
+  }
 
-    @Test
-    void testLinksBaseTag() throws Exception {
-        // Resolves relative URLs using base tag href
-        var engine = Crawlberg.createEngine(null);
-        String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/links_base_tag";
-        var result = Crawlberg.scrape(engine, url);
-assertTrue(result.links().size() > 2, "expected > 2");assertTrue(result.links().get(0).url().contains("example.com"), "expected to contain: " + "example.com");
+  @Test
+  void testLinksBaseTag() throws Exception {
+    // Resolves relative URLs using base tag href
+    var engine = Crawlberg.createEngine(null);
+    String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+        + "/fixtures/links_base_tag";
+    var result = Crawlberg.scrape(engine, url);
+    assertTrue(result.links().size() > 2, "expected > 2");
+    assertTrue(
+        result.links().get(0).url().contains("example.com"),
+        "expected to contain: " + "example.com");
+  }
 
-    }
+  @Test
+  void testLinksDocumentTypes() throws Exception {
+    // Detects PDF, DOCX, XLSX links as document type
+    var engine = Crawlberg.createEngine(null);
+    String url = System.getProperty(
+        "mockServer.links_document_types",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/links_document_types");
+    var result = Crawlberg.scrape(engine, url);
+    assertTrue(
+        result.links().get(0).linkType().getValue().contains("document"),
+        "expected to contain: " + "document");
+  }
 
+  @Test
+  void testLinksEmptyHref() throws Exception {
+    // Handles empty href attributes without errors
+    var engine = Crawlberg.createEngine(null);
+    String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+        + "/fixtures/links_empty_href";
+    var result = Crawlberg.scrape(engine, url);
+    assertTrue(result.links().size() > 0, "expected > 0");
+    assertTrue(result.links().get(0).url().contains("/valid"), "expected to contain: " + "/valid");
+  }
 
-    @Test
-    void testLinksDocumentTypes() throws Exception {
-        // Detects PDF, DOCX, XLSX links as document type
-        var engine = Crawlberg.createEngine(null);
-        String url = System.getProperty("mockServer.links_document_types", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/links_document_types");
-        var result = Crawlberg.scrape(engine, url);
-assertTrue(result.links().get(0).linkType().getValue().contains("document"), "expected to contain: " + "document");
+  @Test
+  void testLinksInternalExternalClassification() throws Exception {
+    // Correctly classifies internal vs external links by domain
+    var engine = Crawlberg.createEngine(null);
+    String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+        + "/fixtures/links_internal_external_classification";
+    var result = Crawlberg.scrape(engine, url);
+    assertTrue(result.links().size() > 4, "expected > 4");
+    assertFalse(result.links().get(0).url().isEmpty(), "expected non-empty value");
+  }
 
-    }
+  @Test
+  void testLinksMailtoJavascriptSkip() throws Exception {
+    // Skips mailto:, javascript:, and tel: scheme links
+    var engine = Crawlberg.createEngine(null);
+    String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+        + "/fixtures/links_mailto_javascript_skip";
+    var result = Crawlberg.scrape(engine, url);
+    assertTrue(result.links().size() > 0, "expected > 0");
+    assertFalse(
+        result.links().get(0).url().contains("mailto:"), "expected NOT to contain: " + "mailto:");
+  }
 
+  @Test
+  void testLinksProtocolRelative() throws Exception {
+    // Handles protocol-relative URLs (//example.com) correctly
+    var engine = Crawlberg.createEngine(null);
+    String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+        + "/fixtures/links_protocol_relative";
+    var result = Crawlberg.scrape(engine, url);
+    assertTrue(result.links().size() > 1, "expected > 1");
+    assertTrue(result.links().get(0).url().contains("//"), "expected to contain: " + "//");
+  }
 
-    @Test
-    void testLinksEmptyHref() throws Exception {
-        // Handles empty href attributes without errors
-        var engine = Crawlberg.createEngine(null);
-        String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/links_empty_href";
-        var result = Crawlberg.scrape(engine, url);
-assertTrue(result.links().size() > 0, "expected > 0");assertTrue(result.links().get(0).url().contains("/valid"), "expected to contain: " + "/valid");
+  @Test
+  void testLinksRelAttributes() throws Exception {
+    // Preserves rel=nofollow and rel=canonical attributes
+    var engine = Crawlberg.createEngine(null);
+    String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+        + "/fixtures/links_rel_attributes";
+    var result = Crawlberg.scrape(engine, url);
+    assertTrue(result.links().size() > 0, "expected > 0");
+  }
 
-    }
-
-
-    @Test
-    void testLinksInternalExternalClassification() throws Exception {
-        // Correctly classifies internal vs external links by domain
-        var engine = Crawlberg.createEngine(null);
-        String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/links_internal_external_classification";
-        var result = Crawlberg.scrape(engine, url);
-assertTrue(result.links().size() > 4, "expected > 4");assertFalse(result.links().get(0).url().isEmpty(), "expected non-empty value");
-
-    }
-
-
-    @Test
-    void testLinksMailtoJavascriptSkip() throws Exception {
-        // Skips mailto:, javascript:, and tel: scheme links
-        var engine = Crawlberg.createEngine(null);
-        String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/links_mailto_javascript_skip";
-        var result = Crawlberg.scrape(engine, url);
-assertTrue(result.links().size() > 0, "expected > 0");assertFalse(result.links().get(0).url().contains("mailto:"), "expected NOT to contain: " + "mailto:");
-
-    }
-
-
-    @Test
-    void testLinksProtocolRelative() throws Exception {
-        // Handles protocol-relative URLs (//example.com) correctly
-        var engine = Crawlberg.createEngine(null);
-        String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/links_protocol_relative";
-        var result = Crawlberg.scrape(engine, url);
-assertTrue(result.links().size() > 1, "expected > 1");assertTrue(result.links().get(0).url().contains("//"), "expected to contain: " + "//");
-
-    }
-
-
-    @Test
-    void testLinksRelAttributes() throws Exception {
-        // Preserves rel=nofollow and rel=canonical attributes
-        var engine = Crawlberg.createEngine(null);
-        String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/links_rel_attributes";
-        var result = Crawlberg.scrape(engine, url);
-assertTrue(result.links().size() > 0, "expected > 0");
-
-    }
-
-
-    @Test
-    void testLinksRelativeParent() throws Exception {
-        // Resolves ../ and ./ relative parent path links correctly
-        var engine = Crawlberg.createEngine(null);
-        String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/links_relative_parent";
-        var result = Crawlberg.scrape(engine, url);
-assertTrue(result.links().size() > 3, "expected > 3");
-
-    }
-
+  @Test
+  void testLinksRelativeParent() throws Exception {
+    // Resolves ../ and ./ relative parent path links correctly
+    var engine = Crawlberg.createEngine(null);
+    String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+        + "/fixtures/links_relative_parent";
+    var result = Crawlberg.scrape(engine, url);
+    assertTrue(result.links().size() > 3, "expected > 3");
+  }
 }

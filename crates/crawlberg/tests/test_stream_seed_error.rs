@@ -4,8 +4,8 @@
 //! HTTP 500 errors — they returned Ok+Complete without emitting Error because the 5xx was
 //! caught in Phase 1 (resolve_initial_redirects) before reaching process_fetch_result.
 
-use futures::StreamExt;
 use crawlberg::{CrawlConfig, CrawlEvent, batch_crawl_stream, crawl_stream, create_engine};
+use futures::StreamExt;
 use wiremock::matchers::{method, path};
 use wiremock::{Mock, MockServer, ResponseTemplate};
 

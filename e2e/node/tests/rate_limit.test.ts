@@ -8,7 +8,6 @@ import { scrape, crawl, createEngine } from "@kreuzberg/crawlberg";
 
 process.env.CRAWLBERG_ALLOW_PRIVATE_NETWORK ??= "true";
 
-
 async function _alefE2eDecompressAndParseJson(response: Response): Promise<unknown> {
 	const contentEncoding = response.headers.get("content-encoding");
 	let buffer = await response.arrayBuffer();
@@ -35,7 +34,16 @@ function _alefE2eItemTexts(item: unknown): string[] {
 	}
 	const record = item as Record<string, unknown>;
 	const itemsText = Array.isArray(record.items) ? record.items.map(_alefE2eText).join(" ") : "";
-	return [_alefE2eText(item), _alefE2eText(record.kind), _alefE2eText(record.name), _alefE2eText(record.source), _alefE2eText(record.alias), _alefE2eText(record.text), _alefE2eText(record.signature), itemsText];
+	return [
+		_alefE2eText(item),
+		_alefE2eText(record.kind),
+		_alefE2eText(record.name),
+		_alefE2eText(record.source),
+		_alefE2eText(record.alias),
+		_alefE2eText(record.text),
+		_alefE2eText(record.signature),
+		itemsText,
+	];
 }
 
 function _alefE2eFormatMetadataDisplay(fm: unknown): string {
@@ -56,45 +64,51 @@ function _alefE2eFormatMetadataDisplay(fm: unknown): string {
 	return "";
 }
 
-
 describe("rate_limit", () => {
-
 	it("rate_limit_adaptive_backoff: Exponential backoff retry succeeds after 429 Too Many Requests", async () => {
 		const engineConfig = { respectRobotsTxt: false, retryCodes: [429], retryCount: 2 };
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/rate_limit_adaptive_backoff`;
 		const result = await scrape(engine, url);
-    expect(result.statusCode).toBe(200);
+		expect(result.statusCode).toBe(200);
 	}, 30000);
 	it("rate_limit_basic_delay: Rate limiter adds delay between requests to the same domain", async () => {
 		const engineConfig = { maxDepth: 1 };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_RATE_LIMIT_BASIC_DELAY ?? `${process.env.MOCK_SERVER_URL}/fixtures/rate_limit_basic_delay`;
+		const url =
+			process.env.MOCK_SERVER_RATE_LIMIT_BASIC_DELAY ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/rate_limit_basic_delay`;
 		await crawl(engine, url);
-    // skipped: field 'crawl.pages_crawled' not available on result type
-    // skipped: field 'rate_limit.min_duration_ms' not available on result type
+		// skipped: field 'crawl.pages_crawled' not available on result type
+		// skipped: field 'rate_limit.min_duration_ms' not available on result type
 	}, 30000);
 	it("rate_limit_per_domain: Per-domain rate limiting applies delay between requests to same domain", async () => {
 		const engineConfig = { maxConcurrent: 1, maxDepth: 1 };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_RATE_LIMIT_PER_DOMAIN ?? `${process.env.MOCK_SERVER_URL}/fixtures/rate_limit_per_domain`;
+		const url =
+			process.env.MOCK_SERVER_RATE_LIMIT_PER_DOMAIN ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/rate_limit_per_domain`;
 		const result = await crawl(engine, url);
-    expect(result.pages.length).toBeGreaterThanOrEqual(2);
-    expect(result.pages[0].statusCode).toBe(200);
+		expect(result.pages.length).toBeGreaterThanOrEqual(2);
+		expect(result.pages[0].statusCode).toBe(200);
 	}, 30000);
 	it("rate_limit_robots_crawl_delay: Respects Crawl-delay directive in robots.txt", async () => {
 		const engineConfig = { maxDepth: 1, respectRobotsTxt: true, userAgent: "TestBot" };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_RATE_LIMIT_ROBOTS_CRAWL_DELAY ?? `${process.env.MOCK_SERVER_URL}/fixtures/rate_limit_robots_crawl_delay`;
+		const url =
+			process.env.MOCK_SERVER_RATE_LIMIT_ROBOTS_CRAWL_DELAY ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/rate_limit_robots_crawl_delay`;
 		const result = await crawl(engine, url);
-    expect(result.pages.length).toBeGreaterThanOrEqual(1);
-    expect(result.pages[0].statusCode).toBe(200);
+		expect(result.pages.length).toBeGreaterThanOrEqual(1);
+		expect(result.pages[0].statusCode).toBe(200);
 	}, 30000);
 	it("rate_limit_zero_no_delay: Rate limiter with zero delay does not slow crawling", async () => {
 		const engineConfig = { maxDepth: 1 };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_RATE_LIMIT_ZERO_NO_DELAY ?? `${process.env.MOCK_SERVER_URL}/fixtures/rate_limit_zero_no_delay`;
+		const url =
+			process.env.MOCK_SERVER_RATE_LIMIT_ZERO_NO_DELAY ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/rate_limit_zero_no_delay`;
 		await crawl(engine, url);
-    // skipped: field 'crawl.pages_crawled' not available on result type
+		// skipped: field 'crawl.pages_crawled' not available on result type
 	}, 30000);
 });

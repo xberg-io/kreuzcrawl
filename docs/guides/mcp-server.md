@@ -88,7 +88,7 @@ let service = streamable_http_service(config);
 
 The server exposes nine tools for web scraping, crawling, and site mapping.
 
-#### `scrape`
+### `scrape`
 
 Scrape a single URL and extract content as markdown or JSON.
 

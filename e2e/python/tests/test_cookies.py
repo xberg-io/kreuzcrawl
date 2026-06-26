@@ -30,12 +30,14 @@ def _alef_e2e_item_texts(item: object) -> tuple[str, ...]:
 
 
 @pytest.mark.asyncio
-
 async def test_cookies_per_domain() -> None:
     """Isolates cookies per domain during crawl."""
     engine_config = CrawlConfig(cookies_enabled=True, max_depth=1, respect_robots_txt=False)
     engine = create_engine(engine_config)
-    url = os.environ.get('MOCK_SERVER_COOKIES_PER_DOMAIN') or os.environ['MOCK_SERVER_URL'] + '/fixtures/cookies_per_domain'
+    url = (
+        os.environ.get("MOCK_SERVER_COOKIES_PER_DOMAIN")
+        or os.environ["MOCK_SERVER_URL"] + "/fixtures/cookies_per_domain"
+    )
 
     result = await crawl(engine, url)
     assert len(result.cookies) == 1  # noqa: S101
@@ -43,24 +45,28 @@ async def test_cookies_per_domain() -> None:
 
 
 @pytest.mark.asyncio
-
 async def test_cookies_persistence() -> None:
     """Maintains cookies across multiple crawl requests."""
     engine_config = CrawlConfig(cookies_enabled=True, max_depth=1, respect_robots_txt=False)
     engine = create_engine(engine_config)
-    url = os.environ.get('MOCK_SERVER_COOKIES_PERSISTENCE') or os.environ['MOCK_SERVER_URL'] + '/fixtures/cookies_persistence'
+    url = (
+        os.environ.get("MOCK_SERVER_COOKIES_PERSISTENCE")
+        or os.environ["MOCK_SERVER_URL"] + "/fixtures/cookies_persistence"
+    )
 
     result = await crawl(engine, url)
     assert any("session" in text for item in result.cookies for text in _alef_e2e_item_texts(item))  # noqa: S101
 
 
 @pytest.mark.asyncio
-
 async def test_cookies_set_cookie_response() -> None:
     """Respects Set-Cookie header from server responses."""
     engine_config = CrawlConfig(cookies_enabled=True, max_depth=1, respect_robots_txt=False)
     engine = create_engine(engine_config)
-    url = os.environ.get('MOCK_SERVER_COOKIES_SET_COOKIE_RESPONSE') or os.environ['MOCK_SERVER_URL'] + '/fixtures/cookies_set_cookie_response'
+    url = (
+        os.environ.get("MOCK_SERVER_COOKIES_SET_COOKIE_RESPONSE")
+        or os.environ["MOCK_SERVER_URL"] + "/fixtures/cookies_set_cookie_response"
+    )
 
     result = await crawl(engine, url)
     assert any("tracking" in text for item in result.cookies for text in _alef_e2e_item_texts(item))  # noqa: S101

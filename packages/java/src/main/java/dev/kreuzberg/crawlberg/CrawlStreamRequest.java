@@ -4,8 +4,8 @@
 // To verify freshness: alef verify --exit-code
 package dev.kreuzberg.crawlberg;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
@@ -19,32 +19,30 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(builder = CrawlStreamRequest.Builder.class)
 public record CrawlStreamRequest(@JsonProperty("url") String url) {
-    /** Creates a new Builder for constructing instances of this record. */
-    public static Builder builder() {
-        return new Builder();
+  /** Creates a new Builder for constructing instances of this record. */
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  // CPD-OFF
+  /** Jackson builder for CrawlStreamRequest deserialization. */
+  @com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
+  @JsonPOJOBuilder(withPrefix = "with", buildMethodName = "build")
+  public static final class Builder {
+
+    private String url;
+
+    /** Sets the url field. */
+    @JsonProperty("url")
+    public Builder withUrl(final String value) {
+      this.url = value;
+      return this;
     }
 
-    // CPD-OFF
-    /** Jackson builder for CrawlStreamRequest deserialization. */
-    @com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
-    @JsonPOJOBuilder(withPrefix = "with", buildMethodName = "build")
-    public static final class Builder {
-
-        private String url;
-
-        /** Sets the url field. */
-        @JsonProperty("url")
-        public Builder withUrl(final String value) {
-            this.url = value;
-            return this;
-        }
-
-        /** Constructs a CrawlStreamRequest instance from the builder's current state. */
-        public CrawlStreamRequest build() {
-            return new CrawlStreamRequest(
-                url
-            );
-        }
+    /** Constructs a CrawlStreamRequest instance from the builder's current state. */
+    public CrawlStreamRequest build() {
+      return new CrawlStreamRequest(url);
     }
-    // CPD-ON
+  }
+  // CPD-ON
 }

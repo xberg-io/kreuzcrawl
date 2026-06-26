@@ -2,17 +2,17 @@
 title: Streaming Crawls
 ---
 
-# Streaming Crawls
+## Streaming Crawls
 
 Use streaming crawls for memory-bounded operations on large sites. Instead of accumulating all pages into a result buffer, a streaming crawl yields `CrawlEvent`s as pages are processed and discards them immediately, keeping peak memory usage constant regardless of crawl size.
 
-## When to stream vs. collect
+### When to stream vs. collect
 
 Use `crawl()` and `batch_crawl()` when you need the full result set at once — they return a collected `CrawlResult` or `BatchCrawlResults`. Use `crawl_stream()` and `batch_crawl_stream()` when crawling large sites, processing pages incrementally, or running on memory-constrained systems. A typical large crawl using `crawl()` consumes ≈2.5 GB peak memory; the same crawl via `crawl_stream()` stays below ≈20 MB.
 
 Streaming trades result shape for memory efficiency: you receive `CrawlEvent`s one at a time instead of a single result object containing all pages.
 
-## Rust streaming
+### Rust streaming
 
 Open a stream and iterate over events:
 
@@ -67,7 +67,7 @@ while let Some(event) = stream.next().await {
 }
 ```
 
-## Python streaming
+### Python streaming
 
 Python async iterators handle streaming naturally:
 
@@ -108,7 +108,7 @@ async for event in batch_crawl_stream(engine, [
     ...
 ```
 
-## Streaming in other languages
+### Streaming in other languages
 
 Streaming entry points (`crawl_stream`, `batch_crawl_stream`) are exposed in all language bindings. Each binding uses that language's native async-iterator or generator protocol:
 

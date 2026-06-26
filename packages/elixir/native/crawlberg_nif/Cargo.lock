@@ -511,6 +511,61 @@ dependencies = [
 ]
 
 [[package]]
+name = "crawlberg"
+version = "0.3.0"
+dependencies = [
+ "ahash",
+ "aho-corasick",
+ "arc-swap",
+ "astral-tl",
+ "async-trait",
+ "blake3",
+ "chromiumoxide",
+ "chrono",
+ "dashmap",
+ "dirs",
+ "encoding_rs",
+ "flate2",
+ "futures",
+ "getrandom 0.3.4",
+ "getrandom 0.4.2",
+ "html-to-markdown-rs",
+ "ipnet",
+ "memchr",
+ "notify",
+ "opentelemetry",
+ "opentelemetry-semantic-conventions",
+ "quick-xml",
+ "regex",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "sha2",
+ "thiserror",
+ "tokio",
+ "tokio-stream",
+ "toml",
+ "tower",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "crawlberg_nif"
+version = "0.3.0"
+dependencies = [
+ "alloc-no-stdlib",
+ "alloc-stdlib",
+ "brotli-decompressor",
+ "crawlberg",
+ "futures-util",
+ "rustler",
+ "serde",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
 name = "crc32fast"
 version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -969,9 +1024,9 @@ dependencies = [
 
 [[package]]
 name = "html-to-markdown-rs"
-version = "3.6.1"
+version = "3.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "567f72be80982d7d1c9d46730506847e8782e62ff95bf8d3ede3489b3a8e963a"
+checksum = "e80e5d74dbe02fc52264d6a1d21c12bbc0cb062bca64caa295e4703590f1aabe"
 dependencies = [
  "ahash",
  "astral-tl",
@@ -1412,61 +1467,6 @@ checksum = "07293a4e297ac234359b510362495713f75ea345d5307140414f20c69ffeb087"
 dependencies = [
  "bitflags",
  "libc",
-]
-
-[[package]]
-name = "crawlberg"
-version = "0.3.0"
-dependencies = [
- "ahash",
- "aho-corasick",
- "arc-swap",
- "astral-tl",
- "async-trait",
- "blake3",
- "chromiumoxide",
- "chrono",
- "dashmap",
- "dirs",
- "encoding_rs",
- "flate2",
- "futures",
- "getrandom 0.3.4",
- "getrandom 0.4.2",
- "html-to-markdown-rs",
- "ipnet",
- "memchr",
- "notify",
- "opentelemetry",
- "opentelemetry-semantic-conventions",
- "quick-xml",
- "regex",
- "reqwest",
- "serde",
- "serde_json",
- "sha2",
- "thiserror",
- "tokio",
- "tokio-stream",
- "toml",
- "tower",
- "tracing",
- "url",
-]
-
-[[package]]
-name = "crawlberg_nif"
-version = "0.3.0"
-dependencies = [
- "alloc-no-stdlib",
- "alloc-stdlib",
- "brotli-decompressor",
- "futures-util",
- "crawlberg",
- "rustler",
- "serde",
- "serde_json",
- "tokio",
 ]
 
 [[package]]

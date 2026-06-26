@@ -4,8 +4,8 @@
 // To verify freshness: alef verify --exit-code
 package dev.kreuzberg.crawlberg;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
@@ -20,73 +20,74 @@ public record ExtractionMeta(
     @Nullable @JsonProperty("prompt_tokens") Long promptTokens,
     @Nullable @JsonProperty("completion_tokens") Long completionTokens,
     @Nullable @JsonProperty("model") String model,
-    @JsonProperty("chunks_processed") long chunksProcessed
-) {
-    /** Creates a new Builder for constructing instances of this record. */
-    public static Builder builder() {
-        return new Builder();
+    @JsonProperty("chunks_processed") long chunksProcessed) {
+  /** Creates a new Builder for constructing instances of this record. */
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  // CPD-OFF
+  /** Jackson builder for ExtractionMeta deserialization. */
+  @com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
+  @JsonPOJOBuilder(withPrefix = "with", buildMethodName = "build")
+  public static final class Builder {
+
+    @Nullable
+    private Double cost;
+
+    @JsonProperty("prompt_tokens")
+    @Nullable
+    private Long promptTokens;
+
+    @JsonProperty("completion_tokens")
+    @Nullable
+    private Long completionTokens;
+
+    @Nullable
+    private String model;
+
+    @JsonProperty("chunks_processed")
+    private long chunksProcessed;
+
+    /** Sets the cost field. */
+    @JsonProperty("cost")
+    public Builder withCost(final @Nullable double value) {
+      this.cost = value;
+      return this;
     }
 
-    // CPD-OFF
-    /** Jackson builder for ExtractionMeta deserialization. */
-    @com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
-    @JsonPOJOBuilder(withPrefix = "with", buildMethodName = "build")
-    public static final class Builder {
-
-        @Nullable private Double cost;
-        @JsonProperty("prompt_tokens")
-        @Nullable private Long promptTokens;
-        @JsonProperty("completion_tokens")
-        @Nullable private Long completionTokens;
-        @Nullable private String model;
-        @JsonProperty("chunks_processed")
-        private long chunksProcessed;
-
-        /** Sets the cost field. */
-        @JsonProperty("cost")
-        public Builder withCost(final @Nullable double value) {
-            this.cost = value;
-            return this;
-        }
-
-        /** Sets the promptTokens field. */
-        @JsonProperty("prompt_tokens")
-        public Builder withPromptTokens(final @Nullable long value) {
-            this.promptTokens = value;
-            return this;
-        }
-
-        /** Sets the completionTokens field. */
-        @JsonProperty("completion_tokens")
-        public Builder withCompletionTokens(final @Nullable long value) {
-            this.completionTokens = value;
-            return this;
-        }
-
-        /** Sets the model field. */
-        @JsonProperty("model")
-        public Builder withModel(final @Nullable String value) {
-            this.model = value;
-            return this;
-        }
-
-        /** Sets the chunksProcessed field. */
-        @JsonProperty("chunks_processed")
-        public Builder withChunksProcessed(final long value) {
-            this.chunksProcessed = value;
-            return this;
-        }
-
-        /** Constructs a ExtractionMeta instance from the builder's current state. */
-        public ExtractionMeta build() {
-            return new ExtractionMeta(
-                cost,
-                promptTokens,
-                completionTokens,
-                model,
-                chunksProcessed
-            );
-        }
+    /** Sets the promptTokens field. */
+    @JsonProperty("prompt_tokens")
+    public Builder withPromptTokens(final @Nullable long value) {
+      this.promptTokens = value;
+      return this;
     }
-    // CPD-ON
+
+    /** Sets the completionTokens field. */
+    @JsonProperty("completion_tokens")
+    public Builder withCompletionTokens(final @Nullable long value) {
+      this.completionTokens = value;
+      return this;
+    }
+
+    /** Sets the model field. */
+    @JsonProperty("model")
+    public Builder withModel(final @Nullable String value) {
+      this.model = value;
+      return this;
+    }
+
+    /** Sets the chunksProcessed field. */
+    @JsonProperty("chunks_processed")
+    public Builder withChunksProcessed(final long value) {
+      this.chunksProcessed = value;
+      return this;
+    }
+
+    /** Constructs a ExtractionMeta instance from the builder's current state. */
+    public ExtractionMeta build() {
+      return new ExtractionMeta(cost, promptTokens, completionTokens, model, chunksProcessed);
+    }
+  }
+  // CPD-ON
 }

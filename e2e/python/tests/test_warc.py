@@ -30,12 +30,11 @@ def _alef_e2e_item_texts(item: object) -> tuple[str, ...]:
 
 
 @pytest.mark.asyncio
-
 async def test_warc_basic_output() -> None:
     """Scrape single page with WARC output enabled writes to file."""
     engine_config = CrawlConfig(respect_robots_txt=False, warc_output="/tmp/crawlberg_test.warc")
     engine = create_engine(engine_config)
-    url = os.environ['MOCK_SERVER_URL'] + '/fixtures/warc_basic_output'
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/warc_basic_output"
 
     result = await crawl(engine, url)
     assert result.pages[0].status_code == 200  # noqa: S101
@@ -43,12 +42,14 @@ async def test_warc_basic_output() -> None:
 
 
 @pytest.mark.asyncio
-
 async def test_warc_multi_page_crawl() -> None:
     """Crawl multiple pages with depth=1 and WARC output enabled."""
     engine_config = CrawlConfig(max_depth=1, respect_robots_txt=False, warc_output="/tmp/crawlberg_crawl.warc")
     engine = create_engine(engine_config)
-    url = os.environ.get('MOCK_SERVER_WARC_MULTI_PAGE_CRAWL') or os.environ['MOCK_SERVER_URL'] + '/fixtures/warc_multi_page_crawl'
+    url = (
+        os.environ.get("MOCK_SERVER_WARC_MULTI_PAGE_CRAWL")
+        or os.environ["MOCK_SERVER_URL"] + "/fixtures/warc_multi_page_crawl"
+    )
 
     result = await crawl(engine, url)
     assert len(result.pages) >= 2  # noqa: S101

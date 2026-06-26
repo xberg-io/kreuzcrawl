@@ -4,11 +4,11 @@
 // To verify freshness: alef verify --exit-code
 package dev.kreuzberg.crawlberg;
 
-import java.util.List;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import java.util.List;
 
 /**
  * Result of citation conversion.
@@ -17,43 +17,39 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 @JsonDeserialize(builder = CitationResult.Builder.class)
 public record CitationResult(
     @JsonProperty("content") String content,
-    @JsonProperty("references") List<CitationReference> references
-) {
-    /** Creates a new Builder for constructing instances of this record. */
-    public static Builder builder() {
-        return new Builder();
+    @JsonProperty("references") List<CitationReference> references) {
+  /** Creates a new Builder for constructing instances of this record. */
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  // CPD-OFF
+  /** Jackson builder for CitationResult deserialization. */
+  @com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
+  @JsonPOJOBuilder(withPrefix = "with", buildMethodName = "build")
+  public static final class Builder {
+
+    private String content;
+    private List<CitationReference> references = List.of();
+
+    /** Sets the content field. */
+    @JsonProperty("content")
+    public Builder withContent(final String value) {
+      this.content = value;
+      return this;
     }
 
-    // CPD-OFF
-    /** Jackson builder for CitationResult deserialization. */
-    @com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
-    @JsonPOJOBuilder(withPrefix = "with", buildMethodName = "build")
-    public static final class Builder {
-
-        private String content;
-        private List<CitationReference> references = List.of();
-
-        /** Sets the content field. */
-        @JsonProperty("content")
-        public Builder withContent(final String value) {
-            this.content = value;
-            return this;
-        }
-
-        /** Sets the references field. */
-        @JsonProperty("references")
-        public Builder withReferences(final List<CitationReference> value) {
-            this.references = value;
-            return this;
-        }
-
-        /** Constructs a CitationResult instance from the builder's current state. */
-        public CitationResult build() {
-            return new CitationResult(
-                content,
-                references
-            );
-        }
+    /** Sets the references field. */
+    @JsonProperty("references")
+    public Builder withReferences(final List<CitationReference> value) {
+      this.references = value;
+      return this;
     }
-    // CPD-ON
+
+    /** Constructs a CitationResult instance from the builder's current state. */
+    public CitationResult build() {
+      return new CitationResult(content, references);
+    }
+  }
+  // CPD-ON
 }

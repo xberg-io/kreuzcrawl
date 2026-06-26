@@ -2,9 +2,9 @@
 // alef:hash:0eab3539dd01cb6d0df8fba44f697d2d6be190216721ace0203cec2be3c98844
 // To regenerate: alef generate
 // To verify freshness: alef verify --exit-code
-import { createRequire } from 'module';
-import { readFileSync } from 'fs';
-import { fileURLToPath } from 'url';
+import { createRequire } from "module";
+import { readFileSync } from "fs";
+import { fileURLToPath } from "url";
 
 process.env.CRAWLBERG_ALLOW_PRIVATE_NETWORK ??= "true";
 
@@ -13,23 +13,27 @@ process.env.CRAWLBERG_ALLOW_PRIVATE_NETWORK ??= "true";
 // does not support file:// URLs in Node.js; use initSync with a
 // readFileSync buffer instead.
 try {
-  const _require = createRequire(import.meta.url);
-  const wasmPkgDir = _require.resolve('@kreuzberg/crawlberg-wasm');
-  const wasmModule = await import(/* @vite-ignore */ wasmPkgDir);
-  const initSync = (wasmModule as unknown as Record<string, unknown>).initSync as ((mod: WebAssembly.Module | BufferSource) => unknown) | undefined;
-  if (typeof initSync === 'function') {
-    // Locate the .wasm binary next to the JS entry.
-    const wasmJsPath = fileURLToPath(new URL(wasmPkgDir, 'file://'));
-    const wasmBinPath = wasmJsPath.replace(/\.js$/, '_bg.wasm');
-    const wasmBytes = readFileSync(wasmBinPath);
-    // Pass as object form to avoid wasm-bindgen deprecation warning.
-    initSync({ module: wasmBytes });
-  } else {
-    // Fallback: try the async default init (wasm-pack --target nodejs bundles).
-    const initDefault = (wasmModule as unknown as Record<string, unknown>).default as (() => Promise<unknown>) | undefined;
-    if (typeof initDefault === 'function') await initDefault();
-  }
+	const _require = createRequire(import.meta.url);
+	const wasmPkgDir = _require.resolve("@kreuzberg/crawlberg-wasm");
+	const wasmModule = await import(/* @vite-ignore */ wasmPkgDir);
+	const initSync = (wasmModule as unknown as Record<string, unknown>).initSync as
+		| ((mod: WebAssembly.Module | BufferSource) => unknown)
+		| undefined;
+	if (typeof initSync === "function") {
+		// Locate the .wasm binary next to the JS entry.
+		const wasmJsPath = fileURLToPath(new URL(wasmPkgDir, "file://"));
+		const wasmBinPath = wasmJsPath.replace(/\.js$/, "_bg.wasm");
+		const wasmBytes = readFileSync(wasmBinPath);
+		// Pass as object form to avoid wasm-bindgen deprecation warning.
+		initSync({ module: wasmBytes });
+	} else {
+		// Fallback: try the async default init (wasm-pack --target nodejs bundles).
+		const initDefault = (wasmModule as unknown as Record<string, unknown>).default as
+			| (() => Promise<unknown>)
+			| undefined;
+		if (typeof initDefault === "function") await initDefault();
+	}
 } catch (err) {
-  // Module may not require explicit init — continue anyway.
-  console.warn('[alef wasm setup] init skipped:', (err as Error).message);
+	// Module may not require explicit init — continue anyway.
+	console.warn("[alef wasm setup] init skipped:", (err as Error).message);
 }

@@ -4,8 +4,8 @@
 // To verify freshness: alef verify --exit-code
 package dev.kreuzberg.crawlberg;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
@@ -19,61 +19,59 @@ public record CookieInfo(
     @JsonProperty("name") String name,
     @JsonProperty("value") String value,
     @Nullable @JsonProperty("domain") String domain,
-    @Nullable @JsonProperty("path") String path
-) {
-    /** Creates a new Builder for constructing instances of this record. */
-    public static Builder builder() {
-        return new Builder();
+    @Nullable @JsonProperty("path") String path) {
+  /** Creates a new Builder for constructing instances of this record. */
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  // CPD-OFF
+  /** Jackson builder for CookieInfo deserialization. */
+  @com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
+  @JsonPOJOBuilder(withPrefix = "with", buildMethodName = "build")
+  public static final class Builder {
+
+    private String name;
+    private String value;
+
+    @Nullable
+    private String domain;
+
+    @Nullable
+    private String path;
+
+    /** Sets the name field. */
+    @JsonProperty("name")
+    public Builder withName(final String value) {
+      this.name = value;
+      return this;
     }
 
-    // CPD-OFF
-    /** Jackson builder for CookieInfo deserialization. */
-    @com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
-    @JsonPOJOBuilder(withPrefix = "with", buildMethodName = "build")
-    public static final class Builder {
-
-        private String name;
-        private String value;
-        @Nullable private String domain;
-        @Nullable private String path;
-
-        /** Sets the name field. */
-        @JsonProperty("name")
-        public Builder withName(final String value) {
-            this.name = value;
-            return this;
-        }
-
-        /** Sets the value field. */
-        @JsonProperty("value")
-        public Builder withValue(final String value) {
-            this.value = value;
-            return this;
-        }
-
-        /** Sets the domain field. */
-        @JsonProperty("domain")
-        public Builder withDomain(final @Nullable String value) {
-            this.domain = value;
-            return this;
-        }
-
-        /** Sets the path field. */
-        @JsonProperty("path")
-        public Builder withPath(final @Nullable String value) {
-            this.path = value;
-            return this;
-        }
-
-        /** Constructs a CookieInfo instance from the builder's current state. */
-        public CookieInfo build() {
-            return new CookieInfo(
-                name,
-                value,
-                domain,
-                path
-            );
-        }
+    /** Sets the value field. */
+    @JsonProperty("value")
+    public Builder withValue(final String value) {
+      this.value = value;
+      return this;
     }
-    // CPD-ON
+
+    /** Sets the domain field. */
+    @JsonProperty("domain")
+    public Builder withDomain(final @Nullable String value) {
+      this.domain = value;
+      return this;
+    }
+
+    /** Sets the path field. */
+    @JsonProperty("path")
+    public Builder withPath(final @Nullable String value) {
+      this.path = value;
+      return this;
+    }
+
+    /** Constructs a CookieInfo instance from the builder's current state. */
+    public CookieInfo build() {
+      return new CookieInfo(name, value, domain, path);
+    }
+  }
+  // CPD-ON
 }

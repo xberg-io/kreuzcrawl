@@ -5,44 +5,56 @@
 
 package dev.kreuzberg.crawlberg.e2e;
 
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import dev.kreuzberg.crawlberg.Crawlberg;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import dev.kreuzberg.crawlberg.CrawlConfig;
-import java.util.Optional;
-import dev.kreuzberg.crawlberg.JsonUtil;
+import dev.kreuzberg.crawlberg.Crawlberg;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 /** E2e tests for category: warc. */
 public class WarcTest {
-    private static final ObjectMapper MAPPER = new ObjectMapper().registerModule(new Jdk8Module()).setPropertyNamingStrategy(com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE);
-    @BeforeAll
-    static void initEnv() {        if (System.getProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK") == null) {
-            System.setProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK", "true");
-        }    }
+  private static final ObjectMapper MAPPER = new ObjectMapper()
+      .registerModule(new Jdk8Module())
+      .setPropertyNamingStrategy(
+          com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE);
 
-    @Test
-    void testWarcBasicOutput() throws Exception {
-        // Scrape single page with WARC output enabled writes to file
-        var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":false,\"warc_output\":\"/tmp/crawlberg_test.warc\"}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/warc_basic_output";
-        var result = Crawlberg.crawl(engine, url);
-assertEquals(200, result.pages().get(0).statusCode());assertEquals(1, result.pages().size());
-
+  @BeforeAll
+  static void initEnv() {
+    if (System.getProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK") == null) {
+      System.setProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK", "true");
     }
+  }
 
+  @Test
+  void testWarcBasicOutput() throws Exception {
+    // Scrape single page with WARC output enabled writes to file
+    var engineConfig = MAPPER.readValue(
+        "{\"respect_robots_txt\":false,\"warc_output\":\"/tmp/crawlberg_test.warc\"}",
+        CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+        + "/fixtures/warc_basic_output";
+    var result = Crawlberg.crawl(engine, url);
+    assertEquals(200, result.pages().get(0).statusCode());
+    assertEquals(1, result.pages().size());
+  }
 
-    @Test
-    void testWarcMultiPageCrawl() throws Exception {
-        // Crawl multiple pages with depth=1 and WARC output enabled
-        var engineConfig = MAPPER.readValue("{\"max_depth\":1,\"respect_robots_txt\":false,\"warc_output\":\"/tmp/crawlberg_crawl.warc\"}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.warc_multi_page_crawl", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/warc_multi_page_crawl");
-        var result = Crawlberg.crawl(engine, url);
-assertTrue(result.pages().size() >= 2, "expected >= 2");assertEquals(true, result.stayedOnDomain());
-
-    }
-
+  @Test
+  void testWarcMultiPageCrawl() throws Exception {
+    // Crawl multiple pages with depth=1 and WARC output enabled
+    var engineConfig = MAPPER.readValue(
+        "{\"max_depth\":1,\"respect_robots_txt\":false,\"warc_output\":\"/tmp/crawlberg_crawl.warc\"}",
+        CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.warc_multi_page_crawl",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/warc_multi_page_crawl");
+    var result = Crawlberg.crawl(engine, url);
+    assertTrue(result.pages().size() >= 2, "expected >= 2");
+    assertEquals(true, result.stayedOnDomain());
+  }
 }

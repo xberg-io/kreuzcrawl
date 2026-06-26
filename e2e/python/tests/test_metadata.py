@@ -30,11 +30,10 @@ def _alef_e2e_item_texts(item: object) -> tuple[str, ...]:
 
 
 @pytest.mark.asyncio
-
 async def test_metadata_article_times() -> None:
     """Extracts article:published_time, modified_time, author, section, and tags."""
     engine = create_engine(None)
-    url = os.environ['MOCK_SERVER_URL'] + '/fixtures/metadata_article_times'
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/metadata_article_times"
 
     result = await scrape(engine, url)
     assert result.status_code == 200  # noqa: S101
@@ -46,11 +45,10 @@ async def test_metadata_article_times() -> None:
 
 
 @pytest.mark.asyncio
-
 async def test_metadata_favicons() -> None:
     """Extracts favicon link tags including apple-touch-icon."""
     engine = create_engine(None)
-    url = os.environ['MOCK_SERVER_URL'] + '/fixtures/metadata_favicons'
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/metadata_favicons"
 
     result = await scrape(engine, url)
     assert result.status_code == 200  # noqa: S101
@@ -59,11 +57,10 @@ async def test_metadata_favicons() -> None:
 
 
 @pytest.mark.asyncio
-
 async def test_metadata_headings() -> None:
     """Extracts heading hierarchy (h1-h6) from HTML page."""
     engine = create_engine(None)
-    url = os.environ['MOCK_SERVER_URL'] + '/fixtures/metadata_headings'
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/metadata_headings"
 
     result = await scrape(engine, url)
     assert result.status_code == 200  # noqa: S101
@@ -73,11 +70,10 @@ async def test_metadata_headings() -> None:
 
 
 @pytest.mark.asyncio
-
 async def test_metadata_hreflang() -> None:
     """Extracts hreflang alternate link tags."""
     engine = create_engine(None)
-    url = os.environ['MOCK_SERVER_URL'] + '/fixtures/metadata_hreflang'
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/metadata_hreflang"
 
     result = await scrape(engine, url)
     assert result.status_code == 200  # noqa: S101
@@ -86,11 +82,10 @@ async def test_metadata_hreflang() -> None:
 
 
 @pytest.mark.asyncio
-
 async def test_metadata_keywords_author() -> None:
     """Extracts keywords, author, viewport, generator, theme-color, robots, lang, dir metadata."""
     engine = create_engine(None)
-    url = os.environ['MOCK_SERVER_URL'] + '/fixtures/metadata_keywords_author'
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/metadata_keywords_author"
 
     result = await scrape(engine, url)
     assert result.status_code == 200  # noqa: S101
@@ -109,11 +104,10 @@ async def test_metadata_keywords_author() -> None:
 
 
 @pytest.mark.asyncio
-
 async def test_metadata_og_video_audio() -> None:
     """Extracts og:video, og:audio, and og:locale:alternate metadata."""
     engine = create_engine(None)
-    url = os.environ['MOCK_SERVER_URL'] + '/fixtures/metadata_og_video_audio'
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/metadata_og_video_audio"
 
     result = await scrape(engine, url)
     assert result.status_code == 200  # noqa: S101
@@ -123,11 +117,10 @@ async def test_metadata_og_video_audio() -> None:
 
 
 @pytest.mark.asyncio
-
 async def test_metadata_response_headers() -> None:
     """Extracts response metadata from HTTP headers (etag, server, content-language)."""
     engine = create_engine(None)
-    url = os.environ['MOCK_SERVER_URL'] + '/fixtures/metadata_response_headers'
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/metadata_response_headers"
 
     result = await scrape(engine, url)
     assert result.status_code == 200  # noqa: S101
@@ -138,11 +131,10 @@ async def test_metadata_response_headers() -> None:
 
 
 @pytest.mark.asyncio
-
 async def test_metadata_word_count() -> None:
     """Computes word count from visible page text."""
     engine = create_engine(None)
-    url = os.environ['MOCK_SERVER_URL'] + '/fixtures/metadata_word_count'
+    url = os.environ["MOCK_SERVER_URL"] + "/fixtures/metadata_word_count"
 
     result = await scrape(engine, url)
     assert result.status_code == 200  # noqa: S101

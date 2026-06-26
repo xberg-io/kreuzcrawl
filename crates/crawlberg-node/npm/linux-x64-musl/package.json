@@ -1,16 +1,28 @@
 {
-  "name": "@kreuzberg/crawlberg-linux-x64-musl",
-  "version": "0.3.0",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/xberg-io/crawlberg.git"
-  },
-  "main": "crawlberg-node.linux-x64-musl.node",
-  "files": ["crawlberg-node.linux-x64-musl.node"],
-  "os": ["linux"],
-  "cpu": ["x64"],
-  "libc": ["musl"],
-  "engines": { "node": ">= 18" },
-  "publishConfig": { "access": "public" }
+	"name": "@kreuzberg/crawlberg-linux-x64-musl",
+	"version": "0.3.0",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/xberg-io/crawlberg.git"
+	},
+	"files": [
+		"crawlberg-node.linux-x64-musl.node"
+	],
+	"os": [
+		"linux"
+	],
+	"cpu": [
+		"x64"
+	],
+	"libc": [
+		"musl"
+	],
+	"main": "crawlberg-node.linux-x64-musl.node",
+	"publishConfig": {
+		"access": "public"
+	},
+	"engines": {
+		"node": ">= 18"
+	}
 }

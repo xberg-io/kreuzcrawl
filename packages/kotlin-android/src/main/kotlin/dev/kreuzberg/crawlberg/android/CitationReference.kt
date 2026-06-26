@@ -28,8 +28,8 @@
 package dev.kreuzberg.crawlberg.android
 
 /**
- * A single numbered reference in a citation list — produced by the citation
- * extractor when content uses inline `[N]`-style markers.
+ * A single numbered reference in a citation list — produced by the citation extractor when content
+ * uses inline `[N]`-style markers.
  */
 data class CitationReference(
     /** 1-based reference number as it appears in the source text. */

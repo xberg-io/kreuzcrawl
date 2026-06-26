@@ -3,6 +3,7 @@
 
 package dev.kreuzberg.crawlberg.android
 
-class CrawlbergBridgeException(message: String?, cause: Throwable?) : RuntimeException(message, cause) {
+class CrawlbergBridgeException(message: String?, cause: Throwable?) :
+    RuntimeException(message, cause) {
     constructor(message: String?) : this(message, null)
 }

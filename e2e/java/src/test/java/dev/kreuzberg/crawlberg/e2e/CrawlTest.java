@@ -5,368 +5,438 @@
 
 package dev.kreuzberg.crawlberg.e2e;
 
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import dev.kreuzberg.crawlberg.Crawlberg;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import dev.kreuzberg.crawlberg.CrawlConfig;
-import java.util.Optional;
-import dev.kreuzberg.crawlberg.JsonUtil;
+import dev.kreuzberg.crawlberg.Crawlberg;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 /** E2e tests for category: crawl. */
 public class CrawlTest {
-    private static final ObjectMapper MAPPER = new ObjectMapper().registerModule(new Jdk8Module()).setPropertyNamingStrategy(com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE);
-    @BeforeAll
-    static void initEnv() {        if (System.getProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK") == null) {
-            System.setProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK", "true");
-        }    }
+  private static final ObjectMapper MAPPER = new ObjectMapper()
+      .registerModule(new Jdk8Module())
+      .setPropertyNamingStrategy(
+          com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE);
 
-    @Test
-    void testContentBinarySkip() throws Exception {
-        // Skips image and video content types gracefully
-        var engineConfig = MAPPER.readValue("{\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/content_binary_skip";
-        var result = Crawlberg.scrape(engine, url);
-assertEquals(true, result.wasSkipped());
-
+  @BeforeAll
+  static void initEnv() {
+    if (System.getProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK") == null) {
+      System.setProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK", "true");
     }
-
-
-    @Test
-    void testContentPdfLinkSkip() throws Exception {
-        // Encounters PDF link and skips or marks as document type
-        var engineConfig = MAPPER.readValue("{\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/content_pdf_link_skip";
-        var result = Crawlberg.scrape(engine, url);
-assertEquals(true, result.wasSkipped());
-
-    }
-
-
-    @Test
-    void testCrawlConcurrentDepth() throws Exception {
-        // Concurrent crawl respects max_depth limit
-        var engineConfig = MAPPER.readValue("{\"max_concurrent\":3,\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.crawl_concurrent_depth", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/crawl_concurrent_depth");
-        var result = Crawlberg.crawl(engine, url);
-assertEquals(3, result.pages().size());assertEquals(true, result.stayedOnDomain());
-
-    }
-
-
-    @Test
-    void testCrawlConcurrentLimit() throws Exception {
-        // Respects max concurrent requests limit during crawl
-        var engineConfig = MAPPER.readValue("{\"max_concurrent\":2,\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.crawl_concurrent_limit", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/crawl_concurrent_limit");
-        var result = Crawlberg.crawl(engine, url);
-assertEquals(5, result.pages().size());
-
-    }
-
-
-    @Test
-    void testCrawlConcurrentMaxPages() throws Exception {
-        // Concurrent crawl respects max_pages budget
-        var engineConfig = MAPPER.readValue("{\"max_concurrent\":4,\"max_depth\":1,\"max_pages\":3,\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.crawl_concurrent_max_pages", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/crawl_concurrent_max_pages");
-        var result = Crawlberg.crawl(engine, url);
-assertTrue(result.pages().size() <= 3, "expected <= 3");
-
-    }
-
-
-    @Test
-    void testCrawlCustomHeaders() throws Exception {
-        // Sends custom headers on all crawl requests
-        var engineConfig = MAPPER.readValue("{\"custom_headers\":{\"Accept-Language\":\"en-US\",\"X-Custom-Header\":\"test-value\"},\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.crawl_custom_headers", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/crawl_custom_headers");
-        var result = Crawlberg.crawl(engine, url);
-assertEquals(2, result.pages().size());
-
-    }
-
-
-    @Test
-    void testCrawlDepthOne() throws Exception {
-        // Follows links one level deep from start page
-        var engineConfig = MAPPER.readValue("{\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.crawl_depth_one", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/crawl_depth_one");
-        var result = Crawlberg.crawl(engine, url);
-assertEquals(3, result.pages().size());assertEquals(true, result.stayedOnDomain());
-
-    }
-
-
-    @Test
-    void testCrawlDepthPriority() throws Exception {
-        // Crawls in breadth-first order, processing depth-0 pages before depth-1
-        var engineConfig = MAPPER.readValue("{\"max_depth\":2,\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.crawl_depth_priority", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/crawl_depth_priority");
-        var result = Crawlberg.crawl(engine, url);
-assertEquals(4, result.pages().size());
-
-    }
-
-
-    @Test
-    void testCrawlDepthTwo() throws Exception {
-        // Crawls 3 levels deep (depth 0, 1, 2)
-        var engineConfig = MAPPER.readValue("{\"max_depth\":2,\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.crawl_depth_two", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/crawl_depth_two");
-        var result = Crawlberg.crawl(engine, url);
-assertEquals(3, result.pages().size());assertTrue(result.pages().size() >= 3, "expected >= 3");
-
-    }
-
-
-    @Test
-    void testCrawlDepthTwoChain() throws Exception {
-        // Depth=2 crawl follows a chain of links across three levels
-        var engineConfig = MAPPER.readValue("{\"max_concurrent\":1,\"max_depth\":2}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.crawl_depth_two_chain", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/crawl_depth_two_chain");
-        var result = Crawlberg.crawl(engine, url);
-assertEquals(3, result.pages().size());
-
-    }
-
-
-    @Test
-    void testCrawlDoubleSlashNormalization() throws Exception {
-        // Normalizes double slashes in URL paths (//page to /page)
-        var engineConfig = MAPPER.readValue("{\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.crawl_double_slash_normalization", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/crawl_double_slash_normalization");
-        var result = Crawlberg.crawl(engine, url);
-assertEquals(2, result.pages().size());
-
-    }
-
-
-    @Test
-    void testCrawlEmptyPageNoLinks() throws Exception {
-        // Crawl completes when child page has no outgoing links
-        var engineConfig = MAPPER.readValue("{\"max_concurrent\":1,\"max_depth\":2}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.crawl_empty_page_no_links", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/crawl_empty_page_no_links");
-        var result = Crawlberg.crawl(engine, url);
-assertEquals(2, result.pages().size());
-
-    }
-
-
-    @Test
-    void testCrawlExcludePathPattern() throws Exception {
-        // Skips URLs matching the exclude path pattern
-        var engineConfig = MAPPER.readValue("{\"exclude_paths\":[\"/admin/.*\"],\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.crawl_exclude_path_pattern", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/crawl_exclude_path_pattern");
-        var result = Crawlberg.crawl(engine, url);
-assertEquals(2, result.pages().size());
-
-    }
-
-
-    @Test
-    void testCrawlExternalLinksIgnored() throws Exception {
-        // External links are discovered but not followed when stay_on_domain is true
-        var engineConfig = MAPPER.readValue("{\"max_concurrent\":1,\"max_depth\":1,\"stay_on_domain\":true}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.crawl_external_links_ignored", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/crawl_external_links_ignored");
-        var result = Crawlberg.crawl(engine, url);
-assertEquals(2, result.pages().size());assertEquals(true, result.stayedOnDomain());
-
-    }
-
-
-    @Test
-    void testCrawlFragmentStripping() throws Exception {
-        // Strips #fragment from URLs for deduplication
-        var engineConfig = MAPPER.readValue("{\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.crawl_fragment_stripping", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/crawl_fragment_stripping");
-        var result = Crawlberg.crawl(engine, url);
-assertEquals(2, result.pages().size());
-
-    }
-
-
-    @Test
-    void testCrawlIncludePathPattern() throws Exception {
-        // Only follows URLs matching the include path pattern
-        var engineConfig = MAPPER.readValue("{\"include_paths\":[\"/blog/.*\"],\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.crawl_include_path_pattern", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/crawl_include_path_pattern");
-        var result = Crawlberg.crawl(engine, url);
-assertEquals(2, result.pages().size());
-
-    }
-
-
-    @Test
-    void testCrawlMaxDepthZero() throws Exception {
-        // max_depth=0 crawls only the seed page with no link following
-        var engineConfig = MAPPER.readValue("{\"max_depth\":0}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.crawl_max_depth_zero", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/crawl_max_depth_zero");
-        var result = Crawlberg.crawl(engine, url);
-assertEquals(1, result.pages().size());assertTrue(result.pages().size() <= 1, "expected <= 1");
-
-    }
-
-
-    @Test
-    void testCrawlMaxPages() throws Exception {
-        // Stops crawling at page budget limit
-        var engineConfig = MAPPER.readValue("{\"max_pages\":3,\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.crawl_max_pages", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/crawl_max_pages");
-        var result = Crawlberg.crawl(engine, url);
-assertTrue(result.pages().size() <= 3, "expected <= 3");
-
-    }
-
-
-    @Test
-    void testCrawlMixedContentTypes() throws Exception {
-        // Crawl handles links to non-HTML content types gracefully
-        var engineConfig = MAPPER.readValue("{\"max_concurrent\":1,\"max_depth\":1}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.crawl_mixed_content_types", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/crawl_mixed_content_types");
-        var result = Crawlberg.crawl(engine, url);
-assertTrue(result.pages().size() >= 2, "expected >= 2");
-
-    }
-
-
-    @Test
-    void testCrawlMultipleRedirectsInTraversal() throws Exception {
-        // Multiple linked pages with redirects are handled during crawl traversal
-        var engineConfig = MAPPER.readValue("{\"max_concurrent\":1,\"max_depth\":1}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.crawl_multiple_redirects_in_traversal", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/crawl_multiple_redirects_in_traversal");
-        var result = Crawlberg.crawl(engine, url);
-assertTrue(result.pages().size() >= 1, "expected >= 1");
-
-    }
-
-
-    @Test
-    void testCrawlQueryParamDedup() throws Exception {
-        // Deduplicates URLs with same query params in different order
-        var engineConfig = MAPPER.readValue("{\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.crawl_query_param_dedup", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/crawl_query_param_dedup");
-        var result = Crawlberg.crawl(engine, url);
-assertEquals(2, result.pages().size());
-
-    }
-
-
-    @Test
-    void testCrawlRedirectInTraversal() throws Exception {
-        // Links that redirect are followed during crawl traversal
-        var engineConfig = MAPPER.readValue("{\"max_concurrent\":1,\"max_depth\":1}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.crawl_redirect_in_traversal", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/crawl_redirect_in_traversal");
-        var result = Crawlberg.crawl(engine, url);
-assertTrue(result.pages().size() >= 1, "expected >= 1");
-
-    }
-
-
-    @Test
-    void testCrawlSelfLinkNoLoop() throws Exception {
-        // Page linking to itself does not cause infinite crawl loop
-        var engineConfig = MAPPER.readValue("{\"max_concurrent\":1,\"max_depth\":1}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.crawl_self_link_no_loop", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/crawl_self_link_no_loop");
-        var result = Crawlberg.crawl(engine, url);
-assertEquals(2, result.pages().size());
-
-    }
-
-
-    @Test
-    void testCrawlSinglePageNoLinks() throws Exception {
-        // Crawling a page with no links returns only the seed page
-        var engineConfig = MAPPER.readValue("{\"max_depth\":2}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/crawl_single_page_no_links";
-        var result = Crawlberg.crawl(engine, url);
-assertEquals(1, result.pages().size());
-
-    }
-
-
-    @Test
-    void testCrawlStayOnDomain() throws Exception {
-        // Does not follow external links when stay_on_domain is true
-        var engineConfig = MAPPER.readValue("{\"max_depth\":1,\"respect_robots_txt\":false,\"stay_on_domain\":true}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.crawl_stay_on_domain", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/crawl_stay_on_domain");
-        var result = Crawlberg.crawl(engine, url);
-assertEquals(2, result.pages().size());assertEquals(true, result.stayedOnDomain());
-
-    }
-
-
-    @Test
-    void testCrawlSubdomainExclusion() throws Exception {
-        // Stays on exact domain and skips subdomain links
-        var engineConfig = MAPPER.readValue("{\"allow_subdomains\":false,\"max_depth\":1,\"respect_robots_txt\":false,\"stay_on_domain\":true}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.crawl_subdomain_exclusion", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/crawl_subdomain_exclusion");
-        var result = Crawlberg.crawl(engine, url);
-assertEquals(2, result.pages().size());assertEquals(true, result.stayedOnDomain());
-
-    }
-
-
-    @Test
-    void testCrawlSubdomainInclusion() throws Exception {
-        // Crawls subdomains when allow_subdomains is enabled
-        var engineConfig = MAPPER.readValue("{\"allow_subdomains\":true,\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.crawl_subdomain_inclusion", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/crawl_subdomain_inclusion");
-        var result = Crawlberg.crawl(engine, url);
-assertTrue(result.pages().size() >= 2, "expected >= 2");
-
-    }
-
-
-    @Test
-    void testCrawlTrailingSlashDedup() throws Exception {
-        // Deduplicates /page and /page/ as the same URL
-        var engineConfig = MAPPER.readValue("{\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.crawl_trailing_slash_dedup", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/crawl_trailing_slash_dedup");
-        var result = Crawlberg.crawl(engine, url);
-assertEquals(2, result.pages().size());
-
-    }
-
-
-    @Test
-    void testCrawlUrlDeduplication() throws Exception {
-        // Deduplicates URLs that differ only by fragment or query params
-        var engineConfig = MAPPER.readValue("{\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.crawl_url_deduplication", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/crawl_url_deduplication");
-        var result = Crawlberg.crawl(engine, url);
-assertTrue(result.pages().size() <= 2, "expected <= 2");
-
-    }
-
+  }
+
+  @Test
+  void testContentBinarySkip() throws Exception {
+    // Skips image and video content types gracefully
+    var engineConfig =
+        MAPPER.readValue("{\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+        + "/fixtures/content_binary_skip";
+    var result = Crawlberg.scrape(engine, url);
+    assertEquals(true, result.wasSkipped());
+  }
+
+  @Test
+  void testContentPdfLinkSkip() throws Exception {
+    // Encounters PDF link and skips or marks as document type
+    var engineConfig =
+        MAPPER.readValue("{\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+        + "/fixtures/content_pdf_link_skip";
+    var result = Crawlberg.scrape(engine, url);
+    assertEquals(true, result.wasSkipped());
+  }
+
+  @Test
+  void testCrawlConcurrentDepth() throws Exception {
+    // Concurrent crawl respects max_depth limit
+    var engineConfig = MAPPER.readValue(
+        "{\"max_concurrent\":3,\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.crawl_concurrent_depth",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/crawl_concurrent_depth");
+    var result = Crawlberg.crawl(engine, url);
+    assertEquals(3, result.pages().size());
+    assertEquals(true, result.stayedOnDomain());
+  }
+
+  @Test
+  void testCrawlConcurrentLimit() throws Exception {
+    // Respects max concurrent requests limit during crawl
+    var engineConfig = MAPPER.readValue(
+        "{\"max_concurrent\":2,\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.crawl_concurrent_limit",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/crawl_concurrent_limit");
+    var result = Crawlberg.crawl(engine, url);
+    assertEquals(5, result.pages().size());
+  }
+
+  @Test
+  void testCrawlConcurrentMaxPages() throws Exception {
+    // Concurrent crawl respects max_pages budget
+    var engineConfig = MAPPER.readValue(
+        "{\"max_concurrent\":4,\"max_depth\":1,\"max_pages\":3,\"respect_robots_txt\":false}",
+        CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.crawl_concurrent_max_pages",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/crawl_concurrent_max_pages");
+    var result = Crawlberg.crawl(engine, url);
+    assertTrue(result.pages().size() <= 3, "expected <= 3");
+  }
+
+  @Test
+  void testCrawlCustomHeaders() throws Exception {
+    // Sends custom headers on all crawl requests
+    var engineConfig = MAPPER.readValue(
+        "{\"custom_headers\":{\"Accept-Language\":\"en-US\",\"X-Custom-Header\":\"test-value\"},\"max_depth\":1,\"respect_robots_txt\":false}",
+        CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.crawl_custom_headers",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/crawl_custom_headers");
+    var result = Crawlberg.crawl(engine, url);
+    assertEquals(2, result.pages().size());
+  }
+
+  @Test
+  void testCrawlDepthOne() throws Exception {
+    // Follows links one level deep from start page
+    var engineConfig =
+        MAPPER.readValue("{\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.crawl_depth_one",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/crawl_depth_one");
+    var result = Crawlberg.crawl(engine, url);
+    assertEquals(3, result.pages().size());
+    assertEquals(true, result.stayedOnDomain());
+  }
+
+  @Test
+  void testCrawlDepthPriority() throws Exception {
+    // Crawls in breadth-first order, processing depth-0 pages before depth-1
+    var engineConfig =
+        MAPPER.readValue("{\"max_depth\":2,\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.crawl_depth_priority",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/crawl_depth_priority");
+    var result = Crawlberg.crawl(engine, url);
+    assertEquals(4, result.pages().size());
+  }
+
+  @Test
+  void testCrawlDepthTwo() throws Exception {
+    // Crawls 3 levels deep (depth 0, 1, 2)
+    var engineConfig =
+        MAPPER.readValue("{\"max_depth\":2,\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.crawl_depth_two",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/crawl_depth_two");
+    var result = Crawlberg.crawl(engine, url);
+    assertEquals(3, result.pages().size());
+    assertTrue(result.pages().size() >= 3, "expected >= 3");
+  }
+
+  @Test
+  void testCrawlDepthTwoChain() throws Exception {
+    // Depth=2 crawl follows a chain of links across three levels
+    var engineConfig =
+        MAPPER.readValue("{\"max_concurrent\":1,\"max_depth\":2}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.crawl_depth_two_chain",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/crawl_depth_two_chain");
+    var result = Crawlberg.crawl(engine, url);
+    assertEquals(3, result.pages().size());
+  }
+
+  @Test
+  void testCrawlDoubleSlashNormalization() throws Exception {
+    // Normalizes double slashes in URL paths (//page to /page)
+    var engineConfig =
+        MAPPER.readValue("{\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.crawl_double_slash_normalization",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/crawl_double_slash_normalization");
+    var result = Crawlberg.crawl(engine, url);
+    assertEquals(2, result.pages().size());
+  }
+
+  @Test
+  void testCrawlEmptyPageNoLinks() throws Exception {
+    // Crawl completes when child page has no outgoing links
+    var engineConfig =
+        MAPPER.readValue("{\"max_concurrent\":1,\"max_depth\":2}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.crawl_empty_page_no_links",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/crawl_empty_page_no_links");
+    var result = Crawlberg.crawl(engine, url);
+    assertEquals(2, result.pages().size());
+  }
+
+  @Test
+  void testCrawlExcludePathPattern() throws Exception {
+    // Skips URLs matching the exclude path pattern
+    var engineConfig = MAPPER.readValue(
+        "{\"exclude_paths\":[\"/admin/.*\"],\"max_depth\":1,\"respect_robots_txt\":false}",
+        CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.crawl_exclude_path_pattern",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/crawl_exclude_path_pattern");
+    var result = Crawlberg.crawl(engine, url);
+    assertEquals(2, result.pages().size());
+  }
+
+  @Test
+  void testCrawlExternalLinksIgnored() throws Exception {
+    // External links are discovered but not followed when stay_on_domain is true
+    var engineConfig = MAPPER.readValue(
+        "{\"max_concurrent\":1,\"max_depth\":1,\"stay_on_domain\":true}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.crawl_external_links_ignored",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/crawl_external_links_ignored");
+    var result = Crawlberg.crawl(engine, url);
+    assertEquals(2, result.pages().size());
+    assertEquals(true, result.stayedOnDomain());
+  }
+
+  @Test
+  void testCrawlFragmentStripping() throws Exception {
+    // Strips #fragment from URLs for deduplication
+    var engineConfig =
+        MAPPER.readValue("{\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.crawl_fragment_stripping",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/crawl_fragment_stripping");
+    var result = Crawlberg.crawl(engine, url);
+    assertEquals(2, result.pages().size());
+  }
+
+  @Test
+  void testCrawlIncludePathPattern() throws Exception {
+    // Only follows URLs matching the include path pattern
+    var engineConfig = MAPPER.readValue(
+        "{\"include_paths\":[\"/blog/.*\"],\"max_depth\":1,\"respect_robots_txt\":false}",
+        CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.crawl_include_path_pattern",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/crawl_include_path_pattern");
+    var result = Crawlberg.crawl(engine, url);
+    assertEquals(2, result.pages().size());
+  }
+
+  @Test
+  void testCrawlMaxDepthZero() throws Exception {
+    // max_depth=0 crawls only the seed page with no link following
+    var engineConfig = MAPPER.readValue("{\"max_depth\":0}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.crawl_max_depth_zero",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/crawl_max_depth_zero");
+    var result = Crawlberg.crawl(engine, url);
+    assertEquals(1, result.pages().size());
+    assertTrue(result.pages().size() <= 1, "expected <= 1");
+  }
+
+  @Test
+  void testCrawlMaxPages() throws Exception {
+    // Stops crawling at page budget limit
+    var engineConfig =
+        MAPPER.readValue("{\"max_pages\":3,\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.crawl_max_pages",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/crawl_max_pages");
+    var result = Crawlberg.crawl(engine, url);
+    assertTrue(result.pages().size() <= 3, "expected <= 3");
+  }
+
+  @Test
+  void testCrawlMixedContentTypes() throws Exception {
+    // Crawl handles links to non-HTML content types gracefully
+    var engineConfig =
+        MAPPER.readValue("{\"max_concurrent\":1,\"max_depth\":1}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.crawl_mixed_content_types",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/crawl_mixed_content_types");
+    var result = Crawlberg.crawl(engine, url);
+    assertTrue(result.pages().size() >= 2, "expected >= 2");
+  }
+
+  @Test
+  void testCrawlMultipleRedirectsInTraversal() throws Exception {
+    // Multiple linked pages with redirects are handled during crawl traversal
+    var engineConfig =
+        MAPPER.readValue("{\"max_concurrent\":1,\"max_depth\":1}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.crawl_multiple_redirects_in_traversal",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/crawl_multiple_redirects_in_traversal");
+    var result = Crawlberg.crawl(engine, url);
+    assertTrue(result.pages().size() >= 1, "expected >= 1");
+  }
+
+  @Test
+  void testCrawlQueryParamDedup() throws Exception {
+    // Deduplicates URLs with same query params in different order
+    var engineConfig =
+        MAPPER.readValue("{\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.crawl_query_param_dedup",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/crawl_query_param_dedup");
+    var result = Crawlberg.crawl(engine, url);
+    assertEquals(2, result.pages().size());
+  }
+
+  @Test
+  void testCrawlRedirectInTraversal() throws Exception {
+    // Links that redirect are followed during crawl traversal
+    var engineConfig =
+        MAPPER.readValue("{\"max_concurrent\":1,\"max_depth\":1}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.crawl_redirect_in_traversal",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/crawl_redirect_in_traversal");
+    var result = Crawlberg.crawl(engine, url);
+    assertTrue(result.pages().size() >= 1, "expected >= 1");
+  }
+
+  @Test
+  void testCrawlSelfLinkNoLoop() throws Exception {
+    // Page linking to itself does not cause infinite crawl loop
+    var engineConfig =
+        MAPPER.readValue("{\"max_concurrent\":1,\"max_depth\":1}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.crawl_self_link_no_loop",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/crawl_self_link_no_loop");
+    var result = Crawlberg.crawl(engine, url);
+    assertEquals(2, result.pages().size());
+  }
+
+  @Test
+  void testCrawlSinglePageNoLinks() throws Exception {
+    // Crawling a page with no links returns only the seed page
+    var engineConfig = MAPPER.readValue("{\"max_depth\":2}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+        + "/fixtures/crawl_single_page_no_links";
+    var result = Crawlberg.crawl(engine, url);
+    assertEquals(1, result.pages().size());
+  }
+
+  @Test
+  void testCrawlStayOnDomain() throws Exception {
+    // Does not follow external links when stay_on_domain is true
+    var engineConfig = MAPPER.readValue(
+        "{\"max_depth\":1,\"respect_robots_txt\":false,\"stay_on_domain\":true}",
+        CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.crawl_stay_on_domain",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/crawl_stay_on_domain");
+    var result = Crawlberg.crawl(engine, url);
+    assertEquals(2, result.pages().size());
+    assertEquals(true, result.stayedOnDomain());
+  }
+
+  @Test
+  void testCrawlSubdomainExclusion() throws Exception {
+    // Stays on exact domain and skips subdomain links
+    var engineConfig = MAPPER.readValue(
+        "{\"allow_subdomains\":false,\"max_depth\":1,\"respect_robots_txt\":false,\"stay_on_domain\":true}",
+        CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.crawl_subdomain_exclusion",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/crawl_subdomain_exclusion");
+    var result = Crawlberg.crawl(engine, url);
+    assertEquals(2, result.pages().size());
+    assertEquals(true, result.stayedOnDomain());
+  }
+
+  @Test
+  void testCrawlSubdomainInclusion() throws Exception {
+    // Crawls subdomains when allow_subdomains is enabled
+    var engineConfig = MAPPER.readValue(
+        "{\"allow_subdomains\":true,\"max_depth\":1,\"respect_robots_txt\":false}",
+        CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.crawl_subdomain_inclusion",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/crawl_subdomain_inclusion");
+    var result = Crawlberg.crawl(engine, url);
+    assertTrue(result.pages().size() >= 2, "expected >= 2");
+  }
+
+  @Test
+  void testCrawlTrailingSlashDedup() throws Exception {
+    // Deduplicates /page and /page/ as the same URL
+    var engineConfig =
+        MAPPER.readValue("{\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.crawl_trailing_slash_dedup",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/crawl_trailing_slash_dedup");
+    var result = Crawlberg.crawl(engine, url);
+    assertEquals(2, result.pages().size());
+  }
+
+  @Test
+  void testCrawlUrlDeduplication() throws Exception {
+    // Deduplicates URLs that differ only by fragment or query params
+    var engineConfig =
+        MAPPER.readValue("{\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.crawl_url_deduplication",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/crawl_url_deduplication");
+    var result = Crawlberg.crawl(engine, url);
+    assertTrue(result.pages().size() <= 2, "expected <= 2");
+  }
 }

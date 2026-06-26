@@ -52,7 +52,7 @@ clap = { version = "4", features = ["derive"] }
 criterion = { version = "0.8", features = ["html_reports"] }
 cssparser = "0.37"
 dashmap = "6"
-deno_core = "0.404"
+deno_core = "0.405"
 deno_error = "0.7"
 dirs = "6"
 encoding_rs = "0.8"
@@ -61,14 +61,14 @@ encoding_rs = "0.8"
 ext-php-rs = "0.15.15"
 flate2 = "1"
 futures = "0.3"
-html-to-markdown-rs = { version = "3.6", features = ["full"] }
+html-to-markdown-rs = { version = "3.7", features = ["full"] }
 html5ever = "0.39"
 ipnet = "2"
-itertools = "0.14"
+itertools = "0.15"
 crawlberg-browser = { path = "crates/crawlberg-browser", version = "0.3.0" }
 crawlberg-bypass = { path = "crates/crawlberg-bypass", version = "0.3.0" }
 libc = "0.2"
-liter-llm = { version = "1.5", features = ["native-http"] }
+liter-llm = { version = "1.8", features = ["native-http"] }
 markup5ever = "0.39"
 memchr = "2"
 minijinja = "2"
@@ -107,7 +107,7 @@ tokio = { version = "1", features = ["full"] }
 tokio-stream = "0.1"
 toml = "1.1"
 tower = { version = "0.5", features = ["timeout", "retry", "limit", "util", "make"] }
-tower-http = { version = "0.6", features = [
+tower-http = { version = "0.7", features = [
     "cors",
     "compression-full",
     "trace",

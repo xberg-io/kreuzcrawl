@@ -5,248 +5,246 @@
 
 package dev.kreuzberg.crawlberg.e2e;
 
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import dev.kreuzberg.crawlberg.Crawlberg;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import dev.kreuzberg.crawlberg.CrawlConfig;
-import java.util.Optional;
-import dev.kreuzberg.crawlberg.JsonUtil;
+import dev.kreuzberg.crawlberg.Crawlberg;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 /** E2e tests for category: validation. */
 public class ValidationTest {
-    private static final ObjectMapper MAPPER = new ObjectMapper().registerModule(new Jdk8Module()).setPropertyNamingStrategy(com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE);
-    @BeforeAll
-    static void initEnv() {        if (System.getProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK") == null) {
-            System.setProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK", "true");
-        }    }
+  private static final ObjectMapper MAPPER = new ObjectMapper()
+      .registerModule(new Jdk8Module())
+      .setPropertyNamingStrategy(
+          com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE);
 
-    @Test
-    void testValidationBrowserEndpointInvalid() throws Exception {
-        // Browser endpoint must be a valid ws:// or wss:// URL, not http://
-        // Wrap setup_lines + call_expr inside the lambda so error fixtures
-        // catch failures at *any* step — including `<Type>.fromJson(...)`
-        // calls that throw on malformed JSON (e.g. error fixtures with an
-        // invalid enum value like `"purpose":"invalid-purpose"`). Mirrors
-        // the C# `Assert.ThrowsAnyAsync(() => client.X(Type.FromJson(...)))`
-        // pattern.
-        assertThrows(Exception.class, () -> {
-            var engineConfig = MAPPER.readValue("{\"browser\":{\"endpoint\":\"http://not-websocket:3000\",\"mode\":\"always\"}}", CrawlConfig.class);
-            var engine = Crawlberg.createEngine(engineConfig);
-            String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/validation_browser_endpoint_invalid";
-            Crawlberg.scrape(engine, url);
-        });
-
+  @BeforeAll
+  static void initEnv() {
+    if (System.getProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK") == null) {
+      System.setProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK", "true");
     }
+  }
 
+  @Test
+  void testValidationBrowserEndpointInvalid() throws Exception {
+    // Browser endpoint must be a valid ws:// or wss:// URL, not http://
+    // Wrap setup_lines + call_expr inside the lambda so error fixtures
+    // catch failures at *any* step — including `<Type>.fromJson(...)`
+    // calls that throw on malformed JSON (e.g. error fixtures with an
+    // invalid enum value like `"purpose":"invalid-purpose"`). Mirrors
+    // the C# `Assert.ThrowsAnyAsync(() => client.X(Type.FromJson(...)))`
+    // pattern.
+    assertThrows(Exception.class, () -> {
+      var engineConfig = MAPPER.readValue(
+          "{\"browser\":{\"endpoint\":\"http://not-websocket:3000\",\"mode\":\"always\"}}",
+          CrawlConfig.class);
+      var engine = Crawlberg.createEngine(engineConfig);
+      String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+          + "/fixtures/validation_browser_endpoint_invalid";
+      Crawlberg.scrape(engine, url);
+    });
+  }
 
-    @Test
-    void testValidationInvalidAuthConfig() throws Exception {
-        // auth object with empty username in basic auth is rejected
-        // Wrap setup_lines + call_expr inside the lambda so error fixtures
-        // catch failures at *any* step — including `<Type>.fromJson(...)`
-        // calls that throw on malformed JSON (e.g. error fixtures with an
-        // invalid enum value like `"purpose":"invalid-purpose"`). Mirrors
-        // the C# `Assert.ThrowsAnyAsync(() => client.X(Type.FromJson(...)))`
-        // pattern.
-        assertThrows(Exception.class, () -> {
-            var engineConfig = MAPPER.readValue("{\"auth\":{\"password\":\"secret\",\"type\":\"basic\",\"username\":\"\"}}", CrawlConfig.class);
-            var engine = Crawlberg.createEngine(engineConfig);
-            String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/validation_invalid_auth_config";
-            Crawlberg.scrape(engine, url);
-        });
+  @Test
+  void testValidationInvalidAuthConfig() throws Exception {
+    // auth object with empty username in basic auth is rejected
+    // Wrap setup_lines + call_expr inside the lambda so error fixtures
+    // catch failures at *any* step — including `<Type>.fromJson(...)`
+    // calls that throw on malformed JSON (e.g. error fixtures with an
+    // invalid enum value like `"purpose":"invalid-purpose"`). Mirrors
+    // the C# `Assert.ThrowsAnyAsync(() => client.X(Type.FromJson(...)))`
+    // pattern.
+    assertThrows(Exception.class, () -> {
+      var engineConfig = MAPPER.readValue(
+          "{\"auth\":{\"password\":\"secret\",\"type\":\"basic\",\"username\":\"\"}}",
+          CrawlConfig.class);
+      var engine = Crawlberg.createEngine(engineConfig);
+      String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+          + "/fixtures/validation_invalid_auth_config";
+      Crawlberg.scrape(engine, url);
+    });
+  }
 
-    }
+  @Test
+  void testValidationInvalidExcludeRegex() throws Exception {
+    // Invalid regex in exclude_paths is rejected
+    // Wrap setup_lines + call_expr inside the lambda so error fixtures
+    // catch failures at *any* step — including `<Type>.fromJson(...)`
+    // calls that throw on malformed JSON (e.g. error fixtures with an
+    // invalid enum value like `"purpose":"invalid-purpose"`). Mirrors
+    // the C# `Assert.ThrowsAnyAsync(() => client.X(Type.FromJson(...)))`
+    // pattern.
+    assertThrows(Exception.class, () -> {
+      var engineConfig = MAPPER.readValue("{\"exclude_paths\":[\"(unclosed\"]}", CrawlConfig.class);
+      var engine = Crawlberg.createEngine(engineConfig);
+      String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+          + "/fixtures/validation_invalid_exclude_regex";
+      Crawlberg.scrape(engine, url);
+    });
+  }
 
+  @Test
+  void testValidationInvalidIncludeRegex() throws Exception {
+    // Invalid regex in include_paths is rejected
+    // Wrap setup_lines + call_expr inside the lambda so error fixtures
+    // catch failures at *any* step — including `<Type>.fromJson(...)`
+    // calls that throw on malformed JSON (e.g. error fixtures with an
+    // invalid enum value like `"purpose":"invalid-purpose"`). Mirrors
+    // the C# `Assert.ThrowsAnyAsync(() => client.X(Type.FromJson(...)))`
+    // pattern.
+    assertThrows(Exception.class, () -> {
+      var engineConfig = MAPPER.readValue("{\"include_paths\":[\"[invalid\"]}", CrawlConfig.class);
+      var engine = Crawlberg.createEngine(engineConfig);
+      String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+          + "/fixtures/validation_invalid_include_regex";
+      Crawlberg.scrape(engine, url);
+    });
+  }
 
-    @Test
-    void testValidationInvalidExcludeRegex() throws Exception {
-        // Invalid regex in exclude_paths is rejected
-        // Wrap setup_lines + call_expr inside the lambda so error fixtures
-        // catch failures at *any* step — including `<Type>.fromJson(...)`
-        // calls that throw on malformed JSON (e.g. error fixtures with an
-        // invalid enum value like `"purpose":"invalid-purpose"`). Mirrors
-        // the C# `Assert.ThrowsAnyAsync(() => client.X(Type.FromJson(...)))`
-        // pattern.
-        assertThrows(Exception.class, () -> {
-            var engineConfig = MAPPER.readValue("{\"exclude_paths\":[\"(unclosed\"]}", CrawlConfig.class);
-            var engine = Crawlberg.createEngine(engineConfig);
-            String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/validation_invalid_exclude_regex";
-            Crawlberg.scrape(engine, url);
-        });
+  @Test
+  void testValidationInvalidProxyUrl() throws Exception {
+    // proxy with invalid URL like 'not-a-url' is rejected
+    // Wrap setup_lines + call_expr inside the lambda so error fixtures
+    // catch failures at *any* step — including `<Type>.fromJson(...)`
+    // calls that throw on malformed JSON (e.g. error fixtures with an
+    // invalid enum value like `"purpose":"invalid-purpose"`). Mirrors
+    // the C# `Assert.ThrowsAnyAsync(() => client.X(Type.FromJson(...)))`
+    // pattern.
+    assertThrows(Exception.class, () -> {
+      var engineConfig = MAPPER.readValue("{\"proxy\":{\"url\":\"not-a-url\"}}", CrawlConfig.class);
+      var engine = Crawlberg.createEngine(engineConfig);
+      String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+          + "/fixtures/validation_invalid_proxy_url";
+      Crawlberg.scrape(engine, url);
+    });
+  }
 
-    }
+  @Test
+  void testValidationInvalidRetryCode() throws Exception {
+    // Retry code outside 100-599 is rejected
+    // Wrap setup_lines + call_expr inside the lambda so error fixtures
+    // catch failures at *any* step — including `<Type>.fromJson(...)`
+    // calls that throw on malformed JSON (e.g. error fixtures with an
+    // invalid enum value like `"purpose":"invalid-purpose"`). Mirrors
+    // the C# `Assert.ThrowsAnyAsync(() => client.X(Type.FromJson(...)))`
+    // pattern.
+    assertThrows(Exception.class, () -> {
+      var engineConfig = MAPPER.readValue("{\"retry_codes\":[999]}", CrawlConfig.class);
+      var engine = Crawlberg.createEngine(engineConfig);
+      String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+          + "/fixtures/validation_invalid_retry_code";
+      Crawlberg.scrape(engine, url);
+    });
+  }
 
+  @Test
+  void testValidationMaxConcurrentZero() throws Exception {
+    // max_concurrent=0 is rejected as invalid config (minimum is 1)
+    // Wrap setup_lines + call_expr inside the lambda so error fixtures
+    // catch failures at *any* step — including `<Type>.fromJson(...)`
+    // calls that throw on malformed JSON (e.g. error fixtures with an
+    // invalid enum value like `"purpose":"invalid-purpose"`). Mirrors
+    // the C# `Assert.ThrowsAnyAsync(() => client.X(Type.FromJson(...)))`
+    // pattern.
+    assertThrows(Exception.class, () -> {
+      var engineConfig = MAPPER.readValue("{\"max_concurrent\":0}", CrawlConfig.class);
+      var engine = Crawlberg.createEngine(engineConfig);
+      String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+          + "/fixtures/validation_max_concurrent_zero";
+      Crawlberg.scrape(engine, url);
+    });
+  }
 
-    @Test
-    void testValidationInvalidIncludeRegex() throws Exception {
-        // Invalid regex in include_paths is rejected
-        // Wrap setup_lines + call_expr inside the lambda so error fixtures
-        // catch failures at *any* step — including `<Type>.fromJson(...)`
-        // calls that throw on malformed JSON (e.g. error fixtures with an
-        // invalid enum value like `"purpose":"invalid-purpose"`). Mirrors
-        // the C# `Assert.ThrowsAnyAsync(() => client.X(Type.FromJson(...)))`
-        // pattern.
-        assertThrows(Exception.class, () -> {
-            var engineConfig = MAPPER.readValue("{\"include_paths\":[\"[invalid\"]}", CrawlConfig.class);
-            var engine = Crawlberg.createEngine(engineConfig);
-            String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/validation_invalid_include_regex";
-            Crawlberg.scrape(engine, url);
-        });
+  @Test
+  void testValidationMaxDepthTooHigh() throws Exception {
+    // max_depth=200 exceeds limit of 100
+    // Wrap setup_lines + call_expr inside the lambda so error fixtures
+    // catch failures at *any* step — including `<Type>.fromJson(...)`
+    // calls that throw on malformed JSON (e.g. error fixtures with an
+    // invalid enum value like `"purpose":"invalid-purpose"`). Mirrors
+    // the C# `Assert.ThrowsAnyAsync(() => client.X(Type.FromJson(...)))`
+    // pattern.
+    assertThrows(Exception.class, () -> {
+      var engineConfig = MAPPER.readValue("{\"max_depth\":200}", CrawlConfig.class);
+      var engine = Crawlberg.createEngine(engineConfig);
+      String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+          + "/fixtures/validation_max_depth_too_high";
+      Crawlberg.scrape(engine, url);
+    });
+  }
 
-    }
+  @Test
+  void testValidationMaxPagesZero() throws Exception {
+    // max_pages=0 is rejected as invalid config
+    // Wrap setup_lines + call_expr inside the lambda so error fixtures
+    // catch failures at *any* step — including `<Type>.fromJson(...)`
+    // calls that throw on malformed JSON (e.g. error fixtures with an
+    // invalid enum value like `"purpose":"invalid-purpose"`). Mirrors
+    // the C# `Assert.ThrowsAnyAsync(() => client.X(Type.FromJson(...)))`
+    // pattern.
+    assertThrows(Exception.class, () -> {
+      var engineConfig = MAPPER.readValue("{\"max_pages\":0}", CrawlConfig.class);
+      var engine = Crawlberg.createEngine(engineConfig);
+      String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+          + "/fixtures/validation_max_pages_zero";
+      Crawlberg.scrape(engine, url);
+    });
+  }
 
+  @Test
+  void testValidationMaxRedirectsTooHigh() throws Exception {
+    // max_redirects > 100 is rejected as invalid config
+    // Wrap setup_lines + call_expr inside the lambda so error fixtures
+    // catch failures at *any* step — including `<Type>.fromJson(...)`
+    // calls that throw on malformed JSON (e.g. error fixtures with an
+    // invalid enum value like `"purpose":"invalid-purpose"`). Mirrors
+    // the C# `Assert.ThrowsAnyAsync(() => client.X(Type.FromJson(...)))`
+    // pattern.
+    assertThrows(Exception.class, () -> {
+      var engineConfig = MAPPER.readValue("{\"max_redirects\":200}", CrawlConfig.class);
+      var engine = Crawlberg.createEngine(engineConfig);
+      String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+          + "/fixtures/validation_max_redirects_too_high";
+      Crawlberg.scrape(engine, url);
+    });
+  }
 
-    @Test
-    void testValidationInvalidProxyUrl() throws Exception {
-        // proxy with invalid URL like 'not-a-url' is rejected
-        // Wrap setup_lines + call_expr inside the lambda so error fixtures
-        // catch failures at *any* step — including `<Type>.fromJson(...)`
-        // calls that throw on malformed JSON (e.g. error fixtures with an
-        // invalid enum value like `"purpose":"invalid-purpose"`). Mirrors
-        // the C# `Assert.ThrowsAnyAsync(() => client.X(Type.FromJson(...)))`
-        // pattern.
-        assertThrows(Exception.class, () -> {
-            var engineConfig = MAPPER.readValue("{\"proxy\":{\"url\":\"not-a-url\"}}", CrawlConfig.class);
-            var engine = Crawlberg.createEngine(engineConfig);
-            String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/validation_invalid_proxy_url";
-            Crawlberg.scrape(engine, url);
-        });
+  @Test
+  void testValidationNegativeBodySize() throws Exception {
+    // max_body_size set to -1 is rejected as invalid config
+    // Wrap setup_lines + call_expr inside the lambda so error fixtures
+    // catch failures at *any* step — including `<Type>.fromJson(...)`
+    // calls that throw on malformed JSON (e.g. error fixtures with an
+    // invalid enum value like `"purpose":"invalid-purpose"`). Mirrors
+    // the C# `Assert.ThrowsAnyAsync(() => client.X(Type.FromJson(...)))`
+    // pattern.
+    assertThrows(Exception.class, () -> {
+      var engineConfig = MAPPER.readValue("{\"max_body_size\":0}", CrawlConfig.class);
+      var engine = Crawlberg.createEngine(engineConfig);
+      String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+          + "/fixtures/validation_negative_body_size";
+      Crawlberg.scrape(engine, url);
+    });
+  }
 
-    }
-
-
-    @Test
-    void testValidationInvalidRetryCode() throws Exception {
-        // Retry code outside 100-599 is rejected
-        // Wrap setup_lines + call_expr inside the lambda so error fixtures
-        // catch failures at *any* step — including `<Type>.fromJson(...)`
-        // calls that throw on malformed JSON (e.g. error fixtures with an
-        // invalid enum value like `"purpose":"invalid-purpose"`). Mirrors
-        // the C# `Assert.ThrowsAnyAsync(() => client.X(Type.FromJson(...)))`
-        // pattern.
-        assertThrows(Exception.class, () -> {
-            var engineConfig = MAPPER.readValue("{\"retry_codes\":[999]}", CrawlConfig.class);
-            var engine = Crawlberg.createEngine(engineConfig);
-            String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/validation_invalid_retry_code";
-            Crawlberg.scrape(engine, url);
-        });
-
-    }
-
-
-    @Test
-    void testValidationMaxConcurrentZero() throws Exception {
-        // max_concurrent=0 is rejected as invalid config (minimum is 1)
-        // Wrap setup_lines + call_expr inside the lambda so error fixtures
-        // catch failures at *any* step — including `<Type>.fromJson(...)`
-        // calls that throw on malformed JSON (e.g. error fixtures with an
-        // invalid enum value like `"purpose":"invalid-purpose"`). Mirrors
-        // the C# `Assert.ThrowsAnyAsync(() => client.X(Type.FromJson(...)))`
-        // pattern.
-        assertThrows(Exception.class, () -> {
-            var engineConfig = MAPPER.readValue("{\"max_concurrent\":0}", CrawlConfig.class);
-            var engine = Crawlberg.createEngine(engineConfig);
-            String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/validation_max_concurrent_zero";
-            Crawlberg.scrape(engine, url);
-        });
-
-    }
-
-
-    @Test
-    void testValidationMaxDepthTooHigh() throws Exception {
-        // max_depth=200 exceeds limit of 100
-        // Wrap setup_lines + call_expr inside the lambda so error fixtures
-        // catch failures at *any* step — including `<Type>.fromJson(...)`
-        // calls that throw on malformed JSON (e.g. error fixtures with an
-        // invalid enum value like `"purpose":"invalid-purpose"`). Mirrors
-        // the C# `Assert.ThrowsAnyAsync(() => client.X(Type.FromJson(...)))`
-        // pattern.
-        assertThrows(Exception.class, () -> {
-            var engineConfig = MAPPER.readValue("{\"max_depth\":200}", CrawlConfig.class);
-            var engine = Crawlberg.createEngine(engineConfig);
-            String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/validation_max_depth_too_high";
-            Crawlberg.scrape(engine, url);
-        });
-
-    }
-
-
-    @Test
-    void testValidationMaxPagesZero() throws Exception {
-        // max_pages=0 is rejected as invalid config
-        // Wrap setup_lines + call_expr inside the lambda so error fixtures
-        // catch failures at *any* step — including `<Type>.fromJson(...)`
-        // calls that throw on malformed JSON (e.g. error fixtures with an
-        // invalid enum value like `"purpose":"invalid-purpose"`). Mirrors
-        // the C# `Assert.ThrowsAnyAsync(() => client.X(Type.FromJson(...)))`
-        // pattern.
-        assertThrows(Exception.class, () -> {
-            var engineConfig = MAPPER.readValue("{\"max_pages\":0}", CrawlConfig.class);
-            var engine = Crawlberg.createEngine(engineConfig);
-            String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/validation_max_pages_zero";
-            Crawlberg.scrape(engine, url);
-        });
-
-    }
-
-
-    @Test
-    void testValidationMaxRedirectsTooHigh() throws Exception {
-        // max_redirects > 100 is rejected as invalid config
-        // Wrap setup_lines + call_expr inside the lambda so error fixtures
-        // catch failures at *any* step — including `<Type>.fromJson(...)`
-        // calls that throw on malformed JSON (e.g. error fixtures with an
-        // invalid enum value like `"purpose":"invalid-purpose"`). Mirrors
-        // the C# `Assert.ThrowsAnyAsync(() => client.X(Type.FromJson(...)))`
-        // pattern.
-        assertThrows(Exception.class, () -> {
-            var engineConfig = MAPPER.readValue("{\"max_redirects\":200}", CrawlConfig.class);
-            var engine = Crawlberg.createEngine(engineConfig);
-            String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/validation_max_redirects_too_high";
-            Crawlberg.scrape(engine, url);
-        });
-
-    }
-
-
-    @Test
-    void testValidationNegativeBodySize() throws Exception {
-        // max_body_size set to -1 is rejected as invalid config
-        // Wrap setup_lines + call_expr inside the lambda so error fixtures
-        // catch failures at *any* step — including `<Type>.fromJson(...)`
-        // calls that throw on malformed JSON (e.g. error fixtures with an
-        // invalid enum value like `"purpose":"invalid-purpose"`). Mirrors
-        // the C# `Assert.ThrowsAnyAsync(() => client.X(Type.FromJson(...)))`
-        // pattern.
-        assertThrows(Exception.class, () -> {
-            var engineConfig = MAPPER.readValue("{\"max_body_size\":0}", CrawlConfig.class);
-            var engine = Crawlberg.createEngine(engineConfig);
-            String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/validation_negative_body_size";
-            Crawlberg.scrape(engine, url);
-        });
-
-    }
-
-
-    @Test
-    void testValidationTimeoutZero() throws Exception {
-        // Zero request timeout is rejected as invalid config
-        // Wrap setup_lines + call_expr inside the lambda so error fixtures
-        // catch failures at *any* step — including `<Type>.fromJson(...)`
-        // calls that throw on malformed JSON (e.g. error fixtures with an
-        // invalid enum value like `"purpose":"invalid-purpose"`). Mirrors
-        // the C# `Assert.ThrowsAnyAsync(() => client.X(Type.FromJson(...)))`
-        // pattern.
-        assertThrows(Exception.class, () -> {
-            var engineConfig = MAPPER.readValue("{\"request_timeout\":0}", CrawlConfig.class);
-            var engine = Crawlberg.createEngine(engineConfig);
-            String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/validation_timeout_zero";
-            Crawlberg.scrape(engine, url);
-        });
-
-    }
-
+  @Test
+  void testValidationTimeoutZero() throws Exception {
+    // Zero request timeout is rejected as invalid config
+    // Wrap setup_lines + call_expr inside the lambda so error fixtures
+    // catch failures at *any* step — including `<Type>.fromJson(...)`
+    // calls that throw on malformed JSON (e.g. error fixtures with an
+    // invalid enum value like `"purpose":"invalid-purpose"`). Mirrors
+    // the C# `Assert.ThrowsAnyAsync(() => client.X(Type.FromJson(...)))`
+    // pattern.
+    assertThrows(Exception.class, () -> {
+      var engineConfig = MAPPER.readValue("{\"request_timeout\":0}", CrawlConfig.class);
+      var engine = Crawlberg.createEngine(engineConfig);
+      String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+          + "/fixtures/validation_timeout_zero";
+      Crawlberg.scrape(engine, url);
+    });
+  }
 }

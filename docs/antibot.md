@@ -174,22 +174,22 @@ use crawlberg::{
 let profile = DispatchProfile::builder()
     // Start with a custom escalation strategy: HTTP → Bypass → Browser
     .strategy(EscalationStrategy::BypassThenBrowser)
-    
+
     // Use a learning retry policy backed by per-domain EWMA state
     .domain_state(Arc::new(EwmaDomainState::new()))
     .retry_policy(Arc::new(LearningRetryPolicy::new(
         Arc::new(EwmaDomainState::new())
     )))
-    
+
     // Cap escalations at $2.50 per job
     .escalation_budget(Arc::new(FixedBudget::new(250)))
-    
+
     // Limit total attempts across all tiers
     .max_total_attempts(15)
-    
+
     // Use a custom WAF classifier (or omit to use the built-in corpus)
     .waf_classifier(Arc::new(TomlClassifier::builtin()))
-    
+
     .build();
 
 // Attach to the crawl config

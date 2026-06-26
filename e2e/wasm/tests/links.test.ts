@@ -4,10 +4,18 @@
 // To verify freshness: alef verify --exit-code
 
 import { describe, expect, it } from "vitest";
-import { scrape, createEngine, WasmCrawlConfig, WasmAuthConfig, WasmBrowserConfig, WasmContentConfig, WasmProxyConfig, WasmSsrfPolicy } from "@kreuzberg/crawlberg-wasm";
+import {
+	scrape,
+	createEngine,
+	WasmCrawlConfig,
+	WasmAuthConfig,
+	WasmBrowserConfig,
+	WasmContentConfig,
+	WasmProxyConfig,
+	WasmSsrfPolicy,
+} from "@kreuzberg/crawlberg-wasm";
 
 process.env.CRAWLBERG_ALLOW_PRIVATE_NETWORK ??= "true";
-
 
 async function _alefE2eDecompressAndParseJson(response: Response): Promise<unknown> {
 	const contentEncoding = response.headers.get("content-encoding");
@@ -35,7 +43,16 @@ function _alefE2eItemTexts(item: unknown): string[] {
 	}
 	const record = item as Record<string, unknown>;
 	const itemsText = Array.isArray(record.items) ? record.items.map(_alefE2eText).join(" ") : "";
-	return [_alefE2eText(item), _alefE2eText(record.kind), _alefE2eText(record.name), _alefE2eText(record.source), _alefE2eText(record.alias), _alefE2eText(record.text), _alefE2eText(record.signature), itemsText];
+	return [
+		_alefE2eText(item),
+		_alefE2eText(record.kind),
+		_alefE2eText(record.name),
+		_alefE2eText(record.source),
+		_alefE2eText(record.alias),
+		_alefE2eText(record.text),
+		_alefE2eText(record.signature),
+		itemsText,
+	];
 }
 
 function _alefE2eFormatMetadataDisplay(fm: unknown): string {
@@ -56,16 +73,16 @@ function _alefE2eFormatMetadataDisplay(fm: unknown): string {
 	return "";
 }
 
-
 describe("links", () => {
-
 	it("links_anchor_fragment: Identifies fragment-only links as anchor type", async () => {
 		const engineConfig = WasmCrawlConfig.default();
 		engineConfig.ssrf.denyPrivate = false;
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_LINKS_ANCHOR_FRAGMENT ?? `${process.env.MOCK_SERVER_URL}/fixtures/links_anchor_fragment`;
+		const url =
+			process.env.MOCK_SERVER_LINKS_ANCHOR_FRAGMENT ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/links_anchor_fragment`;
 		const result = await scrape(engine, url);
-    expect(result.links[0].linkType).toContain("anchor");
+		expect(result.links[0].linkType).toContain("anchor");
 	}, 30000);
 	it("links_base_tag: Resolves relative URLs using base tag href", async () => {
 		const engineConfig = WasmCrawlConfig.default();
@@ -73,16 +90,18 @@ describe("links", () => {
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/links_base_tag`;
 		const result = await scrape(engine, url);
-    expect(Number(result.links.length)).toBeGreaterThan(2);
-    expect(result.links[0].url).toContain("example.com");
+		expect(Number(result.links.length)).toBeGreaterThan(2);
+		expect(result.links[0].url).toContain("example.com");
 	}, 30000);
 	it("links_document_types: Detects PDF, DOCX, XLSX links as document type", async () => {
 		const engineConfig = WasmCrawlConfig.default();
 		engineConfig.ssrf.denyPrivate = false;
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_LINKS_DOCUMENT_TYPES ?? `${process.env.MOCK_SERVER_URL}/fixtures/links_document_types`;
+		const url =
+			process.env.MOCK_SERVER_LINKS_DOCUMENT_TYPES ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/links_document_types`;
 		const result = await scrape(engine, url);
-    expect(result.links[0].linkType).toContain("document");
+		expect(result.links[0].linkType).toContain("document");
 	}, 30000);
 	it("links_empty_href: Handles empty href attributes without errors", async () => {
 		const engineConfig = WasmCrawlConfig.default();
@@ -90,8 +109,8 @@ describe("links", () => {
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/links_empty_href`;
 		const result = await scrape(engine, url);
-    expect(Number(result.links.length)).toBeGreaterThan(0);
-    expect(result.links[0].url).toContain("/valid");
+		expect(Number(result.links.length)).toBeGreaterThan(0);
+		expect(result.links[0].url).toContain("/valid");
 	}, 30000);
 	it("links_internal_external_classification: Correctly classifies internal vs external links by domain", async () => {
 		const engineConfig = WasmCrawlConfig.default();
@@ -99,16 +118,16 @@ describe("links", () => {
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/links_internal_external_classification`;
 		const result = await scrape(engine, url);
-    expect(Number(result.links.length)).toBeGreaterThan(4);
-    {
-        const _v = result.links[0].url;
-        if (typeof _v === "string" || Array.isArray(_v)) {
-            expect(_v.length).toBeGreaterThan(0);
-        } else {
-            expect(_v).toBeDefined();
-            expect(_v).not.toBeNull();
-        }
-    }
+		expect(Number(result.links.length)).toBeGreaterThan(4);
+		{
+			const _v = result.links[0].url;
+			if (typeof _v === "string" || Array.isArray(_v)) {
+				expect(_v.length).toBeGreaterThan(0);
+			} else {
+				expect(_v).toBeDefined();
+				expect(_v).not.toBeNull();
+			}
+		}
 	}, 30000);
 	it("links_mailto_javascript_skip: Skips mailto:, javascript:, and tel: scheme links", async () => {
 		const engineConfig = WasmCrawlConfig.default();
@@ -116,8 +135,8 @@ describe("links", () => {
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/links_mailto_javascript_skip`;
 		const result = await scrape(engine, url);
-    expect(Number(result.links.length)).toBeGreaterThan(0);
-    expect(result.links[0].url).not.toContain("mailto:");
+		expect(Number(result.links.length)).toBeGreaterThan(0);
+		expect(result.links[0].url).not.toContain("mailto:");
 	}, 30000);
 	it("links_protocol_relative: Handles protocol-relative URLs (//example.com) correctly", async () => {
 		const engineConfig = WasmCrawlConfig.default();
@@ -125,8 +144,8 @@ describe("links", () => {
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/links_protocol_relative`;
 		const result = await scrape(engine, url);
-    expect(Number(result.links.length)).toBeGreaterThan(1);
-    expect(result.links[0].url).toContain("//");
+		expect(Number(result.links.length)).toBeGreaterThan(1);
+		expect(result.links[0].url).toContain("//");
 	}, 30000);
 	it("links_rel_attributes: Preserves rel=nofollow and rel=canonical attributes", async () => {
 		const engineConfig = WasmCrawlConfig.default();
@@ -134,7 +153,7 @@ describe("links", () => {
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/links_rel_attributes`;
 		const result = await scrape(engine, url);
-    expect(Number(result.links.length)).toBeGreaterThan(0);
+		expect(Number(result.links.length)).toBeGreaterThan(0);
 	}, 30000);
 	it("links_relative_parent: Resolves ../ and ./ relative parent path links correctly", async () => {
 		const engineConfig = WasmCrawlConfig.default();
@@ -142,6 +161,6 @@ describe("links", () => {
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/links_relative_parent`;
 		const result = await scrape(engine, url);
-    expect(Number(result.links.length)).toBeGreaterThan(3);
+		expect(Number(result.links.length)).toBeGreaterThan(3);
 	}, 30000);
 });

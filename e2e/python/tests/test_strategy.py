@@ -30,36 +30,42 @@ def _alef_e2e_item_texts(item: object) -> tuple[str, ...]:
 
 
 @pytest.mark.asyncio
-
 async def test_strategy_adaptive_saturation() -> None:
     """Adaptive strategy stops early when encountering saturation (duplicate content)."""
     engine_config = CrawlConfig(max_concurrent=1, max_depth=2, respect_robots_txt=False)
     engine = create_engine(engine_config)
-    url = os.environ.get('MOCK_SERVER_STRATEGY_ADAPTIVE_SATURATION') or os.environ['MOCK_SERVER_URL'] + '/fixtures/strategy_adaptive_saturation'
+    url = (
+        os.environ.get("MOCK_SERVER_STRATEGY_ADAPTIVE_SATURATION")
+        or os.environ["MOCK_SERVER_URL"] + "/fixtures/strategy_adaptive_saturation"
+    )
 
     _ = await crawl(engine, url)
     # skipped: field 'crawl.pages_crawled' not available on result type
 
 
 @pytest.mark.asyncio
-
 async def test_strategy_adaptive_window() -> None:
     """Adaptive strategy crawls more pages when content is diverse."""
     engine_config = CrawlConfig(max_concurrent=1, max_depth=1, respect_robots_txt=False)
     engine = create_engine(engine_config)
-    url = os.environ.get('MOCK_SERVER_STRATEGY_ADAPTIVE_WINDOW') or os.environ['MOCK_SERVER_URL'] + '/fixtures/strategy_adaptive_window'
+    url = (
+        os.environ.get("MOCK_SERVER_STRATEGY_ADAPTIVE_WINDOW")
+        or os.environ["MOCK_SERVER_URL"] + "/fixtures/strategy_adaptive_window"
+    )
 
     _ = await crawl(engine, url)
     # skipped: field 'crawl.pages_crawled' not available on result type
 
 
 @pytest.mark.asyncio
-
 async def test_strategy_best_first_seed() -> None:
     """BestFirst strategy always processes the seed URL first."""
     engine_config = CrawlConfig(max_concurrent=1, max_depth=1)
     engine = create_engine(engine_config)
-    url = os.environ.get('MOCK_SERVER_STRATEGY_BEST_FIRST_SEED') or os.environ['MOCK_SERVER_URL'] + '/fixtures/strategy_best_first_seed'
+    url = (
+        os.environ.get("MOCK_SERVER_STRATEGY_BEST_FIRST_SEED")
+        or os.environ["MOCK_SERVER_URL"] + "/fixtures/strategy_best_first_seed"
+    )
 
     _ = await crawl(engine, url)
     # skipped: field 'crawl.pages_crawled' not available on result type
@@ -67,12 +73,14 @@ async def test_strategy_best_first_seed() -> None:
 
 
 @pytest.mark.asyncio
-
 async def test_strategy_bfs_default_order() -> None:
     """BFS strategy visits pages in breadth-first order."""
     engine_config = CrawlConfig(max_concurrent=1, max_depth=2)
     engine = create_engine(engine_config)
-    url = os.environ.get('MOCK_SERVER_STRATEGY_BFS_DEFAULT_ORDER') or os.environ['MOCK_SERVER_URL'] + '/fixtures/strategy_bfs_default_order'
+    url = (
+        os.environ.get("MOCK_SERVER_STRATEGY_BFS_DEFAULT_ORDER")
+        or os.environ["MOCK_SERVER_URL"] + "/fixtures/strategy_bfs_default_order"
+    )
 
     _ = await crawl(engine, url)
     # skipped: field 'crawl.pages_crawled' not available on result type
@@ -80,12 +88,14 @@ async def test_strategy_bfs_default_order() -> None:
 
 
 @pytest.mark.asyncio
-
 async def test_strategy_dfs_depth_first() -> None:
     """DFS strategy visits pages in depth-first order."""
     engine_config = CrawlConfig(max_concurrent=1, max_depth=2)
     engine = create_engine(engine_config)
-    url = os.environ.get('MOCK_SERVER_STRATEGY_DFS_DEPTH_FIRST') or os.environ['MOCK_SERVER_URL'] + '/fixtures/strategy_dfs_depth_first'
+    url = (
+        os.environ.get("MOCK_SERVER_STRATEGY_DFS_DEPTH_FIRST")
+        or os.environ["MOCK_SERVER_URL"] + "/fixtures/strategy_dfs_depth_first"
+    )
 
     _ = await crawl(engine, url)
     # skipped: field 'crawl.pages_crawled' not available on result type

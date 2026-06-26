@@ -1,15 +1,25 @@
 {
-  "name": "@kreuzberg/crawlberg-win32-x64-msvc",
-  "version": "0.3.0",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/xberg-io/crawlberg.git"
-  },
-  "main": "crawlberg-node.win32-x64-msvc.node",
-  "files": ["crawlberg-node.win32-x64-msvc.node"],
-  "os": ["win32"],
-  "cpu": ["x64"],
-  "engines": { "node": ">= 18" },
-  "publishConfig": { "access": "public" }
+	"name": "@kreuzberg/crawlberg-win32-x64-msvc",
+	"version": "0.3.0",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/xberg-io/crawlberg.git"
+	},
+	"files": [
+		"crawlberg-node.win32-x64-msvc.node"
+	],
+	"os": [
+		"win32"
+	],
+	"cpu": [
+		"x64"
+	],
+	"main": "crawlberg-node.win32-x64-msvc.node",
+	"publishConfig": {
+		"access": "public"
+	},
+	"engines": {
+		"node": ">= 18"
+	}
 }

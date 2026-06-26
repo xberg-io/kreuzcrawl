@@ -9,7 +9,13 @@ keywords = ["crawl", "scrape", "spider", "web"]
 categories = []
 
 [package.metadata.cargo-machete]
-ignored = ["tokio", "futures-util", "alloc-no-stdlib", "alloc-stdlib", "brotli-decompressor"]
+ignored = [
+    "tokio",
+    "futures-util",
+    "alloc-no-stdlib",
+    "alloc-stdlib",
+    "brotli-decompressor",
+]
 
 [workspace]
 

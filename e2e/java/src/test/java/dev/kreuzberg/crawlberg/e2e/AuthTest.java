@@ -5,56 +5,68 @@
 
 package dev.kreuzberg.crawlberg.e2e;
 
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import dev.kreuzberg.crawlberg.Crawlberg;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import dev.kreuzberg.crawlberg.CrawlConfig;
-import java.util.Optional;
-import dev.kreuzberg.crawlberg.JsonUtil;
+import dev.kreuzberg.crawlberg.Crawlberg;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 /** E2e tests for category: auth. */
 public class AuthTest {
-    private static final ObjectMapper MAPPER = new ObjectMapper().registerModule(new Jdk8Module()).setPropertyNamingStrategy(com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE);
-    @BeforeAll
-    static void initEnv() {        if (System.getProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK") == null) {
-            System.setProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK", "true");
-        }    }
+  private static final ObjectMapper MAPPER = new ObjectMapper()
+      .registerModule(new Jdk8Module())
+      .setPropertyNamingStrategy(
+          com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE);
 
-    @Test
-    void testAuthBasicHttp() throws Exception {
-        // Sends HTTP Basic authentication header
-        var engineConfig = MAPPER.readValue("{\"auth\":{\"password\":\"testpass\",\"type\":\"basic\",\"username\":\"testuser\"},\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/auth_basic_http";
-        var result = Crawlberg.scrape(engine, url);
-assertEquals(true, result.authHeaderSent());assertEquals(200, result.statusCode());
-
+  @BeforeAll
+  static void initEnv() {
+    if (System.getProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK") == null) {
+      System.setProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK", "true");
     }
+  }
 
+  @Test
+  void testAuthBasicHttp() throws Exception {
+    // Sends HTTP Basic authentication header
+    var engineConfig = MAPPER.readValue(
+        "{\"auth\":{\"password\":\"testpass\",\"type\":\"basic\",\"username\":\"testuser\"},\"respect_robots_txt\":false}",
+        CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+        + "/fixtures/auth_basic_http";
+    var result = Crawlberg.scrape(engine, url);
+    assertEquals(true, result.authHeaderSent());
+    assertEquals(200, result.statusCode());
+  }
 
-    @Test
-    void testAuthBearerToken() throws Exception {
-        // Sends Bearer token in Authorization header
-        var engineConfig = MAPPER.readValue("{\"auth\":{\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test\",\"type\":\"bearer\"},\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/auth_bearer_token";
-        var result = Crawlberg.scrape(engine, url);
-assertEquals(true, result.authHeaderSent());assertEquals(200, result.statusCode());
+  @Test
+  void testAuthBearerToken() throws Exception {
+    // Sends Bearer token in Authorization header
+    var engineConfig = MAPPER.readValue(
+        "{\"auth\":{\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test\",\"type\":\"bearer\"},\"respect_robots_txt\":false}",
+        CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+        + "/fixtures/auth_bearer_token";
+    var result = Crawlberg.scrape(engine, url);
+    assertEquals(true, result.authHeaderSent());
+    assertEquals(200, result.statusCode());
+  }
 
-    }
-
-
-    @Test
-    void testAuthCustomHeader() throws Exception {
-        // Sends authentication via custom header (X-API-Key)
-        var engineConfig = MAPPER.readValue("{\"auth\":{\"name\":\"X-API-Key\",\"type\":\"header\",\"value\":\"sk-test-key-12345\"},\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/auth_custom_header";
-        var result = Crawlberg.scrape(engine, url);
-assertEquals(true, result.authHeaderSent());assertEquals(200, result.statusCode());
-
-    }
-
+  @Test
+  void testAuthCustomHeader() throws Exception {
+    // Sends authentication via custom header (X-API-Key)
+    var engineConfig = MAPPER.readValue(
+        "{\"auth\":{\"name\":\"X-API-Key\",\"type\":\"header\",\"value\":\"sk-test-key-12345\"},\"respect_robots_txt\":false}",
+        CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+        + "/fixtures/auth_custom_header";
+    var result = Crawlberg.scrape(engine, url);
+    assertEquals(true, result.authHeaderSent());
+    assertEquals(200, result.statusCode());
+  }
 }

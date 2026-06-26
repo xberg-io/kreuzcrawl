@@ -4,10 +4,18 @@
 // To verify freshness: alef verify --exit-code
 
 import { describe, expect, it } from "vitest";
-import { scrape, createEngine, WasmCrawlConfig, WasmAuthConfig, WasmBrowserConfig, WasmContentConfig, WasmProxyConfig, WasmSsrfPolicy } from "@kreuzberg/crawlberg-wasm";
+import {
+	scrape,
+	createEngine,
+	WasmCrawlConfig,
+	WasmAuthConfig,
+	WasmBrowserConfig,
+	WasmContentConfig,
+	WasmProxyConfig,
+	WasmSsrfPolicy,
+} from "@kreuzberg/crawlberg-wasm";
 
 process.env.CRAWLBERG_ALLOW_PRIVATE_NETWORK ??= "true";
-
 
 async function _alefE2eDecompressAndParseJson(response: Response): Promise<unknown> {
 	const contentEncoding = response.headers.get("content-encoding");
@@ -35,7 +43,16 @@ function _alefE2eItemTexts(item: unknown): string[] {
 	}
 	const record = item as Record<string, unknown>;
 	const itemsText = Array.isArray(record.items) ? record.items.map(_alefE2eText).join(" ") : "";
-	return [_alefE2eText(item), _alefE2eText(record.kind), _alefE2eText(record.name), _alefE2eText(record.source), _alefE2eText(record.alias), _alefE2eText(record.text), _alefE2eText(record.signature), itemsText];
+	return [
+		_alefE2eText(item),
+		_alefE2eText(record.kind),
+		_alefE2eText(record.name),
+		_alefE2eText(record.source),
+		_alefE2eText(record.alias),
+		_alefE2eText(record.text),
+		_alefE2eText(record.signature),
+		itemsText,
+	];
 }
 
 function _alefE2eFormatMetadataDisplay(fm: unknown): string {
@@ -56,9 +73,7 @@ function _alefE2eFormatMetadataDisplay(fm: unknown): string {
 	return "";
 }
 
-
 describe("download", () => {
-
 	it("download_basic_pdf: Download a basic PDF document with download_documents enabled", async () => {
 		const engineConfig = WasmCrawlConfig.default();
 		engineConfig.downloadDocuments = true;
@@ -67,7 +82,7 @@ describe("download", () => {
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/download_basic_pdf`;
 		const result = await scrape(engine, url);
-    expect(result.downloadedDocument.mimeType.trim()).toBe("application/pdf");
+		expect(result.downloadedDocument.mimeType.trim()).toBe("application/pdf");
 	}, 30000);
 	it("download_filename_extraction: Extract filename from Content-Disposition header", async () => {
 		const engineConfig = WasmCrawlConfig.default();
@@ -77,8 +92,8 @@ describe("download", () => {
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/download_filename_extraction`;
 		const result = await scrape(engine, url);
-    expect(result.downloadedDocument.mimeType.trim()).toBe("application/pdf");
-    expect(Number(result.statusCode)).toBe(200);
+		expect(result.downloadedDocument.mimeType.trim()).toBe("application/pdf");
+		expect(Number(result.statusCode)).toBe(200);
 	}, 30000);
 	it("download_mime_filter: Only download documents matching specified MIME types (PDF only, not DOCX)", async () => {
 		const engineConfig = WasmCrawlConfig.default();
@@ -89,7 +104,7 @@ describe("download", () => {
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/download_mime_filter`;
 		const result = await scrape(engine, url);
-    expect(result.downloadedDocument.mimeType.trim()).toBe("application/pdf");
+		expect(result.downloadedDocument.mimeType.trim()).toBe("application/pdf");
 	}, 30000);
 	it("download_no_document: HTML pages are not downloaded as documents even when download_documents is enabled", async () => {
 		const engineConfig = WasmCrawlConfig.default();
@@ -99,7 +114,7 @@ describe("download", () => {
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/download_no_document`;
 		const result = await scrape(engine, url);
-    expect(Number(result.statusCode)).toBe(200);
+		expect(Number(result.statusCode)).toBe(200);
 	}, 30000);
 	it("download_size_limit: Reject documents exceeding the configured size limit", async () => {
 		const engineConfig = WasmCrawlConfig.default();
@@ -110,6 +125,6 @@ describe("download", () => {
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/download_size_limit`;
 		const result = await scrape(engine, url);
-    expect(Number(result.statusCode)).toBe(200);
+		expect(Number(result.statusCode)).toBe(200);
 	}, 30000);
 });

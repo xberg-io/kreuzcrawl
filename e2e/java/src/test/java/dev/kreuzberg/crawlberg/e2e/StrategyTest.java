@@ -5,80 +5,104 @@
 
 package dev.kreuzberg.crawlberg.e2e;
 
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import dev.kreuzberg.crawlberg.Crawlberg;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import dev.kreuzberg.crawlberg.CrawlConfig;
-import java.util.Optional;
-import dev.kreuzberg.crawlberg.JsonUtil;
+import dev.kreuzberg.crawlberg.Crawlberg;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 /** E2e tests for category: strategy. */
 public class StrategyTest {
-    private static final ObjectMapper MAPPER = new ObjectMapper().registerModule(new Jdk8Module()).setPropertyNamingStrategy(com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE);
-    @BeforeAll
-    static void initEnv() {        if (System.getProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK") == null) {
-            System.setProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK", "true");
-        }    }
+  private static final ObjectMapper MAPPER = new ObjectMapper()
+      .registerModule(new Jdk8Module())
+      .setPropertyNamingStrategy(
+          com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE);
 
-    @Test
-    void testStrategyAdaptiveSaturation() throws Exception {
-        // Adaptive strategy stops early when encountering saturation (duplicate content)
-        var engineConfig = MAPPER.readValue("{\"max_concurrent\":1,\"max_depth\":2,\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.strategy_adaptive_saturation", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/strategy_adaptive_saturation");
-        var result = Crawlberg.crawl(engine, url);
-        // skipped: field 'crawl.pages_crawled' not available on result type
-
+  @BeforeAll
+  static void initEnv() {
+    if (System.getProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK") == null) {
+      System.setProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK", "true");
     }
+  }
 
+  @Test
+  void testStrategyAdaptiveSaturation() throws Exception {
+    // Adaptive strategy stops early when encountering saturation (duplicate content)
+    var engineConfig = MAPPER.readValue(
+        "{\"max_concurrent\":1,\"max_depth\":2,\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.strategy_adaptive_saturation",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/strategy_adaptive_saturation");
+    var result = Crawlberg.crawl(engine, url);
+    // skipped: field 'crawl.pages_crawled' not available on result type
 
-    @Test
-    void testStrategyAdaptiveWindow() throws Exception {
-        // Adaptive strategy crawls more pages when content is diverse
-        var engineConfig = MAPPER.readValue("{\"max_concurrent\":1,\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.strategy_adaptive_window", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/strategy_adaptive_window");
-        var result = Crawlberg.crawl(engine, url);
-        // skipped: field 'crawl.pages_crawled' not available on result type
+  }
 
-    }
+  @Test
+  void testStrategyAdaptiveWindow() throws Exception {
+    // Adaptive strategy crawls more pages when content is diverse
+    var engineConfig = MAPPER.readValue(
+        "{\"max_concurrent\":1,\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.strategy_adaptive_window",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/strategy_adaptive_window");
+    var result = Crawlberg.crawl(engine, url);
+    // skipped: field 'crawl.pages_crawled' not available on result type
 
+  }
 
-    @Test
-    void testStrategyBestFirstSeed() throws Exception {
-        // BestFirst strategy always processes the seed URL first
-        var engineConfig = MAPPER.readValue("{\"max_concurrent\":1,\"max_depth\":1}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.strategy_best_first_seed", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/strategy_best_first_seed");
-        var result = Crawlberg.crawl(engine, url);
-        // skipped: field 'crawl.pages_crawled' not available on result type        // skipped: field 'strategy.first_page_url_contains' not available on result type
+  @Test
+  void testStrategyBestFirstSeed() throws Exception {
+    // BestFirst strategy always processes the seed URL first
+    var engineConfig =
+        MAPPER.readValue("{\"max_concurrent\":1,\"max_depth\":1}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.strategy_best_first_seed",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/strategy_best_first_seed");
+    var result = Crawlberg.crawl(engine, url);
+    // skipped: field 'crawl.pages_crawled' not available on result type        // skipped: field
+    // 'strategy.first_page_url_contains' not available on result type
 
-    }
+  }
 
+  @Test
+  void testStrategyBfsDefaultOrder() throws Exception {
+    // BFS strategy visits pages in breadth-first order
+    var engineConfig =
+        MAPPER.readValue("{\"max_concurrent\":1,\"max_depth\":2}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.strategy_bfs_default_order",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/strategy_bfs_default_order");
+    var result = Crawlberg.crawl(engine, url);
+    // skipped: field 'crawl.pages_crawled' not available on result type        // skipped: field
+    // 'strategy.crawl_order' not available on result type
 
-    @Test
-    void testStrategyBfsDefaultOrder() throws Exception {
-        // BFS strategy visits pages in breadth-first order
-        var engineConfig = MAPPER.readValue("{\"max_concurrent\":1,\"max_depth\":2}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.strategy_bfs_default_order", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/strategy_bfs_default_order");
-        var result = Crawlberg.crawl(engine, url);
-        // skipped: field 'crawl.pages_crawled' not available on result type        // skipped: field 'strategy.crawl_order' not available on result type
+  }
 
-    }
+  @Test
+  void testStrategyDfsDepthFirst() throws Exception {
+    // DFS strategy visits pages in depth-first order
+    var engineConfig =
+        MAPPER.readValue("{\"max_concurrent\":1,\"max_depth\":2}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.strategy_dfs_depth_first",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/strategy_dfs_depth_first");
+    var result = Crawlberg.crawl(engine, url);
+    // skipped: field 'crawl.pages_crawled' not available on result type        // skipped: field
+    // 'strategy.crawl_order' not available on result type
 
-
-    @Test
-    void testStrategyDfsDepthFirst() throws Exception {
-        // DFS strategy visits pages in depth-first order
-        var engineConfig = MAPPER.readValue("{\"max_concurrent\":1,\"max_depth\":2}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.strategy_dfs_depth_first", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/strategy_dfs_depth_first");
-        var result = Crawlberg.crawl(engine, url);
-        // skipped: field 'crawl.pages_crawled' not available on result type        // skipped: field 'strategy.crawl_order' not available on result type
-
-    }
-
+  }
 }

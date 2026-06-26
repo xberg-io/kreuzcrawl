@@ -8,7 +8,6 @@ import { scrape, crawl, createEngine } from "@kreuzberg/crawlberg";
 
 process.env.CRAWLBERG_ALLOW_PRIVATE_NETWORK ??= "true";
 
-
 async function _alefE2eDecompressAndParseJson(response: Response): Promise<unknown> {
 	const contentEncoding = response.headers.get("content-encoding");
 	let buffer = await response.arrayBuffer();
@@ -35,7 +34,16 @@ function _alefE2eItemTexts(item: unknown): string[] {
 	}
 	const record = item as Record<string, unknown>;
 	const itemsText = Array.isArray(record.items) ? record.items.map(_alefE2eText).join(" ") : "";
-	return [_alefE2eText(item), _alefE2eText(record.kind), _alefE2eText(record.name), _alefE2eText(record.source), _alefE2eText(record.alias), _alefE2eText(record.text), _alefE2eText(record.signature), itemsText];
+	return [
+		_alefE2eText(item),
+		_alefE2eText(record.kind),
+		_alefE2eText(record.name),
+		_alefE2eText(record.source),
+		_alefE2eText(record.alias),
+		_alefE2eText(record.text),
+		_alefE2eText(record.signature),
+		itemsText,
+	];
 }
 
 function _alefE2eFormatMetadataDisplay(fm: unknown): string {
@@ -56,102 +64,116 @@ function _alefE2eFormatMetadataDisplay(fm: unknown): string {
 	return "";
 }
 
-
 describe("redirect", () => {
-
 	it("redirect_301_permanent: Follows 301 permanent redirect and returns final page content", async () => {
 		const engineConfig = { respectRobotsTxt: false };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_REDIRECT_301_PERMANENT ?? `${process.env.MOCK_SERVER_URL}/fixtures/redirect_301_permanent`;
+		const url =
+			process.env.MOCK_SERVER_REDIRECT_301_PERMANENT ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/redirect_301_permanent`;
 		const result = await crawl(engine, url);
-    expect(result.finalUrl).toContain("/target");
-    expect(result.redirectCount).toBe(1);
+		expect(result.finalUrl).toContain("/target");
+		expect(result.redirectCount).toBe(1);
 	}, 30000);
 	it("redirect_302_found: Follows 302 Found redirect correctly", async () => {
 		const engineConfig = { respectRobotsTxt: false };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_REDIRECT_302_FOUND ?? `${process.env.MOCK_SERVER_URL}/fixtures/redirect_302_found`;
+		const url =
+			process.env.MOCK_SERVER_REDIRECT_302_FOUND ?? `${process.env.MOCK_SERVER_URL}/fixtures/redirect_302_found`;
 		const result = await crawl(engine, url);
-    expect(result.finalUrl).toContain("/found-target");
-    expect(result.redirectCount).toBe(1);
+		expect(result.finalUrl).toContain("/found-target");
+		expect(result.redirectCount).toBe(1);
 	}, 30000);
 	it("redirect_303_see_other: Follows 303 See Other redirect (method changes to GET)", async () => {
 		const engineConfig = { respectRobotsTxt: false };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_REDIRECT_303_SEE_OTHER ?? `${process.env.MOCK_SERVER_URL}/fixtures/redirect_303_see_other`;
+		const url =
+			process.env.MOCK_SERVER_REDIRECT_303_SEE_OTHER ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/redirect_303_see_other`;
 		const result = await crawl(engine, url);
-    expect(result.finalUrl).toContain("/see-other");
-    expect(result.redirectCount).toBe(1);
+		expect(result.finalUrl).toContain("/see-other");
+		expect(result.redirectCount).toBe(1);
 	}, 30000);
 	it("redirect_307_temporary: Follows 307 Temporary Redirect (preserves method)", async () => {
 		const engineConfig = { respectRobotsTxt: false };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_REDIRECT_307_TEMPORARY ?? `${process.env.MOCK_SERVER_URL}/fixtures/redirect_307_temporary`;
+		const url =
+			process.env.MOCK_SERVER_REDIRECT_307_TEMPORARY ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/redirect_307_temporary`;
 		const result = await crawl(engine, url);
-    expect(result.finalUrl).toContain("/temp-target");
-    expect(result.redirectCount).toBe(1);
+		expect(result.finalUrl).toContain("/temp-target");
+		expect(result.redirectCount).toBe(1);
 	}, 30000);
 	it("redirect_308_permanent: Follows 308 Permanent Redirect (preserves method)", async () => {
 		const engineConfig = { respectRobotsTxt: false };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_REDIRECT_308_PERMANENT ?? `${process.env.MOCK_SERVER_URL}/fixtures/redirect_308_permanent`;
+		const url =
+			process.env.MOCK_SERVER_REDIRECT_308_PERMANENT ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/redirect_308_permanent`;
 		const result = await crawl(engine, url);
-    expect(result.finalUrl).toContain("/perm-target");
-    expect(result.redirectCount).toBe(1);
+		expect(result.finalUrl).toContain("/perm-target");
+		expect(result.redirectCount).toBe(1);
 	}, 30000);
 	it("redirect_chain: Follows a chain of redirects (301 -> 302 -> 200)", async () => {
 		const engineConfig = { respectRobotsTxt: false };
 		const engine = createEngine(engineConfig);
 		const url = process.env.MOCK_SERVER_REDIRECT_CHAIN ?? `${process.env.MOCK_SERVER_URL}/fixtures/redirect_chain`;
 		const result = await crawl(engine, url);
-    expect(result.finalUrl).toContain("/step2");
-    expect(result.redirectCount).toBe(2);
+		expect(result.finalUrl).toContain("/step2");
+		expect(result.redirectCount).toBe(2);
 	}, 30000);
 	it("redirect_cross_domain: Reports cross-domain redirect target without following to external domain", async () => {
 		const engineConfig = { respectRobotsTxt: false };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_REDIRECT_CROSS_DOMAIN ?? `${process.env.MOCK_SERVER_URL}/fixtures/redirect_cross_domain`;
+		const url =
+			process.env.MOCK_SERVER_REDIRECT_CROSS_DOMAIN ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/redirect_cross_domain`;
 		const result = await crawl(engine, url);
-    expect(result.finalUrl).toContain("/external-redirect");
-    expect(result.redirectCount).toBe(1);
+		expect(result.finalUrl).toContain("/external-redirect");
+		expect(result.redirectCount).toBe(1);
 	}, 30000);
 	it("redirect_loop: Detects redirect loop (A -> B -> A) and returns error", async () => {
 		const engineConfig = { respectRobotsTxt: false };
 		const engine = createEngine(engineConfig);
 		const url = process.env.MOCK_SERVER_REDIRECT_LOOP ?? `${process.env.MOCK_SERVER_URL}/fixtures/redirect_loop`;
 		await crawl(engine, url);
-    // skipped: field 'is_error' not available on result type
+		// skipped: field 'is_error' not available on result type
 	}, 30000);
 	it("redirect_max_exceeded: Aborts when redirect count exceeds max_redirects limit", async () => {
 		const engineConfig = { maxRedirects: 2, respectRobotsTxt: false };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_REDIRECT_MAX_EXCEEDED ?? `${process.env.MOCK_SERVER_URL}/fixtures/redirect_max_exceeded`;
+		const url =
+			process.env.MOCK_SERVER_REDIRECT_MAX_EXCEEDED ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/redirect_max_exceeded`;
 		await crawl(engine, url);
-    // skipped: field 'is_error' not available on result type
+		// skipped: field 'is_error' not available on result type
 	}, 30000);
 	it("redirect_meta_refresh: Follows HTML meta-refresh redirect to target page", async () => {
 		const engineConfig = { respectRobotsTxt: false };
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/redirect_meta_refresh`;
 		const result = await crawl(engine, url);
-    expect(result.finalUrl).toContain("/target");
-    expect(result.redirectCount).toBe(1);
+		expect(result.finalUrl).toContain("/target");
+		expect(result.redirectCount).toBe(1);
 	}, 30000);
 	it("redirect_refresh_header: Handles HTTP Refresh header redirect", async () => {
 		const engineConfig = { respectRobotsTxt: false };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_REDIRECT_REFRESH_HEADER ?? `${process.env.MOCK_SERVER_URL}/fixtures/redirect_refresh_header`;
+		const url =
+			process.env.MOCK_SERVER_REDIRECT_REFRESH_HEADER ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/redirect_refresh_header`;
 		const result = await crawl(engine, url);
-    expect(result.finalUrl).toContain("/refreshed");
-    expect(result.redirectCount).toBe(1);
+		expect(result.finalUrl).toContain("/refreshed");
+		expect(result.redirectCount).toBe(1);
 	}, 30000);
 	it("redirect_to_404: Redirect target returns 404 Not Found", async () => {
 		const engineConfig = { respectRobotsTxt: false };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_REDIRECT_TO_404 ?? `${process.env.MOCK_SERVER_URL}/fixtures/redirect_to_404`;
+		const url =
+			process.env.MOCK_SERVER_REDIRECT_TO_404 ?? `${process.env.MOCK_SERVER_URL}/fixtures/redirect_to_404`;
 		const result = await crawl(engine, url);
-    expect(result.finalUrl).toContain("/gone");
-    expect(result.redirectCount).toBe(1);
-    // skipped: field 'is_error' not available on result type
+		expect(result.finalUrl).toContain("/gone");
+		expect(result.redirectCount).toBe(1);
+		// skipped: field 'is_error' not available on result type
 	}, 30000);
 });

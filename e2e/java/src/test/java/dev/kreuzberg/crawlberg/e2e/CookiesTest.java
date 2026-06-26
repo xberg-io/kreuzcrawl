@@ -5,56 +5,90 @@
 
 package dev.kreuzberg.crawlberg.e2e;
 
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import dev.kreuzberg.crawlberg.Crawlberg;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import dev.kreuzberg.crawlberg.CrawlConfig;
-import java.util.Optional;
-import dev.kreuzberg.crawlberg.JsonUtil;
+import dev.kreuzberg.crawlberg.Crawlberg;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 /** E2e tests for category: cookies. */
 public class CookiesTest {
-    private static final ObjectMapper MAPPER = new ObjectMapper().registerModule(new Jdk8Module()).setPropertyNamingStrategy(com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE);
-    @BeforeAll
-    static void initEnv() {        if (System.getProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK") == null) {
-            System.setProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK", "true");
-        }    }
+  private static final ObjectMapper MAPPER = new ObjectMapper()
+      .registerModule(new Jdk8Module())
+      .setPropertyNamingStrategy(
+          com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE);
 
-    @Test
-    void testCookiesPerDomain() throws Exception {
-        // Isolates cookies per domain during crawl
-        var engineConfig = MAPPER.readValue("{\"cookies_enabled\":true,\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.cookies_per_domain", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/cookies_per_domain");
-        var result = Crawlberg.crawl(engine, url);
-assertEquals(1, result.cookies().size());assertTrue(result.cookies().toString().toLowerCase().contains(String.valueOf("domain_cookie").toLowerCase()), "expected to contain: " + "domain_cookie");
-
+  @BeforeAll
+  static void initEnv() {
+    if (System.getProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK") == null) {
+      System.setProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK", "true");
     }
+  }
 
+  @Test
+  void testCookiesPerDomain() throws Exception {
+    // Isolates cookies per domain during crawl
+    var engineConfig = MAPPER.readValue(
+        "{\"cookies_enabled\":true,\"max_depth\":1,\"respect_robots_txt\":false}",
+        CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.cookies_per_domain",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/cookies_per_domain");
+    var result = Crawlberg.crawl(engine, url);
+    assertEquals(1, result.cookies().size());
+    assertTrue(
+        result
+            .cookies()
+            .toString()
+            .toLowerCase()
+            .contains(String.valueOf("domain_cookie").toLowerCase()),
+        "expected to contain: " + "domain_cookie");
+  }
 
-    @Test
-    void testCookiesPersistence() throws Exception {
-        // Maintains cookies across multiple crawl requests
-        var engineConfig = MAPPER.readValue("{\"cookies_enabled\":true,\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.cookies_persistence", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/cookies_persistence");
-        var result = Crawlberg.crawl(engine, url);
-assertTrue(result.cookies().toString().toLowerCase().contains(String.valueOf("session").toLowerCase()), "expected to contain: " + "session");
+  @Test
+  void testCookiesPersistence() throws Exception {
+    // Maintains cookies across multiple crawl requests
+    var engineConfig = MAPPER.readValue(
+        "{\"cookies_enabled\":true,\"max_depth\":1,\"respect_robots_txt\":false}",
+        CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.cookies_persistence",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/cookies_persistence");
+    var result = Crawlberg.crawl(engine, url);
+    assertTrue(
+        result
+            .cookies()
+            .toString()
+            .toLowerCase()
+            .contains(String.valueOf("session").toLowerCase()),
+        "expected to contain: " + "session");
+  }
 
-    }
-
-
-    @Test
-    void testCookiesSetCookieResponse() throws Exception {
-        // Respects Set-Cookie header from server responses
-        var engineConfig = MAPPER.readValue("{\"cookies_enabled\":true,\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.cookies_set_cookie_response", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/cookies_set_cookie_response");
-        var result = Crawlberg.crawl(engine, url);
-assertTrue(result.cookies().toString().toLowerCase().contains(String.valueOf("tracking").toLowerCase()), "expected to contain: " + "tracking");
-
-    }
-
+  @Test
+  void testCookiesSetCookieResponse() throws Exception {
+    // Respects Set-Cookie header from server responses
+    var engineConfig = MAPPER.readValue(
+        "{\"cookies_enabled\":true,\"max_depth\":1,\"respect_robots_txt\":false}",
+        CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.cookies_set_cookie_response",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/cookies_set_cookie_response");
+    var result = Crawlberg.crawl(engine, url);
+    assertTrue(
+        result
+            .cookies()
+            .toString()
+            .toLowerCase()
+            .contains(String.valueOf("tracking").toLowerCase()),
+        "expected to contain: " + "tracking");
+  }
 }

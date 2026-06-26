@@ -8,7 +8,6 @@ import { scrape, mapUrls, createEngine } from "@kreuzberg/crawlberg";
 
 process.env.CRAWLBERG_ALLOW_PRIVATE_NETWORK ??= "true";
 
-
 async function _alefE2eDecompressAndParseJson(response: Response): Promise<unknown> {
 	const contentEncoding = response.headers.get("content-encoding");
 	let buffer = await response.arrayBuffer();
@@ -35,7 +34,16 @@ function _alefE2eItemTexts(item: unknown): string[] {
 	}
 	const record = item as Record<string, unknown>;
 	const itemsText = Array.isArray(record.items) ? record.items.map(_alefE2eText).join(" ") : "";
-	return [_alefE2eText(item), _alefE2eText(record.kind), _alefE2eText(record.name), _alefE2eText(record.source), _alefE2eText(record.alias), _alefE2eText(record.text), _alefE2eText(record.signature), itemsText];
+	return [
+		_alefE2eText(item),
+		_alefE2eText(record.kind),
+		_alefE2eText(record.name),
+		_alefE2eText(record.source),
+		_alefE2eText(record.alias),
+		_alefE2eText(record.text),
+		_alefE2eText(record.signature),
+		itemsText,
+	];
 }
 
 function _alefE2eFormatMetadataDisplay(fm: unknown): string {
@@ -56,50 +64,56 @@ function _alefE2eFormatMetadataDisplay(fm: unknown): string {
 	return "";
 }
 
-
 describe("map", () => {
-
 	it("map_discover_urls: Discovers all URLs on a site without fetching full content", async () => {
 		const engineConfig = { maxDepth: 0, respectRobotsTxt: false };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_MAP_DISCOVER_URLS ?? `${process.env.MOCK_SERVER_URL}/fixtures/map_discover_urls`;
+		const url =
+			process.env.MOCK_SERVER_MAP_DISCOVER_URLS ?? `${process.env.MOCK_SERVER_URL}/fixtures/map_discover_urls`;
 		const result = await mapUrls(engine, url);
-    expect(result.urls.length).toBeGreaterThanOrEqual(3);
+		expect(result.urls.length).toBeGreaterThanOrEqual(3);
 	}, 30000);
 	it("map_exclude_patterns: Excludes URLs matching patterns from URL map", async () => {
 		const engineConfig = { excludePaths: ["/private/.*", "/api/.*"], maxDepth: 0, respectRobotsTxt: false };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_MAP_EXCLUDE_PATTERNS ?? `${process.env.MOCK_SERVER_URL}/fixtures/map_exclude_patterns`;
+		const url =
+			process.env.MOCK_SERVER_MAP_EXCLUDE_PATTERNS ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/map_exclude_patterns`;
 		const result = await mapUrls(engine, url);
-    expect(result.urls.length).toBe(1);
+		expect(result.urls.length).toBe(1);
 	}, 30000);
 	it("map_include_subdomains: Includes subdomain URLs in URL map discovery; page has 1 local and 1 subdomain link", async () => {
 		const engineConfig = { allowSubdomains: true, maxDepth: 0, respectRobotsTxt: false };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_MAP_INCLUDE_SUBDOMAINS ?? `${process.env.MOCK_SERVER_URL}/fixtures/map_include_subdomains`;
+		const url =
+			process.env.MOCK_SERVER_MAP_INCLUDE_SUBDOMAINS ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/map_include_subdomains`;
 		const result = await mapUrls(engine, url);
-    expect(result.urls.length).toBeGreaterThanOrEqual(2);
+		expect(result.urls.length).toBeGreaterThanOrEqual(2);
 	}, 30000);
 	it("map_large_sitemap: Handles large sitemap with 100+ URLs", async () => {
 		const engineConfig = { respectRobotsTxt: false };
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/map_large_sitemap`;
 		const result = await mapUrls(engine, url);
-    expect(result.urls.length).toBeGreaterThanOrEqual(100);
+		expect(result.urls.length).toBeGreaterThanOrEqual(100);
 	}, 30000);
 	it("map_limit_pagination: Limits map result count to specified maximum", async () => {
 		const engineConfig = { mapLimit: 5, maxDepth: 0, respectRobotsTxt: false };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_MAP_LIMIT_PAGINATION ?? `${process.env.MOCK_SERVER_URL}/fixtures/map_limit_pagination`;
+		const url =
+			process.env.MOCK_SERVER_MAP_LIMIT_PAGINATION ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/map_limit_pagination`;
 		const result = await mapUrls(engine, url);
-    expect(result.urls.length).toBeLessThanOrEqual(5);
+		expect(result.urls.length).toBeLessThanOrEqual(5);
 	}, 30000);
 	it("map_search_filter: Filters map results by search keyword; 4 links in page but only 2 match 'blog'", async () => {
 		const engineConfig = { mapSearch: "blog", maxDepth: 0, respectRobotsTxt: false };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_MAP_SEARCH_FILTER ?? `${process.env.MOCK_SERVER_URL}/fixtures/map_search_filter`;
+		const url =
+			process.env.MOCK_SERVER_MAP_SEARCH_FILTER ?? `${process.env.MOCK_SERVER_URL}/fixtures/map_search_filter`;
 		const result = await mapUrls(engine, url);
-    expect(result.urls.length).toBeGreaterThanOrEqual(2);
-    expect(result.urls.length).toBeLessThanOrEqual(2);
+		expect(result.urls.length).toBeGreaterThanOrEqual(2);
+		expect(result.urls.length).toBeLessThanOrEqual(2);
 	}, 30000);
 });

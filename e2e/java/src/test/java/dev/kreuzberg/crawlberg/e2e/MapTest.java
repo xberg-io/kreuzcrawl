@@ -5,92 +5,111 @@
 
 package dev.kreuzberg.crawlberg.e2e;
 
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import dev.kreuzberg.crawlberg.Crawlberg;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import dev.kreuzberg.crawlberg.CrawlConfig;
-import java.util.Optional;
-import dev.kreuzberg.crawlberg.JsonUtil;
+import dev.kreuzberg.crawlberg.Crawlberg;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 /** E2e tests for category: map. */
 public class MapTest {
-    private static final ObjectMapper MAPPER = new ObjectMapper().registerModule(new Jdk8Module()).setPropertyNamingStrategy(com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE);
-    @BeforeAll
-    static void initEnv() {        if (System.getProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK") == null) {
-            System.setProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK", "true");
-        }    }
+  private static final ObjectMapper MAPPER = new ObjectMapper()
+      .registerModule(new Jdk8Module())
+      .setPropertyNamingStrategy(
+          com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE);
 
-    @Test
-    void testMapDiscoverUrls() throws Exception {
-        // Discovers all URLs on a site without fetching full content
-        var engineConfig = MAPPER.readValue("{\"max_depth\":0,\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.map_discover_urls", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/map_discover_urls");
-        var result = Crawlberg.mapUrls(engine, url);
-assertTrue(result.urls().size() >= 3, "expected >= 3");
-
+  @BeforeAll
+  static void initEnv() {
+    if (System.getProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK") == null) {
+      System.setProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK", "true");
     }
+  }
 
+  @Test
+  void testMapDiscoverUrls() throws Exception {
+    // Discovers all URLs on a site without fetching full content
+    var engineConfig =
+        MAPPER.readValue("{\"max_depth\":0,\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.map_discover_urls",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/map_discover_urls");
+    var result = Crawlberg.mapUrls(engine, url);
+    assertTrue(result.urls().size() >= 3, "expected >= 3");
+  }
 
-    @Test
-    void testMapExcludePatterns() throws Exception {
-        // Excludes URLs matching patterns from URL map
-        var engineConfig = MAPPER.readValue("{\"exclude_paths\":[\"/private/.*\",\"/api/.*\"],\"max_depth\":0,\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.map_exclude_patterns", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/map_exclude_patterns");
-        var result = Crawlberg.mapUrls(engine, url);
-assertEquals(1, result.urls().size());
+  @Test
+  void testMapExcludePatterns() throws Exception {
+    // Excludes URLs matching patterns from URL map
+    var engineConfig = MAPPER.readValue(
+        "{\"exclude_paths\":[\"/private/.*\",\"/api/.*\"],\"max_depth\":0,\"respect_robots_txt\":false}",
+        CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.map_exclude_patterns",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/map_exclude_patterns");
+    var result = Crawlberg.mapUrls(engine, url);
+    assertEquals(1, result.urls().size());
+  }
 
-    }
+  @Test
+  void testMapIncludeSubdomains() throws Exception {
+    // Includes subdomain URLs in URL map discovery; page has 1 local and 1 subdomain link
+    var engineConfig = MAPPER.readValue(
+        "{\"allow_subdomains\":true,\"max_depth\":0,\"respect_robots_txt\":false}",
+        CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.map_include_subdomains",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/map_include_subdomains");
+    var result = Crawlberg.mapUrls(engine, url);
+    assertTrue(result.urls().size() >= 2, "expected >= 2");
+  }
 
+  @Test
+  void testMapLargeSitemap() throws Exception {
+    // Handles large sitemap with 100+ URLs
+    var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+        + "/fixtures/map_large_sitemap";
+    var result = Crawlberg.mapUrls(engine, url);
+    assertTrue(result.urls().size() >= 100, "expected >= 100");
+  }
 
-    @Test
-    void testMapIncludeSubdomains() throws Exception {
-        // Includes subdomain URLs in URL map discovery; page has 1 local and 1 subdomain link
-        var engineConfig = MAPPER.readValue("{\"allow_subdomains\":true,\"max_depth\":0,\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.map_include_subdomains", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/map_include_subdomains");
-        var result = Crawlberg.mapUrls(engine, url);
-assertTrue(result.urls().size() >= 2, "expected >= 2");
+  @Test
+  void testMapLimitPagination() throws Exception {
+    // Limits map result count to specified maximum
+    var engineConfig = MAPPER.readValue(
+        "{\"map_limit\":5,\"max_depth\":0,\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.map_limit_pagination",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/map_limit_pagination");
+    var result = Crawlberg.mapUrls(engine, url);
+    assertTrue(result.urls().size() <= 5, "expected <= 5");
+  }
 
-    }
-
-
-    @Test
-    void testMapLargeSitemap() throws Exception {
-        // Handles large sitemap with 100+ URLs
-        var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/map_large_sitemap";
-        var result = Crawlberg.mapUrls(engine, url);
-assertTrue(result.urls().size() >= 100, "expected >= 100");
-
-    }
-
-
-    @Test
-    void testMapLimitPagination() throws Exception {
-        // Limits map result count to specified maximum
-        var engineConfig = MAPPER.readValue("{\"map_limit\":5,\"max_depth\":0,\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.map_limit_pagination", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/map_limit_pagination");
-        var result = Crawlberg.mapUrls(engine, url);
-assertTrue(result.urls().size() <= 5, "expected <= 5");
-
-    }
-
-
-    @Test
-    void testMapSearchFilter() throws Exception {
-        // Filters map results by search keyword; 4 links in page but only 2 match 'blog'
-        var engineConfig = MAPPER.readValue("{\"map_search\":\"blog\",\"max_depth\":0,\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.map_search_filter", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/map_search_filter");
-        var result = Crawlberg.mapUrls(engine, url);
-assertTrue(result.urls().size() >= 2, "expected >= 2");assertTrue(result.urls().size() <= 2, "expected <= 2");
-
-    }
-
+  @Test
+  void testMapSearchFilter() throws Exception {
+    // Filters map results by search keyword; 4 links in page but only 2 match 'blog'
+    var engineConfig = MAPPER.readValue(
+        "{\"map_search\":\"blog\",\"max_depth\":0,\"respect_robots_txt\":false}",
+        CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.map_search_filter",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/map_search_filter");
+    var result = Crawlberg.mapUrls(engine, url);
+    assertTrue(result.urls().size() >= 2, "expected >= 2");
+    assertTrue(result.urls().size() <= 2, "expected <= 2");
+  }
 }

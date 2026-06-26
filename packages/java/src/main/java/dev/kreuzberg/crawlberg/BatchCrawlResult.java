@@ -4,8 +4,8 @@
 // To verify freshness: alef verify --exit-code
 package dev.kreuzberg.crawlberg;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
@@ -18,52 +18,51 @@ import org.jspecify.annotations.Nullable;
 public record BatchCrawlResult(
     @JsonProperty("url") String url,
     @Nullable @JsonProperty("result") CrawlResult result,
-    @Nullable @JsonProperty("error") String error
-) {
-    /** Creates a new Builder for constructing instances of this record. */
-    public static Builder builder() {
-        return new Builder();
+    @Nullable @JsonProperty("error") String error) {
+  /** Creates a new Builder for constructing instances of this record. */
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  // CPD-OFF
+  /** Jackson builder for BatchCrawlResult deserialization. */
+  @com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
+  @JsonPOJOBuilder(withPrefix = "with", buildMethodName = "build")
+  public static final class Builder {
+
+    private String url;
+
+    @Nullable
+    private CrawlResult result;
+
+    @Nullable
+    private String error;
+
+    /** Sets the url field. */
+    @JsonProperty("url")
+    public Builder withUrl(final String value) {
+      this.url = value;
+      return this;
     }
 
-    // CPD-OFF
-    /** Jackson builder for BatchCrawlResult deserialization. */
-    @com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
-    @JsonPOJOBuilder(withPrefix = "with", buildMethodName = "build")
-    public static final class Builder {
-
-        private String url;
-        @Nullable private CrawlResult result;
-        @Nullable private String error;
-
-        /** Sets the url field. */
-        @JsonProperty("url")
-        public Builder withUrl(final String value) {
-            this.url = value;
-            return this;
-        }
-
-        /** Sets the result field. */
-        @JsonProperty("result")
-        public Builder withResult(final @Nullable CrawlResult value) {
-            this.result = value;
-            return this;
-        }
-
-        /** Sets the error field. */
-        @JsonProperty("error")
-        public Builder withError(final @Nullable String value) {
-            this.error = value;
-            return this;
-        }
-
-        /** Constructs a BatchCrawlResult instance from the builder's current state. */
-        public BatchCrawlResult build() {
-            return new BatchCrawlResult(
-                url,
-                result,
-                error
-            );
-        }
+    /** Sets the result field. */
+    @JsonProperty("result")
+    public Builder withResult(final @Nullable CrawlResult value) {
+      this.result = value;
+      return this;
     }
-    // CPD-ON
+
+    /** Sets the error field. */
+    @JsonProperty("error")
+    public Builder withError(final @Nullable String value) {
+      this.error = value;
+      return this;
+    }
+
+    /** Constructs a BatchCrawlResult instance from the builder's current state. */
+    public BatchCrawlResult build() {
+      return new BatchCrawlResult(url, result, error);
+    }
+  }
+  // CPD-ON
 }

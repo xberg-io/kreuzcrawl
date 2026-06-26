@@ -5,164 +5,199 @@
 
 package dev.kreuzberg.crawlberg.e2e;
 
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import dev.kreuzberg.crawlberg.Crawlberg;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import dev.kreuzberg.crawlberg.CrawlConfig;
-import java.util.Optional;
-import dev.kreuzberg.crawlberg.JsonUtil;
+import dev.kreuzberg.crawlberg.Crawlberg;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 /** E2e tests for category: redirect. */
 public class RedirectTest {
-    private static final ObjectMapper MAPPER = new ObjectMapper().registerModule(new Jdk8Module()).setPropertyNamingStrategy(com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE);
-    @BeforeAll
-    static void initEnv() {        if (System.getProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK") == null) {
-            System.setProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK", "true");
-        }    }
+  private static final ObjectMapper MAPPER = new ObjectMapper()
+      .registerModule(new Jdk8Module())
+      .setPropertyNamingStrategy(
+          com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE);
 
-    @Test
-    void testRedirect301Permanent() throws Exception {
-        // Follows 301 permanent redirect and returns final page content
-        var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.redirect_301_permanent", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/redirect_301_permanent");
-        var result = Crawlberg.crawl(engine, url);
-assertTrue(result.finalUrl().contains("/target"), "expected to contain: " + "/target");assertEquals(1, result.redirectCount());
-
+  @BeforeAll
+  static void initEnv() {
+    if (System.getProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK") == null) {
+      System.setProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK", "true");
     }
+  }
 
+  @Test
+  void testRedirect301Permanent() throws Exception {
+    // Follows 301 permanent redirect and returns final page content
+    var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.redirect_301_permanent",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/redirect_301_permanent");
+    var result = Crawlberg.crawl(engine, url);
+    assertTrue(result.finalUrl().contains("/target"), "expected to contain: " + "/target");
+    assertEquals(1, result.redirectCount());
+  }
 
-    @Test
-    void testRedirect302Found() throws Exception {
-        // Follows 302 Found redirect correctly
-        var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.redirect_302_found", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/redirect_302_found");
-        var result = Crawlberg.crawl(engine, url);
-assertTrue(result.finalUrl().contains("/found-target"), "expected to contain: " + "/found-target");assertEquals(1, result.redirectCount());
+  @Test
+  void testRedirect302Found() throws Exception {
+    // Follows 302 Found redirect correctly
+    var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.redirect_302_found",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/redirect_302_found");
+    var result = Crawlberg.crawl(engine, url);
+    assertTrue(
+        result.finalUrl().contains("/found-target"), "expected to contain: " + "/found-target");
+    assertEquals(1, result.redirectCount());
+  }
 
-    }
+  @Test
+  void testRedirect303SeeOther() throws Exception {
+    // Follows 303 See Other redirect (method changes to GET)
+    var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.redirect_303_see_other",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/redirect_303_see_other");
+    var result = Crawlberg.crawl(engine, url);
+    assertTrue(result.finalUrl().contains("/see-other"), "expected to contain: " + "/see-other");
+    assertEquals(1, result.redirectCount());
+  }
 
+  @Test
+  void testRedirect307Temporary() throws Exception {
+    // Follows 307 Temporary Redirect (preserves method)
+    var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.redirect_307_temporary",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/redirect_307_temporary");
+    var result = Crawlberg.crawl(engine, url);
+    assertTrue(
+        result.finalUrl().contains("/temp-target"), "expected to contain: " + "/temp-target");
+    assertEquals(1, result.redirectCount());
+  }
 
-    @Test
-    void testRedirect303SeeOther() throws Exception {
-        // Follows 303 See Other redirect (method changes to GET)
-        var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.redirect_303_see_other", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/redirect_303_see_other");
-        var result = Crawlberg.crawl(engine, url);
-assertTrue(result.finalUrl().contains("/see-other"), "expected to contain: " + "/see-other");assertEquals(1, result.redirectCount());
+  @Test
+  void testRedirect308Permanent() throws Exception {
+    // Follows 308 Permanent Redirect (preserves method)
+    var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.redirect_308_permanent",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/redirect_308_permanent");
+    var result = Crawlberg.crawl(engine, url);
+    assertTrue(
+        result.finalUrl().contains("/perm-target"), "expected to contain: " + "/perm-target");
+    assertEquals(1, result.redirectCount());
+  }
 
-    }
+  @Test
+  void testRedirectChain() throws Exception {
+    // Follows a chain of redirects (301 -> 302 -> 200)
+    var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.redirect_chain",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/redirect_chain");
+    var result = Crawlberg.crawl(engine, url);
+    assertTrue(result.finalUrl().contains("/step2"), "expected to contain: " + "/step2");
+    assertEquals(2, result.redirectCount());
+  }
 
+  @Test
+  void testRedirectCrossDomain() throws Exception {
+    // Reports cross-domain redirect target without following to external domain
+    var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.redirect_cross_domain",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/redirect_cross_domain");
+    var result = Crawlberg.crawl(engine, url);
+    assertTrue(
+        result.finalUrl().contains("/external-redirect"),
+        "expected to contain: " + "/external-redirect");
+    assertEquals(1, result.redirectCount());
+  }
 
-    @Test
-    void testRedirect307Temporary() throws Exception {
-        // Follows 307 Temporary Redirect (preserves method)
-        var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.redirect_307_temporary", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/redirect_307_temporary");
-        var result = Crawlberg.crawl(engine, url);
-assertTrue(result.finalUrl().contains("/temp-target"), "expected to contain: " + "/temp-target");assertEquals(1, result.redirectCount());
+  @Test
+  void testRedirectLoop() throws Exception {
+    // Detects redirect loop (A -> B -> A) and returns error
+    var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.redirect_loop",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/redirect_loop");
+    var result = Crawlberg.crawl(engine, url);
+    // skipped: field 'is_error' not available on result type
 
-    }
+  }
 
+  @Test
+  void testRedirectMaxExceeded() throws Exception {
+    // Aborts when redirect count exceeds max_redirects limit
+    var engineConfig =
+        MAPPER.readValue("{\"max_redirects\":2,\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.redirect_max_exceeded",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/redirect_max_exceeded");
+    var result = Crawlberg.crawl(engine, url);
+    // skipped: field 'is_error' not available on result type
 
-    @Test
-    void testRedirect308Permanent() throws Exception {
-        // Follows 308 Permanent Redirect (preserves method)
-        var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.redirect_308_permanent", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/redirect_308_permanent");
-        var result = Crawlberg.crawl(engine, url);
-assertTrue(result.finalUrl().contains("/perm-target"), "expected to contain: " + "/perm-target");assertEquals(1, result.redirectCount());
+  }
 
-    }
+  @Test
+  void testRedirectMetaRefresh() throws Exception {
+    // Follows HTML meta-refresh redirect to target page
+    var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+        + "/fixtures/redirect_meta_refresh";
+    var result = Crawlberg.crawl(engine, url);
+    assertTrue(result.finalUrl().contains("/target"), "expected to contain: " + "/target");
+    assertEquals(1, result.redirectCount());
+  }
 
+  @Test
+  void testRedirectRefreshHeader() throws Exception {
+    // Handles HTTP Refresh header redirect
+    var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.redirect_refresh_header",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/redirect_refresh_header");
+    var result = Crawlberg.crawl(engine, url);
+    assertTrue(result.finalUrl().contains("/refreshed"), "expected to contain: " + "/refreshed");
+    assertEquals(1, result.redirectCount());
+  }
 
-    @Test
-    void testRedirectChain() throws Exception {
-        // Follows a chain of redirects (301 -> 302 -> 200)
-        var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.redirect_chain", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/redirect_chain");
-        var result = Crawlberg.crawl(engine, url);
-assertTrue(result.finalUrl().contains("/step2"), "expected to contain: " + "/step2");assertEquals(2, result.redirectCount());
-
-    }
-
-
-    @Test
-    void testRedirectCrossDomain() throws Exception {
-        // Reports cross-domain redirect target without following to external domain
-        var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.redirect_cross_domain", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/redirect_cross_domain");
-        var result = Crawlberg.crawl(engine, url);
-assertTrue(result.finalUrl().contains("/external-redirect"), "expected to contain: " + "/external-redirect");assertEquals(1, result.redirectCount());
-
-    }
-
-
-    @Test
-    void testRedirectLoop() throws Exception {
-        // Detects redirect loop (A -> B -> A) and returns error
-        var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.redirect_loop", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/redirect_loop");
-        var result = Crawlberg.crawl(engine, url);
-        // skipped: field 'is_error' not available on result type
-
-    }
-
-
-    @Test
-    void testRedirectMaxExceeded() throws Exception {
-        // Aborts when redirect count exceeds max_redirects limit
-        var engineConfig = MAPPER.readValue("{\"max_redirects\":2,\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.redirect_max_exceeded", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/redirect_max_exceeded");
-        var result = Crawlberg.crawl(engine, url);
-        // skipped: field 'is_error' not available on result type
-
-    }
-
-
-    @Test
-    void testRedirectMetaRefresh() throws Exception {
-        // Follows HTML meta-refresh redirect to target page
-        var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/redirect_meta_refresh";
-        var result = Crawlberg.crawl(engine, url);
-assertTrue(result.finalUrl().contains("/target"), "expected to contain: " + "/target");assertEquals(1, result.redirectCount());
-
-    }
-
-
-    @Test
-    void testRedirectRefreshHeader() throws Exception {
-        // Handles HTTP Refresh header redirect
-        var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.redirect_refresh_header", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/redirect_refresh_header");
-        var result = Crawlberg.crawl(engine, url);
-assertTrue(result.finalUrl().contains("/refreshed"), "expected to contain: " + "/refreshed");assertEquals(1, result.redirectCount());
-
-    }
-
-
-    @Test
-    void testRedirectTo404() throws Exception {
-        // Redirect target returns 404 Not Found
-        var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServer.redirect_to_404", System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/redirect_to_404");
-        var result = Crawlberg.crawl(engine, url);
-assertTrue(result.finalUrl().contains("/gone"), "expected to contain: " + "/gone");assertEquals(1, result.redirectCount());        // skipped: field 'is_error' not available on result type
-
-    }
-
+  @Test
+  void testRedirectTo404() throws Exception {
+    // Redirect target returns 404 Not Found
+    var engineConfig = MAPPER.readValue("{\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty(
+        "mockServer.redirect_to_404",
+        System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+            + "/fixtures/redirect_to_404");
+    var result = Crawlberg.crawl(engine, url);
+    assertTrue(result.finalUrl().contains("/gone"), "expected to contain: " + "/gone");
+    assertEquals(
+        1, result.redirectCount()); // skipped: field 'is_error' not available on result type
+  }
 }

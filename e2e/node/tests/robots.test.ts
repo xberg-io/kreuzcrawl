@@ -8,7 +8,6 @@ import { scrape, createEngine } from "@kreuzberg/crawlberg";
 
 process.env.CRAWLBERG_ALLOW_PRIVATE_NETWORK ??= "true";
 
-
 async function _alefE2eDecompressAndParseJson(response: Response): Promise<unknown> {
 	const contentEncoding = response.headers.get("content-encoding");
 	let buffer = await response.arrayBuffer();
@@ -35,7 +34,16 @@ function _alefE2eItemTexts(item: unknown): string[] {
 	}
 	const record = item as Record<string, unknown>;
 	const itemsText = Array.isArray(record.items) ? record.items.map(_alefE2eText).join(" ") : "";
-	return [_alefE2eText(item), _alefE2eText(record.kind), _alefE2eText(record.name), _alefE2eText(record.source), _alefE2eText(record.alias), _alefE2eText(record.text), _alefE2eText(record.signature), itemsText];
+	return [
+		_alefE2eText(item),
+		_alefE2eText(record.kind),
+		_alefE2eText(record.name),
+		_alefE2eText(record.source),
+		_alefE2eText(record.alias),
+		_alefE2eText(record.text),
+		_alefE2eText(record.signature),
+		itemsText,
+	];
 }
 
 function _alefE2eFormatMetadataDisplay(fm: unknown): string {
@@ -56,108 +64,131 @@ function _alefE2eFormatMetadataDisplay(fm: unknown): string {
 	return "";
 }
 
-
 describe("robots", () => {
-
 	it("robots_allow_all: Permissive robots.txt allows all paths", async () => {
 		const engineConfig = { respectRobotsTxt: true };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_ROBOTS_ALLOW_ALL ?? `${process.env.MOCK_SERVER_URL}/fixtures/robots_allow_all`;
+		const url =
+			process.env.MOCK_SERVER_ROBOTS_ALLOW_ALL ?? `${process.env.MOCK_SERVER_URL}/fixtures/robots_allow_all`;
 		const result = await scrape(engine, url);
-    expect(result.isAllowed).toBe(true);
+		expect(result.isAllowed).toBe(true);
 	}, 30000);
 	it("robots_allow_override: Allow directive overrides Disallow for specific paths", async () => {
 		const engineConfig = { respectRobotsTxt: true };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_ROBOTS_ALLOW_OVERRIDE ?? `${process.env.MOCK_SERVER_URL}/fixtures/robots_allow_override`;
+		const url =
+			process.env.MOCK_SERVER_ROBOTS_ALLOW_OVERRIDE ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/robots_allow_override`;
 		const result = await scrape(engine, url);
-    expect(result.isAllowed).toBe(true);
+		expect(result.isAllowed).toBe(true);
 	}, 30000);
 	it("robots_comments_handling: Correctly parses robots.txt with inline and line comments", async () => {
 		const engineConfig = { respectRobotsTxt: true, userAgent: "crawlberg" };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_ROBOTS_COMMENTS_HANDLING ?? `${process.env.MOCK_SERVER_URL}/fixtures/robots_comments_handling`;
+		const url =
+			process.env.MOCK_SERVER_ROBOTS_COMMENTS_HANDLING ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/robots_comments_handling`;
 		const result = await scrape(engine, url);
-    expect(result.isAllowed).toBe(true);
+		expect(result.isAllowed).toBe(true);
 	}, 30000);
 	it("robots_crawl_delay: Respects crawl-delay directive from robots.txt", async () => {
 		const engineConfig = { respectRobotsTxt: true, userAgent: "crawlberg" };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_ROBOTS_CRAWL_DELAY ?? `${process.env.MOCK_SERVER_URL}/fixtures/robots_crawl_delay`;
+		const url =
+			process.env.MOCK_SERVER_ROBOTS_CRAWL_DELAY ?? `${process.env.MOCK_SERVER_URL}/fixtures/robots_crawl_delay`;
 		const result = await scrape(engine, url);
-    expect(result.crawlDelay).toBe(2);
+		expect(result.crawlDelay).toBe(2);
 	}, 30000);
 	it("robots_disallow_path: Robots.txt disallows specific paths", async () => {
 		const engineConfig = { respectRobotsTxt: true };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_ROBOTS_DISALLOW_PATH ?? `${process.env.MOCK_SERVER_URL}/fixtures/robots_disallow_path`;
+		const url =
+			process.env.MOCK_SERVER_ROBOTS_DISALLOW_PATH ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/robots_disallow_path`;
 		const result = await scrape(engine, url);
-    expect(result.isAllowed).toBe(false);
+		expect(result.isAllowed).toBe(false);
 	}, 30000);
 	it("robots_meta_nofollow: Detects nofollow meta robots tag and skips link extraction", async () => {
 		const engineConfig = { respectRobotsTxt: true };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_ROBOTS_META_NOFOLLOW ?? `${process.env.MOCK_SERVER_URL}/fixtures/robots_meta_nofollow`;
+		const url =
+			process.env.MOCK_SERVER_ROBOTS_META_NOFOLLOW ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/robots_meta_nofollow`;
 		const result = await scrape(engine, url);
-    expect(result.nofollowDetected).toBe(true);
+		expect(result.nofollowDetected).toBe(true);
 	}, 30000);
 	it("robots_meta_noindex: Detects noindex meta robots tag in HTML page", async () => {
 		const engineConfig = { respectRobotsTxt: true };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_ROBOTS_META_NOINDEX ?? `${process.env.MOCK_SERVER_URL}/fixtures/robots_meta_noindex`;
+		const url =
+			process.env.MOCK_SERVER_ROBOTS_META_NOINDEX ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/robots_meta_noindex`;
 		const result = await scrape(engine, url);
-    expect(result.noindexDetected).toBe(true);
+		expect(result.noindexDetected).toBe(true);
 	}, 30000);
 	it("robots_missing_404: Missing robots.txt (404) allows all crawling", async () => {
 		const engineConfig = { respectRobotsTxt: true };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_ROBOTS_MISSING_404 ?? `${process.env.MOCK_SERVER_URL}/fixtures/robots_missing_404`;
+		const url =
+			process.env.MOCK_SERVER_ROBOTS_MISSING_404 ?? `${process.env.MOCK_SERVER_URL}/fixtures/robots_missing_404`;
 		const result = await scrape(engine, url);
-    expect(result.isAllowed).toBe(true);
+		expect(result.isAllowed).toBe(true);
 	}, 30000);
 	it("robots_multiple_user_agents: Picks the most specific user-agent block from robots.txt", async () => {
 		const engineConfig = { respectRobotsTxt: true, userAgent: "SpecificBot" };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_ROBOTS_MULTIPLE_USER_AGENTS ?? `${process.env.MOCK_SERVER_URL}/fixtures/robots_multiple_user_agents`;
+		const url =
+			process.env.MOCK_SERVER_ROBOTS_MULTIPLE_USER_AGENTS ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/robots_multiple_user_agents`;
 		const result = await scrape(engine, url);
-    expect(result.isAllowed).toBe(true);
+		expect(result.isAllowed).toBe(true);
 	}, 30000);
 	it("robots_request_rate: Parses request-rate directive from robots.txt", async () => {
 		const engineConfig = { respectRobotsTxt: true, userAgent: "crawlberg" };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_ROBOTS_REQUEST_RATE ?? `${process.env.MOCK_SERVER_URL}/fixtures/robots_request_rate`;
+		const url =
+			process.env.MOCK_SERVER_ROBOTS_REQUEST_RATE ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/robots_request_rate`;
 		const result = await scrape(engine, url);
-    expect(result.crawlDelay).toBe(5);
-    expect(result.isAllowed).toBe(true);
+		expect(result.crawlDelay).toBe(5);
+		expect(result.isAllowed).toBe(true);
 	}, 30000);
 	it("robots_sitemap_directive: Discovers sitemap URL from Sitemap directive in robots.txt", async () => {
 		const engineConfig = { respectRobotsTxt: true };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_ROBOTS_SITEMAP_DIRECTIVE ?? `${process.env.MOCK_SERVER_URL}/fixtures/robots_sitemap_directive`;
+		const url =
+			process.env.MOCK_SERVER_ROBOTS_SITEMAP_DIRECTIVE ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/robots_sitemap_directive`;
 		const result = await scrape(engine, url);
-    expect(result.isAllowed).toBe(true);
+		expect(result.isAllowed).toBe(true);
 	}, 30000);
 	it("robots_user_agent_specific: Matches user-agent specific rules in robots.txt", async () => {
 		const engineConfig = { respectRobotsTxt: true, userAgent: "CrawlbergBot" };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_ROBOTS_USER_AGENT_SPECIFIC ?? `${process.env.MOCK_SERVER_URL}/fixtures/robots_user_agent_specific`;
+		const url =
+			process.env.MOCK_SERVER_ROBOTS_USER_AGENT_SPECIFIC ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/robots_user_agent_specific`;
 		const result = await scrape(engine, url);
-    expect(result.isAllowed).toBe(false);
+		expect(result.isAllowed).toBe(false);
 	}, 30000);
 	it("robots_wildcard_paths: Handles wildcard Disallow patterns in robots.txt", async () => {
 		const engineConfig = { respectRobotsTxt: true };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_ROBOTS_WILDCARD_PATHS ?? `${process.env.MOCK_SERVER_URL}/fixtures/robots_wildcard_paths`;
+		const url =
+			process.env.MOCK_SERVER_ROBOTS_WILDCARD_PATHS ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/robots_wildcard_paths`;
 		const result = await scrape(engine, url);
-    expect(result.isAllowed).toBe(false);
+		expect(result.isAllowed).toBe(false);
 	}, 30000);
 	it("robots_x_robots_tag: Respects X-Robots-Tag HTTP header directives", async () => {
 		const engineConfig = { respectRobotsTxt: true };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_ROBOTS_X_ROBOTS_TAG ?? `${process.env.MOCK_SERVER_URL}/fixtures/robots_x_robots_tag`;
+		const url =
+			process.env.MOCK_SERVER_ROBOTS_X_ROBOTS_TAG ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/robots_x_robots_tag`;
 		const result = await scrape(engine, url);
-    expect((result.xRobotsTag ?? "").trim()).toBe("noindex, nofollow");
-    expect(result.noindexDetected).toBe(true);
-    expect(result.nofollowDetected).toBe(true);
+		expect((result.xRobotsTag ?? "").trim()).toBe("noindex, nofollow");
+		expect(result.noindexDetected).toBe(true);
+		expect(result.nofollowDetected).toBe(true);
 	}, 30000);
 });

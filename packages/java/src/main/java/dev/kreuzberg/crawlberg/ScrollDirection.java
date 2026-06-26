@@ -12,43 +12,42 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 @SuppressWarnings("PMD")
 public enum ScrollDirection {
-    /**
-     * Scroll upward.
-     */
-    Up("up"),
-    /**
-     * Scroll downward.
-     */
-    Down("down");
+  /**
+   * Scroll upward.
+   */
+  Up("up"),
+  /**
+   * Scroll downward.
+   */
+  Down("down");
 
+  /** The string value. */
+  private final String value;
 
-    /** The string value. */
-    private final String value;
+  ScrollDirection(final String value) {
+    this.value = value;
+  }
 
-    ScrollDirection(final String value) {
-        this.value = value;
+  /** Returns the string value. */
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
+
+  /** Creates an instance from a string value. */
+  @JsonCreator
+  public static ScrollDirection fromValue(final String value) {
+    for (ScrollDirection e : values()) {
+      if (e.value.equalsIgnoreCase(value)) {
+        return e;
+      }
     }
+    throw new IllegalArgumentException("Unknown ScrollDirection value: " + value);
+  }
 
-    /** Returns the string value. */
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    /** Creates an instance from a string value. */
-    @JsonCreator
-    public static ScrollDirection fromValue(final String value) {
-        for (ScrollDirection e : values()) {
-            if (e.value.equalsIgnoreCase(value)) {
-                return e;
-            }
-        }
-        throw new IllegalArgumentException("Unknown ScrollDirection value: " + value);
-    }
-
-    /** Returns the wire-format string value (matches JSON serialization). */
-    @Override
-    public String toString() {
-        return value;
-    }
+  /** Returns the wire-format string value (matches JSON serialization). */
+  @Override
+  public String toString() {
+    return value;
+  }
 }

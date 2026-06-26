@@ -5,80 +5,89 @@
 
 package dev.kreuzberg.crawlberg.e2e;
 
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import dev.kreuzberg.crawlberg.Crawlberg;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import dev.kreuzberg.crawlberg.CrawlConfig;
-import java.util.Optional;
-import dev.kreuzberg.crawlberg.JsonUtil;
+import dev.kreuzberg.crawlberg.Crawlberg;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 /** E2e tests for category: download. */
 public class DownloadTest {
-    private static final ObjectMapper MAPPER = new ObjectMapper().registerModule(new Jdk8Module()).setPropertyNamingStrategy(com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE);
-    @BeforeAll
-    static void initEnv() {        if (System.getProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK") == null) {
-            System.setProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK", "true");
-        }    }
+  private static final ObjectMapper MAPPER = new ObjectMapper()
+      .registerModule(new Jdk8Module())
+      .setPropertyNamingStrategy(
+          com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE);
 
-    @Test
-    void testDownloadBasicPdf() throws Exception {
-        // Download a basic PDF document with download_documents enabled
-        var engineConfig = MAPPER.readValue("{\"download_documents\":true,\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/download_basic_pdf";
-        var result = Crawlberg.scrape(engine, url);
-assertEquals("application/pdf", result.downloadedDocument().mimeType().trim());
-
+  @BeforeAll
+  static void initEnv() {
+    if (System.getProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK") == null) {
+      System.setProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK", "true");
     }
+  }
 
+  @Test
+  void testDownloadBasicPdf() throws Exception {
+    // Download a basic PDF document with download_documents enabled
+    var engineConfig = MAPPER.readValue(
+        "{\"download_documents\":true,\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+        + "/fixtures/download_basic_pdf";
+    var result = Crawlberg.scrape(engine, url);
+    assertEquals("application/pdf", result.downloadedDocument().mimeType().trim());
+  }
 
-    @Test
-    void testDownloadFilenameExtraction() throws Exception {
-        // Extract filename from Content-Disposition header
-        var engineConfig = MAPPER.readValue("{\"download_documents\":true,\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/download_filename_extraction";
-        var result = Crawlberg.scrape(engine, url);
-assertEquals("application/pdf", result.downloadedDocument().mimeType().trim());assertEquals(200, result.statusCode());
+  @Test
+  void testDownloadFilenameExtraction() throws Exception {
+    // Extract filename from Content-Disposition header
+    var engineConfig = MAPPER.readValue(
+        "{\"download_documents\":true,\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+        + "/fixtures/download_filename_extraction";
+    var result = Crawlberg.scrape(engine, url);
+    assertEquals("application/pdf", result.downloadedDocument().mimeType().trim());
+    assertEquals(200, result.statusCode());
+  }
 
-    }
+  @Test
+  void testDownloadMimeFilter() throws Exception {
+    // Only download documents matching specified MIME types (PDF only, not DOCX)
+    var engineConfig = MAPPER.readValue(
+        "{\"document_mime_types\":[\"application/pdf\"],\"download_documents\":true,\"respect_robots_txt\":false}",
+        CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+        + "/fixtures/download_mime_filter";
+    var result = Crawlberg.scrape(engine, url);
+    assertEquals("application/pdf", result.downloadedDocument().mimeType().trim());
+  }
 
+  @Test
+  void testDownloadNoDocument() throws Exception {
+    // HTML pages are not downloaded as documents even when download_documents is enabled
+    var engineConfig = MAPPER.readValue(
+        "{\"download_documents\":true,\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+        + "/fixtures/download_no_document";
+    var result = Crawlberg.scrape(engine, url);
+    assertEquals(200, result.statusCode());
+  }
 
-    @Test
-    void testDownloadMimeFilter() throws Exception {
-        // Only download documents matching specified MIME types (PDF only, not DOCX)
-        var engineConfig = MAPPER.readValue("{\"document_mime_types\":[\"application/pdf\"],\"download_documents\":true,\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/download_mime_filter";
-        var result = Crawlberg.scrape(engine, url);
-assertEquals("application/pdf", result.downloadedDocument().mimeType().trim());
-
-    }
-
-
-    @Test
-    void testDownloadNoDocument() throws Exception {
-        // HTML pages are not downloaded as documents even when download_documents is enabled
-        var engineConfig = MAPPER.readValue("{\"download_documents\":true,\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/download_no_document";
-        var result = Crawlberg.scrape(engine, url);
-assertEquals(200, result.statusCode());
-
-    }
-
-
-    @Test
-    void testDownloadSizeLimit() throws Exception {
-        // Reject documents exceeding the configured size limit
-        var engineConfig = MAPPER.readValue("{\"document_max_size\":100,\"download_documents\":true,\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL")) + "/fixtures/download_size_limit";
-        var result = Crawlberg.scrape(engine, url);
-assertEquals(200, result.statusCode());
-
-    }
-
+  @Test
+  void testDownloadSizeLimit() throws Exception {
+    // Reject documents exceeding the configured size limit
+    var engineConfig = MAPPER.readValue(
+        "{\"document_max_size\":100,\"download_documents\":true,\"respect_robots_txt\":false}",
+        CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String url = System.getProperty("mockServerUrl", System.getenv("MOCK_SERVER_URL"))
+        + "/fixtures/download_size_limit";
+    var result = Crawlberg.scrape(engine, url);
+    assertEquals(200, result.statusCode());
+  }
 }

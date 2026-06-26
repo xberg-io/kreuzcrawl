@@ -4,11 +4,11 @@
 // To verify freshness: alef verify --exit-code
 package dev.kreuzberg.crawlberg;
 
-import java.util.List;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import java.util.List;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -21,54 +21,54 @@ import org.jspecify.annotations.Nullable;
 public record BrowserExtras(
     @Nullable @JsonProperty("eval_result") Object evalResult,
     @Nullable @JsonProperty("network_events") List<ResponseMeta> networkEvents,
-    @Nullable @JsonProperty("cookies") List<CookieInfo> cookies
-) {
-    /** Creates a new Builder for constructing instances of this record. */
-    public static Builder builder() {
-        return new Builder();
+    @Nullable @JsonProperty("cookies") List<CookieInfo> cookies) {
+  /** Creates a new Builder for constructing instances of this record. */
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  // CPD-OFF
+  /** Jackson builder for BrowserExtras deserialization. */
+  @com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
+  @JsonPOJOBuilder(withPrefix = "with", buildMethodName = "build")
+  public static final class Builder {
+
+    @JsonProperty("eval_result")
+    @Nullable
+    private Object evalResult;
+
+    @JsonProperty("network_events")
+    @Nullable
+    private List<ResponseMeta> networkEvents;
+
+    @Nullable
+    private List<CookieInfo> cookies;
+
+    /** Sets the evalResult field. */
+    @JsonProperty("eval_result")
+    public Builder withEvalResult(final @Nullable Object value) {
+      this.evalResult = value;
+      return this;
     }
 
-    // CPD-OFF
-    /** Jackson builder for BrowserExtras deserialization. */
-    @com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
-    @JsonPOJOBuilder(withPrefix = "with", buildMethodName = "build")
-    public static final class Builder {
-
-        @JsonProperty("eval_result")
-        @Nullable private Object evalResult;
-        @JsonProperty("network_events")
-        @Nullable private List<ResponseMeta> networkEvents;
-        @Nullable private List<CookieInfo> cookies;
-
-        /** Sets the evalResult field. */
-        @JsonProperty("eval_result")
-        public Builder withEvalResult(final @Nullable Object value) {
-            this.evalResult = value;
-            return this;
-        }
-
-        /** Sets the networkEvents field. */
-        @JsonProperty("network_events")
-        public Builder withNetworkEvents(final @Nullable List<ResponseMeta> value) {
-            this.networkEvents = value;
-            return this;
-        }
-
-        /** Sets the cookies field. */
-        @JsonProperty("cookies")
-        public Builder withCookies(final @Nullable List<CookieInfo> value) {
-            this.cookies = value;
-            return this;
-        }
-
-        /** Constructs a BrowserExtras instance from the builder's current state. */
-        public BrowserExtras build() {
-            return new BrowserExtras(
-                evalResult,
-                networkEvents,
-                cookies
-            );
-        }
+    /** Sets the networkEvents field. */
+    @JsonProperty("network_events")
+    public Builder withNetworkEvents(final @Nullable List<ResponseMeta> value) {
+      this.networkEvents = value;
+      return this;
     }
-    // CPD-ON
+
+    /** Sets the cookies field. */
+    @JsonProperty("cookies")
+    public Builder withCookies(final @Nullable List<CookieInfo> value) {
+      this.cookies = value;
+      return this;
+    }
+
+    /** Constructs a BrowserExtras instance from the builder's current state. */
+    public BrowserExtras build() {
+      return new BrowserExtras(evalResult, networkEvents, cookies);
+    }
+  }
+  // CPD-ON
 }

@@ -8,7 +8,6 @@ import { scrape, crawl, createEngine } from "@kreuzberg/crawlberg";
 
 process.env.CRAWLBERG_ALLOW_PRIVATE_NETWORK ??= "true";
 
-
 async function _alefE2eDecompressAndParseJson(response: Response): Promise<unknown> {
 	const contentEncoding = response.headers.get("content-encoding");
 	let buffer = await response.arrayBuffer();
@@ -35,7 +34,16 @@ function _alefE2eItemTexts(item: unknown): string[] {
 	}
 	const record = item as Record<string, unknown>;
 	const itemsText = Array.isArray(record.items) ? record.items.map(_alefE2eText).join(" ") : "";
-	return [_alefE2eText(item), _alefE2eText(record.kind), _alefE2eText(record.name), _alefE2eText(record.source), _alefE2eText(record.alias), _alefE2eText(record.text), _alefE2eText(record.signature), itemsText];
+	return [
+		_alefE2eText(item),
+		_alefE2eText(record.kind),
+		_alefE2eText(record.name),
+		_alefE2eText(record.source),
+		_alefE2eText(record.alias),
+		_alefE2eText(record.text),
+		_alefE2eText(record.signature),
+		itemsText,
+	];
 }
 
 function _alefE2eFormatMetadataDisplay(fm: unknown): string {
@@ -56,29 +64,40 @@ function _alefE2eFormatMetadataDisplay(fm: unknown): string {
 	return "";
 }
 
-
 describe("stealth", () => {
-
 	it("stealth_ua_rotation_config: User-agent rotation config is accepted and crawl succeeds", async () => {
 		const engineConfig = { userAgents: ["Mozilla/5.0 (Windows NT 10.0)", "Chrome/120.0.0.0"] };
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/stealth_ua_rotation_config`;
 		const result = await scrape(engine, url);
-    expect(result.statusCode).toBe(200);
+		expect(result.statusCode).toBe(200);
 	}, 30000);
 	it("stealth_ua_rotation_round_robin: User-agent rotation cycles through multiple agents across multiple requests", async () => {
-		const engineConfig = { maxDepth: 1, maxPages: 3, userAgents: ["Mozilla/5.0 (Windows NT 10.0; Win64; x64) TestAgent-1", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15) TestAgent-2"] };
+		const engineConfig = {
+			maxDepth: 1,
+			maxPages: 3,
+			userAgents: [
+				"Mozilla/5.0 (Windows NT 10.0; Win64; x64) TestAgent-1",
+				"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15) TestAgent-2",
+			],
+		};
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_STEALTH_UA_ROTATION_ROUND_ROBIN ?? `${process.env.MOCK_SERVER_URL}/fixtures/stealth_ua_rotation_round_robin`;
+		const url =
+			process.env.MOCK_SERVER_STEALTH_UA_ROTATION_ROUND_ROBIN ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/stealth_ua_rotation_round_robin`;
 		const result = await crawl(engine, url);
-    expect(result.pages.length).toBeGreaterThanOrEqual(2);
+		expect(result.pages.length).toBeGreaterThanOrEqual(2);
 	}, 30000);
 	it("stealth_ua_rotation_single_domain: Custom user-agent string is applied for single domain crawl", async () => {
-		const engineConfig = { maxDepth: 0, stayOnDomain: true, userAgents: ["Mozilla/5.0 TestBot/1.0 (+http://example.com/bot)"] };
+		const engineConfig = {
+			maxDepth: 0,
+			stayOnDomain: true,
+			userAgents: ["Mozilla/5.0 TestBot/1.0 (+http://example.com/bot)"],
+		};
 		const engine = createEngine(engineConfig);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/stealth_ua_rotation_single_domain`;
 		const result = await crawl(engine, url);
-    expect(result.pages[0].statusCode).toBe(200);
-    expect(result.pages.length).toBe(1);
+		expect(result.pages[0].statusCode).toBe(200);
+		expect(result.pages.length).toBe(1);
 	}, 30000);
 });

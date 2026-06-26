@@ -8,7 +8,6 @@ import { scrape, createEngine } from "@kreuzberg/crawlberg";
 
 process.env.CRAWLBERG_ALLOW_PRIVATE_NETWORK ??= "true";
 
-
 async function _alefE2eDecompressAndParseJson(response: Response): Promise<unknown> {
 	const contentEncoding = response.headers.get("content-encoding");
 	let buffer = await response.arrayBuffer();
@@ -35,7 +34,16 @@ function _alefE2eItemTexts(item: unknown): string[] {
 	}
 	const record = item as Record<string, unknown>;
 	const itemsText = Array.isArray(record.items) ? record.items.map(_alefE2eText).join(" ") : "";
-	return [_alefE2eText(item), _alefE2eText(record.kind), _alefE2eText(record.name), _alefE2eText(record.source), _alefE2eText(record.alias), _alefE2eText(record.text), _alefE2eText(record.signature), itemsText];
+	return [
+		_alefE2eText(item),
+		_alefE2eText(record.kind),
+		_alefE2eText(record.name),
+		_alefE2eText(record.source),
+		_alefE2eText(record.alias),
+		_alefE2eText(record.text),
+		_alefE2eText(record.signature),
+		itemsText,
+	];
 }
 
 function _alefE2eFormatMetadataDisplay(fm: unknown): string {
@@ -56,9 +64,7 @@ function _alefE2eFormatMetadataDisplay(fm: unknown): string {
 	return "";
 }
 
-
 describe("error", () => {
-
 	it("error_401_unauthorized: Handles 401 Unauthorized response correctly", async () => {
 		await expect(async () => {
 			const engine = createEngine(null);
@@ -157,7 +163,7 @@ describe("error", () => {
 		const engine = createEngine(null);
 		const url = `${process.env.MOCK_SERVER_URL}/fixtures/error_empty_response`;
 		const result = await scrape(engine, url);
-    expect((result.html ?? "").length).toBe(0);
+		expect((result.html ?? "").length).toBe(0);
 	}, 30000);
 	it("error_invalid_proxy: Proxy pointing to unreachable address causes connection error during scrape", async () => {
 		await expect(async () => {

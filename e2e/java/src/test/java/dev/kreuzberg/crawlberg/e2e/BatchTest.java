@@ -5,127 +5,230 @@
 
 package dev.kreuzberg.crawlberg.e2e;
 
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import dev.kreuzberg.crawlberg.Crawlberg;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import dev.kreuzberg.crawlberg.CrawlConfig;
-import java.util.Optional;
-import dev.kreuzberg.crawlberg.JsonUtil;
+import dev.kreuzberg.crawlberg.Crawlberg;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 /** E2e tests for category: batch. */
 public class BatchTest {
-    private static final ObjectMapper MAPPER = new ObjectMapper().registerModule(new Jdk8Module()).setPropertyNamingStrategy(com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE);
-    @BeforeAll
-    static void initEnv() {        if (System.getProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK") == null) {
-            System.setProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK", "true");
-        }    }
+  private static final ObjectMapper MAPPER = new ObjectMapper()
+      .registerModule(new Jdk8Module())
+      .setPropertyNamingStrategy(
+          com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE);
 
-    @Test
-    void testBatchCrawlBasic() throws Exception {
-        // Batch crawl of 2 seed URLs with links to discover
-        var engineConfig = MAPPER.readValue("{\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String urlsBase = System.getProperty("mockServer.batch_crawl_basic", System.getenv().getOrDefault("MOCK_SERVER_BATCH_CRAWL_BASIC", (System.getProperty("mockServerUrl") != null ? System.getProperty("mockServerUrl") : (System.getenv("MOCK_SERVER_URL") != null ? System.getenv("MOCK_SERVER_URL") : "http://localhost:8000")) + "/fixtures/batch_crawl_basic"));
-        java.util.List<String> urls = java.util.Arrays.stream(new String[]{"/seed1", "/seed2"}).map(p -> p.startsWith("http") ? p : urlsBase + p).collect(java.util.stream.Collectors.toList());
-        var result = Crawlberg.batchCrawl(engine, urls);
-assertEquals(2, result.completedCount());assertEquals(0, result.failedCount());assertEquals(2, result.totalCount());
-
+  @BeforeAll
+  static void initEnv() {
+    if (System.getProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK") == null) {
+      System.setProperty("CRAWLBERG_ALLOW_PRIVATE_NETWORK", "true");
     }
+  }
 
+  @Test
+  void testBatchCrawlBasic() throws Exception {
+    // Batch crawl of 2 seed URLs with links to discover
+    var engineConfig =
+        MAPPER.readValue("{\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String urlsBase = System.getProperty(
+        "mockServer.batch_crawl_basic",
+        System.getenv()
+            .getOrDefault(
+                "MOCK_SERVER_BATCH_CRAWL_BASIC",
+                (System.getProperty("mockServerUrl") != null
+                        ? System.getProperty("mockServerUrl")
+                        : (System.getenv("MOCK_SERVER_URL") != null
+                            ? System.getenv("MOCK_SERVER_URL")
+                            : "http://localhost:8000"))
+                    + "/fixtures/batch_crawl_basic"));
+    java.util.List<String> urls = java.util.Arrays.stream(new String[] {"/seed1", "/seed2"})
+        .map(p -> p.startsWith("http") ? p : urlsBase + p)
+        .collect(java.util.stream.Collectors.toList());
+    var result = Crawlberg.batchCrawl(engine, urls);
+    assertEquals(2, result.completedCount());
+    assertEquals(0, result.failedCount());
+    assertEquals(2, result.totalCount());
+  }
 
-    @Test
-    void testBatchCrawlPartialFailure() throws Exception {
-        // Batch crawl where one seed URL returns 404 error
-        var engineConfig = MAPPER.readValue("{\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String urlsBase = System.getProperty("mockServer.batch_crawl_partial_failure", System.getenv().getOrDefault("MOCK_SERVER_BATCH_CRAWL_PARTIAL_FAILURE", (System.getProperty("mockServerUrl") != null ? System.getProperty("mockServerUrl") : (System.getenv("MOCK_SERVER_URL") != null ? System.getenv("MOCK_SERVER_URL") : "http://localhost:8000")) + "/fixtures/batch_crawl_partial_failure"));
-        java.util.List<String> urls = java.util.Arrays.stream(new String[]{"/good_seed", "/bad_seed"}).map(p -> p.startsWith("http") ? p : urlsBase + p).collect(java.util.stream.Collectors.toList());
-        var result = Crawlberg.batchCrawl(engine, urls);
-assertEquals(1, result.completedCount());assertEquals(1, result.failedCount());assertEquals(2, result.totalCount());
+  @Test
+  void testBatchCrawlPartialFailure() throws Exception {
+    // Batch crawl where one seed URL returns 404 error
+    var engineConfig =
+        MAPPER.readValue("{\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String urlsBase = System.getProperty(
+        "mockServer.batch_crawl_partial_failure",
+        System.getenv()
+            .getOrDefault(
+                "MOCK_SERVER_BATCH_CRAWL_PARTIAL_FAILURE",
+                (System.getProperty("mockServerUrl") != null
+                        ? System.getProperty("mockServerUrl")
+                        : (System.getenv("MOCK_SERVER_URL") != null
+                            ? System.getenv("MOCK_SERVER_URL")
+                            : "http://localhost:8000"))
+                    + "/fixtures/batch_crawl_partial_failure"));
+    java.util.List<String> urls = java.util.Arrays.stream(new String[] {"/good_seed", "/bad_seed"})
+        .map(p -> p.startsWith("http") ? p : urlsBase + p)
+        .collect(java.util.stream.Collectors.toList());
+    var result = Crawlberg.batchCrawl(engine, urls);
+    assertEquals(1, result.completedCount());
+    assertEquals(1, result.failedCount());
+    assertEquals(2, result.totalCount());
+  }
 
-    }
+  @Test
+  void testBatchCrawlWithConfig() throws Exception {
+    // Batch crawl with max_depth=1 config verifying pages are discovered
+    var engineConfig =
+        MAPPER.readValue("{\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String urlsBase = System.getProperty(
+        "mockServer.batch_crawl_with_config",
+        System.getenv()
+            .getOrDefault(
+                "MOCK_SERVER_BATCH_CRAWL_WITH_CONFIG",
+                (System.getProperty("mockServerUrl") != null
+                        ? System.getProperty("mockServerUrl")
+                        : (System.getenv("MOCK_SERVER_URL") != null
+                            ? System.getenv("MOCK_SERVER_URL")
+                            : "http://localhost:8000"))
+                    + "/fixtures/batch_crawl_with_config"));
+    java.util.List<String> urls = java.util.Arrays.stream(new String[] {"/seed1", "/seed2"})
+        .map(p -> p.startsWith("http") ? p : urlsBase + p)
+        .collect(java.util.stream.Collectors.toList());
+    var result = Crawlberg.batchCrawl(engine, urls);
+    assertEquals(2, result.completedCount());
+    assertEquals(0, result.failedCount());
+  }
 
+  @Test
+  void testBatchScrapeEmptyUrlsError() throws Exception {
+    // Batch scrape with empty batch_urls array returns error
+    // Wrap setup_lines + call_expr inside the lambda so error fixtures
+    // catch failures at *any* step — including `<Type>.fromJson(...)`
+    // calls that throw on malformed JSON (e.g. error fixtures with an
+    // invalid enum value like `"purpose":"invalid-purpose"`). Mirrors
+    // the C# `Assert.ThrowsAnyAsync(() => client.X(Type.FromJson(...)))`
+    // pattern.
+    assertThrows(Exception.class, () -> {
+      var engine = Crawlberg.createEngine(null);
+      String urlsBase = System.getProperty(
+          "mockServer.batch_scrape_empty_urls_error",
+          System.getenv()
+              .getOrDefault(
+                  "MOCK_SERVER_BATCH_SCRAPE_EMPTY_URLS_ERROR",
+                  (System.getProperty("mockServerUrl") != null
+                          ? System.getProperty("mockServerUrl")
+                          : (System.getenv("MOCK_SERVER_URL") != null
+                              ? System.getenv("MOCK_SERVER_URL")
+                              : "http://localhost:8000"))
+                      + "/fixtures/batch_scrape_empty_urls_error"));
+      java.util.List<String> urls = java.util.Arrays.stream(new String[] {})
+          .map(p -> p.startsWith("http") ? p : urlsBase + p)
+          .collect(java.util.stream.Collectors.toList());
+      Crawlberg.batchScrape(engine, urls);
+    });
+  }
 
-    @Test
-    void testBatchCrawlWithConfig() throws Exception {
-        // Batch crawl with max_depth=1 config verifying pages are discovered
-        var engineConfig = MAPPER.readValue("{\"max_depth\":1,\"respect_robots_txt\":false}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String urlsBase = System.getProperty("mockServer.batch_crawl_with_config", System.getenv().getOrDefault("MOCK_SERVER_BATCH_CRAWL_WITH_CONFIG", (System.getProperty("mockServerUrl") != null ? System.getProperty("mockServerUrl") : (System.getenv("MOCK_SERVER_URL") != null ? System.getenv("MOCK_SERVER_URL") : "http://localhost:8000")) + "/fixtures/batch_crawl_with_config"));
-        java.util.List<String> urls = java.util.Arrays.stream(new String[]{"/seed1", "/seed2"}).map(p -> p.startsWith("http") ? p : urlsBase + p).collect(java.util.stream.Collectors.toList());
-        var result = Crawlberg.batchCrawl(engine, urls);
-assertEquals(2, result.completedCount());assertEquals(0, result.failedCount());
+  @Test
+  void testBatchScrapeWithConfig() throws Exception {
+    // Batch scrape with aggressive preprocessing configuration
+    var engineConfig = MAPPER.readValue(
+        "{\"content\":{\"preprocessing_preset\":\"aggressive\"}}", CrawlConfig.class);
+    var engine = Crawlberg.createEngine(engineConfig);
+    String urlsBase = System.getProperty(
+        "mockServer.batch_scrape_with_config",
+        System.getenv()
+            .getOrDefault(
+                "MOCK_SERVER_BATCH_SCRAPE_WITH_CONFIG",
+                (System.getProperty("mockServerUrl") != null
+                        ? System.getProperty("mockServerUrl")
+                        : (System.getenv("MOCK_SERVER_URL") != null
+                            ? System.getenv("MOCK_SERVER_URL")
+                            : "http://localhost:8000"))
+                    + "/fixtures/batch_scrape_with_config"));
+    java.util.List<String> urls = java.util.Arrays.stream(new String[] {"/article1", "/article2"})
+        .map(p -> p.startsWith("http") ? p : urlsBase + p)
+        .collect(java.util.stream.Collectors.toList());
+    var result = Crawlberg.batchScrape(engine, urls);
+    assertEquals(2, result.completedCount());
+    assertEquals(0, result.failedCount());
+    assertEquals(2, result.totalCount());
+  }
 
-    }
+  @Test
+  void testScrapeBatchBasic() throws Exception {
+    // Batch scrape of multiple URLs all succeeding
+    var engine = Crawlberg.createEngine(null);
+    String urlsBase = System.getProperty(
+        "mockServer.scrape_batch_basic",
+        System.getenv()
+            .getOrDefault(
+                "MOCK_SERVER_SCRAPE_BATCH_BASIC",
+                (System.getProperty("mockServerUrl") != null
+                        ? System.getProperty("mockServerUrl")
+                        : (System.getenv("MOCK_SERVER_URL") != null
+                            ? System.getenv("MOCK_SERVER_URL")
+                            : "http://localhost:8000"))
+                    + "/fixtures/scrape_batch_basic"));
+    java.util.List<String> urls = java.util.Arrays.stream(
+            new String[] {"/page1", "/page2", "/page3"})
+        .map(p -> p.startsWith("http") ? p : urlsBase + p)
+        .collect(java.util.stream.Collectors.toList());
+    var result = Crawlberg.batchScrape(engine, urls);
+    assertEquals(3, result.completedCount());
+    assertEquals(0, result.failedCount());
+    assertEquals(3, result.totalCount());
+  }
 
+  @Test
+  void testScrapeBatchPartialFailure() throws Exception {
+    // Batch scrape with one URL failing returns partial results
+    var engine = Crawlberg.createEngine(null);
+    String urlsBase = System.getProperty(
+        "mockServer.scrape_batch_partial_failure",
+        System.getenv()
+            .getOrDefault(
+                "MOCK_SERVER_SCRAPE_BATCH_PARTIAL_FAILURE",
+                (System.getProperty("mockServerUrl") != null
+                        ? System.getProperty("mockServerUrl")
+                        : (System.getenv("MOCK_SERVER_URL") != null
+                            ? System.getenv("MOCK_SERVER_URL")
+                            : "http://localhost:8000"))
+                    + "/fixtures/scrape_batch_partial_failure"));
+    java.util.List<String> urls = java.util.Arrays.stream(new String[] {"/good1", "/bad", "/good2"})
+        .map(p -> p.startsWith("http") ? p : urlsBase + p)
+        .collect(java.util.stream.Collectors.toList());
+    var result = Crawlberg.batchScrape(engine, urls);
+    assertEquals(2, result.completedCount());
+    assertEquals(1, result.failedCount());
+    assertEquals(3, result.totalCount());
+  }
 
-    @Test
-    void testBatchScrapeEmptyUrlsError() throws Exception {
-        // Batch scrape with empty batch_urls array returns error
-        // Wrap setup_lines + call_expr inside the lambda so error fixtures
-        // catch failures at *any* step — including `<Type>.fromJson(...)`
-        // calls that throw on malformed JSON (e.g. error fixtures with an
-        // invalid enum value like `"purpose":"invalid-purpose"`). Mirrors
-        // the C# `Assert.ThrowsAnyAsync(() => client.X(Type.FromJson(...)))`
-        // pattern.
-        assertThrows(Exception.class, () -> {
-            var engine = Crawlberg.createEngine(null);
-            String urlsBase = System.getProperty("mockServer.batch_scrape_empty_urls_error", System.getenv().getOrDefault("MOCK_SERVER_BATCH_SCRAPE_EMPTY_URLS_ERROR", (System.getProperty("mockServerUrl") != null ? System.getProperty("mockServerUrl") : (System.getenv("MOCK_SERVER_URL") != null ? System.getenv("MOCK_SERVER_URL") : "http://localhost:8000")) + "/fixtures/batch_scrape_empty_urls_error"));
-            java.util.List<String> urls = java.util.Arrays.stream(new String[]{}).map(p -> p.startsWith("http") ? p : urlsBase + p).collect(java.util.stream.Collectors.toList());
-            Crawlberg.batchScrape(engine, urls);
-        });
-
-    }
-
-
-    @Test
-    void testBatchScrapeWithConfig() throws Exception {
-        // Batch scrape with aggressive preprocessing configuration
-        var engineConfig = MAPPER.readValue("{\"content\":{\"preprocessing_preset\":\"aggressive\"}}", CrawlConfig.class);
-        var engine = Crawlberg.createEngine(engineConfig);
-        String urlsBase = System.getProperty("mockServer.batch_scrape_with_config", System.getenv().getOrDefault("MOCK_SERVER_BATCH_SCRAPE_WITH_CONFIG", (System.getProperty("mockServerUrl") != null ? System.getProperty("mockServerUrl") : (System.getenv("MOCK_SERVER_URL") != null ? System.getenv("MOCK_SERVER_URL") : "http://localhost:8000")) + "/fixtures/batch_scrape_with_config"));
-        java.util.List<String> urls = java.util.Arrays.stream(new String[]{"/article1", "/article2"}).map(p -> p.startsWith("http") ? p : urlsBase + p).collect(java.util.stream.Collectors.toList());
-        var result = Crawlberg.batchScrape(engine, urls);
-assertEquals(2, result.completedCount());assertEquals(0, result.failedCount());assertEquals(2, result.totalCount());
-
-    }
-
-
-    @Test
-    void testScrapeBatchBasic() throws Exception {
-        // Batch scrape of multiple URLs all succeeding
-        var engine = Crawlberg.createEngine(null);
-        String urlsBase = System.getProperty("mockServer.scrape_batch_basic", System.getenv().getOrDefault("MOCK_SERVER_SCRAPE_BATCH_BASIC", (System.getProperty("mockServerUrl") != null ? System.getProperty("mockServerUrl") : (System.getenv("MOCK_SERVER_URL") != null ? System.getenv("MOCK_SERVER_URL") : "http://localhost:8000")) + "/fixtures/scrape_batch_basic"));
-        java.util.List<String> urls = java.util.Arrays.stream(new String[]{"/page1", "/page2", "/page3"}).map(p -> p.startsWith("http") ? p : urlsBase + p).collect(java.util.stream.Collectors.toList());
-        var result = Crawlberg.batchScrape(engine, urls);
-assertEquals(3, result.completedCount());assertEquals(0, result.failedCount());assertEquals(3, result.totalCount());
-
-    }
-
-
-    @Test
-    void testScrapeBatchPartialFailure() throws Exception {
-        // Batch scrape with one URL failing returns partial results
-        var engine = Crawlberg.createEngine(null);
-        String urlsBase = System.getProperty("mockServer.scrape_batch_partial_failure", System.getenv().getOrDefault("MOCK_SERVER_SCRAPE_BATCH_PARTIAL_FAILURE", (System.getProperty("mockServerUrl") != null ? System.getProperty("mockServerUrl") : (System.getenv("MOCK_SERVER_URL") != null ? System.getenv("MOCK_SERVER_URL") : "http://localhost:8000")) + "/fixtures/scrape_batch_partial_failure"));
-        java.util.List<String> urls = java.util.Arrays.stream(new String[]{"/good1", "/bad", "/good2"}).map(p -> p.startsWith("http") ? p : urlsBase + p).collect(java.util.stream.Collectors.toList());
-        var result = Crawlberg.batchScrape(engine, urls);
-assertEquals(2, result.completedCount());assertEquals(1, result.failedCount());assertEquals(3, result.totalCount());
-
-    }
-
-
-    @Test
-    void testScrapeBatchProgress() throws Exception {
-        // Batch scrape of 2 URLs completes with 2 results
-        var engine = Crawlberg.createEngine(null);
-        String urlsBase = System.getProperty("mockServer.scrape_batch_progress", System.getenv().getOrDefault("MOCK_SERVER_SCRAPE_BATCH_PROGRESS", (System.getProperty("mockServerUrl") != null ? System.getProperty("mockServerUrl") : (System.getenv("MOCK_SERVER_URL") != null ? System.getenv("MOCK_SERVER_URL") : "http://localhost:8000")) + "/fixtures/scrape_batch_progress"));
-        java.util.List<String> urls = java.util.Arrays.stream(new String[]{"/target", "/other"}).map(p -> p.startsWith("http") ? p : urlsBase + p).collect(java.util.stream.Collectors.toList());
-        var result = Crawlberg.batchScrape(engine, urls);
-assertEquals(2, result.totalCount());assertEquals(2, result.completedCount());
-
-    }
-
+  @Test
+  void testScrapeBatchProgress() throws Exception {
+    // Batch scrape of 2 URLs completes with 2 results
+    var engine = Crawlberg.createEngine(null);
+    String urlsBase = System.getProperty(
+        "mockServer.scrape_batch_progress",
+        System.getenv()
+            .getOrDefault(
+                "MOCK_SERVER_SCRAPE_BATCH_PROGRESS",
+                (System.getProperty("mockServerUrl") != null
+                        ? System.getProperty("mockServerUrl")
+                        : (System.getenv("MOCK_SERVER_URL") != null
+                            ? System.getenv("MOCK_SERVER_URL")
+                            : "http://localhost:8000"))
+                    + "/fixtures/scrape_batch_progress"));
+    java.util.List<String> urls = java.util.Arrays.stream(new String[] {"/target", "/other"})
+        .map(p -> p.startsWith("http") ? p : urlsBase + p)
+        .collect(java.util.stream.Collectors.toList());
+    var result = Crawlberg.batchScrape(engine, urls);
+    assertEquals(2, result.totalCount());
+    assertEquals(2, result.completedCount());
+  }
 }

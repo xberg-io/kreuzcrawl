@@ -8,7 +8,6 @@ import { scrape, crawl, createEngine } from "@kreuzberg/crawlberg";
 
 process.env.CRAWLBERG_ALLOW_PRIVATE_NETWORK ??= "true";
 
-
 async function _alefE2eDecompressAndParseJson(response: Response): Promise<unknown> {
 	const contentEncoding = response.headers.get("content-encoding");
 	let buffer = await response.arrayBuffer();
@@ -35,7 +34,16 @@ function _alefE2eItemTexts(item: unknown): string[] {
 	}
 	const record = item as Record<string, unknown>;
 	const itemsText = Array.isArray(record.items) ? record.items.map(_alefE2eText).join(" ") : "";
-	return [_alefE2eText(item), _alefE2eText(record.kind), _alefE2eText(record.name), _alefE2eText(record.source), _alefE2eText(record.alias), _alefE2eText(record.text), _alefE2eText(record.signature), itemsText];
+	return [
+		_alefE2eText(item),
+		_alefE2eText(record.kind),
+		_alefE2eText(record.name),
+		_alefE2eText(record.source),
+		_alefE2eText(record.alias),
+		_alefE2eText(record.text),
+		_alefE2eText(record.signature),
+		itemsText,
+	];
 }
 
 function _alefE2eFormatMetadataDisplay(fm: unknown): string {
@@ -56,43 +64,50 @@ function _alefE2eFormatMetadataDisplay(fm: unknown): string {
 	return "";
 }
 
-
 describe("concurrent", () => {
-
 	it("concurrent_basic: Concurrent crawling fetches all pages with max_concurrent workers", async () => {
 		const engineConfig = { maxConcurrent: 3, maxDepth: 1 };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_CONCURRENT_BASIC ?? `${process.env.MOCK_SERVER_URL}/fixtures/concurrent_basic`;
+		const url =
+			process.env.MOCK_SERVER_CONCURRENT_BASIC ?? `${process.env.MOCK_SERVER_URL}/fixtures/concurrent_basic`;
 		const result = await crawl(engine, url);
-    expect(result.pages.length).toBe(6);
-    expect(result.pages.length).toBeGreaterThanOrEqual(6);
+		expect(result.pages.length).toBe(6);
+		expect(result.pages.length).toBeGreaterThanOrEqual(6);
 	}, 30000);
 	it("concurrent_depth_two_fan_out: Concurrent depth=2 crawl correctly fans out and deduplicates across levels", async () => {
 		const engineConfig = { maxConcurrent: 3, maxDepth: 2 };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_CONCURRENT_DEPTH_TWO_FAN_OUT ?? `${process.env.MOCK_SERVER_URL}/fixtures/concurrent_depth_two_fan_out`;
+		const url =
+			process.env.MOCK_SERVER_CONCURRENT_DEPTH_TWO_FAN_OUT ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/concurrent_depth_two_fan_out`;
 		const result = await crawl(engine, url);
-    expect(result.pages.length).toBe(4);
+		expect(result.pages.length).toBe(4);
 	}, 30000);
 	it("concurrent_max_pages_exact: Concurrent crawling does not exceed max_pages limit even with high concurrency", async () => {
 		const engineConfig = { maxConcurrent: 5, maxDepth: 1, maxPages: 3 };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_CONCURRENT_MAX_PAGES_EXACT ?? `${process.env.MOCK_SERVER_URL}/fixtures/concurrent_max_pages_exact`;
+		const url =
+			process.env.MOCK_SERVER_CONCURRENT_MAX_PAGES_EXACT ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/concurrent_max_pages_exact`;
 		const result = await crawl(engine, url);
-    expect(result.pages.length).toBeLessThanOrEqual(3);
+		expect(result.pages.length).toBeLessThanOrEqual(3);
 	}, 30000);
 	it("concurrent_partial_errors: Concurrent crawl handles partial failures gracefully", async () => {
 		const engineConfig = { maxConcurrent: 3, maxDepth: 1 };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_CONCURRENT_PARTIAL_ERRORS ?? `${process.env.MOCK_SERVER_URL}/fixtures/concurrent_partial_errors`;
+		const url =
+			process.env.MOCK_SERVER_CONCURRENT_PARTIAL_ERRORS ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/concurrent_partial_errors`;
 		const result = await crawl(engine, url);
-    expect(result.pages.length).toBeGreaterThanOrEqual(2);
+		expect(result.pages.length).toBeGreaterThanOrEqual(2);
 	}, 30000);
 	it("concurrent_respects_max_pages: Concurrent crawling respects max_pages limit", async () => {
 		const engineConfig = { maxConcurrent: 2, maxDepth: 1, maxPages: 3 };
 		const engine = createEngine(engineConfig);
-		const url = process.env.MOCK_SERVER_CONCURRENT_RESPECTS_MAX_PAGES ?? `${process.env.MOCK_SERVER_URL}/fixtures/concurrent_respects_max_pages`;
+		const url =
+			process.env.MOCK_SERVER_CONCURRENT_RESPECTS_MAX_PAGES ??
+			`${process.env.MOCK_SERVER_URL}/fixtures/concurrent_respects_max_pages`;
 		const result = await crawl(engine, url);
-    expect(result.pages.length).toBeLessThanOrEqual(3);
+		expect(result.pages.length).toBeLessThanOrEqual(3);
 	}, 30000);
 });
