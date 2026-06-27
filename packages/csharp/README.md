@@ -30,8 +30,8 @@
   <a href="https://pkg.go.dev/github.com/xberg-io/crawlberg/packages/go">
     <img src="https://img.shields.io/github/v/tag/xberg-io/crawlberg?label=Go&color=007ec6" alt="Go">
   </a>
-  <a href="https://www.nuget.org/packages/Crawlberg/">
-    <img src="https://img.shields.io/nuget/v/Crawlberg?label=C%23&color=007ec6" alt="C#">
+  <a href="https://www.nuget.org/packages/XbergIo.Crawlberg/">
+    <img src="https://img.shields.io/nuget/v/XbergIo.Crawlberg?label=C%23&color=007ec6" alt="C#">
   </a>
   <a href="https://packagist.org/packages/xberg-io/crawlberg">
     <img src="https://img.shields.io/packagist/v/xberg-io/crawlberg?label=PHP&color=007ec6" alt="PHP">
@@ -90,7 +90,7 @@ P/Invoke with the C FFI layer, supporting .NET 8+ with async/await and nullable 
 ## Installation
 
 ```bash
-dotnet add package Crawlberg
+dotnet add package XbergIo.Crawlberg
 ```
 
 ## Agent plugin

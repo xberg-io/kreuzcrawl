@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <RootNamespace>Crawlberg</RootNamespace>
-    <PackageId>Crawlberg</PackageId>
+    <PackageId>XbergIo.Crawlberg</PackageId>
     <Version>1.0.0-rc.2</Version>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>1.0.0.0</FileVersion>

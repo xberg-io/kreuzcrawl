@@ -170,6 +170,7 @@ package = "io.xberg.crawlberg"
 
 [crates.csharp]
 namespace = "Crawlberg"
+package_id = "XbergIo.Crawlberg"
 project_file = "packages/csharp/Crawlberg.slnx"
 
 [crates.dart]
@@ -1715,8 +1716,8 @@ name = "C#"
 template = "language_package.md"
 output_path = "packages/csharp/README.md"
 package_manager = ["nuget"]
-package_name = "Crawlberg"
-install_command = "dotnet add package Crawlberg"
+package_name = "XbergIo.Crawlberg"
+install_command = "dotnet add package XbergIo.Crawlberg"
 description = """
 C# / .NET bindings for **crawlberg** — a high-performance Rust web crawling engine. Uses
 P/Invoke with the C FFI layer, supporting .NET 8+ with async/await and nullable reference types.
