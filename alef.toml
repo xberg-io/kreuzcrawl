@@ -328,7 +328,7 @@ typecheck = "cd packages/python && uv run --no-sync mypy ."
 # Node/TS/JSON: match prek's `oxfmt` hook, which formats tracked files by type.
 # Scope to git-tracked sources (a raw `.` walk chokes on target/ and build dirs);
 # oxfmt still honours .oxfmtrc.json ignorePatterns. Covers the node crate, wasm,
-# packages/typescript, and the e2e/* TS suites in one pass.
+# and the e2e/* TS suites in one pass.
 [crates.lint.node]
 precondition = "command -v oxfmt >/dev/null 2>&1"
 format = "git ls-files -z '*.ts' '*.mts' '*.cts' '*.js' '*.mjs' '*.cjs' '*.json' '*.jsonc' '*.css' | xargs -0 oxfmt --config .oxfmtrc.json --write"

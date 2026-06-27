@@ -30,5 +30,5 @@
 		"forceConsistentCasingInFileNames": true,
 		"noEmit": true
 	},
-	"include": ["packages/typescript/src/**/*.ts"]
+	"include": ["crates/crawlberg-node/index.d.ts"]
 }

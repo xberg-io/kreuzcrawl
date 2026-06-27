@@ -47,7 +47,6 @@ tasks:
                   corepack enable
                   pnpm install -r
                   pnpm exec napi build --platform --release
-            - cmd: pnpm -r --filter="./packages/typescript/**" run build
 
     build:bindings:
         desc: Build Node bindings for benchmarking

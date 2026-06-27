@@ -1935,39 +1935,6 @@ jobs:
                   version: ${{ needs.prepare.outputs.version }}
                   max-attempts: "25"
 
-            - name: Build TypeScript wrapper package
-              if: ${{ hashFiles('packages/typescript/package.json') != '' }}
-              # Inline: pnpm tsc + workspace:* rewrite so npm publish ships an
-              # installable package. Tightly coupled to packages/typescript layout.
-              shell: bash
-              run: |
-                  (cd packages/typescript && pnpm install --no-frozen-lockfile && pnpm exec tsc --project tsconfig.json)
-                  version="$(node -p "require('./packages/typescript/package.json').version")"
-                  PKG_VERSION="$version" node -e '
-                    const fs = require("node:fs");
-                    const path = "packages/typescript/package.json";
-                    const pkg = JSON.parse(fs.readFileSync(path, "utf8"));
-                    const ver = process.env.PKG_VERSION;
-                    for (const field of ["dependencies", "peerDependencies", "optionalDependencies"]) {
-                      if (pkg[field]) {
-                        for (const [name, spec] of Object.entries(pkg[field])) {
-                          if (typeof spec === "string" && spec.startsWith("workspace:")) {
-                            pkg[field][name] = ver;
-                          }
-                        }
-                      }
-                    }
-                    fs.writeFileSync(path, JSON.stringify(pkg, null, 2) + "\n");
-                  '
-
-            - name: Publish TypeScript wrapper package
-              if: ${{ hashFiles('packages/typescript/package.json') != '' }}
-              uses: xberg-io/actions/publish-npm@v1
-              with:
-                  package-dir: packages/typescript
-                  npm-tag: ${{ needs.prepare.outputs.npm_tag }}
-                  dry-run: ${{ needs.prepare.outputs.dry_run }}
-
     publish-wasm:
         name: Publish WASM package
         needs: [prepare, wasm-bindings, check-wasm]
