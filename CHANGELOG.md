@@ -2,6 +2,11 @@
 
 All notable changes to crawlberg are documented here.
 
+## [1.0.1] - 2026-06-29
+
+Maintenance release. Version-only bump synced across all manifests; `.gitignore`
+ai-rulez block reorganized.
+
 ## [1.0.0] - 2026-06-27
 
 First stable release. Promotes 1.0.0-rc.2; version-only bump synced across all manifests.

@@ -22,7 +22,7 @@ ai = ["crawlberg/ai"]
 
 [dependencies]
 clap = { workspace = true }
-crawlberg = { path = "../crawlberg", version = "1.0.0", features = [
+crawlberg = { path = "../crawlberg", version = "1.0.1", features = [
     "native-runtime",
     "browser",
 ] }
